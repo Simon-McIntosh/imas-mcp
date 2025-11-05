@@ -72,6 +72,24 @@ def _print_version(
         "e.g., 'core_profiles equilibrium'"
     ),
 )
+@click.option(
+    "--enable-imas-python-search/--disable-imas-python-search",
+    envvar="ENABLE_IMAS_PYTHON_SEARCH",
+    default=True,
+    help="Enable/disable IMAS-Python documentation search (env: ENABLE_IMAS_PYTHON_SEARCH)",
+)
+@click.option(
+    "--docs-mcp-url",
+    envvar="DOCS_MCP_URL",
+    default="http://localhost:3000",
+    help="URL of the docs-mcp-server (env: DOCS_MCP_URL)",
+)
+@click.option(
+    "--docs-db-path",
+    envvar="DOCS_DB_PATH",
+    default="./docs-mcp-data",
+    help="Path to documentation database (env: DOCS_DB_PATH)",
+)
 def main(
     transport: str,
     host: str,
@@ -79,6 +97,9 @@ def main(
     log_level: str,
     no_rich: bool,
     ids_filter: str,
+    enable_imas_python_search: bool,
+    docs_mcp_url: str,
+    docs_db_path: str,
 ) -> None:
     """Run the AI-enhanced MCP server with configurable transport options.
 
@@ -149,7 +170,13 @@ def main(
             "Disabled rich output for stdio transport to prevent protocol interference"
         )
 
-    server = Server(use_rich=use_rich, ids_set=ids_set)
+    server = Server(
+        use_rich=use_rich,
+        ids_set=ids_set,
+        enable_imas_python_search=enable_imas_python_search,
+        docs_mcp_url=docs_mcp_url,
+        docs_db_path=docs_db_path,
+    )
     server.run(
         transport=cast(Literal["stdio", "sse", "streamable-http"], transport),
         host=host,

@@ -69,6 +69,9 @@ class Server:
     # Configuration parameters
     ids_set: set[str] | None = None
     use_rich: bool = True
+    enable_imas_python_search: bool = True
+    docs_mcp_url: str = "http://localhost:3000"
+    docs_db_path: str = "./docs-mcp-data"
 
     # Internal fields
     mcp: FastMCP = field(init=False, repr=False)
@@ -88,7 +91,12 @@ class Server:
         self._validate_schemas_available()
 
         # Initialize components
-        self.tools = Tools(ids_set=self.ids_set)
+        self.tools = Tools(
+            ids_set=self.ids_set,
+            enable_imas_python_search=self.enable_imas_python_search,
+            docs_mcp_url=self.docs_mcp_url,
+            docs_db_path=self.docs_db_path,
+        )
         self.resources = Resources(ids_set=self.ids_set)
         # Compose embeddings manager
         self.embeddings = Embeddings(

@@ -19,6 +19,7 @@ from .base import BaseTool
 from .explain_tool import ExplainTool
 from .export_tool import ExportTool
 from .identifiers_tool import IdentifiersTool
+from .imas_python_search_tool import IMASPythonSearchTool
 from .list_tool import ListTool
 from .overview_tool import OverviewTool
 from .path_tool import PathTool
@@ -29,14 +30,24 @@ from .search_tool import SearchTool
 class Tools(MCPProvider):
     """Main Tools class that delegates to individual tool implementations."""
 
-    def __init__(self, ids_set: set[str] | None = None):
+    def __init__(
+        self,
+        ids_set: set[str] | None = None,
+        enable_imas_python_search: bool = True,
+        docs_mcp_url: str = "http://localhost:3000",
+        docs_db_path: str = "./docs-mcp-data",
+    ):
         """Initialize the IMAS tools provider.
 
         Args:
             ids_set: Optional set of IDS names to limit processing to.
                     If None, will process all available IDS.
+            enable_imas_python_search: Whether to enable IMAS-Python documentation search
+            docs_mcp_url: URL of the docs-mcp-server
+            docs_db_path: Path to documentation database
         """
         self.ids_set = ids_set
+        self.enable_imas_python_search = enable_imas_python_search
 
         # Create shared DocumentStore with ids_set
         self.document_store = DocumentStore(ids_set=ids_set)
@@ -52,6 +63,14 @@ class Tools(MCPProvider):
         self.identifiers_tool = IdentifiersTool(self.document_store)
         self.export_tool = ExportTool(self.document_store)
 
+        # Initialize IMAS-Python search tool if enabled
+        self.imas_python_search_tool: IMASPythonSearchTool | None = None
+        if enable_imas_python_search:
+            self.imas_python_search_tool = IMASPythonSearchTool(
+                docs_mcp_url=docs_mcp_url,
+                docs_db_path=docs_db_path,
+            )
+
     @property
     def name(self) -> str:
         """Provider name for logging and identification."""
@@ -59,8 +78,8 @@ class Tools(MCPProvider):
 
     def register(self, mcp: FastMCP):
         """Register all IMAS tools with the MCP server."""
-        # Register tools from each module
-        for tool in [
+        # Build list of tools to register
+        tools_to_register = [
             self.search_tool,
             self.path_tool,
             self.list_tool,
@@ -70,7 +89,14 @@ class Tools(MCPProvider):
             self.relationships_tool,
             self.identifiers_tool,
             self.export_tool,
-        ]:
+        ]
+
+        # Add IMAS-Python search tool if enabled
+        if self.imas_python_search_tool is not None:
+            tools_to_register.append(self.imas_python_search_tool)
+
+        # Register tools from each module
+        for tool in tools_to_register:
             for attr_name in dir(tool):
                 attr = getattr(tool, attr_name)
                 if hasattr(attr, "_mcp_tool") and attr._mcp_tool:
@@ -121,6 +147,12 @@ class Tools(MCPProvider):
         """Delegate to export tool."""
         return await self.export_tool.export_physics_domain(*args, **kwargs)
 
+    async def search_imas_python_docs(self, *args, **kwargs):
+        """Delegate to IMAS-Python search tool."""
+        if self.imas_python_search_tool is None:
+            raise RuntimeError("IMAS-Python search tool is not enabled")
+        return await self.imas_python_search_tool.search_imas_python_docs(*args, **kwargs)
+
 
 __all__ = [
     "BaseTool",
@@ -133,5 +165,6 @@ __all__ = [
     "RelationshipsTool",
     "IdentifiersTool",
     "ExportTool",
+    "IMASPythonSearchTool",
     "Tools",
 ]

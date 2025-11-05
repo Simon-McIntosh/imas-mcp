@@ -60,10 +60,14 @@ docker run -d \
 
 ## Environment Variables
 
-| Variable     | Description               | Default |
-| ------------ | ------------------------- | ------- |
-| `PYTHONPATH` | Python path               | `/app`  |
-| `PORT`       | Port to run the server on | `8000`  |
+| Variable                     | Description                                  | Default                  |
+| ---------------------------- | -------------------------------------------- | ------------------------ |
+| `PYTHONPATH`                 | Python path                                  | `/app`                   |
+| `PORT`                       | Port to run the server on                    | `8000`                   |
+| `DOCS_MCP_URL`               | URL of the docs-mcp-server                   | `http://localhost:3000`  |
+| `ENABLE_IMAS_PYTHON_SEARCH`  | Enable/disable IMAS-Python documentation search | `true`                |
+| `DOCS_DB_PATH`               | Path to documentation database               | `./docs-mcp-data`        |
+| `IMAS_PYTHON_VERSION`        | IMAS-Python version to scrape at build time  | `latest`                 |
 
 ## Volume Mounts
 
@@ -188,6 +192,75 @@ spec:
   type: LoadBalancer
 ```
 
+## IMAS-Python Documentation Integration
+
+The IMAS MCP server includes integrated support for searching IMAS-Python documentation.
+
+### Docker Setup
+
+When using docker-compose, the docs-mcp-server is automatically started and configured:
+
+```bash
+# Build with IMAS-Python documentation scraping
+IMAS_PYTHON_VERSION=latest docker-compose build
+
+# Start both services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f imas-mcp
+docker-compose logs -f docs-mcp-server
+```
+
+### Build-Time Documentation Scraping
+
+During the Docker build, IMAS-Python documentation can be scraped:
+
+```bash
+# Build with specific IMAS-Python version
+docker build \
+  --build-arg IMAS_PYTHON_VERSION=1.0.0 \
+  -t imas-mcp:custom .
+
+# Skip documentation scraping
+docker build \
+  --build-arg IMAS_PYTHON_VERSION=skip \
+  -t imas-mcp:no-docs .
+```
+
+### Runtime Configuration
+
+```bash
+# Disable IMAS-Python search at runtime
+docker run -d \
+  --name imas-mcp \
+  -p 8000:8000 \
+  -e ENABLE_IMAS_PYTHON_SEARCH=false \
+  ghcr.io/iterorganization/imas-mcp:latest
+
+# Use custom docs-mcp-server URL
+docker run -d \
+  --name imas-mcp \
+  -p 8000:8000 \
+  -e DOCS_MCP_URL=http://custom-docs-server:3000 \
+  ghcr.io/iterorganization/imas-mcp:latest
+```
+
+### Local Development with IMAS-Python Search
+
+For local development without Docker:
+
+```bash
+# Start docs-mcp-server (in separate terminal)
+make start-docs-server
+
+# Scrape IMAS-Python documentation
+make scrape-imas-docs
+
+# Run the IMAS MCP server
+make run
+```
+
 ## Development
 
 ### Building locally
@@ -235,8 +308,23 @@ docker logs -f imas-mcp
    - Verify the index files were built correctly
 
 3. **Memory issues**
+
    - The container may need more memory for large indexes
    - Consider using Docker's memory limits: `--memory=2g`
+
+4. **IMAS-Python documentation search not working**
+
+   - Verify docs-mcp-server is running: `docker-compose ps docs-mcp-server`
+   - Check docs-mcp-server logs: `docker-compose logs docs-mcp-server`
+   - Ensure documentation was scraped: check the `docs-mcp-data` volume
+   - Test docs-mcp-server health: `curl http://localhost:3000/health`
+   - Verify network connectivity between containers
+
+5. **Documentation scraping failed during build**
+   - Check build logs for scraping errors
+   - Verify network connectivity to ReadTheDocs
+   - Try rebuilding without cache: `docker-compose build --no-cache`
+   - Consider pre-scraping documentation locally and mounting as volume
 
 ### Performance Tuning
 

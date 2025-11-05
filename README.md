@@ -245,9 +245,19 @@ Once you have the IMAS MCP server configured, you can interact with it using nat
 @imas Export physics domain data for comprehensive transport analysis
 ```
 
-The IMAS MCP server provides 8 specialized tools for different types of queries:
+### IMAS-Python Documentation Search
+
+```text
+@imas How do I open an IMAS file in Python?
+@imas Search for examples of reading core_profiles data
+@imas Show me IMAS-Python API documentation for data access
+@imas What are the installation requirements for IMAS-Python?
+```
+
+The IMAS MCP server provides 9 specialized tools for different types of queries:
 
 - **Search**: Natural language and structured search across IMAS data paths
+- **IMAS-Python Docs**: Search IMAS-Python documentation including API references, tutorials, and guides
 - **Explain**: Physics concepts with IMAS context and domain expertise
 - **Overview**: General information about IMAS structure and available data
 - **Analyze**: Detailed structural analysis of specific IDS
@@ -269,6 +279,11 @@ cd imas-mcp
 
 # Install development dependencies (search index build takes ~8 minutes first time)
 uv sync --all-extras
+
+# Optional: Setup IMAS-Python documentation search
+# Install Node.js/npm if not already installed
+make start-docs-server  # In a separate terminal
+make scrape-imas-docs   # Scrape IMAS-Python documentation
 ```
 
 ### Build Dependencies

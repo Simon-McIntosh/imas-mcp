@@ -1,6 +1,6 @@
 # Makefile for imas-mcp
 
-.PHONY: install install-dev clean test run package docker-build docker-run install-bench test-baseline performance-baseline test-current performance-current performance-compare test-and-performance
+.PHONY: install install-dev clean test run package docker-build docker-run install-bench test-baseline performance-baseline test-current performance-current performance-compare test-and-performance start-docs-server scrape-imas-docs dev
 
 # Install dependencies
 install:
@@ -111,3 +111,21 @@ lint:
 # Fix linting issues
 lint-fix:
 	uv run ruff check --fix imas_mcp tests scripts
+
+# Start docs-mcp-server for local development
+start-docs-server:
+	@echo "Starting docs-mcp-server..."
+	uv run python scripts/start_docs_server.py --install
+
+# Scrape IMAS-Python documentation
+scrape-imas-docs:
+	@echo "Scraping IMAS-Python documentation..."
+	uv run python scripts/scrape_imas_docs.py
+
+# Complete local development setup
+dev: install-dev
+	@echo "Setting up local development environment..."
+	@echo "1. Installing dependencies..."
+	@echo "2. Starting docs-mcp-server (Ctrl+C to stop)..."
+	@echo "   (In a separate terminal, run 'make run' to start the IMAS MCP server)"
+	uv run python scripts/start_docs_server.py --install

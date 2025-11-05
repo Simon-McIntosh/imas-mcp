@@ -2,6 +2,29 @@
 ARG UV_VERSION=0.7.13
 FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv
 
+## Stage 2: IMAS-Python documentation scraping (optional, builds in parallel)
+FROM node:20-slim AS docs-scraper
+ARG IMAS_PYTHON_VERSION=latest
+
+WORKDIR /scraper
+
+# Install docs-mcp-server
+RUN npm install -g @modelcontextprotocol/server-docs
+
+# Scrape IMAS-Python documentation if version specified
+RUN if [ "${IMAS_PYTHON_VERSION}" != "" ] && [ "${IMAS_PYTHON_VERSION}" != "skip" ]; then \
+    echo "Scraping IMAS-Python docs version: ${IMAS_PYTHON_VERSION}"; \
+    mkdir -p /docs-mcp-data && \
+    npx @modelcontextprotocol/server-docs scrape \
+        --url "https://imas-python.readthedocs.io/en/${IMAS_PYTHON_VERSION}/" \
+        --version "${IMAS_PYTHON_VERSION}" \
+        --output /docs-mcp-data || \
+    echo "Warning: Documentation scraping failed (non-fatal)"; \
+    else \
+    echo "Skipping IMAS-Python documentation scraping"; \
+    mkdir -p /docs-mcp-data; \
+    fi
+
 ## Final stage: runtime image
 FROM python:3.12-slim
 
@@ -10,6 +33,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && apt-get install -y --no-install-recommends \
     git \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv package manager (copied from first stage; version pinned by ARG above)
@@ -22,6 +46,7 @@ WORKDIR /app
 ARG IDS_FILTER=""
 ARG TRANSPORT="streamable-http"
 ARG IMAS_DD_VERSION="4.0.0"
+ARG IMAS_PYTHON_VERSION="latest"
 
 # Additional build-time metadata for cache busting & traceability
 ARG GIT_SHA=""
@@ -33,17 +58,23 @@ ENV PYTHONPATH="/app" \
     IDS_FILTER=${IDS_FILTER} \
     TRANSPORT=${TRANSPORT} \
     IMAS_DD_VERSION=${IMAS_DD_VERSION} \
+    IMAS_PYTHON_VERSION=${IMAS_PYTHON_VERSION} \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     HATCH_BUILD_NO_HOOKS=true \
     IMAS_MCP_COMMIT=${GIT_SHA} \
     IMAS_MCP_TAG=${GIT_TAG} \
-    IMAS_MCP_REF=${GIT_REF}
+    IMAS_MCP_REF=${GIT_REF} \
+    DOCS_MCP_URL="http://localhost:3000" \
+    DOCS_DB_PATH="/app/docs-mcp-data"
 
 # Labels for image provenance
 LABEL imas_mcp.git_sha=${GIT_SHA} \
       imas_mcp.git_tag=${GIT_TAG} \
       imas_mcp.git_ref=${GIT_REF}
+
+## Copy scraped documentation from scraper stage
+COPY --from=docs-scraper /docs-mcp-data /app/docs-mcp-data
 
 ## Copy git metadata first so hatch-vcs sees repository state exactly as on tag
 COPY .git/ ./.git/
