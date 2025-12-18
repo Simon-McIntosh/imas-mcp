@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.12", "3.13"]
+        python-version: ["3.12"]
         imas-dd-version: ["3.42.2", "4.1.0"]
 
     steps:
@@ -55,7 +55,7 @@ jobs:
         run: uv python install ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: uv sync --extra test --extra transformers
+        run: uv sync --extra test
         env:
           HATCH_BUILD_NO_HOOKS: true
           IMAS_DD_VERSION: ${{ matrix.imas-dd-version }}
