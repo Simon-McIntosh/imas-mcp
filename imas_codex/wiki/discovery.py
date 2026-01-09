@@ -424,21 +424,25 @@ class WikiDiscovery:
     # =========================================================================
 
     def _get_scoring_tools(self) -> list[FunctionTool]:
-        """Get tools for the scoring agent from shared wiki tools."""
-        from imas_codex.wiki.tools import get_wiki_tools
+        """Get tools for the scoring agent - graph-only, no SSH.
 
-        # Get shared tools
-        tools = get_wiki_tools()
+        Scoring is done purely from graph metrics to avoid slow SSH calls.
+        The agent can compose its own Cypher queries for graph exploration.
+        """
+        import json
+
+        from imas_codex.wiki.tools import (
+            get_graph_schema,
+            get_wiki_pages,
+            get_wiki_progress,
+            update_wiki_scores,
+        )
 
         # Add a facility-bound progress tracker that updates stats
         facility_id = self.config.facility_id
 
         def track_scoring_progress() -> str:
             """Track scoring and update stats."""
-            import json
-
-            from imas_codex.wiki.tools import get_wiki_progress
-
             progress_json = get_wiki_progress(facility_id)
             progress = json.loads(progress_json)
 
@@ -456,19 +460,63 @@ class WikiDiscovery:
 
             return progress_json
 
-        # Add tracking tool
-        tools.append(
+        def query_graph(cypher: str) -> str:
+            """Execute read-only Cypher query against the wiki graph.
+
+            Use this to explore the graph structure and inform scoring decisions.
+            Examples:
+            - Get neighbors: MATCH (wp:WikiPage {id: $id})-[:LINKS_TO]->(target) RETURN target.title
+            - Check connectivity: MATCH (source)-[:LINKS_TO]->(wp:WikiPage {id: $id}) RETURN count(source)
+            - Find high-value pages: MATCH (wp:WikiPage) WHERE wp.in_degree > 10 RETURN wp.title
+
+            Args:
+                cypher: Read-only Cypher query string
+
+            Returns:
+                JSON array of query results
+            """
+            gc = self._get_gc()
+            try:
+                results = gc.query(cypher)
+                return json.dumps(results, default=str)
+            except Exception as e:
+                return json.dumps({"error": str(e)})
+
+        # Return graph-based tools - agent composes its own Cypher for exploration
+        return [
+            FunctionTool.from_defaults(
+                fn=get_graph_schema,
+                name="get_graph_schema",
+                description="Get schema for graph writes. focus='wiki' for WikiPage fields and relationships.",
+            ),
+            FunctionTool.from_defaults(
+                fn=query_graph,
+                name="query_graph",
+                description="Execute read-only Cypher query. Use to explore graph structure (neighbors, connectivity, patterns).",
+            ),
+            FunctionTool.from_defaults(
+                fn=get_wiki_pages,
+                name="get_wiki_pages",
+                description="Get WikiPage nodes with metrics (in_degree, out_degree, link_depth). Convenience wrapper.",
+            ),
+            FunctionTool.from_defaults(
+                fn=update_wiki_scores,
+                name="update_wiki_scores",
+                description="Batch update scores. JSON: [{id, score, reasoning, skip_reason}]",
+            ),
             FunctionTool.from_defaults(
                 fn=track_scoring_progress,
                 name="track_scoring_progress",
-                description="Track scoring progress and update internal stats.",
-            )
-        )
-
-        return tools
+                description="Check scoring progress and remaining work.",
+            ),
+        ]
 
     async def phase2_score(self, progress: Progress | None = None) -> int:
-        """Phase 2: Score pages using agent with graph metrics.
+        """Phase 2: Score pages using LLM agent with graph queries.
+
+        The agent analyzes graph structure (in_degree, out_degree, neighbors)
+        to intelligently score pages. No SSH or content fetching - pure graph analysis.
+        The LLM decides scoring based on graph context, not hardcoded patterns.
 
         Returns number of pages scored.
         """
@@ -479,14 +527,13 @@ class WikiDiscovery:
         system_prompt = prompts.get("wiki-scorer")
 
         if system_prompt is None:
-            # Use default prompt
             system_prompt_text = self._get_default_scorer_prompt()
         else:
             system_prompt_text = system_prompt.content
 
-        # Use Sonnet for scoring - higher capability for accurate assessment
-        model = get_model_for_task("scoring")  # Use scoring-specific model
-        llm = get_llm(model=model, temperature=0.2, max_tokens=16384)
+        # Use discovery model for scoring (configured in pyproject.toml)
+        model = get_model_for_task("discovery")
+        llm = get_llm(model=model, temperature=0.2, max_tokens=32768)
 
         tools = self._get_scoring_tools()
         agent = ReActAgent(
@@ -494,64 +541,127 @@ class WikiDiscovery:
             llm=llm,
             verbose=self.verbose,
             system_prompt=system_prompt_text,
-            max_iterations=50,  # More iterations for larger batches
+            max_iterations=100,  # Allow many iterations for large page sets
         )
 
-        # Run agent with task that uses get_graph_schema for schema info
-        task = f"""Score all crawled wiki pages for {self.config.facility_id}.
+        # Task instructs agent to use graph queries for intelligent scoring
+        task = f"""Score all crawled wiki pages for facility "{self.config.facility_id}".
 
-1. First call get_graph_schema(focus="wiki") to see WikiPage fields and valid status values
-2. Call get_wiki_pages("{self.config.facility_id}", status="crawled", limit=750) to get pages
-3. For each page, compute interest_score (0.0-1.0) based on graph metrics:
-   - in_degree: Pages with many incoming links are important
-   - out_degree: Hub pages that link to many others
-   - link_depth: Pages closer to portal (lower depth) are more central
-   - title: Keywords like Thomson, LIUQE, signals indicate high value
-4. If uncertain about a page, call get_wiki_neighbors(page_id) to check context
-5. Call update_wiki_scores with JSON array of 200-500 pages per batch
-6. Call track_scoring_progress to check remaining work
-7. Continue until all crawled pages are scored"""
+## Instructions
+
+1. First call `get_graph_schema(focus="wiki")` to understand WikiPage structure
+2. Call `get_wiki_pages("{self.config.facility_id}", status="crawled", limit=500)` to get pages with metrics
+3. For each page, analyze the graph structure to determine value:
+   - Use `in_degree` (pages linking TO this page) as primary signal
+   - Use `out_degree` and `link_depth` as secondary signals
+   - For ambiguous titles, call `get_wiki_neighbors(page_id)` to see what links to it
+4. Apply YOUR judgment based on graph context - you decide what's valuable:
+   - High-value pages are well-connected, referenced by many other pages
+   - Low-value pages are orphans or only linked from administrative pages
+   - A "User:" page that links to many diagnostic pages may still be valuable
+5. Call `update_wiki_scores` with ALL pages in a single batch:
+   ```json
+   [{{"id": "...", "score": 0.85, "reasoning": "in_degree=12, linked from Thomson and LIUQE"}}]
+   ```
+6. Include `skip_reason` for pages with score < 0.5 (explain WHY based on graph evidence)
+7. Call `track_scoring_progress` to verify all pages scored
+
+Process ALL pages. Ground every score in graph metrics you observed."""
+
+        task_id = None
+        if progress:
+            # Get count of pages to score
+            gc = self._get_gc()
+            count_result = gc.query(
+                """
+                MATCH (wp:WikiPage {facility_id: $facility_id, status: 'crawled'})
+                RETURN count(wp) AS count
+                """,
+                facility_id=self.config.facility_id,
+            )
+            total = count_result[0]["count"] if count_result else 0
+            task_id = progress.add_task("Scoring pages (LLM)...", total=total)
 
         try:
             response = await agent.run(task)
             if self.verbose and hasattr(response, "response"):
                 resp_text = str(response.response)[:200] if response.response else ""
                 console.print(f"[dim]Agent response: {resp_text}...[/dim]")
+
+            # Update stats from graph
+            self._update_scoring_stats()
+
+            if progress and task_id is not None:
+                progress.update(task_id, completed=self.stats.pages_scored)
+
         except Exception as e:
             logger.error("Scoring agent error: %s", e)
 
         return self.stats.pages_scored
 
+    def _update_scoring_stats(self) -> None:
+        """Update stats from graph after agent scoring."""
+        gc = self._get_gc()
+        result = gc.query(
+            """
+            MATCH (wp:WikiPage {facility_id: $facility_id})
+            WHERE wp.status IN ['discovered', 'skipped']
+            RETURN
+                count(wp) AS scored,
+                count(CASE WHEN wp.interest_score >= 0.7 THEN 1 END) AS high,
+                count(CASE WHEN wp.interest_score < 0.3 THEN 1 END) AS low
+            """,
+            facility_id=self.config.facility_id,
+        )
+        if result:
+            self.stats.pages_scored = result[0].get("scored", 0)
+            self.stats.high_score_count = result[0].get("high", 0)
+            self.stats.low_score_count = result[0].get("low", 0)
+
     def _get_default_scorer_prompt(self) -> str:
         """Default system prompt for scoring agent."""
-        return """You are scoring wiki pages for a fusion research facility.
+        return """You are scoring wiki pages for a fusion research facility based on graph structure.
 
-Your goal is to assign interest_score (0.0-1.0) to each page based on measurable graph metrics.
+## Your Task
 
-## Scoring Guidelines
+Assign interest_score (0.0-1.0) to wiki pages using ONLY graph metrics from the knowledge graph.
+Do NOT fetch page content via SSH - score based on graph structure alone.
 
-HIGH SCORE (0.7-1.0):
-- in_degree > 5: Many pages link here - indicates importance
-- Title contains: Thomson, CXRS, LIUQE, signals, nodes, calibration
-- link_depth <= 2: Close to portal, central to documentation
+## Scoring Principles
 
-MEDIUM SCORE (0.4-0.7):
-- in_degree 1-5: Some references
-- Technical content but not central
-- link_depth 3-4
+Use graph metrics as evidence for your decisions:
 
-LOW SCORE (0.0-0.4):
-- in_degree = 0: Orphan page, nobody references it
-- Title contains: Meeting, Workshop, Mission, personal
-- link_depth > 5: Far from main documentation
+**High Value (0.7-1.0)**: Well-connected pages that many other pages reference
+- in_degree > 5: Many pages link here - indicates central importance
+- Linked FROM diagnostic/signal documentation pages
+- Close to portal (link_depth <= 2)
 
-## Important
+**Medium Value (0.4-0.7)**: Moderately connected pages
+- in_degree 1-5: Some references from the wiki
+- Reasonable link depth (3-4 from portal)
 
-- ALWAYS provide reasoning for scores
-- Skip pages with skip_reason if score < 0.5
-- Use neighbor_info to check context when title is ambiguous
-- Process in batches of 200-500 pages for efficiency
-- Stop when all pages scored or budget exhausted"""
+**Low Value (0.0-0.4)**: Poorly connected or administrative pages
+- in_degree = 0: Orphan page - nobody references it
+- Only linked from navigation/administrative pages
+- Very deep in link structure (link_depth > 5)
+
+## Key Rules
+
+1. **Ground scores in metrics**: Always cite in_degree, link_depth, neighbor context
+2. **Use get_wiki_neighbors for ambiguous cases**: Check what links to a page
+3. **Provide skip_reason for low scores**: Explain WHY based on graph evidence
+4. **Process ALL pages in one batch**: Use update_wiki_scores with full array
+5. **You decide what's valuable**: Don't follow rigid keyword patterns
+
+## Output Format
+
+Call update_wiki_scores with JSON array:
+```json
+[
+  {"id": "epfl:Thomson", "score": 0.92, "reasoning": "in_degree=47, depth=1, linked from 12 diagnostics"},
+  {"id": "epfl:Orphan_Page", "score": 0.15, "reasoning": "in_degree=0, depth=5", "skip_reason": "orphan page with no incoming links"}
+]
+```"""
 
     # =========================================================================
     # Phase 3: INGEST - Not implemented yet (placeholder)

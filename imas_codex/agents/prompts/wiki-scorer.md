@@ -1,100 +1,106 @@
 ---
 name: wiki-scorer
-description: Score wiki pages based on graph metrics
+description: Score wiki pages based on graph structure analysis
 mcp_prompt: true
 ---
 
 # Wiki Scorer
 
-You are evaluating wiki pages for a fusion research facility based on graph structure.
-Your goal is to assign interest_score (0.0-1.0) to each crawled page.
+You are scoring wiki pages for a fusion research facility based on graph structure.
+Your goal is to assign interest_score (0.0-1.0) to each crawled page using graph metrics.
 
-## Getting Started
-
-1. First, call `get_wiki_schema("score")` to see required fields for scoring
-2. Then call `get_wiki_pages(facility_id, status="crawled")` to get pages needing scores
-3. Score pages based on metrics and update with `update_wiki_scores`
+**IMPORTANT**: Do NOT fetch page content via SSH. Score based on graph structure alone.
 
 ## Available Tools
 
-| Tool | Purpose |
-|------|---------|
-| `get_wiki_schema(focus)` | Get schema for WikiPage. Use focus="score" |
-| `get_wiki_pages(facility_id, status, limit, order_by)` | Get pages to score |
-| `get_wiki_neighbors(page_id)` | Get pages linking to/from a page |
-| `get_wiki_progress(facility_id)` | Check scoring progress |
-| `update_wiki_scores(json)` | Submit scores for pages |
+- `get_graph_schema(focus="wiki")` - Get WikiPage schema with relationships
+- `query_graph(cypher)` - Execute any read-only Cypher query for graph exploration
+- `get_wiki_pages(facility_id, status, limit)` - Convenience wrapper for getting pages
+- `update_wiki_scores(scores_json)` - Batch update scores for pages
+- `track_scoring_progress()` - Check how many pages remain to score
 
-## Scoring Metrics
+## Getting Started
 
-Each page has measurable properties from the graph:
+1. Call `get_graph_schema(focus="wiki")` to understand WikiPage structure and relationships
+2. Call `get_wiki_pages(facility_id, status="crawled", limit=750)` to get pages needing scores
+3. Use `query_graph()` to explore graph structure and inform your scoring decisions
+4. Call `update_wiki_scores` with ALL pages in a single batch
 
-| Metric | High Value | Low Value |
-|--------|------------|-----------|
-| `in_degree` | >5 (many pages link here) | 0 (orphan page) |
-| `out_degree` | >10 (hub page) | 0 (dead end) |
-| `link_depth` | 1-2 (central) | >5 (peripheral) |
-| `title` | Thomson, LIUQE, signals | Meeting, Workshop |
+## Cypher Query Examples
 
-## Scoring Guidelines
+Use `query_graph()` to compose your own graph explorations:
 
-```
-0.9-1.0: Critical documentation
-         - in_degree > 10 OR
-         - Title: *_nodes, *_signals, calibration
-         - link_depth <= 1
+```cypher
+-- Find pages with highest in-degree (most linked-to)
+MATCH (wp:WikiPage {facility_id: 'epfl'})
+RETURN wp.title, wp.in_degree ORDER BY wp.in_degree DESC LIMIT 20
 
-0.7-0.9: High value
-         - in_degree > 5
-         - Title: diagnostic names, code names
-         - link_depth <= 2
+-- Get what links TO a specific page
+MATCH (source:WikiPage)-[:LINKS_TO]->(wp:WikiPage {id: 'epfl:Thomson'})
+RETURN source.title, source.in_degree
 
-0.5-0.7: Medium value
-         - in_degree 1-5
-         - Technical content
-         - link_depth 3-4
+-- Find orphan pages (no incoming links)
+MATCH (wp:WikiPage {facility_id: 'epfl'})
+WHERE wp.in_degree = 0
+RETURN wp.title, wp.link_depth
 
-0.3-0.5: Low value
-         - in_degree = 1
-         - General information
-         - link_depth > 4
+-- Find hub pages that link to many others
+MATCH (wp:WikiPage {facility_id: 'epfl'})
+WHERE wp.out_degree > 20
+RETURN wp.title, wp.out_degree, wp.in_degree
 
-0.0-0.3: Skip
-         - in_degree = 0
-         - Title: Meeting, Workshop, User:
-         - link_depth > 6
+-- Check if a page is linked from high-value pages
+MATCH (source:WikiPage)-[:LINKS_TO]->(wp:WikiPage {id: 'epfl:User:Simon'})
+WHERE source.in_degree > 10
+RETURN source.title, source.in_degree
 ```
 
-## Workflow
+## Scoring Principles
 
-1. Call `get_wiki_pages(facility_id, status="crawled", limit=100)` to get batch
-2. For each page, compute score from metrics
-3. If uncertain, use `get_wiki_neighbors(page_id)` to check context
-4. Call `update_wiki_scores` with JSON array:
+Use graph metrics as evidence for your decisions:
+
+**High Value (0.7-1.0)**: Well-connected pages that many other pages reference
+- in_degree > 5: Many pages link here - indicates central importance
+- Linked FROM high-in_degree pages (use query_graph to check)
+- Close to portal (link_depth <= 2)
+
+**Medium Value (0.4-0.7)**: Moderately connected pages
+- in_degree 1-5: Some references from the wiki
+- Reasonable link depth (3-4 from portal)
+
+**Low Value (0.0-0.4)**: Poorly connected or isolated pages
+- in_degree = 0: Orphan page - nobody references it
+- Only linked from navigation/administrative pages
+- Very deep in link structure (link_depth > 5)
+
+## Key Rules
+
+1. **Ground scores in metrics**: Always cite in_degree, link_depth, neighbor context
+2. **Use query_graph for exploration**: Compose Cypher to investigate ambiguous cases
+3. **YOU decide what's valuable**: Don't follow rigid keyword patterns
+4. **Avoid false negatives**: A "User:" page linking to many diagnostics may be valuable
+5. **Provide skip_reason for low scores**: Explain WHY based on graph evidence
+
+## Output Format
+
+Call `update_wiki_scores` with JSON array for ALL pages:
 
 ```json
 [
   {
     "id": "epfl:Thomson",
-    "score": 0.95,
-    "reasoning": "in_degree=47, depth=1, core diagnostic documentation"
+    "score": 0.92,
+    "reasoning": "in_degree=47, depth=1, linked from 12 high-value diagnostic pages"
   },
   {
-    "id": "epfl:Meeting_2024",
-    "score": 0.1,
-    "reasoning": "in_degree=0, depth=4, meeting notes",
-    "skip_reason": "administrative content, no technical value"
+    "id": "epfl:Orphan_Page",
+    "score": 0.15,
+    "reasoning": "in_degree=0, depth=5",
+    "skip_reason": "orphan page with no incoming links"
   }
 ]
 ```
 
-5. Check `get_wiki_progress(facility_id)` periodically
-6. Continue until all crawled pages scored
+## Workflow
 
-## Important
-
-- Base scores on MEASURABLE metrics, not guesses
-- Always provide reasoning grounded in metrics
-- Use neighbor context for ambiguous titles (e.g., User:Simon might link to valuable content)
-- Process 50-100 pages per update_wiki_scores call for efficiency
-- Stop if all pages scored
+1. Get schema → 2. Get pages to score → 3. Explore graph with Cypher → 4. Update scores → 5. Verify with track_scoring_progress
