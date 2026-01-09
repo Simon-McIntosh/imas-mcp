@@ -182,6 +182,8 @@ include-error-fields = false
 default = "anthropic/claude-haiku-4.5"
 # Fast model for discovery/crawl phases (high throughput)
 discovery = "anthropic/claude-haiku-4.5"
+# Capable model for wiki page scoring (accurate interest assessment)
+scoring = "anthropic/claude-sonnet-4.5"
 # More capable model for evaluation/scoring (better reasoning)
 evaluation = "anthropic/claude-sonnet-4.5"
 # Best model for physics understanding and enrichment

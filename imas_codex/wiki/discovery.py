@@ -224,22 +224,56 @@ class WikiDiscovery:
     def phase1_crawl(self, progress: Progress | None = None) -> int:
         """Phase 1: Crawl wiki and build link structure.
 
+        Graph-driven: picks up pending_crawl pages from previous runs.
         Returns number of pages crawled.
         """
         self.stats.phase = "CRAWL"
         gc = self._get_gc()
 
-        # Start from portal
+        # Load already-crawled pages to skip
+        crawled_result = gc.query(
+            """
+            MATCH (wp:WikiPage {facility_id: $facility_id})
+            WHERE wp.status = 'crawled' OR wp.status = 'scored'
+                  OR wp.status = 'discovered' OR wp.status = 'ingested'
+            RETURN wp.title AS title
+            """,
+            facility_id=self.config.facility_id,
+        )
+        visited: set[str] = {r["title"] for r in crawled_result}
+
+        # Load pending_crawl pages from previous runs
+        pending_result = gc.query(
+            """
+            MATCH (wp:WikiPage {facility_id: $facility_id, status: 'pending_crawl'})
+            RETURN wp.title AS title, wp.link_depth AS depth
+            ORDER BY wp.link_depth
+            """,
+            facility_id=self.config.facility_id,
+        )
+        frontier: set[str] = {r["title"] for r in pending_result}
+        depth_map: dict[str, int] = {
+            r["title"]: r["depth"] or 0 for r in pending_result
+        }
+
+        # Add portal if no frontier
         portal = self.config.portal_page
-        visited: set[str] = set()
-        frontier: set[str] = {portal}
-        depth_map: dict[str, int] = {portal: 0}
+        if not frontier and portal not in visited:
+            frontier.add(portal)
+            depth_map[portal] = 0
+
+        if self.verbose and pending_result:
+            console.print(f"  Resuming with {len(frontier)} pending pages from graph")
 
         task_id = None
         if progress:
             task_id = progress.add_task("Crawling wiki...", total=self.max_pages)
 
-        while frontier and len(visited) < self.max_pages:
+        # Track all links for bulk relationship creation
+        all_link_results: dict[str, list[str]] = {}
+        crawled_this_run = 0
+
+        while frontier and crawled_this_run < self.max_pages:
             # Get next batch from frontier
             batch = list(frontier)[:50]
             frontier -= set(batch)
@@ -252,6 +286,8 @@ class WikiDiscovery:
                     continue
 
                 visited.add(page)
+                crawled_this_run += 1
+                all_link_results[page] = links
                 current_depth = depth_map.get(page, 0)
                 self.stats.max_depth_reached = max(
                     self.stats.max_depth_reached, current_depth
@@ -292,17 +328,22 @@ class WikiDiscovery:
                 self.stats.links_found += len(links)
 
                 if progress and task_id is not None:
-                    progress.update(task_id, completed=len(visited))
+                    progress.update(task_id, completed=crawled_this_run)
 
             self.stats.frontier_size = len(frontier)
 
             if self.verbose:
                 console.print(
-                    f"  Crawled {len(visited)}, frontier: {len(frontier)}, depth: {self.stats.max_depth_reached}"
+                    f"  Crawled {crawled_this_run}, frontier: {len(frontier)}, depth: {self.stats.max_depth_reached}"
                 )
 
         # Create LINKS_TO relationships in bulk
-        self._create_link_relationships(results, gc)
+        if all_link_results:
+            self._create_link_relationships(all_link_results, gc)
+
+        # Persist frontier pages with status='pending_crawl'
+        if frontier:
+            self._persist_frontier(frontier, depth_map, gc)
 
         # Compute in_degree for all pages
         gc.query(
@@ -318,7 +359,43 @@ class WikiDiscovery:
         if progress and task_id is not None:
             progress.update(task_id, completed=self.max_pages)
 
-        return len(visited)
+        return crawled_this_run
+
+    def _persist_frontier(
+        self, frontier: set[str], depth_map: dict[str, int], gc: GraphClient
+    ) -> None:
+        """Persist frontier pages as pending_crawl for subsequent runs."""
+        frontier_data = [
+            {
+                "id": f"{self.config.facility_id}:{page}",
+                "title": page,
+                "url": f"{self.config.base_url}/{urllib.parse.quote(page, safe='')}",
+                "facility_id": self.config.facility_id,
+                "link_depth": depth_map.get(page, 0),
+            }
+            for page in frontier
+        ]
+
+        gc.query(
+            """
+            UNWIND $pages AS p
+            MERGE (wp:WikiPage {id: p.id})
+            ON CREATE SET
+                wp.title = p.title,
+                wp.url = p.url,
+                wp.status = 'pending_crawl',
+                wp.facility_id = p.facility_id,
+                wp.link_depth = p.link_depth,
+                wp.discovered_at = datetime()
+            WITH wp, p
+            MATCH (f:Facility {id: p.facility_id})
+            MERGE (wp)-[:FACILITY_ID]->(f)
+            """,
+            pages=frontier_data,
+        )
+
+        if self.verbose:
+            console.print(f"  Persisted {len(frontier)} frontier pages for next run")
 
     def _create_link_relationships(
         self, results: dict[str, list[str]], gc: GraphClient
@@ -347,143 +424,48 @@ class WikiDiscovery:
     # =========================================================================
 
     def _get_scoring_tools(self) -> list[FunctionTool]:
-        """Get tools for the scoring agent."""
-        gc = self._get_gc()
+        """Get tools for the scoring agent from shared wiki tools."""
+        from imas_codex.wiki.tools import get_wiki_tools
+
+        # Get shared tools
+        tools = get_wiki_tools()
+
+        # Add a facility-bound progress tracker that updates stats
         facility_id = self.config.facility_id
 
-        def get_pages_to_score(limit: int = 100) -> str:
-            """Get crawled pages that need scoring, with graph metrics."""
+        def track_scoring_progress() -> str:
+            """Track scoring and update stats."""
             import json
 
-            result = gc.query(
-                """
-                MATCH (wp:WikiPage {facility_id: $facility_id, status: 'crawled'})
-                RETURN wp.id AS id,
-                       wp.title AS title,
-                       wp.link_depth AS depth,
-                       wp.in_degree AS in_degree,
-                       wp.out_degree AS out_degree
-                ORDER BY wp.in_degree DESC
-                LIMIT $limit
-                """,
-                facility_id=facility_id,
-                limit=limit,
+            from imas_codex.wiki.tools import get_wiki_progress
+
+            progress_json = get_wiki_progress(facility_id)
+            progress = json.loads(progress_json)
+
+            # Update internal stats
+            status_counts = progress.get("status_counts", {})
+            self.stats.pages_scored = status_counts.get(
+                "discovered", 0
+            ) + status_counts.get("skipped", 0)
+            self.stats.high_score_count = progress.get("score_distribution", {}).get(
+                "high", 0
+            )
+            self.stats.low_score_count = progress.get("score_distribution", {}).get(
+                "low", 0
             )
 
-            return json.dumps({"pages": result, "count": len(result)})
+            return progress_json
 
-        def get_neighbor_info(page_id: str) -> str:
-            """Get info about pages that link to/from this page."""
-            import json
-
-            result = gc.query(
-                """
-                MATCH (wp:WikiPage {id: $page_id})
-                OPTIONAL MATCH (wp)-[:LINKS_TO]->(outgoing)
-                OPTIONAL MATCH (incoming)-[:LINKS_TO]->(wp)
-                WITH wp,
-                     collect(DISTINCT {id: outgoing.id, title: outgoing.title, score: outgoing.interest_score}) AS out_links,
-                     collect(DISTINCT {id: incoming.id, title: incoming.title, score: incoming.interest_score}) AS in_links
-                RETURN out_links, in_links
-                """,
-                page_id=page_id,
+        # Add tracking tool
+        tools.append(
+            FunctionTool.from_defaults(
+                fn=track_scoring_progress,
+                name="track_scoring_progress",
+                description="Track scoring progress and update internal stats.",
             )
+        )
 
-            if result:
-                return json.dumps(result[0])
-            return json.dumps({"out_links": [], "in_links": []})
-
-        def update_page_scores(scores_json: str) -> str:
-            """Update interest_score for pages. Input: JSON array of {id, score, reasoning, skip_reason}."""
-            import json
-
-            try:
-                scores = json.loads(scores_json)
-            except json.JSONDecodeError as e:
-                return json.dumps({"error": f"Invalid JSON: {e}"})
-
-            updated = 0
-            for s in scores:
-                page_id = s.get("id")
-                score = s.get("score", 0.5)
-                reasoning = s.get("reasoning", "")
-                skip_reason = s.get("skip_reason")
-
-                # Determine status based on score
-                if score >= 0.5:
-                    status = "discovered"
-                else:
-                    status = "skipped"
-
-                gc.query(
-                    """
-                    MATCH (wp:WikiPage {id: $id})
-                    SET wp.interest_score = $score,
-                        wp.score_reasoning = $reasoning,
-                        wp.skip_reason = $skip_reason,
-                        wp.status = $status,
-                        wp.scored_at = datetime()
-                    """,
-                    id=page_id,
-                    score=score,
-                    reasoning=reasoning,
-                    skip_reason=skip_reason,
-                    status=status,
-                )
-                updated += 1
-
-                # Track stats
-                if score >= 0.7:
-                    self.stats.high_score_count += 1
-                elif score < 0.3:
-                    self.stats.low_score_count += 1
-
-            self.stats.pages_scored += updated
-            return json.dumps({"updated": updated})
-
-        def get_scoring_progress() -> str:
-            """Get current scoring progress."""
-            import json
-
-            result = gc.query(
-                """
-                MATCH (wp:WikiPage {facility_id: $facility_id})
-                RETURN wp.status AS status, count(*) AS count
-                """,
-                facility_id=facility_id,
-            )
-
-            return json.dumps(
-                {
-                    "status_counts": {r["status"]: r["count"] for r in result},
-                    "pages_scored": self.stats.pages_scored,
-                    "cost_spent": self.stats.cost_spent_usd,
-                    "cost_remaining": self.stats.cost_remaining(),
-                }
-            )
-
-        return [
-            FunctionTool.from_defaults(
-                fn=get_pages_to_score,
-                name="get_pages_to_score",
-                description="Get crawled pages needing scores. Returns id, title, depth, in_degree, out_degree.",
-            ),
-            FunctionTool.from_defaults(
-                fn=get_neighbor_info,
-                name="get_neighbor_info",
-                description="Get pages that link to/from a specific page. Use to assess value from context.",
-            ),
-            FunctionTool.from_defaults(
-                fn=update_page_scores,
-                name="update_page_scores",
-                description="Update scores for pages. Pass JSON array: [{id, score, reasoning, skip_reason}]",
-            ),
-            FunctionTool.from_defaults(
-                fn=get_scoring_progress,
-                name="get_scoring_progress",
-                description="Get current scoring progress and remaining budget.",
-            ),
-        ]
+        return tools
 
     async def phase2_score(self, progress: Progress | None = None) -> int:
         """Phase 2: Score pages using agent with graph metrics.
@@ -502,9 +484,9 @@ class WikiDiscovery:
         else:
             system_prompt_text = system_prompt.content
 
-        # Get model for scoring
-        model = get_model_for_task("discovery")
-        llm = get_llm(model=model, temperature=0.3, max_tokens=8192)
+        # Use Sonnet for scoring - higher capability for accurate assessment
+        model = get_model_for_task("scoring")  # Use scoring-specific model
+        llm = get_llm(model=model, temperature=0.2, max_tokens=16384)
 
         tools = self._get_scoring_tools()
         agent = ReActAgent(
@@ -512,25 +494,23 @@ class WikiDiscovery:
             llm=llm,
             verbose=self.verbose,
             system_prompt=system_prompt_text,
-            max_iterations=30,
+            max_iterations=50,  # More iterations for larger batches
         )
 
-        # Run agent
+        # Run agent with task that uses get_graph_schema for schema info
         task = f"""Score all crawled wiki pages for {self.config.facility_id}.
 
-Use get_pages_to_score to get batches of pages with their graph metrics.
-For each page, compute interest_score (0.0-1.0) based on:
-- in_degree: Pages with many incoming links are likely important
-- out_degree: Hub pages that link to many others
-- link_depth: Pages closer to portal (lower depth) are more central
-- title: Keywords like Thomson, LIUQE, signals indicate high value
-- neighbor_scores: If neighbors are high-value, this page may be too
-
-Use get_neighbor_info to check what a page links to when uncertain.
-
-Call update_page_scores with batches of 20-50 pages at a time.
-Continue until all crawled pages are scored or budget is exhausted.
-Check get_scoring_progress periodically."""
+1. First call get_graph_schema(focus="wiki") to see WikiPage fields and valid status values
+2. Call get_wiki_pages("{self.config.facility_id}", status="crawled", limit=200) to get pages
+3. For each page, compute interest_score (0.0-1.0) based on graph metrics:
+   - in_degree: Pages with many incoming links are important
+   - out_degree: Hub pages that link to many others
+   - link_depth: Pages closer to portal (lower depth) are more central
+   - title: Keywords like Thomson, LIUQE, signals indicate high value
+4. If uncertain about a page, call get_wiki_neighbors(page_id) to check context
+5. Call update_wiki_scores with JSON array of 100-200 pages per batch
+6. Call track_scoring_progress to check remaining work
+7. Continue until all crawled pages are scored"""
 
         try:
             response = await agent.run(task)

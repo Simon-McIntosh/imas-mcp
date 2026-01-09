@@ -31,6 +31,7 @@ def _load_model_config() -> dict[str, str]:
             return {
                 "default": models.get("default", DEFAULT_MODEL),
                 "discovery": models.get("discovery", DEFAULT_MODEL),
+                "scoring": models.get("scoring", DEFAULT_MODEL),
                 "evaluation": models.get("evaluation", DEFAULT_MODEL),
                 "enrichment": models.get("enrichment", DEFAULT_MODEL),
                 "presets": models.get("presets", {}),
@@ -40,6 +41,7 @@ def _load_model_config() -> dict[str, str]:
     return {
         "default": DEFAULT_MODEL,
         "discovery": DEFAULT_MODEL,
+        "scoring": DEFAULT_MODEL,
         "evaluation": DEFAULT_MODEL,
         "enrichment": DEFAULT_MODEL,
         "presets": {},
@@ -54,7 +56,7 @@ def get_model_for_task(task: str) -> str:
     """Get the configured model for a specific task.
 
     Args:
-        task: One of 'default', 'discovery', 'evaluation', 'enrichment'
+        task: One of 'default', 'discovery', 'scoring', 'evaluation', 'enrichment'
 
     Returns:
         Full model identifier string

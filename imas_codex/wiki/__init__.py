@@ -8,6 +8,10 @@ Phase 3 - INGEST: Fetch content for high-score pages, create chunks
 
 Facility-agnostic design - wiki configuration comes from facility YAML.
 
+Tools are shared between:
+- ReAct agents (LlamaIndex FunctionTools)
+- MCP server (Cursor chat debugging)
+
 Example:
     from imas_codex.wiki import run_wiki_discovery
 
@@ -40,6 +44,18 @@ from .scraper import (
     extract_units,
     fetch_wiki_page,
 )
+from .tools import (
+    create_wiki_pages,
+    fetch_wiki_links,
+    fetch_wiki_preview,
+    get_graph_schema,
+    get_wiki_neighbors,
+    get_wiki_pages,
+    get_wiki_progress,
+    get_wiki_schema,
+    get_wiki_tools,
+    update_wiki_scores,
+)
 
 __all__ = [
     # Discovery pipeline
@@ -47,6 +63,17 @@ __all__ = [
     "WikiConfig",
     "WikiDiscovery",
     "run_wiki_discovery",
+    # Shared tools (ReAct + MCP parity)
+    "get_wiki_tools",
+    "get_graph_schema",
+    "get_wiki_schema",
+    "get_wiki_pages",
+    "get_wiki_neighbors",
+    "get_wiki_progress",
+    "update_wiki_scores",
+    "create_wiki_pages",
+    "fetch_wiki_links",
+    "fetch_wiki_preview",
     # Ingestion
     "WikiIngestionPipeline",
     "WikiPage",

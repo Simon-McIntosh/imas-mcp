@@ -434,35 +434,81 @@ class AgentsServer:
                 raise RuntimeError(f"Failed to access private data: {e}") from e
 
         @self.mcp.tool()
-        def get_graph_schema() -> dict[str, Any]:
+        def get_graph_schema(
+            focus: str | None = None,
+            node_types: list[str] | None = None,
+        ) -> dict[str, Any]:
             """
-            Get complete graph schema for Cypher query generation.
+            Get graph schema for Cypher query generation.
 
-            Returns node labels with all properties, enums with valid values,
-            relationship types, and private field annotations.
-            Call this before writing Cypher queries.
+            Returns node labels with properties, enums, and relationship types.
+            Use focus or node_types to get a subset and reduce context window usage.
+
+            Args:
+                focus: Predefined schema subset:
+                    - "wiki": WikiPage schema for discovery/scoring
+                    - "facility": Facility, FacilityPath, SourceFile
+                    - "mdsplus": MDSplusTree, TreeNode, TDIFunction
+                    - "all" or None: Complete schema (default)
+                node_types: Specific node labels to include (overrides focus)
 
             Returns:
-                Schema dict with node_labels, enums, relationship_types, private_fields
+                Schema dict with node_labels, enums, relationship_types
+
+            Examples:
+                # Get wiki-specific schema for scoring
+                get_graph_schema(focus="wiki")
+
+                # Get just WikiPage and Facility schemas
+                get_graph_schema(node_types=["WikiPage", "Facility"])
             """
             schema = get_schema()
 
+            # Determine which node types to include
+            focus_mapping = {
+                "wiki": ["WikiPage", "Facility"],
+                "facility": ["Facility", "FacilityPath", "SourceFile", "AnalysisCode"],
+                "mdsplus": ["MDSplusTree", "TreeNode", "TDIFunction", "Diagnostic"],
+                "code": ["CodeChunk", "SourceFile", "AnalysisCode"],
+            }
+
+            if node_types:
+                labels_to_include = set(node_types)
+            elif focus and focus != "all":
+                labels_to_include = set(focus_mapping.get(focus, schema.node_labels))
+            else:
+                labels_to_include = set(schema.node_labels)
+
             node_labels = {}
             for label in schema.node_labels:
-                node_labels[label] = {
-                    "identifier": schema.get_identifier(label),
-                    "description": schema.get_class_description(label),
-                    "properties": schema.get_all_slots(label),
-                    "private_fields": schema.get_private_slots(label),
-                }
+                if label in labels_to_include:
+                    node_labels[label] = {
+                        "identifier": schema.get_identifier(label),
+                        "description": schema.get_class_description(label),
+                        "properties": schema.get_all_slots(label),
+                        "private_fields": schema.get_private_slots(label),
+                    }
+
+            # Filter enums to only those used by included node types
+            all_enums = schema.get_enums()
+            relevant_enums = {}
+            for label in labels_to_include:
+                props = schema.get_all_slots(label)
+                for _prop_name, prop_info in props.items():
+                    if prop_info.get("type") == "enum" and prop_info.get("enum_name"):
+                        enum_name = prop_info["enum_name"]
+                        if enum_name in all_enums:
+                            relevant_enums[enum_name] = all_enums[enum_name]
 
             return {
                 "node_labels": node_labels,
-                "enums": schema.get_enums(),
+                "enums": relevant_enums if relevant_enums else all_enums,
                 "relationship_types": schema.relationship_types,
+                "focus": focus or "all",
                 "notes": {
                     "private_fields": "Fields with is_private:true are never stored in graph",
                     "mutations": "Cypher mutations are blocked - use ingest_nodes() for writes",
+                    "usage": "Call with focus='wiki' for discovery, focus='mdsplus' for tree work",
                 },
             }
 
@@ -630,6 +676,128 @@ class AgentsServer:
             except Exception as e:
                 logger.exception("Failed to search code examples")
                 raise RuntimeError(f"Failed to search code examples: {e}") from e
+
+        # =====================================================================
+        # Wiki Discovery Tools
+        # =====================================================================
+
+        @self.mcp.tool()
+        def get_wiki_pages(
+            facility_id: str,
+            status: str | None = None,
+            limit: int = 100,
+            order_by: str = "in_degree",
+        ) -> str:
+            """
+            Get WikiPage nodes from graph with optional filters.
+
+            Args:
+                facility_id: Facility to query (e.g., "epfl")
+                status: Filter by status (crawled, discovered, skipped, etc.)
+                limit: Maximum pages to return
+                order_by: Sort field (in_degree, interest_score, link_depth)
+
+            Returns:
+                JSON array of page objects with id, title, status, and metrics.
+            """
+            from imas_codex.wiki.tools import get_wiki_pages as _get_wiki_pages
+
+            return _get_wiki_pages(facility_id, status, limit, order_by)
+
+        @self.mcp.tool()
+        def get_wiki_neighbors(page_id: str) -> str:
+            """
+            Get pages that link to/from a specific page.
+
+            Args:
+                page_id: Full page ID (e.g., "epfl:Thomson")
+
+            Returns:
+                JSON with incoming and outgoing link info.
+            """
+            from imas_codex.wiki.tools import get_wiki_neighbors as _get_wiki_neighbors
+
+            return _get_wiki_neighbors(page_id)
+
+        @self.mcp.tool()
+        def get_wiki_progress(facility_id: str) -> str:
+            """
+            Get wiki discovery progress for a facility.
+
+            Returns status counts, scoring progress, and recommendations.
+            """
+            from imas_codex.wiki.tools import get_wiki_progress as _get_wiki_progress
+
+            return _get_wiki_progress(facility_id)
+
+        @self.mcp.tool()
+        def update_wiki_scores(scores_json: str) -> str:
+            """
+            Batch update interest_score for WikiPage nodes.
+
+            Args:
+                scores_json: JSON array of objects with:
+                    - id: Page ID (required)
+                    - score: Interest score 0.0-1.0 (required)
+                    - reasoning: Explanation for score (optional)
+                    - skip_reason: Why skipped if score < 0.5 (optional)
+
+            Returns:
+                JSON with updated count and any errors.
+
+            Example:
+                update_wiki_scores('[
+                    {"id": "epfl:Thomson", "score": 0.95, "reasoning": "in_degree=47"},
+                    {"id": "epfl:Meeting_2024", "score": 0.1, "skip_reason": "administrative"}
+                ]')
+            """
+            from imas_codex.wiki.tools import update_wiki_scores as _update_wiki_scores
+
+            return _update_wiki_scores(scores_json)
+
+        @self.mcp.tool()
+        def fetch_wiki_links(
+            facility_id: str,
+            page_name: str,
+            base_url: str = "https://spcwiki.epfl.ch/wiki",
+        ) -> str:
+            """
+            Extract internal wiki links from a page via SSH.
+
+            Args:
+                facility_id: Facility for SSH host (e.g., "epfl")
+                page_name: Page to fetch links from
+                base_url: Wiki base URL
+
+            Returns:
+                JSON array of linked page names.
+            """
+            from imas_codex.wiki.tools import fetch_wiki_links as _fetch_wiki_links
+
+            return _fetch_wiki_links(facility_id, page_name, base_url)
+
+        @self.mcp.tool()
+        def fetch_wiki_preview(
+            facility_id: str,
+            page_name: str,
+            max_chars: int = 1000,
+            base_url: str = "https://spcwiki.epfl.ch/wiki",
+        ) -> str:
+            """
+            Fetch first N characters of wiki page content.
+
+            Args:
+                facility_id: Facility for SSH host
+                page_name: Page to preview
+                max_chars: Maximum characters to return
+                base_url: Wiki base URL
+
+            Returns:
+                JSON with title, preview text, and size.
+            """
+            from imas_codex.wiki.tools import fetch_wiki_preview as _fetch_wiki_preview
+
+            return _fetch_wiki_preview(facility_id, page_name, max_chars, base_url)
 
         @self.mcp.tool()
         def get_exploration_progress(facility: str) -> dict[str, Any]:
