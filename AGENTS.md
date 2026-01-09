@@ -281,6 +281,45 @@ uv run imas-codex neo4j start
 - User: `neo4j`
 - Password: `imas-codex` (or `$NEO4J_PASSWORD`)
 
+### Persistent Neo4j with systemd (Optional)
+
+For long-running development or unattended agents, run Neo4j as a user service:
+
+```bash
+# Create systemd user directory
+mkdir -p ~/.config/systemd/user
+
+# Create service unit
+cat > ~/.config/systemd/user/imas-codex-neo4j.service << 'EOF'
+[Unit]
+Description=IMAS Codex Neo4j (Apptainer)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/apptainer run \
+    --bind %h/.local/share/imas-codex/neo4j/data:/data \
+    --bind %h/.local/share/imas-codex/neo4j/logs:/logs \
+    %h/apptainer/neo4j_2025.11-community.sif
+Environment=NEO4J_AUTH=neo4j/imas-codex
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target
+EOF
+
+# Enable and start
+systemctl --user daemon-reload
+systemctl --user enable imas-codex-neo4j
+systemctl --user start imas-codex-neo4j
+
+# Check status
+systemctl --user status imas-codex-neo4j
+```
+
+**Note:** User services require `loginctl enable-linger $USER` to persist after logout.
+
 ### Graph Artifact Versioning
 
 The graph database is versioned as an OCI artifact on GHCR:

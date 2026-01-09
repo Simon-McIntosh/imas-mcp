@@ -35,9 +35,21 @@ Use `query_graph()` to compose your own graph explorations:
 MATCH (wp:WikiPage {facility_id: 'epfl'})
 RETURN wp.title, wp.in_degree ORDER BY wp.in_degree DESC LIMIT 20
 
--- Get what links TO a specific page
+-- Get what links TO a specific page (examine the TITLES)
 MATCH (source:WikiPage)-[:LINKS_TO]->(wp:WikiPage {id: 'epfl:Thomson'})
 RETURN source.title, source.in_degree
+
+-- Get what a page links TO (examine outbound neighbors)
+MATCH (wp:WikiPage {id: 'epfl:Some_Page'})-[:LINKS_TO]->(target:WikiPage)
+RETURN target.title, target.in_degree
+
+-- Batch analyze neighbor context for multiple pages
+MATCH (wp:WikiPage {facility_id: 'epfl', status: 'crawled'})
+OPTIONAL MATCH (source:WikiPage)-[:LINKS_TO]->(wp)
+OPTIONAL MATCH (wp)-[:LINKS_TO]->(target:WikiPage)
+WITH wp, collect(DISTINCT source.title) AS linked_from, collect(DISTINCT target.title) AS links_to
+RETURN wp.id, wp.title, wp.in_degree, wp.out_degree, linked_from[0..5], links_to[0..5]
+LIMIT 100
 
 -- Find orphan pages (no incoming links)
 MATCH (wp:WikiPage {facility_id: 'epfl'})
@@ -57,20 +69,27 @@ RETURN source.title, source.in_degree
 
 ## Scoring Principles
 
-Use graph metrics as evidence for your decisions:
+Use graph metrics AND neighbor page names as evidence for your decisions:
 
-**High Value (0.7-1.0)**: Well-connected pages that many other pages reference
+**Analyze Neighbor Context**: 
+- Query which pages link TO and FROM each candidate
+- Look at the **titles** of linked pages, not just counts
+- A page linked from "Thomson_Scattering" is more valuable than one linked from "Meetings_2024"
+
+**High Value (0.7-1.0)**: Well-connected to technical content
 - in_degree > 5: Many pages link here - indicates central importance
-- Linked FROM high-in_degree pages (use query_graph to check)
+- Neighbors have physics/diagnostic names (Thomson, CXRS, equilibrium, MDSplus)
+- Linked FROM high-in_degree pages with technical titles
 - Close to portal (link_depth <= 2)
 
-**Medium Value (0.4-0.7)**: Moderately connected pages
+**Medium Value (0.4-0.7)**: Some technical connections
 - in_degree 1-5: Some references from the wiki
+- At least some neighbors appear technical
 - Reasonable link depth (3-4 from portal)
 
-**Low Value (0.0-0.4)**: Poorly connected or isolated pages
+**Low Value (0.0-0.4)**: Administrative or isolated pages
 - in_degree = 0: Orphan page - nobody references it
-- Only linked from navigation/administrative pages
+- Neighbors are mostly administrative (User:*, Meeting*, Events*, Template:*)
 - Very deep in link structure (link_depth > 5)
 
 ## Key Rules
