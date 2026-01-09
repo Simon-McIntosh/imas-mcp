@@ -501,14 +501,14 @@ class WikiDiscovery:
         task = f"""Score all crawled wiki pages for {self.config.facility_id}.
 
 1. First call get_graph_schema(focus="wiki") to see WikiPage fields and valid status values
-2. Call get_wiki_pages("{self.config.facility_id}", status="crawled", limit=200) to get pages
+2. Call get_wiki_pages("{self.config.facility_id}", status="crawled", limit=750) to get pages
 3. For each page, compute interest_score (0.0-1.0) based on graph metrics:
    - in_degree: Pages with many incoming links are important
    - out_degree: Hub pages that link to many others
    - link_depth: Pages closer to portal (lower depth) are more central
    - title: Keywords like Thomson, LIUQE, signals indicate high value
 4. If uncertain about a page, call get_wiki_neighbors(page_id) to check context
-5. Call update_wiki_scores with JSON array of 100-200 pages per batch
+5. Call update_wiki_scores with JSON array of 200-500 pages per batch
 6. Call track_scoring_progress to check remaining work
 7. Continue until all crawled pages are scored"""
 
@@ -550,7 +550,7 @@ LOW SCORE (0.0-0.4):
 - ALWAYS provide reasoning for scores
 - Skip pages with skip_reason if score < 0.5
 - Use neighbor_info to check context when title is ambiguous
-- Process in batches of 20-50 pages
+- Process in batches of 200-500 pages for efficiency
 - Stop when all pages scored or budget exhausted"""
 
     # =========================================================================
