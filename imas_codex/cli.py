@@ -2201,48 +2201,42 @@ def wiki_crawl(
     help="Maximum pages to score per run (default: 750)",
 )
 @click.option(
-    "--use-agent",
-    is_flag=True,
-    help="Use ReAct agent instead of heuristic (slower but handles edge cases)",
-)
-@click.option(
     "--cost-limit",
     "-c",
     default=5.0,
     type=float,
-    help="Maximum cost budget in USD when using agent (default: 5.0)",
+    help="Maximum cost budget in USD (default: 5.0)",
 )
 @click.option(
     "--verbose",
     "-v",
     is_flag=True,
-    help="Show agent reasoning (only with --use-agent)",
+    help="Show agent reasoning",
 )
 def wiki_score(
     facility: str,
     limit: int,
-    use_agent: bool,
     cost_limit: float,
     verbose: bool,
 ) -> None:
-    """Score crawled wiki pages.
+    """Score crawled wiki pages using ReAct agent.
 
-    By default uses fast heuristic scoring (~800 pages/sec).
-    Use --use-agent for LLM-based scoring (slower but handles edge cases).
+    The agent analyzes graph structure (in_degree, out_degree, neighbors)
+    to intelligently score pages based on their connectivity and context.
 
     Scoring is based on graph metrics (in_degree, out_degree, link_depth).
     Pages with score >= 0.5 are marked 'discovered' (ready for ingestion).
     Pages with score < 0.5 are marked 'skipped' with a reason.
 
     Examples:
-        # Fast heuristic scoring (default)
+        # Score crawled pages
         imas-codex wiki score epfl
 
-        # Use ReAct agent for more nuanced scoring
-        imas-codex wiki score epfl --use-agent -v
+        # With verbose agent reasoning
+        imas-codex wiki score epfl -v
 
-        # Limit cost for agent scoring
-        imas-codex wiki score epfl --use-agent --cost-limit 2.0
+        # Limit cost
+        imas-codex wiki score epfl --cost-limit 2.0
     """
     import asyncio
 
@@ -2260,12 +2254,9 @@ def wiki_score(
 
     try:
         console.print(f"[bold]Scoring wiki pages: {facility}[/bold]")
-        if use_agent:
-            console.print(f"Mode: ReAct agent (cost limit: ${cost_limit:.2f})")
-        else:
-            console.print("Mode: Heuristic (fast)")
+        console.print(f"Mode: ReAct agent (cost limit: ${cost_limit:.2f})")
 
-        scored = asyncio.run(discovery.phase2_score(use_heuristic=not use_agent))
+        scored = asyncio.run(discovery.phase2_score())
 
         console.print(f"\n[green]Scored {scored} pages[/green]")
         console.print(f"High score (≥0.7): {discovery.stats.high_score_count}")
