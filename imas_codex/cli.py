@@ -376,20 +376,32 @@ def neo4j() -> None:
     help="Neo4j password (env: NEO4J_PASSWORD)",
 )
 @click.option("--foreground", "-f", is_flag=True, help="Run in foreground")
+@click.option(
+    "--no-service",
+    is_flag=True,
+    help="Run without systemd (legacy mode, process dies with terminal)",
+)
 def neo4j_start(
     image: str | None,
     data_dir: str | None,
     password: str,
     foreground: bool,
+    no_service: bool,
 ) -> None:
     """Start Neo4j server via Apptainer.
 
+    By default, installs and starts Neo4j as a systemd user service for
+    persistence across reboots. Use --no-service for ephemeral runs.
+
     Examples:
-        # Start with defaults
+        # Start as systemd service (recommended, persists across reboots)
         imas-codex neo4j start
 
         # Run in foreground (for debugging)
         imas-codex neo4j start -f
+
+        # Run without systemd (legacy mode)
+        imas-codex neo4j start --no-service
 
         # Custom data directory
         imas-codex neo4j start --data-dir /path/to/data
@@ -442,7 +454,98 @@ def neo4j_start(
     for subdir in ["data", "logs", "conf", "import"]:
         (data_path / subdir).mkdir(parents=True, exist_ok=True)
 
-    # Build command
+    # Default: use systemd service for persistence
+    if not no_service and not foreground:
+        # Check if systemctl is available
+        if not shutil.which("systemctl"):
+            click.echo(
+                "Warning: systemctl not found - falling back to non-service mode",
+                err=True,
+            )
+            click.echo(
+                "Install systemd or use --no-service to suppress this warning",
+                err=True,
+            )
+            no_service = True
+        else:
+            # Install/start via systemd
+            service_dir = home / ".config" / "systemd" / "user"
+            service_file = service_dir / "imas-codex-neo4j.service"
+            apptainer_path = shutil.which("apptainer")
+
+            # Create service file if not exists or update it
+            service_dir.mkdir(parents=True, exist_ok=True)
+            service_content = f"""[Unit]
+Description=Neo4j Graph Database (IMAS Codex)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart={apptainer_path} exec \\
+    --bind {data_path}/data:/data \\
+    --bind {data_path}/logs:/logs \\
+    --bind {data_path}/import:/import \\
+    --writable-tmpfs \\
+    --env NEO4J_AUTH=neo4j/{password} \\
+    {image_path} \\
+    neo4j console
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+"""
+            service_file.write_text(service_content)
+
+            # Reload and enable
+            subprocess.run(
+                ["systemctl", "--user", "daemon-reload"],
+                capture_output=True,
+            )
+            subprocess.run(
+                ["systemctl", "--user", "enable", "imas-codex-neo4j"],
+                capture_output=True,
+            )
+
+            # Start the service
+            result = subprocess.run(
+                ["systemctl", "--user", "start", "imas-codex-neo4j"],
+                capture_output=True,
+                text=True,
+            )
+
+            if result.returncode != 0:
+                click.echo(f"Error starting service: {result.stderr}", err=True)
+                raise SystemExit(1)
+
+            click.echo("Starting Neo4j as systemd service")
+            click.echo(f"Image: {image_path}")
+            click.echo(f"Data directory: {data_path}")
+            click.echo("Waiting for server...")
+
+            import time
+
+            for _ in range(30):
+                try:
+                    urllib.request.urlopen("http://localhost:7474/", timeout=2)
+                    click.echo("Neo4j ready at http://localhost:7474")
+                    click.echo("Bolt: bolt://localhost:7687")
+                    click.echo(f"Credentials: neo4j / {password}")
+                    click.echo()
+                    click.echo("Service persists across reboots. Control with:")
+                    click.echo("  imas-codex neo4j stop")
+                    click.echo("  imas-codex neo4j status")
+                    click.echo("  journalctl --user -u imas-codex-neo4j -f")
+                    return
+                except Exception:
+                    time.sleep(1)
+
+            click.echo(
+                "Warning: Neo4j may still be starting. Check: imas-codex neo4j status"
+            )
+            return
+
+    # Build command for non-service mode
     cmd = [
         "apptainer",
         "exec",
@@ -462,6 +565,8 @@ def neo4j_start(
 
     click.echo(f"Starting Neo4j from {image_path}")
     click.echo(f"Data directory: {data_path}")
+    if no_service:
+        click.echo("(non-service mode: process will stop when terminal closes)")
 
     if foreground:
         # Run in foreground
@@ -537,7 +642,11 @@ def neo4j_start(
     help="Data directory (env: NEO4J_DATA)",
 )
 def neo4j_stop(data_dir: str | None) -> None:
-    """Stop Neo4j server."""
+    """Stop Neo4j server.
+
+    Stops Neo4j whether running as a systemd service or in non-service mode.
+    """
+    import shutil
     import signal
     import subprocess
     from pathlib import Path
@@ -550,6 +659,23 @@ def neo4j_stop(data_dir: str | None) -> None:
     )
     pid_file = data_path / "neo4j.pid"
 
+    # First, try stopping the systemd service
+    service_file = home / ".config" / "systemd" / "user" / "imas-codex-neo4j.service"
+    if shutil.which("systemctl") and service_file.exists():
+        result = subprocess.run(
+            ["systemctl", "--user", "is-active", "imas-codex-neo4j"],
+            capture_output=True,
+            text=True,
+        )
+        if result.stdout.strip() == "active":
+            subprocess.run(
+                ["systemctl", "--user", "stop", "imas-codex-neo4j"],
+                check=True,
+            )
+            click.echo("Neo4j service stopped")
+            return
+
+    # Fall back to PID file (non-service mode)
     if pid_file.exists():
         pid = int(pid_file.read_text().strip())
         try:
@@ -560,13 +686,20 @@ def neo4j_stop(data_dir: str | None) -> None:
             click.echo("Neo4j process not found (stale PID file)")
             pid_file.unlink()
     else:
-        # Try pkill as fallback
+        # Try finding the process
         result = subprocess.run(
-            ["pkill", "-f", "neo4j.*console"],
+            ["pgrep", "-f", "neo4j.*console"],
             capture_output=True,
+            text=True,
         )
-        if result.returncode == 0:
-            click.echo("Neo4j stopped")
+        if result.returncode == 0 and result.stdout.strip():
+            pids = result.stdout.strip().split("\n")
+            for pid in pids:
+                try:
+                    os.kill(int(pid), signal.SIGTERM)
+                    click.echo(f"Sent SIGTERM to Neo4j (PID: {pid})")
+                except (ProcessLookupError, ValueError):
+                    pass
         else:
             click.echo("Neo4j not running")
 
@@ -575,12 +708,30 @@ def neo4j_stop(data_dir: str | None) -> None:
 def neo4j_status() -> None:
     """Check Neo4j server status."""
     import json
+    import shutil
+    import subprocess
     import urllib.request
+    from pathlib import Path
+
+    home = Path.home()
+    service_file = home / ".config" / "systemd" / "user" / "imas-codex-neo4j.service"
+
+    # Check if running as systemd service
+    running_as_service = False
+    if shutil.which("systemctl") and service_file.exists():
+        result = subprocess.run(
+            ["systemctl", "--user", "is-active", "imas-codex-neo4j"],
+            capture_output=True,
+            text=True,
+        )
+        if result.stdout.strip() == "active":
+            running_as_service = True
 
     try:
         with urllib.request.urlopen("http://localhost:7474/", timeout=5) as resp:
             data = json.loads(resp.read().decode())
-            click.echo("Neo4j is running")
+            mode = "systemd service" if running_as_service else "process"
+            click.echo(f"Neo4j is running ({mode})")
             click.echo(f"  Version: {data.get('neo4j_version', 'unknown')}")
             click.echo(f"  Edition: {data.get('neo4j_edition', 'unknown')}")
             click.echo(f"  Bolt: {data.get('bolt_direct', 'unknown')}")

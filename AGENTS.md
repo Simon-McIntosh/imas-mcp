@@ -243,13 +243,13 @@ tests/              # Mirror source structure
 
 ### Neo4j Service (Apptainer)
 
-Local development uses Neo4j via Apptainer. The CLI handles all setup:
+Local development uses Neo4j via Apptainer. By default, `neo4j start` runs Neo4j as a systemd user service for persistence across reboots:
 
 ```bash
-# Start Neo4j (first run pulls image automatically)
+# Start Neo4j as systemd service (default, persists across reboots)
 uv run imas-codex neo4j start
 
-# Check status
+# Check status (shows if running as service or process)
 uv run imas-codex neo4j status
 
 # Stop Neo4j
@@ -260,6 +260,15 @@ uv run imas-codex neo4j shell
 
 # Access Neo4j Browser
 open http://localhost:7474
+```
+
+**Non-service mode** (for systems without systemd or ephemeral runs):
+```bash
+# Run without systemd (process dies with terminal)
+uv run imas-codex neo4j start --no-service
+
+# Run in foreground (for debugging)
+uv run imas-codex neo4j start -f
 ```
 
 **Environment variables:**
@@ -281,41 +290,16 @@ uv run imas-codex neo4j start
 - User: `neo4j`
 - Password: `imas-codex` (or `$NEO4J_PASSWORD`)
 
-### Persistent Neo4j with systemd (Optional)
-
-For long-running development or unattended agents, run Neo4j as a user service:
-
+**Systemd service control** (when running as service):
 ```bash
-# Create systemd user directory
-mkdir -p ~/.config/systemd/user
+# View logs
+journalctl --user -u imas-codex-neo4j -f
 
-# Create service unit
-cat > ~/.config/systemd/user/imas-codex-neo4j.service << 'EOF'
-[Unit]
-Description=IMAS Codex Neo4j (Apptainer)
-After=network.target
+# Restart service
+systemctl --user restart imas-codex-neo4j
 
-[Service]
-Type=simple
-ExecStart=/usr/bin/apptainer run \
-    --bind %h/.local/share/imas-codex/neo4j/data:/data \
-    --bind %h/.local/share/imas-codex/neo4j/logs:/logs \
-    %h/apptainer/neo4j_2025.11-community.sif
-Environment=NEO4J_AUTH=neo4j/imas-codex
-Restart=on-failure
-RestartSec=10
-
-[Install]
-WantedBy=default.target
-EOF
-
-# Enable and start
-systemctl --user daemon-reload
-systemctl --user enable imas-codex-neo4j
-systemctl --user start imas-codex-neo4j
-
-# Check status
-systemctl --user status imas-codex-neo4j
+# Disable auto-start on login
+systemctl --user disable imas-codex-neo4j
 ```
 
 **Note:** User services require `loginctl enable-linger $USER` to persist after logout.
