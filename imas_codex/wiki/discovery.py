@@ -531,7 +531,7 @@ class WikiDiscovery:
         else:
             system_prompt_text = system_prompt.content
 
-        # Use discovery model for scoring (configured in pyproject.toml)
+        # Use discovery model for combined crawl+score flow
         model = get_model_for_task("discovery")
         llm = get_llm(model=model, temperature=0.2, max_tokens=32768)
 

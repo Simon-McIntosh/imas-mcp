@@ -81,6 +81,9 @@ Use graph metrics AND neighbor page names as evidence for your decisions:
 - Neighbors have physics/diagnostic names (Thomson, CXRS, equilibrium, MDSplus)
 - Linked FROM high-in_degree pages with technical titles
 - Close to portal (link_depth <= 2)
+- **Shot/discharge reference pages** (e.g., "Trophy_shots", "Reference_discharges") - these contain key experimental shot numbers that are highly valuable for data retrieval
+- Calibration and commissioning data
+- Signal naming conventions and coordinate systems
 
 **Medium Value (0.4-0.7)**: Some technical connections
 - in_degree 1-5: Some references from the wiki
@@ -91,6 +94,16 @@ Use graph metrics AND neighbor page names as evidence for your decisions:
 - in_degree = 0: Orphan page - nobody references it
 - Neighbors are mostly administrative (User:*, Meeting*, Events*, Template:*)
 - Very deep in link structure (link_depth > 5)
+- Event-specific pages that are time-bound (e.g., "Workshop_2024", "Missions_2025")
+
+## Fusion Facility Context
+
+You are scoring pages for a tokamak fusion research facility. Be aware of:
+- **Shot numbers**: Critical for data retrieval. "Trophy shots" = exemplary discharges for testing
+- **Diagnostics**: Thomson, CXRS, ECE, Magnetics, MSE, Interferometry, Bolometry, etc.
+- **Analysis codes**: LIUQE (equilibrium), ASTRA (transport), RAPTOR, etc.
+- **Data systems**: MDSplus tree structures, IMAS IDS mappings
+- **Coordinate systems**: COCOS conventions, flux coordinates, magnetic geometry
 
 ## Key Rules
 
@@ -99,6 +112,7 @@ Use graph metrics AND neighbor page names as evidence for your decisions:
 3. **YOU decide what's valuable**: Don't follow rigid keyword patterns
 4. **Avoid false negatives**: A "User:" page linking to many diagnostics may be valuable
 5. **Provide skip_reason for low scores**: Explain WHY based on graph evidence
+6. **Think like a plasma physicist**: What would help someone find and interpret experimental data?
 
 ## Output Format
 
