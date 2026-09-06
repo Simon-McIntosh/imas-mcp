@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T21:53:28",
+  "updated": "2026-09-06T22:56:27",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -94906,6 +94906,310 @@
           "role": "implement",
           "status": "compatible"
         }
+      },
+      {
+        "run_id": "r-20260906T191613373623-n-swcr-the-release-tests-assert-the-new-contract",
+        "plan": "sn-west-catalog-release",
+        "section": "Release and fold-back contract",
+        "node": "n-swcr-the-release-tests-assert-the-new-contract",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 471,
+                "cached_input_tokens": 606969,
+                "input_tokens": 607442,
+                "output_tokens": 285,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 607727,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "THREE TESTS ASSERT THE DEFECT YOUR OWN COMMIT REMOVED. Update them to the contract that now holds, in the same worktree, so the pair merges together.\n\nWHAT YOU ALREADY CHANGED, in commit a9638457e on catalog_release.py: a review dry run no longer freezes the roster or moves the candidate counter. It still runs the export and the approved-baseline check, still reports the candidate it would take and the path it would write, and returns before the freeze.\n\nTHE THREE FAILURES that change created, all attributable and all the old contract:\n  test_review_release_dry_run_no_push_no_pr\n  test_review_release_source_batch_excludes_unbound_family\n  test_frozen_artifact_is_schema_valid_with_the_label\nThe first is confirmed at tests/standard_names/test_review_release.py:808, which reads the artifact after a dry run:\n    doc = yaml.safe_load(Path(report.artifact_path).read_text())\nThat line requires the rehearsal to have written a real roster, which is precisely the behaviour removed. Locate the equivalent dependence in the other two and quote the line for each.\n\nTHE DELIVERABLE: each of the three asserts the contract that now holds, and the focused release gate returns to the exit status it had before your source change.\n\nHOW TO UPDATE EACH, keeping what the test was legitimately for:\n  Where a test used the frozen roster only to observe a property of a DRY run, assert instead that report.artifact_path names a path that DOES NOT EXIST, and keep every other assertion it made about pushing, branching and pull requests. The absent file is the new contract and deserves a positive assertion rather than a deleted one.\n  Where a test genuinely needs a roster to inspect - the schema-validity test is the likely case - drive it with a real run rather than a rehearsal, so it validates an artifact that is actually written. Do not weaken the schema assertion to accommodate a missing file.\n\nDO NOT change catalog_release.py again. The source contract is settled and any further edit to it in this node would put a second, unaudited change under a promoted commit.\n\nDO NOT delete a test or mark one skipped to reach green. If any of the three cannot be expressed under the new contract, leave it failing, say which and why, and stop; a test removed to reach green destroys the only record of what the surface promises.\n\nADD ONE TEST THAT WOULD HAVE CAUGHT THE ORIGINAL DEFECT: a dry run leaves the reviews directory unchanged and the candidate counter unmoved. Assert the directory listing before and after are equal and that the next candidate is the same on both sides. The absence of that test is why the defect survived, so it matters more than the three repairs.\n\nEVIDENCE REQUIRED: the offending line quoted for each of the three; the focused release gate before your test change and after, with failure counts and ids, against the stated base; and the new test shown failing against the PRE-FIX source and passing against the current source, since a test that cannot fail on the old code does not cover the defect.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.6,
+          "goal": "The release tests assert that a rehearsal writes no roster and moves no candidate number",
+          "id": "n-swcr-the-release-tests-assert-the-new-contract",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-dryrun-tests/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "Release and fold-back contract",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "tests/standard_names/test_review_release.py",
+            "tests/standard_names/test_review_artifact_schema.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-gate",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T19:16:22Z",
+        "completed_at": "2026-09-06T20:14:47.145Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 3472,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 3505,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "dabf727315ab94a8abd1eef1e944ecfc925e00c9",
+        "commits": [
+          "de6c8063517bd56c65e5fc582b114d5994671e13"
+        ],
+        "changed_lines": {
+          "added": 55,
+          "removed": 7,
+          "files": 1
+        },
+        "tests_added": 1,
+        "gate": "passed",
+        "gate_check": {
+          "command": "uv run --no-sync pytest tests/standard_names/test_review_release.py tests/standard_names/test_review_artifact_schema.py -p no:cacheprovider",
+          "exit_status": 0,
+          "log_path": "/tmp/swcr-release-tests/fixed-newtests.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-dryrun-tests/manifest.md",
+        "scope_changed": false,
+        "session_id": "898e7708-e4a3-4bea-9ae1-f5ed01172642",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 7012026,
+            "input_tokens_cumulative": 7012026,
+            "output_tokens": 57451,
+            "output_tokens_cumulative": 57451,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 3502.18,
+          "generated_tokens": 57451,
+          "generation_seconds": 3104.33,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 14.4,
+          "machine_seconds": 397.85,
+          "peak_input_tokens": 146644,
+          "tokens_per_second": 18.51,
+          "wall_tokens_per_second": 16.4
+        },
+        "follow_on_paths": [
+          "test_cli_release.py"
+        ],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-release-tests-assert-the-new-contract",
+          "session_id": "898e7708-e4a3-4bea-9ae1-f5ed01172642",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T20:14:47.145Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260906T191425753553-n-swcr-the-composer-sees-its-accepted-siblings",
+        "plan": "sn-west-catalog-release",
+        "section": "Hard entry gate",
+        "node": "n-swcr-the-composer-sees-its-accepted-siblings",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1170,
+                "cached_input_tokens": 603600,
+                "input_tokens": 604772,
+                "output_tokens": 708,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 605480,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "THE COMPOSER NEVER SEES ITS ACCEPTED SIBLINGS' SPELLINGS. Supply them, then re-attempt the one source that needs them.\n\nTHE GAP, measured. Family detection groups DD paths into vector and geometric-coordinate families, but _detect_families_from_items at imas_codex/standard_names/enrichment.py:367 builds its inputs from path and unit ONLY - no names. Nothing downstream assembles the accepted names of a source's family siblings, and no prompt carries them. So a focus manifest that puts sibling paths in scope conveys the grouping and not the spellings, which is why a family-seeded compose run could not help the member it was built for.\n\nTHE PRECEDENT TO FOLLOW IS IN THE SAME FILE, in the other direction. At imas_codex/standard_names/workers.py:9133-9143, composing a PARENT injects item[\"child_components\"] - a list of name, description and axis per child, ordered by sort_by_axis_convention. Read that block before writing anything and mirror its shape for the sibling direction: same helper for ordering, same per-entry fields, same defensive try/except posture, same placement in the item dict.\n\nTHE DELIVERABLE: when a DD source being composed belongs to a detected family whose other members already carry accepted standard names, those sibling names reach the composer with their axis and description, so a new member can follow the family's established spelling instead of inventing one.\n\nSCOPE IT TO ACCEPTED SIBLINGS ONLY. A sibling at drafted, reviewed, exhausted or superseded is not an established spelling and must not be offered as one - following a name the catalog has not accepted propagates a spelling that may itself be about to change. Filter on name_stage = 'accepted' and say in your manifest how many siblings that filter admitted and rejected for the source you exercise.\n\nDO NOT INVENT A PROMPT SECTION IF ONE FITS. Read how child_components is rendered into the prompt before adding a new block; if the existing family or component section can carry sibling names, extend it rather than adding a parallel one. Report which route you took.\n\nTHEN RE-ATTEMPT ONE SOURCE, and only this one. The lead has authorised a retry of ece/channel/position/z, whose radial and toroidal siblings are accepted as radial_coordinate_of_measurement_position and toroidal_angle_of_measurement_position. It sits at the compose attempt cap, so it needs its attempt state cleared before the compose pool can claim it: use the repository's own sanctioned route for that, report the exact command, and never write Cypher to reset a counter. If no sanctioned route exists, report that as a blocker and stop rather than reaching into the graph.\n\nThen run the free local compose scoped to that source with a focus manifest containing it and its accepted siblings:\n  uv run imas-codex sn run --focus YOUR_FOCUS_FILE --only compose\nNever pass --flush. Note that --only compose also selects generate_docs and enrich_parents. Never pipe or redirect the CLI output; it auto-logs and you read the log afterwards. A five minute cold start on GPFS is normal.\n\nREPORT WHAT THE COMPOSER PRODUCED and whether it followed the siblings. Quote the composed name beside its two sibling names so the family reads as a set. The expected shape follows the vertical axis of the same triple; if the composer produced something that does not follow the family, report it verbatim rather than retrying, because that is evidence the injection is not reaching the prompt.\n\nDO NOT retry camera_x_rays/camera/camera_dimensions. It needs a vocabulary token it does not have, so a retry would spend its remaining attempts and make it permanently unreachable. The lead excluded it deliberately.\n\nEVIDENCE REQUIRED: the enrichment and worker sites you changed with line numbers; the accepted-only filter counts for the source you exercised; the sanctioned command that cleared the attempt state; the composed name beside its siblings; and the focused test result for the modules you touched before and after against a stated base revision, reporting added failures rather than an absolute count.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.8,
+          "goal": "A source composed inside a detected family receives its accepted siblings names so it follows their spelling",
+          "id": "n-swcr-the-composer-sees-its-accepted-siblings",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-sibling-names/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "Hard entry gate",
+          "spec_level": "exact",
+          "time_budget": "50m",
+          "write_paths": [
+            "imas_codex/standard_names/enrichment.py",
+            "imas_codex/standard_names/workers.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-probe",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T19:14:34Z",
+        "completed_at": "2026-09-06T20:46:05.945Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 5465,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 5491,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "dabf727315ab94a8abd1eef1e944ecfc925e00c9",
+        "commits": [
+          "f74a973cf5bce63c72ba462ae9bf624a08e8ddbd"
+        ],
+        "changed_lines": {
+          "added": 285,
+          "removed": 0,
+          "files": 2
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "focused tests over the touched modules plus a live sibling-resolution probe",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-sibling-names/manifest.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-sibling-names/manifest.md",
+        "scope_changed": false,
+        "session_id": "de7acb29-7a85-41cb-b92d-5cc2b44f7d55",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 23560287,
+            "input_tokens_cumulative": 29553083,
+            "output_tokens": 45283,
+            "output_tokens_cumulative": 72994,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 5487.663,
+          "generated_tokens": 72994,
+          "generation_seconds": 4101.091,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 37.0,
+          "machine_seconds": 1386.572,
+          "peak_input_tokens": 376122,
+          "tokens_per_second": 17.8,
+          "wall_tokens_per_second": 13.3
+        },
+        "follow_on_paths": [
+          "0.8.1.dev32",
+          "0.8.9",
+          "camera_x_rays/camera/camera_dimensions"
+        ],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-composer-sees-its-accepted-siblings",
+          "session_id": "de7acb29-7a85-41cb-b92d-5cc2b44f7d55",
+          "session_source": "pointer",
+          "retained_at": "2026-09-06T20:46:05.945Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -95148,6 +95452,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1851
+    "_version": 1853
   }
 }
