@@ -774,6 +774,20 @@ class DDGapEvidence(BaseModel):
         default=None,
         description="Declaration observed at reference_path",
     )
+    reference_evidence_repaired: bool = Field(
+        default=False,
+        description=(
+            "True when a half reference-evidence pair was detected and both "
+            "fields cleared so no half pair is ever stored"
+        ),
+    )
+    reference_field_missing: str | None = Field(
+        default=None,
+        description=(
+            "Which of reference_path / reference_value was absent when the "
+            "pair was cleared; null when no repair happened"
+        ),
+    )
 
     @field_validator("path", "reference_path")
     @classmethod
@@ -787,9 +801,15 @@ class DDGapEvidence(BaseModel):
     @model_validator(mode="after")
     def _reference_evidence_is_complete(self) -> DDGapEvidence:
         if (self.reference_path is None) != (self.reference_value is None):
-            raise ValueError(
-                "reference_path and reference_value must be supplied together"
+            missing = (
+                "reference_value"
+                if self.reference_path is not None
+                else "reference_path"
             )
+            self.reference_path = None
+            self.reference_value = None
+            self.reference_evidence_repaired = True
+            self.reference_field_missing = missing
         return self
 
 
@@ -1215,6 +1235,34 @@ class StandardNameQualityCommentsDocs(BaseModel):
 # =============================================================================
 
 
+def suggestion_is_semantically_distinct(
+    reviewed_identity: str, proposed_spelling: str
+) -> bool:
+    """Whether a proposed spelling is a genuine objection to a reviewed name.
+
+    A proposal earns the word "objection" only when it is both emittable and
+    semantically different from the identity under review: it must parse under
+    the grammar, compose back to a canonical spelling, and that canonical
+    spelling must differ from the reviewed identity's canonical spelling. An
+    equal composed form means the reviewer restated the same name and there is
+    no objection to record.
+
+    This decides suggestion identity, not suggestion quality: nothing here
+    scores a coherent alternative or judges whether a different name is better.
+    ``normalize_standard_name`` must NOT be used as this instrument — it is a
+    passthrough that calls every spelling canonical, so it cannot discriminate
+    between two spellings of one name.
+    """
+    from imas_standard_names import compose, parse
+
+    try:
+        proposed_canonical = compose(parse(proposed_spelling).ir)
+        reviewed_canonical = compose(parse(reviewed_identity).ir)
+    except Exception:
+        return False
+    return proposed_canonical != reviewed_canonical
+
+
 class StandardNameQualityScore(BaseModel):
     """6-dimensional quality score for a standard name entry."""
 
@@ -1286,6 +1334,25 @@ class StandardNameQualityReview(BaseModel):
         ),
     )
     issues: list[str] = Field(default_factory=list, description="Specific issues found")
+
+    @model_validator(mode="after")
+    def _clear_unparseable_suggestion(self) -> StandardNameQualityReview:
+        if self.suggested_name is not None:
+            from imas_standard_names import compose, parse
+
+            try:
+                compose(parse(self.suggested_name).ir)
+            except Exception as exc:
+                logger.warning(
+                    "Cleared reviewer suggested_name %r on %r because it failed "
+                    "a strict grammar parse: %s",
+                    self.suggested_name,
+                    self.standard_name,
+                    exc,
+                )
+                self.suggested_name = None
+                self.suggestion_justification = None
+        return self
 
 
 class StandardNameQualityReviewBatch(BaseModel):
@@ -1371,6 +1438,25 @@ class StandardNameQualityReviewNameOnly(BaseModel):
             "name-stage decisions"
         ),
     )
+
+    @model_validator(mode="after")
+    def _clear_unparseable_suggestion(self) -> StandardNameQualityReviewNameOnly:
+        if self.suggested_name is not None:
+            from imas_standard_names import compose, parse
+
+            try:
+                compose(parse(self.suggested_name).ir)
+            except Exception as exc:
+                logger.warning(
+                    "Cleared reviewer suggested_name %r on %r because it failed "
+                    "a strict grammar parse: %s",
+                    self.suggested_name,
+                    self.standard_name,
+                    exc,
+                )
+                self.suggested_name = None
+                self.suggestion_justification = None
+        return self
 
 
 class StandardNameQualityReviewNameOnlyBatch(BaseModel):
