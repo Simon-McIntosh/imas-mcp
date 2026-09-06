@@ -109,6 +109,7 @@ __all__ = [
     "AttachmentVerdict",
     "AttachmentAuditResult",
     "NameLevelDefect",
+    "attach_one_source",
     "audit_attachments",
     "count_unattributed_detachments",
     "guard_source_pairings",
@@ -277,6 +278,70 @@ SET sn.source_paths = [
       WHERE NOT (p = 'dd:' + $dd_path OR p = $dd_path)
     ]
 RETURN count(*) AS detached
+"""
+
+
+#: Everything the attach decision needs about one DD path, its source node and
+#: the proposed target, read in one round trip.
+#:
+#: The outer ``MATCH`` on the DD node is deliberately not optional: a path the
+#: graph does not carry yields NO rows, which is how the caller distinguishes
+#: "that DD path does not exist" from "that path has no source node". The
+#: target is matched optionally for the same reason in reverse — a missing name
+#: must be reported as a missing name, not as an empty read.
+#:
+#: ``live_names`` lists the names this source ALREADY produces, excluding
+#: historical stages: a source bound to a live name is being re-pointed, and
+#: re-pointing is a detach followed by an attach.
+_ATTACH_PREFLIGHT_QUERY = """
+MATCH (dd:IMASNode {id: $dd_path})
+OPTIONAL MATCH (src:StandardNameSource)-[:FROM_DD_PATH]->(dd)
+WITH dd, collect(src)[0] AS src
+OPTIONAL MATCH (src)-[:PRODUCED_NAME]->(live:StandardName)
+WHERE NOT coalesce(live.name_stage, '') IN $historical
+WITH dd, src, collect(DISTINCT live.id) AS live_names
+OPTIONAL MATCH (sn:StandardName {id: $sn_id})
+RETURN src.id AS source_node_id,
+       src.status AS source_status,
+       live_names,
+       sn IS NOT NULL AS name_exists,
+       sn.name_stage AS name_stage,
+       EXISTS { (dd)-[:HAS_STANDARD_NAME]->(sn) } AS projected
+"""
+
+
+#: Bind one source onto one name: the inverse of ``_DETACH_QUERY``, writing the
+#: same edges and scalars the compose pipeline's own attachment writer sets
+#: (``graph_ops.persist_claimed_attachments``) so a hand-made realization is
+#: indistinguishable from a composed one.
+#:
+#: The three assertions of a realization are the ``PRODUCED_NAME`` provenance
+#: edge, the DD-side ``HAS_STANDARD_NAME`` projection the export reads, and the
+#: name's ``source_paths`` entry. The source moves off ``extracted`` to
+#: ``attached`` with its claim fields cleared and its ``produced_sn_id`` mirror
+#: pointed at the target, and the stale ``last_error`` of whatever earlier
+#: composition failed is dropped — it describes an attempt this binding
+#: supersedes.
+_ATTACH_QUERY = """
+MATCH (src:StandardNameSource {id: $source_node_id})
+MATCH (sn:StandardName {id: $sn_id})
+MATCH (dd:IMASNode {id: $dd_path})
+MERGE (src)-[:PRODUCED_NAME]->(sn)
+MERGE (dd)-[:HAS_STANDARD_NAME]->(sn)
+SET src.status = 'attached',
+    src.composed_at = datetime(),
+    src.claimed_at = null,
+    src.claim_token = null,
+    src.produced_sn_id = sn.id,
+    src.last_error = null
+SET sn.source_paths = CASE
+      WHEN 'dd:' + $dd_path IN coalesce(sn.source_paths, [])
+        OR $dd_path IN coalesce(sn.source_paths, [])
+      THEN sn.source_paths
+      ELSE coalesce(sn.source_paths, []) + ('dd:' + $dd_path)
+    END,
+    sn.updated_at = datetime()
+RETURN count(*) AS attached
 """
 
 
@@ -2462,6 +2527,186 @@ def detach_one_attachment(
         reason,
     )
     return result
+
+
+#: Ledger operation for a source bound onto a name by physics judgement. Shared
+#: with the signed-manifest attachment route so one operation name covers every
+#: adjudicated attachment, whatever instrument performed it.
+_ATTACH_OPERATION = "attach_unbound_standard_name_source"
+
+
+def attach_one_source(
+    dd_path: str,
+    sn_id: str,
+    *,
+    reason: str,
+    gc: Any | None = None,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Bind ONE unbound source onto the name a physics judgement chose for it.
+
+    The symmetric counterpart of :func:`detach_one_attachment`. That docstring
+    states the rationale this extends: the mechanical guard rules on
+    dimensionality, locus and vector families, but deciding WHICH name a path
+    realizes is a physics judgement, and once made it needs an instrument.
+    Detach was the instrument in one direction only, so a source whose correct
+    name was identified by hand had no sanctioned way to reach it — the compose
+    pool would have to be paid to rediscover the same answer, or the edges
+    written by hand outside every guard.
+
+    Writes exactly what the compose pipeline writes for a realization
+    (``graph_ops.persist_claimed_attachments``): the ``PRODUCED_NAME``
+    provenance edge, the DD-side ``HAS_STANDARD_NAME`` projection the export
+    reads, and the name's ``source_paths`` entry, moving the source off
+    ``extracted`` to ``attached``. A ``StandardNameChange`` records the
+    judgement and its reason exactly as a detach does, so attach followed by
+    detach returns the graph to its starting shape with both events in the
+    ledger.
+
+    Refuses, writing nothing, when:
+
+    * the DD path is not in the graph, or carries no source node to bind;
+    * the target name does not exist, or its stage may not hold a binding —
+      a superseded, exhausted or contested name is a terminal identity and
+      acquiring a source there is how the terminal-target corruption
+      :func:`recover_terminal_attachment` repairs gets created;
+    * the source already produces a live name. Re-pointing is a detach
+      followed by an attach; conflating them into one verb hides the
+      intermediate state where the source belongs to neither name, and that
+      state is the whole subject of the judgement;
+    * :func:`guard_source_pairings` rejects the pairing. An attach that
+      bypasses the mechanical guard is worse than no attach verb, because it
+      manufactures precisely the inconsistent edges this module exists to
+      remove.
+
+    Returns ``{"ok": bool, ...}``; never raises on a refusal.
+    """
+    from imas_codex.standard_names.graph_ops import _STABLE_BINDING_NAME_STAGES
+
+    own = gc is None
+    if own:
+        from imas_codex.graph.client import GraphClient
+
+        client: Any = GraphClient()
+    else:
+        client = gc
+    try:
+        rows = client.query(
+            _ATTACH_PREFLIGHT_QUERY,
+            dd_path=dd_path,
+            sn_id=sn_id,
+            historical=sorted(_HISTORICAL_NAME_STAGES),
+        )
+        row = rows[0] if rows else None
+        if row is None:
+            return {
+                "ok": False,
+                "reason": f"{dd_path!r} is not a DD path in the graph",
+            }
+        source_node_id = row.get("source_node_id")
+        if not source_node_id:
+            return {
+                "ok": False,
+                "reason": (
+                    f"{dd_path!r} has no StandardNameSource node — there is "
+                    "nothing to bind; extract the path first"
+                ),
+            }
+        if not row.get("name_exists"):
+            return {
+                "ok": False,
+                "reason": f"{sn_id!r} does not exist",
+            }
+        name_stage = row.get("name_stage") or ""
+        if name_stage not in _STABLE_BINDING_NAME_STAGES:
+            return {
+                "ok": False,
+                "reason": (
+                    f"{sn_id!r} is at name_stage {name_stage!r} and may not "
+                    "acquire a source; only "
+                    f"{', '.join(sorted(_STABLE_BINDING_NAME_STAGES))} can hold "
+                    "a binding"
+                ),
+            }
+        live_names = sorted(name for name in (row.get("live_names") or []) if name)
+        if live_names:
+            return {
+                "ok": False,
+                "reason": (
+                    f"{dd_path!r} already realizes {', '.join(live_names)} — "
+                    "re-pointing is a detach followed by an attach; run "
+                    "sn detach first so the intermediate state is recorded"
+                ),
+            }
+
+        guard = guard_source_pairings(client, sn_id, [source_node_id])
+        if guard.rejected:
+            rejection = guard.rejected[0]
+            return {
+                "ok": False,
+                "reason": (
+                    f"the consistency guard rejects this pairing: {rejection.reason}"
+                ),
+            }
+
+        result = {
+            "ok": True,
+            "dd_path": dd_path,
+            "sn_id": sn_id,
+            "source_node_id": source_node_id,
+            "name_stage": name_stage,
+            "already_projected": bool(row.get("projected")),
+            "dry_run": dry_run,
+        }
+        if dry_run:
+            return result
+
+        client.query(
+            _ATTACH_QUERY,
+            source_node_id=source_node_id,
+            dd_path=dd_path,
+            sn_id=sn_id,
+        )
+        _record_attachment(client, dd_path, sn_id, reason=reason)
+    finally:
+        if own:
+            client.close()
+
+    logger.info(
+        "attach_one_source: %s now realizes %s at %s — %s",
+        dd_path,
+        sn_id,
+        name_stage,
+        reason,
+    )
+    return result
+
+
+def _record_attachment(
+    gc: Any, dd_path: str, sn_id: str, *, reason: str, run_id: str | None = None
+) -> None:
+    """Write the ``StandardNameChange`` that keeps an attach judgement auditable.
+
+    Mirrors :func:`_record_detachments`, including its refusal to let a failed
+    audit crumb undo a correct graph write: the edges are already there, and
+    raising here would leave the caller believing the attach did not happen.
+    """
+    from imas_codex.standard_names.provenance_lifecycle import (
+        record_standard_name_change,
+    )
+
+    try:
+        record_standard_name_change(
+            gc,
+            dd_path,
+            sn_id,
+            operation=_ATTACH_OPERATION,
+            reason=f"adjudicated attachment: {reason}",
+            origin="attachment_judgement",
+            run_id=run_id,
+        )
+    except Exception:  # pragma: no cover - audit crumb must not block the fix
+        logger.debug("Failed to record attachment of %s", dd_path, exc_info=True)
 
 
 def gate_migrated_attachments(

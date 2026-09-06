@@ -6593,6 +6593,61 @@ def sn_detach(dd_path: str, standard_name: str, reason: str, dry_run: bool) -> N
     )
 
 
+@sn.command("attach")
+@click.argument("dd_path")
+@click.argument("standard_name")
+@click.option(
+    "--reason",
+    required=True,
+    help=(
+        "Why this DD path realizes this name. Recorded in the change ledger — "
+        "an attach is a physics judgement and must carry its argument."
+    ),
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    help="Report what would happen without writing to the graph.",
+)
+def sn_attach(dd_path: str, standard_name: str, reason: str, dry_run: bool) -> None:
+    """Attach one unbound DD path to the standard name it realizes.
+
+    The symmetric counterpart of `sn detach`. The consistency guard rules on
+    dimensionality, locus and vector families; it cannot decide WHICH of several
+    sound names a path means. When that judgement identifies the name an unbound
+    source belongs on, this binds it there — writing the same edges and scalars
+    the compose pipeline writes, so the realization is indistinguishable from a
+    composed one and `sn detach` undoes it exactly.
+
+    Refuses, writing nothing, if the source already realizes a live name
+    (re-pointing is a detach then an attach), if the mechanical guard rejects
+    the pairing, if the target does not exist or its stage may not hold a
+    binding, or if the DD path is not in the graph.
+
+    \b
+    Example:
+      imas-codex sn attach core_profiles/global_quantities/beta_tor toroidal_beta \\
+        --reason "the toroidal beta of the plasma, already named"
+    """
+    from imas_codex.standard_names.attachment_audit import attach_one_source
+
+    result = attach_one_source(dd_path, standard_name, reason=reason, dry_run=dry_run)
+    if not result.get("ok"):
+        raise click.UsageError(result.get("reason", "attach refused"))
+
+    verb = "would attach" if dry_run else "attached"
+    click.echo(f"{verb} {dd_path} to {standard_name}")
+    click.echo(
+        f"  source {result['source_node_id']} → 'attached'; "
+        f"target at name_stage {result['name_stage']!r}"
+        + (
+            " (the DD-side projection already existed)"
+            if result.get("already_projected")
+            else ""
+        )
+    )
+
+
 @sn.command("supersede")
 @click.argument("old_name")
 @click.option(
