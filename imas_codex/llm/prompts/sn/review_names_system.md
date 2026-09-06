@@ -110,8 +110,6 @@ If ISN validation issues are present, judge whether each is a real defect or fal
 
 - Does the name round-trip: `parse(name) → compose() == name`?
 - For all closed segments, is the token in its registry?
-- Are prefix operators written with explicit `_of_` scope marker?
-- Are postfix operators (`_magnitude`, `_real_part`, …) correctly appended (not prefix `_of_` form)?
 - Locus correctly expressed with `_of_`/`_at_`/`_over_` prepositions?
 - Mechanism with `_due_to_`?
 - **Base registry** — the parser resolves the base token and rejects an unregistered one (`parse` raises `UnknownBaseTokenError`). Do **not** hand-scan `physical_base` for embedded closed-vocab tokens and dock for them: the surface base phrase legitimately carries glued **kind-forming** qualifiers (`absorbed_power`, `wave_electric_field`, `ion_atomic_mass`) whose base token is registered (`power`, `electric_field`, `atomic_mass`). If a name conveys a quantity with no registered base, that is a `vocab_gap` for the composer, not a base you invent.
