@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T20:05:38",
+  "updated": "2026-09-06T20:15:30",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -93998,6 +93998,606 @@
           "role": "implement",
           "status": "compatible"
         }
+      },
+      {
+        "run_id": "r-20260906T151440257233-n-swcr-the-cascade-report-matches-what-it-writes",
+        "plan": "sn-west-catalog-release",
+        "section": "Release and fold-back contract",
+        "node": "n-swcr-the-cascade-report-matches-what-it-writes",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 329,
+                "cached_input_tokens": 291744,
+                "input_tokens": 292075,
+                "output_tokens": 114,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 292189,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "A PLANNER THAT REPORTS WORK IT DID NOT DO. Close the gap between the report and the surface.\n\nTHE DEFECT. A subtree rename plans and prints its descendant renames, then persists none of them unless the root identity itself reaches accepted. Measured 2026-09-03: emissivity_due_to_fusion was exhausted at 0.825, so deuterium_deuterium_emissivity_due_to_fusion and deuterium_tritium_emissivity_due_to_fusion were reported as planned, and both remain unchanged and still flagged. Verify that pair against the live graph and report their current spellings before you change anything.\n\nA SECOND FAULT SITS IN THE SAME BUILDER. It emitted a claim that a cascade was unreachable for want of a parent in the plan, on a chain that is strictly linear and non-branching across three levels. A linear chain cannot lack a parent, so this is a plan-construction bug rather than a data problem. Locate it in imas_codex/standard_names/cascade.py and report the line.\n\nWHY THIS IS URGENT RATHER THAN TIDY. A locus rename across seventeen accepted identities is about to be dispatched against this same machinery. If the planner keeps printing descendant work it does not perform, that rename will report success while leaving descendants on the old spelling, and nothing will say so. So this node gates that one.\n\nTHE DELIVERABLE: the planner and the persister agree.\n\nMAKE THE REPORT HONEST; DO NOT FORCE THE WRITES. The default fix is that the cascade stops presenting deferred descendants as planned work and states plainly that they await the root's acceptance. Take that route unless you establish that the guard deferring them has no justification. The justification to look for is observable: if a descendant renamed under an exhausted root would carry a spelling derived from a name the catalog rejected, the deferral is load-bearing and must stay. Demonstrate which case holds by naming one descendant and the spelling it would receive under an exhausted root. Read the guard, quote the reason you find or report its absence, and only if there is no such reason may you make the cascade persist what it printed. A report that tells the truth about deferred work is a complete fix.\n\nTHE REPORT MUST BE DISTINGUISHABLE. After your change, a caller must be able to tell planned-and-performed from planned-and-deferred without reading the graph afterwards. Show the two report shapes in your manifest.\n\nPROVE IT ON THE MEASURED CASE. Exercise the emissivity_due_to_fusion subtree, whose root is exhausted, and show what the cascade now reports and what it now writes. Then exercise a case whose root IS accepted and show that the descendants are still renamed there, so the fix has not disabled working cascades. Report both.\n\nALSO REPAIR THE LINEAR-CHAIN FAULT and prove it on a strictly linear three-level chain, showing the claim is no longer emitted.\n\nFOUND BESIDE IT, AND OUT OF YOUR SCOPE: neutron_rate_due_to_beam_beam_fusion carries a stale physical_base of flux while its name is already correct, which needs a property repair rather than a rename. Name it in your follow-ons and do not touch it.\n\nGraph writes go through sn edit only; never write Cypher to rename a name.\n\nEVIDENCE REQUIRED: the two current spellings before and after; both report shapes; the exhausted-root case and the accepted-root case; the linear-chain proof; and the focused test result before and after against a stated base revision, reporting added failures rather than an absolute count.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, one sentence on what you had to discover versus what this brief handed you, and the count of api_retry records carrying error_status 429 in your own stream, since a fleet-wide concurrency measurement is being collected.",
+          "estimated_hours": 0.9,
+          "goal": "The rename cascade report distinguishes descendants it renamed from descendants it deferred",
+          "id": "n-swcr-the-cascade-report-matches-what-it-writes",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-cascade-report/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "Release and fold-back contract",
+          "spec_level": "exact",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/cascade.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-postcopy",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T15:15:20Z",
+        "completed_at": "2026-09-06T17:15:38.168Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 7208,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 7218,
+        "stalled": true,
+        "time_budget": "55m",
+        "base_sha": "e17675406da3b6798af110e8aa29f4c06fd900d9",
+        "commits": [
+          "de9c2a2102c09a793d56198a54bdd69656aac34d"
+        ],
+        "changed_lines": {
+          "added": 20,
+          "removed": 11,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "uv run --no-sync pytest tests/standard_names/test_rename_cascade.py -q",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-cascade-report/manifest.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-cascade-report/manifest.md",
+        "scope_changed": false,
+        "session_id": "30967d62-5cd2-4cd9-86c2-8fc4506ef4cb",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 8828898,
+            "input_tokens_cumulative": 8828898,
+            "output_tokens": 67671,
+            "output_tokens_cumulative": 67671,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 7212.82,
+          "generated_tokens": 67671,
+          "generation_seconds": 6933.789,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 19.1,
+          "machine_seconds": 279.031,
+          "peak_input_tokens": 193902,
+          "tokens_per_second": 9.76,
+          "wall_tokens_per_second": 9.38
+        },
+        "follow_on_paths": [
+          "superseded/exhausted;",
+          "tests/standard_names/test_rename_cascade.py:",
+          "conflict/early-return",
+          "cascade.py"
+        ],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-cascade-report-matches-what-it-writes",
+          "session_id": "30967d62-5cd2-4cd9-86c2-8fc4506ef4cb",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T17:15:38.168Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260906T164009738105-n-sli-a-set-then-remove-lock-is-not-a-modification",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-a-set-then-remove-lock-is-not-a-modification",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1615,
+                "cached_input_tokens": 455329,
+                "input_tokens": 456946,
+                "output_tokens": 607,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 457553,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "TWO LOCK MARKERS ARE RECORDED AS DEBT WHILE AN IDENTICAL SIBLING IS EXEMPT. Close the inconsistency in the checker, then lower the baseline that was holding the two as debt.\n\nTHE IDIOM, verbatim from imas_codex/standard_names/parents.py at lines 421-422 and 487-488:\n                SET parent._structural_authority_replay_lock = true\n                REMOVE parent._structural_authority_replay_lock\nand\n                SET child._structural_authority_grounding_lock = true\n                REMOVE child._structural_authority_grounding_lock\nEach sets a marker and removes it inside the same statement. Nothing is persisted, so there is no modification for a modification stamp to record.\n\nTHE INCONSISTENCY. imas_codex/graph/cypher_property_check.py defines _TRANSIENT_TOUCH_EXEMPT_PROPERTIES at line 543, whose own comment states that a statement writing only these properties on a StandardName-bound alias must not be required to stamp updated_at. It contains _structural_authority_lock, _drain_scope_lock, _lifecycleless_reconcile_lock, _refine_claim_release_lock and three reservation properties. It does NOT contain _structural_authority_replay_lock or _structural_authority_grounding_lock, which are the same idiom on the same label in the same package.\n\nThe same file already adjudicates both missing tokens as transient locks for the OTHER audit it carries. In the _ADJUDICATED_OCCURRENCES inventory (line 57 onward) they appear under a [transient_lock] section, whose reason text at line 38 reads: adjudicated transient set-then-remove lock idiom, Cypher writes and removes this marker in one statement to acquire a node write lock without persisting graph data. So the file classifies them correctly for schema declaration and treats them as stamp debt at the same time.\n\nTHE DELIVERABLE: the stamp auditor stops reporting those two, and the debt baseline records the two survivors that remain.\n\nSTEP ONE. Add both tokens to _TRANSIENT_TOUCH_EXEMPT_PROPERTIES. Confirm afterwards that the auditor over imas_codex/standard_names reports exactly 2 findings, in catalog_import.py and orphan_sweep.py.\n\nSTEP TWO. tests/graph/test_updated_at_coverage.py holds a _SURVIVING_FINDINGS mapping keyed by path and property tuple, each with a written justification, from which the counts are derived. Remove the two parents.py entries and leave the remaining two, keeping the existing structure and the justification style. Do not restructure that file; it landed minutes ago and its shape is deliberate.\n\nREFUSE IF THE EVIDENCE DOES NOT HOLD. Read both statements in full before changing anything. If either one persists the marker, writes any other property, or the REMOVE is not in the same statement as the SET, then it is NOT the exempt idiom: leave that token in the baseline, report which one and why, and change only the other. A token exempted wrongly silences a real omission permanently, which is worse than leaving it recorded as debt.\n\nDO NOT weaken the checker in any other way. Do not add a wildcard, a prefix match, or a pattern that would exempt future tokens automatically; name exactly these two. A rule that exempts anything ending in _lock would silence writes nobody has adjudicated.\n\nTHE RATCHET MUST STILL BITE AFTER YOUR CHANGE. That test file was mutation-proven when it landed: it rejects an added finding in a new module, an added finding in a surviving module, an unrecorded repair, and a count-preserving property relabel caught by an identity assertion. Re-run those same proofs after your edit and report each verdict, because your change alters both the exemption set the detector uses and the baseline the gate compares against, and a mistake in either direction disarms the gate while leaving it green.\n\nEVIDENCE REQUIRED: the auditor's full output before and after, which must go from 4 findings to 2; both Cypher statements quoted in full; the four mutation proofs re-run with their verdicts; and the test file's result before and after against a stated base revision, reporting added failures rather than an absolute count.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.6,
+          "goal": "The stamp auditor exempts the two set-then-remove authority locks and the baseline records only the two real survivors",
+          "id": "n-sli-a-set-then-remove-lock-is-not-a-modification",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sli-lock-exempt/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "imas_codex/graph/cypher_property_check.py",
+            "tests/graph/test_updated_at_coverage.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-census",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T16:40:19Z",
+        "completed_at": "2026-09-06T17:18:11.869Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 2238,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 2272,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "188581c98888e1c644e42b4d43f9d24b6b3ba5fa",
+        "commits": [
+          "15913fc9135792c8b5dbf462e8f70fdb574c810f"
+        ],
+        "changed_lines": {
+          "added": 5,
+          "removed": 13,
+          "files": 2
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "audit_standard_name_touch over imas_codex/standard_names plus pytest tests/graph/test_updated_at_coverage.py",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sli-lock-exempt/manifest.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sli-lock-exempt/manifest.md",
+        "scope_changed": false,
+        "session_id": "5a5a7ed5-beea-4121-8584-fa3bbb835185",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 2786509,
+            "input_tokens_cumulative": 2786509,
+            "output_tokens": 23654,
+            "output_tokens_cumulative": 23654,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 2269.492,
+          "generated_tokens": 23654,
+          "generation_seconds": 2180.79,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 9.9,
+          "machine_seconds": 88.702,
+          "peak_input_tokens": 100313,
+          "tokens_per_second": 10.85,
+          "wall_tokens_per_second": 10.42
+        },
+        "follow_on_paths": [
+          "tests/standard_names/test_structural_authority_replay.py"
+        ],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-a-set-then-remove-lock-is-not-a-modification",
+          "session_id": "5a5a7ed5-beea-4121-8584-fa3bbb835185",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T17:18:11.869Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260906T164753792020-n-sli-a-priority-scope-replaces-rather-than-collides",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-a-priority-scope-replaces-rather-than-collides",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1294,
+                "cached_input_tokens": 494513,
+                "input_tokens": 495809,
+                "output_tokens": 969,
+                "reasoning_output_tokens": 327,
+                "total_tokens": 496778,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "ONE DUPLICATE KEYWORD CRASHES TWO POOLS UNDER FOCUS. The diagnosis below is complete; your work is the repair, its regression test, and the proof.\n\nTHE OBSERVED FAILURE. A focus-scoped pipeline run reported: asyncio.threads.to_thread() got multiple values for keyword argument 'scope_run_id'. It was raised from the claim path of the generate_docs and enrich_parents pools. It was benign in that run only because those pools had nothing to claim; a focus run that needs documentation work fails outright.\n\nTHE CAUSE, three sites in imas_codex/standard_names/loop.py:\n\n  At 595-597 the scope kwargs dict is built, and it carries the scope run id whenever one exists, which is the case under focus:\n      _scope_kwargs[\"scope_run_id\"] = scope_run_id\n\n  At 712 and 727 the generate_docs and review_docs pools pass BOTH a priority scope and that dict:\n      claim=_make_claim_adapter(\n          claim_generate_docs_batch,\n          priority_scope_run_id=drift_scope_run_id,\n          ...\n          **_scope_kwargs,\n      )\n\n  At 465-469 the adapter's priority branch then adds the same keyword a second time:\n      items = await asyncio.to_thread(\n          claim_fn,\n          **kwargs,\n          scope_run_id=priority_scope_run_id,\n      )\n\nSo when a drift scope and a focus scope are both live, the keyword arrives twice and the call raises before reaching the claim function. Confirm all three sites and their line numbers yourself and report what you find; if the line numbers have moved, report the current ones.\n\nTHE REPAIR: build the priority call's arguments as one mapping so the priority scope REPLACES any caller-supplied scope rather than colliding with it. The two-pass behaviour must survive: the priority pass runs against the priority scope, and the existing fallback call, which passes the caller's kwargs unchanged, still runs when the priority pass returns nothing. That ordering is the point of the adapter and must not change.\n\nWHICH VALUE WINS IS ALREADY DECIDED BY THE EXISTING DESIGN, so do not treat it as open: the priority pass exists to try the priority scope first, so the priority value takes precedence inside that call, and the caller's own scope still gets its turn on the second call. Preserve exactly that.\n\nDO NOT change any call site to stop passing the scope kwargs, and do not remove the priority scope from either pool. The defect is in how the adapter combines them, not in what the callers ask for. Narrowing a caller to dodge the collision would hide the same fault for the next caller.\n\nA REGRESSION TEST IS REQUIRED, and it must fail before your fix. Add a test that drives the adapter with a claim function accepting a scope run id, with the same keyword supplied BOTH through the caller kwargs and as the priority scope, and assert the call succeeds and receives the priority value. Then assert the fallback call receives the caller's value when the priority pass yields nothing. Run it against the unfixed code and report the failure text; a test that passes before the change does not cover this.\n\nVERIFY THE OTHER FIVE ADAPTER CALL SITES. Seven pools construct this adapter, at roughly 660, 676, 690, 708, 722, 740 and 755. Report, for each, whether it passes a priority scope, whether it passes the scope kwargs, and therefore whether it could collide. Say plainly which sites the defect could reach beyond the two named.\n\nEVIDENCE REQUIRED: the three cause sites quoted with current line numbers; the regression test failing before and passing after, with its verbatim failure text; the seven-site table; and the focused test result for the modules you touched, before and after, against a stated base revision, reporting added failures rather than an absolute count.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.6,
+          "goal": "The claim adapter passes one scope run id so focus-scoped documentation pools claim without raising",
+          "id": "n-sli-a-priority-scope-replaces-rather-than-collides",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sli-claim-kwarg/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "imas_codex/standard_names/loop.py",
+            "tests/standard_names/test_loop_claim_adapter.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-drain",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T16:48:03Z",
+        "completed_at": "2026-09-06T17:27:34.787Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 2354,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 2371,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "8af1d5275c88b4a261ca58d3a9f43f33831ccfa7",
+        "commits": [
+          "3a197bdd680b4c98c20ac74019bda9ced19914b8"
+        ],
+        "changed_lines": {
+          "added": 112,
+          "removed": 5,
+          "files": 2
+        },
+        "tests_added": 3,
+        "gate": "passed",
+        "gate_check": {
+          "command": "uv run --no-sync pytest tests/standard_names/test_loop_claim_adapter.py -p no:cacheprovider -q",
+          "exit_status": 0,
+          "log_path": "/tmp/n-sli-after-fix.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sli-claim-kwarg/manifest.md",
+        "scope_changed": false,
+        "session_id": "bc95023a-f1c5-4121-b66a-cecb3153d469",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 4667963,
+            "input_tokens_cumulative": 4667963,
+            "output_tokens": 30446,
+            "output_tokens_cumulative": 30446,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 2368.506,
+          "generated_tokens": 30446,
+          "generation_seconds": 2200.331,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 12.0,
+          "machine_seconds": 168.175,
+          "peak_input_tokens": 122206,
+          "tokens_per_second": 13.84,
+          "wall_tokens_per_second": 12.85
+        },
+        "follow_on_paths": [
+          "loop.py"
+        ],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-a-priority-scope-replaces-rather-than-collides",
+          "session_id": "bc95023a-f1c5-4121-b66a-cecb3153d469",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T17:27:34.787Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260906T164501276407-n-swcr-the-churning-sources-keep-their-last-attempts",
+        "plan": "sn-west-catalog-release",
+        "section": "Hard entry gate",
+        "node": "n-swcr-the-churning-sources-keep-their-last-attempts",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1123,
+                "cached_input_tokens": 480664,
+                "input_tokens": 481789,
+                "output_tokens": 605,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 482394,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "ESTABLISH WHY TWO SOURCES CHURN BEFORE SPENDING THEIR LAST ATTEMPTS. The obvious action is forbidden until you have the cause, because taking it blindly destroys what it is meant to recover.\n\nTHE SITUATION. Two WEST release-manifest sources hold no standard name and sit at status extracted with attempt_count 3 of a maximum of 5:\n  calorimetry/group/component/energy_total/data\n  hard_x_rays/emissivity_profile_1d/half_width_external\nA previous node recommended simply re-running the free compose-only pipeline to drain them. That recommendation is NOT authorised here, because the compose claim path only takes rows below the attempt cap: if their failure is deterministic, a re-run consumes attempts 4 and 5 and moves both to terminal, at which point no focus manifest can reach them at all. Two sibling sources are already in exactly that state, so the failure mode is measured rather than hypothetical.\n\nTHE QUESTION YOU ANSWER: for each of the two, is the failure TRANSIENT or DETERMINISTIC. Transient means a timeout, a transport error, a concurrency collision, a claim race, or a model call that failed to return - a cause where the same input could succeed unchanged. Deterministic means the input itself cannot be composed as it stands: an unresolvable unit, an uninformative documentation field, a missing vocabulary token, a schema-ineligible node.\n\nREAD THE RUN LOG, BOUNDED. The auto-log at ~/.local/share/imas-codex/logs/sn_sn-compose.log is roughly 9 MB and shared across runs. Do not read it whole. The most recent run carried focus run_id 23616948-9423-480c-9a50-95ae37a0ed42 and ran between 2026-09-06T14:01Z and 15:44Z. Grep for each source path and for that run id, and read the surrounding lines only. Report the failure text verbatim for each attempt you can find, with its timestamp.\n\nALSO READ THE ROWS THEMSELVES. Each StandardNameSource carries last_error, skip_reason, skip_reason_detail, retry_events, failed_at, dd_unit and dd_documentation. Report all of them for both sources. Where the stored classification and the log disagree, say so and prefer the log, noting that a stored classification carries no observation time and may predate a later repair.\n\nTWO SPECIFIC HYPOTHESES TO TEST, both from prior measurement, and both may be wrong:\n  half_width_external carries dd_unit '1' and was at some point classified dd_unit_unresolvable. The compose path at imas_codex/standard_names/workers.py:4094-4110 explicitly accepts '1' as valid dimensionless and normalises '-' to it, skipping only 'mixed', None and empty. So either that classification is stale and the real failure is something else, or the unit reaching the composer differs from the unit stored on the row. Establish which, and report the unit the composer actually received if the log shows it.\n  energy_total/data has documentation reading only the word Data and is the value leaf of a parent named energy_total. Establish whether the composer failed for want of usable documentation, and whether the parent path carries the real documentation.\n\nTHEN, AND ONLY THEN, ACT ON WHAT YOU FOUND.\n  If a failure is TRANSIENT: re-run the free compose-only pipeline scoped to that source alone, using a focus manifest containing just it, and report the outcome. The command is uv run imas-codex sn run --focus YOUR_FOCUS_FILE --only compose. Never pass --flush. Note that --only compose also selects generate_docs and enrich_parents, and that their claim path currently crashes on a duplicate scope_run_id keyword at imas_codex/standard_names/loop.py:465 under focus - that crash is a known separate defect, is not yours to fix, and does not invalidate a compose result; report it if you see it.\n  If a failure is DETERMINISTIC: DO NOT RE-RUN. Leave the attempts unspent, report the cause, and state what would have to change for the source to compose - a vocabulary token, a unit repair, a parent-documentation fallback. Leaving two attempts unspent with a named cause is the more valuable outcome, because it keeps the source reachable.\nReport which branch you took for each source and the evidence that selected it.\n\nDO NOT reset any attempt counter, do not run sn retry, do not clear a skip reason, and do not modify any source file. Attempt-count and skip-reason repairs are coordinator decisions outside this node.\n\nEVIDENCE REQUIRED: verbatim failure text per source per attempt with timestamps; the full stored field set for both rows; the transient-or-deterministic verdict per source with the evidence that decided it; the attempt_count before and after your node for both sources; and, for any source you re-ran, its status and produced name afterwards.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.7,
+          "goal": "Each churning manifest source has a transient or deterministic verdict with its evidence, and only transient ones spend another attempt",
+          "id": "n-swcr-the-churning-sources-keep-their-last-attempts",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-churn-cause/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "Hard entry gate",
+          "spec_level": "exact",
+          "time_budget": "45m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/churning-source-causes.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-probe",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T16:45:10Z",
+        "completed_at": "2026-09-06T17:25:52.001Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 2351,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 2442,
+        "stalled": false,
+        "time_budget": "45m",
+        "base_sha": "8af1d5275c88b4a261ca58d3a9f43f33831ccfa7",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "transient-or-deterministic verdict per source from bounded run-log reads and stored row state",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/churning-source-causes.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-churn-cause/manifest.md",
+        "scope_changed": false,
+        "session_id": "de7acb29-7a85-41cb-b92d-5cc2b44f7d55",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 0,
+            "input_tokens_cumulative": 5992796,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 27711,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 2436.853,
+          "generated_tokens": 27711,
+          "generation_seconds": 2402.063,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 26.0,
+          "machine_seconds": 34.79,
+          "peak_input_tokens": 264376,
+          "tokens_per_second": 11.54,
+          "wall_tokens_per_second": 11.37
+        },
+        "follow_on_paths": [
+          ".../energy_total"
+        ],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "a diagnosis node forbidden from resetting attempts, clearing skips or changing source; its deliverable is the verdict",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-churning-sources-keep-their-last-attempts",
+          "session_id": "de7acb29-7a85-41cb-b92d-5cc2b44f7d55",
+          "session_source": "pointer",
+          "retained_at": "2026-09-06T17:25:52.001Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -94240,6 +94840,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1845
+    "_version": 1849
   }
 }
