@@ -1,22 +1,92 @@
-"""Specification for the StandardName.updated_at coverage check."""
+"""Measured updated_at omissions are a debt ledger, not an approval, lowered only after fixing the corresponding writes and updating the count."""
 
 from __future__ import annotations
 
+from collections import Counter
 from pathlib import Path
+
+import pytest
 
 from imas_codex.graph.cypher_property_check import audit_standard_name_touch
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+_STANDARD_NAMES_ROOT = REPO_ROOT / "imas_codex" / "standard_names"
 
-# graph_ops.py is the write path this coverage gate holds to zero. Every
-# other module under imas_codex/standard_names/ still has pre-existing gaps
-# (a separately dispatched node owns closing those) — scoping here keeps this
-# gate meaningful without failing on write paths this change did not touch.
+# These are observed omissions by package-relative file. Keep an entry when a
+# file reaches zero so an unrecorded improvement fails until its debt is
+# explicitly lowered. New findings also fail until their file is accounted for.
+_EXPECTED_FINDINGS = {
+    "attachment_audit.py": 4,
+    "audits.py": 3,
+    "campaign.py": 4,
+    "cascade.py": 2,
+    "catalog_import.py": 1,
+    "catalog_reconcile.py": 1,
+    "edit.py": 8,
+    "orphan_sweep.py": 5,
+    "parents.py": 2,
+    "promote.py": 6,
+    "provenance_lifecycle.py": 5,
+    "review/audits.py": 1,
+    "signed_manifest.py": 9,
+    "source_refresh.py": 2,
+    "workers.py": 2,
+}
+
 _GATED_PATH = REPO_ROOT / "imas_codex" / "standard_names" / "graph_ops.py"
 
 
-def test_repository_standard_name_writes_stamp_updated_at() -> None:
-    """Every substantive StandardName write in graph_ops.py sets ``updated_at``."""
+def _finding_counts(findings: tuple) -> Counter[str]:
+    """Return omission counts keyed by package-relative source path."""
+    return Counter(
+        finding.path.relative_to(_STANDARD_NAMES_ROOT).as_posix()
+        for finding in findings
+    )
+
+
+def _assert_findings_match_baseline(counts: Counter[str]) -> None:
+    """Require every observed file count to equal its declared debt count."""
+    unexpected = sorted(set(counts) - set(_EXPECTED_FINDINGS))
+    too_high = {
+        path: (counts.get(path, 0), expected)
+        for path, expected in _EXPECTED_FINDINGS.items()
+        if counts.get(path, 0) > expected
+    }
+    too_low = {
+        path: (counts.get(path, 0), expected)
+        for path, expected in _EXPECTED_FINDINGS.items()
+        if counts.get(path, 0) < expected
+    }
+    assert not unexpected, f"findings lack a debt baseline: {unexpected}"
+    assert not too_high, f"findings exceed the debt baseline: {too_high}"
+    assert not too_low, (
+        f"findings fell below the debt baseline; lower the recorded count: {too_low}"
+    )
+
+
+def test_standard_name_package_matches_updated_at_debt_baseline() -> None:
+    """Every package module is audited against its measured omission count."""
+    findings = audit_standard_name_touch(_STANDARD_NAMES_ROOT)
+    _assert_findings_match_baseline(_finding_counts(findings))
+
+
+def test_debt_baseline_rejects_unrecorded_count_changes() -> None:
+    """Both new omissions and unrecorded repairs require an explicit update."""
+    _assert_findings_match_baseline(Counter(_EXPECTED_FINDINGS))
+
+    increased = Counter(_EXPECTED_FINDINGS)
+    increased["audits.py"] += 1
+    with pytest.raises(AssertionError, match="exceed the debt baseline"):
+        _assert_findings_match_baseline(increased)
+
+    decreased = Counter(_EXPECTED_FINDINGS)
+    decreased["audits.py"] -= 1
+    with pytest.raises(AssertionError, match="fell below the debt baseline"):
+        _assert_findings_match_baseline(decreased)
+
+
+def test_graph_ops_standard_name_writes_have_hard_zero() -> None:
+    """The primary graph operation module has no tolerated omissions."""
     findings = audit_standard_name_touch(_GATED_PATH)
     assert not findings, (
         "Cypher writes that modify StandardName without stamping updated_at:\n"
@@ -40,6 +110,26 @@ def test_transient_lock_only_write_is_exempt(tmp_path: Path) -> None:
     findings = audit_standard_name_touch(fixture)
 
     assert not findings
+
+
+def test_new_unstamped_write_in_other_module_fails_gate(tmp_path: Path) -> None:
+    """An omission in a non-graph_ops module cannot hide from the package gate."""
+    fixture = tmp_path / "other_module.py"
+    fixture.write_text(
+        "QUERY = '''\n"
+        "MATCH (sn:StandardName {id: $id})\n"
+        "SET sn.description = $description\n"
+        "RETURN sn.id AS id\n"
+        "'''\n",
+        encoding="utf-8",
+    )
+
+    findings = audit_standard_name_touch(tmp_path)
+
+    assert len(findings) == 1
+    assert findings[0].path == fixture
+    with pytest.raises(AssertionError, match="lack a debt baseline"):
+        _assert_findings_match_baseline(Counter({"other_module.py": 1}))
 
 
 def test_substantive_write_without_updated_at_is_flagged(tmp_path: Path) -> None:
