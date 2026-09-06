@@ -261,18 +261,17 @@ def test_review_pydantic_accepts_populated_suggestion() -> None:
         "source_id": "core_profiles/profiles_1d/electrons/temperature",
         "standard_name": "Te_core",
         "scores": {"grammar": 8, "semantic": 14, "convention": 6, "completeness": 12},
-        "reasoning": "Symbol abbreviation; missing locus distinguisher.",
-        "revised_name": "electron_temperature_core",
-        "suggested_name": "electron_temperature_core",
+        "reasoning": "Symbol abbreviation; cluster siblings use the full spelling.",
+        "revised_name": "electron_temperature",
+        "suggested_name": "electron_temperature",
         "suggestion_justification": (
-            "Original used the symbol abbreviation 'Te'; cluster siblings "
-            "show all related quantities use full 'electron_temperature' with "
-            "a '_core' locus suffix for inner-flux-surface variants."
+            "Original used the symbol abbreviation 'Te'; cluster siblings show "
+            "all related quantities use the full 'electron_temperature' spelling."
         ),
         "issues": ["abbreviation"],
     }
     review = StandardNameQualityReviewNameOnly(**payload)
-    assert review.suggested_name == "electron_temperature_core"
+    assert review.suggested_name == "electron_temperature"
     assert (
         review.suggestion_justification
         and "cluster siblings" in review.suggestion_justification
@@ -310,16 +309,16 @@ def test_review_batch_parses_full_sample() -> None:
                     "completeness": 10,
                 },
                 "reasoning": "Multiple defects.",
-                "revised_name": "better_name",
-                "suggested_name": "better_name",
-                "suggestion_justification": "Cluster siblings use that form.",
+                "revised_name": "ion_temperature",
+                "suggested_name": "ion_temperature",
+                "suggestion_justification": "Cluster siblings use the ion carrier.",
             },
         ]
     }
     batch = StandardNameQualityReviewNameOnlyBatch(**sample)
     assert len(batch.reviews) == 2
     assert batch.reviews[0].suggested_name is None
-    assert batch.reviews[1].suggested_name == "better_name"
+    assert batch.reviews[1].suggested_name == "ion_temperature"
 
 
 def test_prior_reviews_iteration_uses_dict_index() -> None:
