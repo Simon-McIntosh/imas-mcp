@@ -5913,11 +5913,12 @@ def sn_review(
     )
 
     async def _run() -> None:
-        # Layer 1: Audits (on full catalog, unless --skip-audit)
-        if not skip_audit:
-            console.print(
-                "[bold]Layer 1:[/bold] Running deterministic audits on full catalog…"
-            )
+        # Layer 1: Audits (on full catalog, unless --skip-audit or --dry-run)
+        if not skip_audit or dry_run:
+            if not dry_run:
+                console.print(
+                    "[bold]Layer 1:[/bold] Running deterministic audits on full catalog…"
+                )
             from imas_codex.graph.client import GraphClient
 
             def _load_catalog() -> list[dict]:
@@ -5958,23 +5959,24 @@ def sn_review(
                 console.print("[yellow]No standard names found in graph[/yellow]")
                 return
 
+            state.all_names = all_names
             console.print(f"  Loaded {len(all_names)} standard names")
 
-            from imas_codex.standard_names.review.audits import run_all_audits
+            if not dry_run:
+                from imas_codex.standard_names.review.audits import run_all_audits
 
-            state.audit_report = await asyncio.to_thread(run_all_audits, all_names)
-            state.all_names = all_names
+                state.audit_report = await asyncio.to_thread(run_all_audits, all_names)
 
-            # Print audit summary
-            ar = state.audit_report
-            console.print(
-                f"  Embeddings: {ar.embedding.missing_count} missing, "
-                f"{ar.embedding.stale_count} stale, "
-                f"{ar.embedding.refreshed_count} refreshed"
-            )
-            console.print(f"  Lint findings: {len(ar.lint_findings)}")
-            console.print(f"  Link issues: {len(ar.link_findings)}")
-            console.print(f"  Duplicate components: {len(ar.duplicate_components)}")
+                # Print audit summary
+                ar = state.audit_report
+                console.print(
+                    f"  Embeddings: {ar.embedding.missing_count} missing, "
+                    f"{ar.embedding.stale_count} stale, "
+                    f"{ar.embedding.refreshed_count} refreshed"
+                )
+                console.print(f"  Lint findings: {len(ar.lint_findings)}")
+                console.print(f"  Link issues: {len(ar.link_findings)}")
+                console.print(f"  Duplicate components: {len(ar.duplicate_components)}")
 
         if dry_run:
             # In dry-run mode, show batch plan but don't run LLM
