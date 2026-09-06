@@ -76,8 +76,11 @@ class CascadeResult:
         The replacement parent id.
     renamed:
         List of ``{"from": old_id, "to": new_id}`` entries, one per
-        descendant whose id changed (root included).  In ``dry_run``
-        mode this is the *planned* rename list.
+        descendant whose id changed (root included).  When ``dry_run``
+        is False this is what was actually written; when ``dry_run`` is
+        True it is the *deferred* plan — descendants follow only once
+        the root's successor reaches accepted, and nothing in the list
+        has been written to the graph yet.
     skipped:
         Descendants intentionally left untouched (projection edges,
         independent-identity children).  Each entry is
@@ -89,7 +92,11 @@ class CascadeResult:
         Total number of descendants discovered via ``HAS_PARENT*`` walk
         (regardless of whether they cascade).
     dry_run:
-        ``True`` when no write took place.
+        ``True`` when no write took place — every early return, refusal
+        and deferred plan reports True, so a False value alone proves
+        the renames in ``renamed`` were actually written.  A caller can
+        therefore distinguish planned-and-performed (dry_run False) from
+        planned-and-deferred (dry_run True) without reading the graph.
     """
 
     old_name: str
@@ -900,7 +907,7 @@ def rename_cascade(
             old_name=old_name,
             new_name=new_name,
             conflicts=["old_name == new_name (no-op rename)"],
-            dry_run=dry_run,
+            dry_run=True,
         )
 
     # ── 1. Validate the root name round-trips (the new name must be
@@ -911,7 +918,7 @@ def rename_cascade(
             old_name=old_name,
             new_name=new_name,
             conflicts=[f"new root name fails ISN round-trip: {rt_reason}"],
-            dry_run=dry_run,
+            dry_run=True,
         )
 
     # ── 2. Confirm the root exists in the graph and gather its safety
@@ -937,7 +944,7 @@ def rename_cascade(
             old_name=old_name,
             new_name=new_name,
             conflicts=[f"root StandardName {old_name!r} not found in graph"],
-            dry_run=dry_run,
+            dry_run=True,
         )
     if root_info[0].get("target_exists"):
         return CascadeResult(
@@ -947,7 +954,7 @@ def rename_cascade(
                 f"destination StandardName {new_name!r} already exists "
                 "(collision with rename root)"
             ],
-            dry_run=dry_run,
+            dry_run=True,
         )
 
     # ── 3-5. Walk the subtree and resolve every descendant's cascade rename.
@@ -994,6 +1001,8 @@ def rename_cascade(
         renamed_list.append({"from": from_id, "to": to_id})
 
     # If anything went wrong, do not write — return the diagnostic.
+    # ``dry_run`` is always True here: the plan was not applied, so
+    # ``renamed`` is the deferred plan rather than a performed outcome.
     if conflicts:
         return CascadeResult(
             old_name=old_name,
@@ -1002,7 +1011,7 @@ def rename_cascade(
             skipped=skipped,
             conflicts=conflicts,
             total_descendants=total_descendants,
-            dry_run=dry_run,
+            dry_run=True,
         )
 
     # ── 8. Audit log every rename (even dry-run, so the operator can
@@ -1117,7 +1126,7 @@ def cascade_descendants_of(
             conflicts=[
                 f"successor_id {successor_id!r} does not match new_root {new_root!r}"
             ],
-            dry_run=dry_run,
+            dry_run=True,
         )
 
     exists_rows = list(
@@ -1131,7 +1140,7 @@ def cascade_descendants_of(
             old_name=old_root,
             new_name=new_root,
             conflicts=[f"successor {successor_id!r} not found in graph"],
-            dry_run=dry_run,
+            dry_run=True,
         )
 
     rename_plan, skipped, conflicts, total_descendants = _walk_and_resolve_cascade(
@@ -1267,7 +1276,7 @@ def cascade_descendants_of(
             skipped=skipped,
             conflicts=conflicts,
             total_descendants=total_descendants,
-            dry_run=dry_run,
+            dry_run=True,
         )
 
     if dry_run or not renamed_list:
