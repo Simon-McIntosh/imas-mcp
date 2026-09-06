@@ -73,6 +73,13 @@ _CARTESIAN_AXES = frozenset({"x", "y"})
 # GeometricBase values for parent path matching
 _GEOMETRIC_BASES = {g.value for g in GeometricBase}
 
+# DD structural primitives whose direct children jointly describe one object.
+_GEOMETRY_PRIMITIVES = frozenset(
+    {"annulus", "arcs_of_circle", "oblique", "outline", "rectangle"}
+)
+
+_GEOMETRY_ERROR_SUFFIXES = ("_error_lower", "_error_upper", "_error_index")
+
 # ---------------------------------------------------------------------------
 # DD derivative map
 # ---------------------------------------------------------------------------
@@ -123,6 +130,24 @@ class VectorFamily:
     parent_name: str | None = None  # Deterministic ISN parent name (if derivable)
     unit_uniform: bool = True  # Whether all members share a single unit
     units: set[str] = field(default_factory=set)
+
+
+@dataclass
+class GeometryField:
+    """One direct DD field describing a geometric object."""
+
+    dd_path: str
+    suffix: str
+    unit: str
+
+
+@dataclass
+class GeometryFamily:
+    """All direct DD fields that jointly describe one geometric primitive."""
+
+    parent_path: str
+    primitive: str
+    members: list[GeometryField] = field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------
@@ -276,6 +301,64 @@ def detect_families(items: list[dict]) -> list[VectorFamily]:
                         units=units,
                     )
                 )
+
+    return families
+
+
+def detect_geometry_families(items: list[dict]) -> list[GeometryFamily]:
+    """Detect complete field groups for named DD geometric primitives.
+
+    A family's identity comes from its structural parent's primitive name, not
+    from the suffixes of its children. Direct error-bound and uncertainty-index
+    leaves are excluded. A primitive containing only axis-classified leaves is
+    already represented by :func:`detect_families` and is not duplicated here.
+
+    Parameters
+    ----------
+    items : list[dict]
+        Each dict must have ``path`` (str); ``unit`` (str) is optional.
+
+    Returns
+    -------
+    list[GeometryFamily]
+        Shape-keyed families with at least two geometric fields and at least
+        one field that the axis-only detector cannot see.
+    """
+    groups: dict[str, list[dict]] = defaultdict(list)
+    for item in items:
+        path = item["path"]
+        if "/" not in path:
+            continue
+        parent_path = path.rsplit("/", 1)[0]
+        groups[parent_path].append(item)
+
+    families: list[GeometryFamily] = []
+    for parent_path, group_items in groups.items():
+        primitive = parent_path.rsplit("/", 1)[-1]
+        if primitive not in _GEOMETRY_PRIMITIVES:
+            continue
+
+        members = [
+            GeometryField(
+                dd_path=item["path"],
+                suffix=item["path"].rsplit("/", 1)[-1],
+                unit=item.get("unit", ""),
+            )
+            for item in group_items
+            if not item["path"].rsplit("/", 1)[-1].endswith(_GEOMETRY_ERROR_SUFFIXES)
+        ]
+        if len(members) < 2:
+            continue
+        if all(_classify_suffix(member.suffix) is not None for member in members):
+            continue
+
+        families.append(
+            GeometryFamily(
+                parent_path=parent_path,
+                primitive=primitive,
+                members=members,
+            )
+        )
 
     return families
 
