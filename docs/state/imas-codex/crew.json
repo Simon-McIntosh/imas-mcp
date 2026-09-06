@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T10:19:32",
+  "updated": "2026-09-06T10:52:05",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -4185,9 +4185,11 @@
         "id": "opus-shortfall",
         "harness": "claude-opus",
         "role": "test",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "24e4315d-e1a0-4e1e-bcfb-ec54ede75b9b",
+        "session_model": "claude-opus-5",
+        "sessions": {
+          "{\"alias\":\"opus 5\",\"backend\":\"claude-opus\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"claude-opus-5\",\"sandbox\":\"worktree-full\"}": "24e4315d-e1a0-4e1e-bcfb-ec54ede75b9b"
+        },
         "created": "2026-09-06"
       },
       {
@@ -86656,6 +86658,446 @@
           "role": "implement",
           "status": "compatible"
         }
+      },
+      {
+        "run_id": "r-20260906T081113746018-n-swct-the-version-stamp-earns-trust",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a76",
+        "node": "n-swct-the-version-stamp-earns-trust",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1181,
+                "cached_input_tokens": 173279,
+                "input_tokens": 174462,
+                "output_tokens": 2422,
+                "reasoning_output_tokens": 655,
+                "total_tokens": 176884,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "A REPORT-ONLY NODE. Change no code, write no graph row, and do not rescore anything.\n\nWHAT I ALREADY MEASURED, so you do not repeat it. The grammar fix that supersedes the arity-only operator rule is commit dd7c3aec in /home/ITER/mcintos/Code/imas-standard-names. It was authored 2026-09-04T21:46:48Z and merged into that repository's main at 2026-09-04T22:31:36Z, and its content survived the merge - `_peel_repositioned_tail_operator` is in HEAD's grammar/parser.py and `_has_repositioning_tail` in HEAD's grammar/render.py. The imas-codex consumer resolves that package as an editable install pointing at the live source tree, and BOTH of those functions are present in the modules the consumer imports right now, so the new rule is behaviourally live in this checkout. And yet `imas_standard_names.__version__` still reports 0.8.1.dev32+g12b557363, which is the commit BEFORE the fix. A plan document also still describes the merge as deferred; it is stale by a day and a half. Take all of that as given.\n\nANSWER THREE QUESTIONS.\n\nFIRST, where does the isn_version recorded on a StandardNameReview come from? Find the code that supplies it and cite file and line. Say whether it reads a build-time artifact - package metadata, a generated version module, importlib.metadata - or whether it re-derives from the source tree at call time. If it is build-time, then an editable install whose source changed without a reinstall stamps a version that no longer describes the code that ran, and the field cannot discriminate pre-fix from post-fix scoring by construction rather than by accident. State which of those two it is, with the evidence.\n\nSECOND, when were those reviews actually written? Query the live graph for the StandardNameReview records carrying isn_version 0.8.1.dev32+g12b557363 with review_axis of name. Report the count, the minimum and the maximum creation timestamp, and how many fall before 2026-09-04T21:46:48Z versus after. Report the same split for the 78 distinct StandardName identities those records attach to. If every record predates the fix, the cohort was genuinely scored under the superseded rule whatever the stamp says. If any postdate it, the stamp is proven unreliable and you must say how many names are affected.\n\nTHIRD, is any OTHER isn_version value present on name-axis review records, and what are the counts per value? A single value across records spanning a period in which the grammar demonstrably changed is itself the proof that the field is frozen.\n\nTHEN GIVE THE VERDICT the release needs, in these words or their negation: the 78 identities DO or DO NOT require a rescore under the current grammar, and isn_version CAN or CANNOT be relied on as grammar provenance in a release record. If it cannot, name what a trustworthy stamp would have to read instead - state the candidate and where it would be obtained - but do not implement it.\n\nAccess the graph through the project's own driver helper rather than a raw bolt connection; find how another module in imas_codex/standard_names obtains a session and reuse that. Run python as:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync python\nWrite everything to /home/ITER/mcintos/.config/reckon/crew/reports/isn-version-stamp-trust.md, and put the count, the timestamp split and the two-part verdict in the first ten lines so it can be read without scrolling.",
+          "estimated_hours": null,
+          "goal": "A verdict on whether the 78 voided identities were scored under the superseded grammar rule",
+          "id": "n-swct-the-version-stamp-earns-trust",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T081113746018-n-swct-the-version-stamp-earns-trust/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requires_decisions": [],
+          "role": "test",
+          "section": "\u00a76",
+          "spec_level": "open",
+          "time_budget": "35m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/isn-version-stamp-trust.md"
+          ]
+        },
+        "role": "test",
+        "spec_level": "open",
+        "member": "clive-census",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "xhigh",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T08:11:24Z",
+        "completed_at": "2026-09-06T08:33:35.514Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 1312,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 1331,
+        "stalled": false,
+        "time_budget": "35m",
+        "base_sha": "a4ec180a0d58ad481bb1d5329ea94b108a8b1a42",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "four read-only probes through the project GraphClient over name-axis StandardNameReview records, joined against the grammar repository history and the installed dist-info metadata",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/isn-version-stamp-trust.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T081113746018-n-swct-the-version-stamp-earns-trust/manifest.md",
+        "scope_changed": false,
+        "session_id": "a3afd351-e082-4d6d-a4be-6561647cb76b",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 5082546,
+            "input_tokens_cumulative": 5082546,
+            "output_tokens": 41862,
+            "output_tokens_cumulative": 41862,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3300,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: The measure is partly unmet. The stage-movement figures ARE produced and; ARE zero; with both causes established; but the node ran out of its 55m; fence with 5 of 7 scoped invocations unrun and the Layer 3 rollup missing; on the two that did run. The unmet condition is wall clock; not budget:; $4.19 of an authorised $50 was spent; and the remaining work is ~$0.75.",
+              "elapsed_seconds": 2528,
+              "external_wait": null,
+              "log_age_seconds": 3529,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/drafted-successors-review.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-swct-the-drafted-successors-earn-acceptance",
+              "phase": "starting",
+              "plan": "sn-west-cohort-treatment",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance",
+                "session_id": "e173a3db-d9ac-4583-a818-6ac8bffc5ebe",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 3549,
+              "terminal_at": "2026-09-06T07:12:11Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swct-the-drafted-successors-earn-acceptance"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 3176,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 3191,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 1325.472,
+          "generated_tokens": 41862,
+          "generation_seconds": 1254.302,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 13.1,
+          "machine_seconds": 71.17,
+          "peak_input_tokens": 133256,
+          "tokens_per_second": 33.37,
+          "wall_tokens_per_second": 31.58
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "report-only node; four read-only graph probes and no code change",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swct-the-version-stamp-earns-trust",
+          "session_id": "a3afd351-e082-4d6d-a4be-6561647cb76b",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T08:33:35.514Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "test",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260906T082249328166-n-sgr-an-unbound-source-earns-an-attach-verb",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a79",
+        "node": "n-sgr-an-unbound-source-earns-an-attach-verb",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1628,
+                "cached_input_tokens": 213216,
+                "input_tokens": 214846,
+                "output_tokens": 2767,
+                "reasoning_output_tokens": 450,
+                "total_tokens": 217613,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "BUILD THE SYMMETRIC COUNTERPART OF AN EXISTING VERB. This is not a new subsystem; the detach half already exists and you are adding the half that was never written. Read these four places and reuse them rather than authoring parallel machinery.\n\nTHE REUSE MAP, all measured today.\nimas_codex/standard_names/attachment_audit.py:2300 is `detach_one_attachment(dd_path, sn_id, *, reason, gc=None, dry_run=False, terminal_recovery=False) -> dict`. Its docstring already states the design rationale you are extending: the mechanical guard judges dimensionality, locus and vector families, but deciding WHICH name a path realizes is a physics judgement that \"once made it needs an instrument\". Detach is that instrument in one direction. There is no instrument in the other direction, which is the gap.\nimas_codex/standard_names/attachment_audit.py:693 is `guard_source_pairings`, the mechanical consistency guard. Your attach path MUST consult it and MUST refuse a pairing it rejects; an attach that bypasses the guard is worse than no attach verb.\nimas_codex/cli/sn.py:6543 is the `sn detach` command. It takes dd_path and standard_name as arguments, a REQUIRED --reason whose help text says a detach is a physics judgement and must carry its argument, and a --dry-run flag; it calls detach_one_attachment and reports. Mirror this shape exactly, including the required --reason and the --dry-run flag.\ngraph_ops.py:10512 `persist_claimed_attachments` and graph_ops.py:10716 `mark_sources_attached` are the pipeline-side writers. Read them to learn which edges and scalars a real attachment sets, so your verb leaves the graph in the SAME shape the pipeline would, rather than a shape that merely looks right.\n\nTHE DELIVERABLE: `imas-codex sn attach DD_PATH STANDARD_NAME --reason TEXT [--dry-run]`, binding one source that is currently unbound onto one existing standard name. It must set every edge and scalar the pipeline sets for a realization - the PRODUCED_NAME edge, the DD-side HAS_STANDARD_NAME edge, and the name's source_paths entry - move the source off `extracted` to the status a bound source carries, and write a StandardNameChange so the judgement and its reason survive in the ledger exactly as a detach does. Round-tripping matters: attach then detach must return the graph to its starting shape, and that is one of your tests.\n\nREFUSE, LOUDLY AND WITH THE REASON NAMED, in each of these cases. The source is already bound to a live name, since re-pointing is a detach followed by an attach and conflating them hides the intermediate state. The mechanical guard rejects the pairing. The target standard name does not exist, or is superseded, or is not in a state that may acquire a source. The DD path does not exist. In every refusal write nothing and exit non-zero.\n\nTHE MOTIVATING CASE, which your test must cover with these exact identities: `core_profiles/global_quantities/beta_tor` is a StandardNameSource at status `extracted` and unbound, and it belongs on the accepted name `toroidal_beta`. That attachment is the one correction three of the beta family needs and cannot currently make.\n\nEVIDENCE REQUIRED, in tests/standard_names/test_unbound_source_attachment.py, matching that file's existing fixture and mocking style: the successful attach setting every edge and scalar; the attach-then-detach round trip returning to the starting shape; a refusal because the source is already bound; a refusal because the mechanical guard rejects the pairing; and a refusal because the target name does not exist. Each refusal test must assert the graph was NOT written, not merely that a non-zero exit occurred.\n\nReport base and after counts for exactly this command, run once before your change and once after:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_unbound_source_attachment.py tests/standard_names/test_attachment_guard.py tests/standard_names/test_attachment_audit.py -p no:cacheprovider\nYour new tests must fail at base, and the two existing attachment files must not lose a single passing test - if they do, you changed shared behaviour and must say so rather than adjusting their expectations.\n\nDO NOT make any graph write against the live database in this node, not even to prove the verb works on the beta case; the tests are the proof and the beta repair is a separate node. Do not touch review pipeline code, do not repair any existing attachment row, and never write Cypher against StandardName or its edges outside the functions named above. Never pipe, tee or redirect imas-codex CLI output.",
+          "estimated_hours": null,
+          "goal": "One extracted source binds onto a chosen accepted standard name through a sanctioned attach verb",
+          "id": "n-sgr-an-unbound-source-earns-an-attach-verb",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T082249328166-n-sgr-an-unbound-source-earns-an-attach-verb/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/attachment_audit.py",
+            "imas_codex/cli/sn.py",
+            "tests/standard_names/test_unbound_source_attachment.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "opus-knot",
+        "backend": "claude-opus",
+        "local": false,
+        "agent": {
+          "alias": "opus 5",
+          "backend": "claude-opus",
+          "effort": "high",
+          "launch": "cli",
+          "model": "claude-opus-5",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T08:22:58Z",
+        "completed_at": "2026-09-06T08:33:58.804Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 654,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 660,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "8d97fb1d559f9c086c3f858f0d5d3e311cc7cc83",
+        "commits": [
+          "1f4d64d635a72a2a55edf204082b870fd0501c77"
+        ],
+        "changed_lines": {
+          "added": 844,
+          "removed": 0,
+          "files": 3
+        },
+        "tests_added": 15,
+        "gate": "passed",
+        "gate_check": {
+          "command": "UV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_unbound_source_attachment.py tests/standard_names/test_attachment_guard.py tests/standard_names/test_attachment_audit.py -p no:cacheprovider",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T082249328166-n-sgr-an-unbound-source-earns-an-attach-verb/after-suite.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T082249328166-n-sgr-an-unbound-source-earns-an-attach-verb/manifest.md",
+        "scope_changed": false,
+        "session_id": "34f1acd5-4208-4261-be46-85d7710d7d6d",
+        "budget": {
+          "headroom": "known",
+          "utilisation_pct": 99.0,
+          "rate_limit_type": "five_hour",
+          "rate_limit_period_minutes": null,
+          "resets_at": "2026-09-06T10:10:00Z",
+          "threshold_status": "allowed_warning",
+          "surpassed_threshold": 0.9,
+          "tokens": {
+            "cache_creation_input_tokens": 131834,
+            "cache_creation_input_tokens_cumulative": 131834,
+            "cache_read_input_tokens": 5311220,
+            "cache_read_input_tokens_cumulative": 5311220,
+            "inference_geo": "not_available",
+            "input_tokens": 98,
+            "input_tokens_cumulative": 98,
+            "output_tokens": 40469,
+            "output_tokens_cumulative": 40469,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": 4.986164999999999,
+          "refusal": false,
+          "detail": "backend reports utilisation and reset time",
+          "cost_usd_cumulative": 4.986164999999999
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 3870,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 3884,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 657.141,
+          "generated_tokens": 40469,
+          "generation_seconds": 487.234,
+          "input_budget_tokens": 1000000,
+          "input_utilisation_pct": 14.5,
+          "machine_seconds": 169.907,
+          "peak_input_tokens": 145048,
+          "tokens_per_second": 83.06,
+          "wall_tokens_per_second": 61.58
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-an-unbound-source-earns-an-attach-verb",
+          "session_id": "34f1acd5-4208-4261-be46-85d7710d7d6d",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T08:33:58.804Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names/test_unbound_source_attachment.py",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
       }
     ],
     "holds": [
@@ -86856,6 +87298,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1793
+    "_version": 1796
   }
 }
