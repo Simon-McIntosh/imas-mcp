@@ -23,7 +23,7 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-06">
-<meta name="plan-version" content="41">
+<meta name="plan-version" content="42">
 <meta name="plan-impl" content="0.9">
 <meta name="plan-commits" content="ff1738fd,0170736e,12b5573,b61430cb,dd7c3aec,eefcdf86,b95b1360,324a1f1a">
 <meta name="plan-artifacts" content="docs/evidence/sn-grammar-refinement/reuse-map.md,docs/evidence/sn-grammar-refinement/merged-head-measurement.md,docs/evidence/sn-grammar-refinement/repaired-head-measurement.md,~/.config/reckon/crew/reports/sgr-cohort-rename-map.md">
@@ -404,6 +404,9 @@ equilibrium_weight_of_flux_loop   retired 2026-09-04 (retire_signed_provenance_o
 </div>
 <div class="r-comment" data-section="s8" data-id="c-run-r-20260906T064940020769-n-sgr-the-migrated-names-recover-their-documentation" data-who="opus-docsbackfill" data-when="2026-09-06T06:57:00.699Z">
     <div class="r-comment-body"><p>the migrated names have their documentation back, restored rather than regenerated so it cost nothing. Successors with empty documentation whose predecessor holds text went 113 to ZERO, verified independently, with 120 restore_rerendered_documentation ledger rows. It restored 120 rather than 113 because it inherited each predecessors ACTUAL docs stage rather than forcing accepted - 113 accepted, 21 pending, 2 exhausted, 1 reviewed, mirroring the predecessors exactly, which is the faithful reading of a re-rendering. Eligibility was re-derived per row through the merged rename_preserves_meaning predicate rather than assuming the cohort qualified. The cut-readiness consequence: successors ready on BOTH axes went 0 to 30, and 68 more now need only a name review because their docs axis is already accepted</p></div>
+</div>
+<div class="r-comment" data-section="s8" data-id="c-run-r-20260906T070045767557-n-sgr-the-shared-source-knot-is-untied" data-who="opus-knot" data-when="2026-09-06T07:08:48.356Z">
+    <div class="r-comment-body"><p>THE KNOT IS NOT TWO NAMES COMPETING FOR A BINDING and the recorded collision target does not exist. Both rows bind ic_antennas/antenna/module/strap/current; neither proposed spelling exists in the graph at all; and the collision target peak_wave_current_of_antenna_strap was a derived parent DELETED BY remove_derived_parent ELEVEN MINUTES AFTER the collision was stamped, so the stop reason records an event whose subject the system itself removed. What actually exists is one live binding plus one stray edge that contradicts the sources own produced_sn_id scalar. The remedy is four FORCED steps: detach the stray edge FIRST, because sn supersede migrates sources and folding earlier would carry the RMS path onto a peak-amplitude identity; clear the stale stop reason; fold row 99 into wave_current_amplitude_of_antenna_strap, which retires an identity and carries nothing because it is source-free by then; and re-render row 116 last, since doing it while the stray edge stands would leave the successor sharing its source. It also established that the plan fold-guard defect does NOT block this fold - the identity has no descendants, so the guard has no ambiguity to read - and that a refusal should be reported rather than worked around, since the alternative would mint a fourth spelling</p></div>
 </div>
 </section>
 <section data-reckon="followups" id="followups" class="r-followups">
