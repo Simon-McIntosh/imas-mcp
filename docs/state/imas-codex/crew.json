@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T12:55:42",
+  "updated": "2026-09-06T13:02:44",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -262,7 +262,11 @@
         "harness": "codex",
         "role": "test",
         "session_id": "01a02da8-07c8-77c2-b63e-2417a7aed6fa",
-        "created": "2026-08-22"
+        "created": "2026-08-22",
+        "sessions": {
+          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a02da8-07c8-77c2-b63e-2417a7aed6fa"
+        },
+        "session_model": "gpt-5.6-sol"
       },
       {
         "id": "doc-graphkeys",
@@ -89923,6 +89927,195 @@
           "role": "implement",
           "status": "compatible"
         }
+      },
+      {
+        "run_id": "r-20260906T104917562589-n-sgr-a-source-backing-can-be-removed",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a79",
+        "node": "n-sgr-a-source-backing-can-be-removed",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 735,
+                "cached_input_tokens": 536212,
+                "input_tokens": 536949,
+                "output_tokens": 2809,
+                "reasoning_output_tokens": 451,
+                "total_tokens": 539758,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "BUILD THE DELETE HALF OF A SOURCE BACKING. FROM_DD_PATH is only ever MERGEd or CREATEd - graph_ops.py:1405, :10073, :11520, :12088 and provenance_rebuild.py:96 - and no sanctioned surface removes one. That gap is now blocking a fold.\n\nTHE PATTERN TO MIRROR is the verb that landed an hour ago for the lineage half: `sn remove-lineage SUCCESSOR PREDECESSOR --reason TEXT [--dry-run]` in imas_codex/standard_names/edit.py and imas_codex/cli/sn.py. Read it and follow its shape exactly - a required reason because the act is a judgement, a dry-run flag, one directed relationship removed, a StandardNameChange written to the same ledger surface, and a set of named refusals that each write nothing. Do not invent a different convention when its sibling is already in the tree.\n\nTHE GUARD THAT NEEDS THIS, exact. edit.py:1921-1925 refuses a fold when a source of type dd or signals has `len(backing_refs) != 1`, reporting \"has ambiguous backing cardinality\". A StandardNameSource is expected to back exactly one DD path.\n\nTHE MOTIVATING CASE, and your test must use these identities. The source `dd:equilibrium/time_slice/global_quantities/beta_normal` carries TWO FROM_DD_PATH backings: to `equilibrium/time_slice/global_quantities/beta_normal`, which is its own path and correct, and to `equilibrium/time_slice/global_quantities/beta_tor_norm`, which is NOT its path and which a separately named source `dd:equilibrium/time_slice/global_quantities/beta_tor_norm` already owns. So one IMASNode has two owning sources, the defect is invisible at name level because both produce the same standard name, and the fold refuses. Removing the second backing leaves the source with exactly one and resolves it. Note this is NOT the deferred physics question about whether a removed-lifecycle beta_normal path belongs on the normalised identity - it is a source claiming a path that is not its own, and it is decidable without settling that.\n\nWHY `sn detach` IS THE WRONG INSTRUMENT and must not be reused: it operates on path-to-name bindings, so detaching the beta_tor_norm path from the name would also sever the legitimate `dd:...beta_tor_norm` source and lose a real source path. Your verb operates one level down, on the source-to-DD-path relationship.\n\nREFUSE, with the reason named and nothing written: the source does not exist; the DD path does not exist; no FROM_DD_PATH relationship exists between them; and - the one that matters - REMOVING IT WOULD LEAVE THE SOURCE WITH ZERO BACKINGS. A source backing no DD path cannot be resolved to anything and is worse than the ambiguity being repaired, so require at least one backing to remain. Also refuse when the source is actively claimed, since edit.py:1915-1920 already treats a claim_token or claimed_at as disqualifying and a repair must not race a live claim.\n\nEVIDENCE REQUIRED, in tests/standard_names/test_source_backing_removal.py: the successful removal with the ledger record carrying the reason; a dry run reporting the same intent and writing nothing; a refusal for each of the four cases above, each asserting the relationship count is unchanged rather than only that the exit was non-zero; and a case proving that after removing one of two backings the remaining source satisfies the cardinality condition the fold guard checks.\n\nPROVE YOUR NEW TESTS FAIL AT BASE by exporting the tree with `git archive HEAD`, copying the new test file into that export, and running it there. A base run with fewer tests is not a base failure. Report both counts and say which method you used.\n\nRun once at base and once after:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_source_backing_removal.py tests/standard_names/test_lineage_edge_removal.py -p no:cacheprovider\nThe lineage file is the blast-radius check because you are extending the same module; it must not lose a passing test.\n\nDO NOT run the verb against the live graph, not even on the beta case - applying it is a separate node. Do not modify the fold guard. Never write ad-hoc Cypher outside the function you add.\n\nOPERATIONAL RECEIPT REQUIRED IN YOUR MANIFEST: wall-clock from first tool call to manifest write, number of tool calls, turns used, any request retried or refused and why, and one sentence naming what you had to discover versus what this brief handed you, including anything under-specified.",
+          "estimated_hours": null,
+          "goal": "One spurious source backing can be removed through a sanctioned verb that refuses to leave a source unbacked",
+          "id": "n-sgr-a-source-backing-can-be-removed",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T104917562589-n-sgr-a-source-backing-can-be-removed/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "50m",
+          "write_paths": [
+            "imas_codex/standard_names/edit.py",
+            "imas_codex/cli/sn.py",
+            "tests/standard_names/test_source_backing_removal.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "cx-verify",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T10:49:26Z",
+        "completed_at": "2026-09-06T11:00:36Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 670,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 670,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "a6cb2f77bc0929f8785fda3f01ad02c58a92e787",
+        "commits": [
+          "0883d723a94d1e5ca075842eaeb5d4865069fac3"
+        ],
+        "changed_lines": {
+          "added": 526,
+          "removed": 0,
+          "files": 3
+        },
+        "tests_added": 10,
+        "gate": "passed",
+        "gate_check": {
+          "command": "UV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_source_backing_removal.py tests/standard_names/test_lineage_edge_removal.py -p no:cacheprovider",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T104917562589-n-sgr-a-source-backing-can-be-removed/after.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T104917562589-n-sgr-a-source-backing-can-be-removed/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a02da8-07c8-77c2-b63e-2417a7aed6fa",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 5875712,
+            "cached_input_tokens_cumulative": 20541952,
+            "input_tokens": 6213649,
+            "input_tokens_cumulative": 21606529,
+            "output_tokens": 24623,
+            "output_tokens_cumulative": 55118,
+            "reasoning_output_tokens": 6700,
+            "reasoning_output_tokens_cumulative": 16985
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 12658,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 12673,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 72103,
+          "peak_input_tokens": 42148481
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-a-source-backing-can-be-removed",
+          "session_id": "01a02da8-07c8-77c2-b63e-2417a7aed6fa",
+          "session_source": "pointer",
+          "retained_at": "2026-09-06T11:00:36Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names/test_source_backing_removal.py",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
       }
     ],
     "holds": [
@@ -90149,8 +90342,22 @@
         "reason": "utilisation 96% with burn multiple 3.0x is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
         "closed_by_purpose": null,
         "resumption_fired": false
+      },
+      {
+        "hold_id": "hold-codex-20260906105906",
+        "backend": "codex",
+        "purpose": "dispatch",
+        "opened_at": "2026-09-06T10:59:06Z",
+        "closed_at": null,
+        "held_seconds": null,
+        "utilisation_pct": 98.0,
+        "resets_at": "2026-09-11T04:24:27Z",
+        "effective_ceiling_pct": 95.0,
+        "reason": "utilisation 98% with burn multiple 3.0x is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
+        "closed_by_purpose": null,
+        "resumption_fired": false
       }
     ],
-    "_version": 1816
+    "_version": 1819
   }
 }
