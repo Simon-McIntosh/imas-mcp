@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T18:44:44",
+  "updated": "2026-09-06T20:05:38",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -93558,6 +93558,446 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260906T151646567260-n-sgr-the-stored-energy-name-states-the-quantity",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a79",
+        "node": "n-sgr-the-stored-energy-name-states-the-quantity",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 3916,
+                "cached_input_tokens": 300881,
+                "input_tokens": 304799,
+                "output_tokens": 1458,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 306257,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "A NAMING AND DESCRIPTION PROPOSAL RESTING ON A PHYSICS JUDGEMENT. You change nothing: no rename, no graph write, no vocabulary edit. Your deliverable is a proposal the lead approves first, because the decision is about physics rather than spelling.\n\nTHE OBJECTION. The accepted name mhd_energy is not self-descriptive. It reads as energy residing in magnetohydrodynamic modes or instabilities. Its own description says something else entirely: global plasma stored energy obtained from the volume integral of total kinetic pressure, including thermal and fast-particle pressure contributions. Unit J, kind scalar, bound to three DD paths carrying energy_mhd under equilibrium time-slice global quantities and summary global quantities, one of which is a value leaf of another. Verify all of that against the live graph and report what you measure.\n\nTHE LEAD HAS ASKED FOR BOTH a self-descriptive name AND a rewritten description here, so unlike the rest of this naming programme a description rewrite IS in scope for this one identity. The physics being described must not change; only its statement.\n\nTHE GOVERNING RULE. A DD source path is a prompt, not an authority. That the DD path is spelled energy_mhd does not license the name mhd_energy. Do not defend a spelling by pointing at its source path.\n\nTHE OBSERVABLE THAT SETTLES THE ANSWER, and it must be settled before any spelling is proposed. There is an accepted sibling, diamagnetic_energy, described as volume-integrated plasma energy associated with pressure perpendicular to the local magnetic field, including thermal and fast-particle populations while excluding electromagnetic and bulk-flow energy.\n\nThe test is whether the two quantities would evaluate to DIFFERENT NUMBERS for an anisotropic plasma, in which perpendicular pressure and total kinetic pressure differ. Answer that question from the two documentation fields and the two DD paths, state your answer, and quote what you relied on. Your answer selects one of the two situations below.\n\n  IF THE NUMBERS WOULD AGREE - TWO ESTIMATORS OF ONE QUANTITY. Both are the plasma's stored energy, differing in how it was obtained, one by equilibrium reconstruction and one by diamagnetic measurement. If so, a landed programme in this repository already governs the outcome: provenance values measured, reconstructed and reference are an ISN controlled vocabulary carried on the StandardNameSource provenance edge property and are NEVER a name segment, and estimator facets collapse to ONE base-quantity name. The two identities would then have to collapse to a single stored-energy name with provenance on the source, and your proposal must say so.\n\n  IF THE NUMBERS WOULD DIFFER - TWO PHYSICAL QUANTITIES. One is the energy of the total kinetic pressure and the other specifically the energy of the perpendicular pressure component, which for an anisotropic plasma are different numbers. If so both names stand as distinct physics and only the misleading spelling of the first is at issue.\n\nRead the DD documentation for both paths and the full documentation field of both identities before deciding, quote the fragments you relied on, and state which of the two holds and why. If the evidence genuinely does not settle it, say that plainly and give the lead the two options with what each would cost; an honest undetermined verdict is worth more than a confident guess, because acting on the wrong one either conflates two quantities or permanently splits one.\n\nAPPLY THE PROLIFERATION TEST TO EVERY CANDIDATE. The lead has just rejected a\ndifferent proposal on exactly this ground: adding an aggregation token to one\ngeneric base would have forced the same token across many sibling bases, and the\nbare base was kept instead. So for each spelling you propose, state how many\nother accepted names would come under pressure to adopt the same new token or\nsegment if this one did, and name a few of them. A spelling that fixes one name\nand obliges fifty others to change is a worse answer than a bare base, and you\nshould say so rather than leave the lead to discover it.\n\nCONSTRAIN THE SPELLING TO THE GRAMMAR. Whatever you propose must parse under the installed grammar and must use existing vocabulary tokens where they exist. Read the physical bases and the aggregation, qualifier and process vocabularies in /home/ITER/mcintos/Code/imas-standard-names before inventing a token. Report the intermediate representation of every candidate spelling beside the current one, and check each candidate against the existing accepted catalog for a collision.\n\nREPORT AT LEAST THREE CANDIDATE SPELLINGS with the argument for and against each, then a single recommendation. For the recommended one give the proposed description in full, and say explicitly which existing accepted names it would collide with, supersede, or leave untouched.\n\nSTATE THE BLAST RADIUS. How many accepted names carry this identity as a parent or a lineage predecessor, how many WEST-batch entries are affected reading the batch from imas_codex/standard_names/manifests/west_production_dd_paths.yaml, and whether any descendant name would need to move with it.\n\nDO NOT modify any file in either repository except your own report. Do not call sn edit. Do not run the sn pipeline.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, one sentence on what you had to discover versus what this brief handed you, and the count of api_retry records carrying error_status 429 in your own stream, since a fleet-wide concurrency measurement is being collected.",
+          "estimated_hours": 0.9,
+          "goal": "A self-descriptive name and description are proposed for the plasma stored-energy identity with the estimator-collapse question answered",
+          "id": "n-sgr-the-stored-energy-name-states-the-quantity",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-stored-energy/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "test",
+          "section": "\u00a79",
+          "spec_level": "exact",
+          "time_budget": "55m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/stored-energy-naming.md"
+          ]
+        },
+        "role": "test",
+        "spec_level": "exact",
+        "member": "clive-sectionaudit",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "xhigh",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T15:17:39Z",
+        "completed_at": "2026-09-06T17:05:44.799Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 6469,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 6485,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "e17675406da3b6798af110e8aa29f4c06fd900d9",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "strict parse plus compose round-trip over five candidate spellings under the installed grammar",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/stored-energy-naming.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-stored-energy/manifest.md",
+        "scope_changed": false,
+        "session_id": "87128101-8d3c-4795-a106-75f0b9f6b6bf",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 7147079,
+            "input_tokens_cumulative": 7147079,
+            "output_tokens": 59991,
+            "output_tokens_cumulative": 59991,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 6479.55,
+          "generated_tokens": 59991,
+          "generation_seconds": 6270.674,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 17.7,
+          "machine_seconds": 208.876,
+          "peak_input_tokens": 180367,
+          "tokens_per_second": 9.57,
+          "wall_tokens_per_second": 9.26
+        },
+        "follow_on_paths": [
+          "energy_mhd/value"
+        ],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "a proposal node: the brief forbade any code, graph or vocabulary change, so its deliverable is the report",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-stored-energy-name-states-the-quantity",
+          "session_id": "87128101-8d3c-4795-a106-75f0b9f6b6bf",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T17:05:44.799Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "test",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260906T151247447278-n-sgr-the-measurement-position-destinations-are-mapped",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a78",
+        "node": "n-sgr-the-measurement-position-destinations-are-mapped",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 802,
+                "cached_input_tokens": 279925,
+                "input_tokens": 280729,
+                "output_tokens": 1019,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 281748,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "A MAPPING PROPOSAL WITH PER-NAME EVIDENCE. You write NO code, NO graph rows, NO vocabulary edits and you rename NOTHING. Your single deliverable is a table the lead approves or rejects before anything changes.\n\nTHE OBJECTION BEING ANSWERED. The locus token measurement_position is too generic: it covers disparate measurement groups under one spelling. Its own definition in the grammar registry is circular, reading \"The spatial location identified as the measurement position in the relevant plasma, diagnostic, or plant context\", which defines nothing. The remedy the lead specified is that each affected name should instead name its actual destination, after which the locus set is curated.\n\nTHE GOVERNING RULE, and it overrides the obvious defence. A DD source path is a prompt, not an authority. That a DD path is itself generically named does NOT license a generic standard name. Do not argue that a name is correct because its DD source is equally vague; that reasoning is rejected.\n\nTHE CONSTRAINT THAT MAKES THIS SAFE. Meaning must not change. Descriptions and documentation stay exactly as they are; only the name moves, to catch up with what its own description already says. If a proposal would require editing a description, it is the wrong proposal.\n\nMEASURE YOUR OWN SET. Seventeen accepted-and-drafted names were observed carrying this locus, via the promoted scalar position = 'measurement_position'. Confirm that set yourself against the live graph and report the count you measure; if it is not 17, proceed on what you found. Read every one of them in full: name, description, documentation, kind, unit, name_stage, and every DD path bound through PRODUCED_NAME.\n\nTHE EVIDENCE IS ALREADY IN THE GRAPH, WHICH IS THE POINT. Several of these descriptions already name the specific destination while the name flattens it. Observed examples to verify rather than trust: normalized_toroidal_flux_coordinate_of_measurement_position describes a Doppler reflectometer location; electrostatic_potential_at_measurement_position describes a Langmuir probe position; poloidal_suprathermal_electron_angle_perturbed_at_measurement_position describes an electron cyclotron emission position; while radial_coordinate_of_measurement_position describes \"a single generic measurement position\". So the destination usually needs deriving, not inventing.\n\nPREFER AN EXISTING LOCUS TOKEN. Read imas_standard_names/grammar/vocabularies/locus_registry.yml in /home/ITER/mcintos/Code/imas-standard-names, which holds 181 loci. Specific candidates already exist, among them ece_channel_emission_position, ece_channel, detector_pixel, sensor_attachment_point, beam_tracing_point, launching_position, constraint_position and spectral_line. For each name, propose an existing token where one fits and say which. Propose a NEW token only when no existing locus names that destination, and then give the token, its type, its allowed relations, and a real definition that says what the location IS rather than restating its own name.\n\nPRESERVE THE RELATION. Each locus entry declares allowed_relations. A coordinate OF a position keeps of; a field value AT a position keeps at. Do not silently switch a name between the two.\n\nREPORT PER NAME, one row each, in this shape: current name, name_stage, every bound DD path, the destination the evidence supports, the quoted fragment of description or DD path that supports it, the proposed name, whether the proposed locus is existing or new, and the relation.\n\nFLAG RATHER THAN INVENT. Where the evidence does not determine a destination - a coordinate genuinely shared across several diagnostics is the expected case - say so, list the diagnostics it serves, and mark the row as needing a decision. A row honestly marked undetermined is worth more than a plausible guess. Do not average several diagnostics into one invented token.\n\nALSO ANSWER THE CURATION QUESTION. Thirty-three of the 181 loci carry that same circular definition template. Report which of the 33 are genuinely generic in the way measurement_position is, and which are specific loci that merely lack a written definition. divertor_target is the illustrative case of the second kind: 33 accepted names use it, it is a perfectly specific place, and only its definition is missing. This distinction decides whether a locus needs removing or merely documenting, so do not merge the two lists.\n\nSTATE THE BLAST RADIUS. For each proposed rename, report how many accepted names and how many WEST-batch names it moves, reading the WEST batch from imas_codex/standard_names/manifests/west_production_dd_paths.yaml. Say plainly whether removing measurement_position from the registry would leave any name unparseable.\n\nEVIDENCE OF CORRECTNESS. For every proposed name, confirm it parses under the installed grammar and that its intermediate representation matches the current name's representation on every field except the locus, so the proposal is a locus substitution and not an accidental semantic edit. Report the two representations side by side for at least three rows, including one where the projection or an operator is present.\n\nDO NOT modify any file in either repository except your own report. Do not run the sn pipeline. Do not call sn edit. Do not touch the vocabulary yaml.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, one sentence on what you had to discover versus what this brief handed you, and the count of api_retry records carrying error_status 429 in your own stream, since a fleet-wide concurrency measurement is being collected.",
+          "estimated_hours": 0.9,
+          "goal": "Every name carrying the generic measurement-position locus has a proposed specific destination with its evidence",
+          "id": "n-sgr-the-measurement-position-destinations-are-mapped",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-mp-destinations/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "test",
+          "section": "\u00a78",
+          "spec_level": "exact",
+          "time_budget": "55m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/measurement-position-destinations.md"
+          ]
+        },
+        "role": "test",
+        "spec_level": "exact",
+        "member": "clive-ledger",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "xhigh",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T15:13:25Z",
+        "completed_at": "2026-09-06T17:10:21.981Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 6990,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 7016,
+        "stalled": true,
+        "time_budget": "55m",
+        "base_sha": "e17675406da3b6798af110e8aa29f4c06fd900d9",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "parse plus IR field comparison of current against proposed spelling for all ten determined proposals",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/measurement-position-destinations.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-mp-destinations/manifest.md",
+        "scope_changed": false,
+        "session_id": "befc2764-7702-46e1-a13f-8851dba86b17",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 6604392,
+            "input_tokens_cumulative": 6604392,
+            "output_tokens": 61488,
+            "output_tokens_cumulative": 61488,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 7009.619,
+          "generated_tokens": 61488,
+          "generation_seconds": 6756.534,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 17.0,
+          "machine_seconds": 253.085,
+          "peak_input_tokens": 172806,
+          "tokens_per_second": 9.1,
+          "wall_tokens_per_second": 8.77
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "a mapping proposal: the brief forbade any rename, graph write or vocabulary edit, so the deliverable is the report",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-measurement-position-destinations-are-mapped",
+          "session_id": "befc2764-7702-46e1-a13f-8851dba86b17",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T17:10:21.981Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "test",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260906T151023551183-n-swcr-a-rehearsal-costs-no-candidate-number",
+        "plan": "sn-west-catalog-release",
+        "section": "Release and fold-back contract",
+        "node": "n-swcr-a-rehearsal-costs-no-candidate-number",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1728,
+                "cached_input_tokens": 275810,
+                "input_tokens": 277540,
+                "output_tokens": 900,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 278440,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "A DEFECT WITH AN EXACT DIAGNOSIS ALREADY MADE. Your job is the repair and the evidence, not the investigation.\n\nTHE DEFECT. imas-codex sn release --batch west_production_dd_paths --dry-run writes a real release artifact and advances the release-candidate counter. Measured: a worker ran it in its own worktree and thirteen seconds later a 79,503-byte roster named for a new candidate appeared, untracked, in imas_codex/standard_names/manifests/reviews/ beside the tracked rosters. Nobody asked for it and the worker did not write it.\n\nTHE CAUSE IS ORDERING, NOT A MISSING FLAG. In run_review_release the candidate number is computed and _freeze_review_artifact is called unconditionally as step three, while the dry-run branch is not consulted until step five, after the export and the assembly have also run. So a dry run freezes a roster into the repository, writes into the staging directory, and consumes a version number that names no release. Read run_review_release in imas_codex/standard_names/catalog_release.py and confirm this ordering yourself before changing it; report the line numbers you found.\n\nWHY IT MATTERS, so you can judge your own fix. Two costs, both live. A reviewer or a later release cannot distinguish a minted-but-never-published roster from a real one, because the artifact carries the same shape including the pull-request number, its URL and the merge commit field. And every rehearsal burns a candidate number, which is the most likely reason several candidate rosters already sit in that directory naming no release at all.\n\nTHE DELIVERABLE: a dry run performs every computation a real run performs, reports everything a real run would report, and leaves the repository and the counter untouched. It must still be a faithful rehearsal - do not achieve cleanliness by making the dry run skip the export or the assembly, because then it stops predicting what a real run would do, which is the only reason it exists.\n\nTAKE THE EARLIER-TEST ROUTE. Move the dry-run test ahead of the freeze rather than giving the freeze a no-write mode: the branch already exists at step five, so relocating its test is the smaller change, while a no-write mode adds a second path through the artifact writer that nothing else needs. If a later step turns out to consume the frozen artifact so the earlier test cannot work, report that dependency by name and add the no-write mode instead. Preserve the reporting either way.\n\nTHE COUNTER MUST NOT MOVE. Establish the current candidate number before your change, run a dry run after it, and establish the number again. Report all three. They must be equal. This is the single most important measurement in the node.\n\nNOTHING NEW MAY APPEAR ON DISK. Take a full listing of imas_codex/standard_names/manifests/reviews/ and of the staging directory before your dry run and after it, and report both listings. Any new file is a failure of the node.\n\nA REAL RUN MUST STILL WORK. Prove that the write path is intact, without publishing anything: run the release path in a mode that does write, directed at a temporary directory, and show that it still freezes its artifact and still advances the counter there. A fix that quietly disables freezing for real releases is worse than the defect.\n\nDO NOT open a pull request, do not push any branch, do not touch the catalog checkout at /home/ITER/mcintos/Code/imas-standard-names-catalog, and do not delete any roster that is already in the reviews directory - the untracked ones are evidence and their disposition is not yours.\n\nEVIDENCE REQUIRED: the three counter readings; the two directory listings; the focused test result before and after against a stated base revision, reporting added failures rather than an absolute count; and the temporary-directory proof that a writing run still writes.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, one sentence on what you had to discover versus what this brief handed you, and the count of api_retry records carrying error_status 429 in your own stream, since a fleet-wide concurrency measurement is being collected.",
+          "estimated_hours": 0.9,
+          "goal": "A dry release run leaves the candidate counter and the repository untouched while still rehearsing every step",
+          "id": "n-swcr-a-rehearsal-costs-no-candidate-number",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-dryrun-freeze/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "Release and fold-back contract",
+          "spec_level": "exact",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/catalog_release.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-gate",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T15:10:39Z",
+        "completed_at": "2026-09-06T17:24:57.580Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 8008,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 8058,
+        "stalled": true,
+        "time_budget": "55m",
+        "base_sha": "e17675406da3b6798af110e8aa29f4c06fd900d9",
+        "commits": [
+          "a9638457e1160f39135043d3d153df8b5783e4b5"
+        ],
+        "changed_lines": {
+          "added": 25,
+          "removed": 15,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "uv run --no-sync pytest tests/standard_names/test_review_release.py and six sibling release tests -p no:cacheprovider",
+          "exit_status": 1,
+          "log_path": "/tmp/n_swcr/after_gate.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-dryrun-freeze/manifest.md",
+        "scope_changed": false,
+        "session_id": "42af1391-95f5-4584-92f7-82f95086fc9b",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 9369386,
+            "input_tokens_cumulative": 9369386,
+            "output_tokens": 82679,
+            "output_tokens_cumulative": 82679,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 8054.537,
+          "generated_tokens": 82679,
+          "generation_seconds": 7927.732,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 18.8,
+          "machine_seconds": 126.805,
+          "peak_input_tokens": 191499,
+          "tokens_per_second": 10.43,
+          "wall_tokens_per_second": 10.26
+        },
+        "follow_on_paths": [
+          "tests/standard_names/test_review_release.py",
+          "rc_version/branch/review_batch/no-branch",
+          "catalog_release.py"
+        ],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-a-rehearsal-costs-no-candidate-number",
+          "session_id": "42af1391-95f5-4584-92f7-82f95086fc9b",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T17:24:57.580Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "run test",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
       }
     ],
     "holds": [
@@ -93800,6 +94240,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1842
+    "_version": 1845
   }
 }
