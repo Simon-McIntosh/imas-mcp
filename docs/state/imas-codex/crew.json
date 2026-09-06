@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T11:08:42",
+  "updated": "2026-09-06T12:05:40",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -70,9 +70,11 @@
         "id": "clive-graphtarget",
         "harness": "clive",
         "role": "test",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "9f20462c-d13e-4ccc-a9fa-dafcccbb8bee",
+        "session_model": "deepseek-v4-flash",
+        "sessions": {
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "9f20462c-d13e-4ccc-a9fa-dafcccbb8bee"
+        },
         "created": "2026-09-05"
       },
       {
@@ -97,9 +99,11 @@
         "id": "clive-probe",
         "harness": "clive",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "de7acb29-7a85-41cb-b92d-5cc2b44f7d55",
+        "session_model": "deepseek-v4-flash",
+        "sessions": {
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "de7acb29-7a85-41cb-b92d-5cc2b44f7d55"
+        },
         "created": "2026-09-05"
       },
       {
@@ -136,9 +140,11 @@
         "id": "clive-tail",
         "harness": "clive",
         "role": "test",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "8575c313-dfa9-457d-a215-99d927934a2d",
+        "session_model": "deepseek-v4-flash",
+        "sessions": {
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"xhigh\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "8575c313-dfa9-457d-a215-99d927934a2d"
+        },
         "created": "2026-09-05"
       },
       {
@@ -87683,6 +87689,1028 @@
           "role": "implement",
           "status": "compatible"
         }
+      },
+      {
+        "run_id": "r-20260906T085324075252-n-sgr-the-toroidal-paths-reach-one-identity",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a79",
+        "node": "n-sgr-the-toroidal-paths-reach-one-identity",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 920,
+                "cached_input_tokens": 253767,
+                "input_tokens": 254689,
+                "output_tokens": 3739,
+                "reasoning_output_tokens": 1494,
+                "total_tokens": 258428,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "THE VERB YOU NEED WAS MERGED TO MAIN MINUTES AGO. `imas-codex sn attach DD_PATH STANDARD_NAME --reason TEXT [--dry-run]` now exists and is the inverse of `sn detach`; it writes the PRODUCED_NAME edge, the DD-side HAS_STANDARD_NAME projection, and the name's source_paths entry, moves the source off `extracted`, consults the mechanical pairing guard and refuses anything the guard rejects, and records a StandardNameChange. Your worktree is fresh from current main so both verbs are available to you. Read /home/ITER/mcintos/.config/reckon/crew/reports/beta-family-state.md section 5 for the correction table and section 4 for the misplacements; do not re-survey the family.\n\nTHE PHYSICS, so you can see why each path moves: total beta is the harmonic combination 1/beta = 1/beta_poloidal + 1/beta_toroidal. It is NOT the toroidal quantity. Every defect here comes from the same original error - toroidal quantities were bound to names that denote something else - so a plain `beta_tor` DD path belongs on `toroidal_beta` and nowhere else.\n\nTHE DELIVERABLE: the five plain-`beta_tor` DD paths all realize `toroidal_beta`. Two already do. Three are misplaced and each needs its own treatment.\n\n`core_profiles/global_quantities/beta_tor` is a StandardNameSource at status `extracted` and UNBOUND - no detach is needed, attach it directly.\n\n`equilibrium/time_slice/global_quantities/beta_tor` is currently bound to `normalized_toroidal_plasma_beta`. A plain toroidal path on the NORMALISED identity is a category error - the normalised form is beta_toroidal divided by normalised plasma current, so it takes `beta_tor_norm` paths, never a bare `beta_tor`. Detach it with that as the reason, then attach it to `toroidal_beta`.\n\n`summary/global_quantities/beta_tor/value` is currently bound to `plasma_beta`. `plasma_beta` is the redundant-qualifier spelling of TOTAL beta and is a HAS_PARENT child of `beta`, so a toroidal path on it is the original error in miniature. Detach with that reason, then attach to `toroidal_beta`.\n\nDRY-RUN EVERY COMMAND FIRST and read what it reports before running it for real. If any dry-run refuses, stop at that path, leave the graph consistent, and report the refusal text verbatim - a refusal from the guard is a physics signal and must not be worked around. Do not use --terminal-recovery. Never write Cypher against StandardName or its edges; `sn attach`, `sn detach` and `sn edit` are the only sanctioned surfaces. Never pipe, tee or redirect imas-codex CLI output - run the command and read its log under ~/.local/share/imas-codex/logs afterwards.\n\nDO NOT ATTEMPT the other three beta corrections; they are blocked on things this node cannot supply and belong to other nodes. Specifically: do not try to edit `beta`'s description or clear its rotted source_path scalar (it sits at name_stage `reviewed` and no route exists), and do not try to fold `normalized_toroidal_plasma_beta` into `normalized_toroidal_beta` (it carries three outbound REFINED_FROM edges and `sn supersede` refuses the ambiguity). Touch no identity other than `toroidal_beta`, `normalized_toroidal_plasma_beta` and `plasma_beta`, and on the latter two only to detach the one named path each.\n\nONE THING TO REPORT RATHER THAN FIX: after this work, `beta`'s source_path scalar still names `core_profiles/global_quantities/beta_tor`, a path now realizing a different name. Say so explicitly in your report as a known-remaining defect with the node that owns it, so nobody reads the family as finished.\n\nEVIDENCE REQUIRED, written to /home/ITER/mcintos/.config/reckon/crew/reports/beta-toroidal-consolidated.md: a before-and-after table over `toroidal_beta`, `normalized_toroidal_plasma_beta` and `plasma_beta` giving per identity the count of PRODUCED_NAME edges and the DD paths behind them. After must show `toroidal_beta` at exactly five paths, all plain `beta_tor`, and neither of the other two holding a plain `beta_tor` path. State the total PRODUCED_NAME edge count across those three identities before and after: it must be UNCHANGED, because every path moved and none was created or lost. Account for each of the three moved paths by name. Also record the StandardNameChange ledger ids the five commands wrote, so the judgements are traceable.",
+          "estimated_hours": null,
+          "goal": "The five plain toroidal-beta data dictionary paths all realize the toroidal_beta identity",
+          "id": "n-sgr-the-toroidal-paths-reach-one-identity",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T085324075252-n-sgr-the-toroidal-paths-reach-one-identity/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/beta-toroidal-consolidated.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-graphtarget",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T08:53:39Z",
+        "completed_at": "2026-09-06T09:35:34.361Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 2482,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 2515,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "105cfac681a9a9305bf3ddf8eae123d989222785",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "before-and-after PRODUCED_NAME census over the four beta identities with a post-write HAS_STANDARD_NAME projection check, verified independently by the coordinator",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/beta-toroidal-consolidated.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T085324075252-n-sgr-the-toroidal-paths-reach-one-identity/manifest.md",
+        "scope_changed": false,
+        "session_id": "9f20462c-d13e-4ccc-a9fa-dafcccbb8bee",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": null,
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "run completed after 7 rate-limit retries; retries alone are not a refusal"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 5712,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 5726,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3600,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: All four ordered corrections in sn-grammar-refinement \u00a79 are blocked from imas-codex sn edit (and its sibling sn detach / sn supersede surfaces) by real; reproduced preconditions or a pre-existing REFINED_FROM lineage tangle \u2014 see evidence_inputs and the full report for verbatim CLI output and graph queries. Per the node's hard constraint; execution stopped with the graph unchanged rather than reaching for Cypher.",
+              "elapsed_seconds": 669,
+              "external_wait": null,
+              "log_age_seconds": 2013,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/beta-family-corrected.md (only)"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-beta-family-binds-correctly",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly",
+                "session_id": "65312f88-1b49-4e4f-93d8-bbbb654e756b",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 2020,
+              "terminal_at": "2026-09-06T08:19:56Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-beta-family-binds-correctly"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 508.055,
+          "generated_tokens": 7897,
+          "generation_seconds": 506.807,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 14.4,
+          "machine_seconds": 1.248,
+          "peak_input_tokens": 146462,
+          "tokens_per_second": 15.58,
+          "wall_tokens_per_second": 15.54
+        },
+        "attempt": 2,
+        "attempt_kind": "resume",
+        "no_commit": "graph correction through the sanctioned verbs; no repository file was in scope",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-toroidal-paths-reach-one-identity",
+          "session_id": "9f20462c-d13e-4ccc-a9fa-dafcccbb8bee",
+          "session_source": "pointer",
+          "retained_at": "2026-09-06T09:35:34.361Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260906T092806008318-n-sgr-a-source-free-parent-reaches-accepted",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a79",
+        "node": "n-sgr-a-source-free-parent-reaches-accepted",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 625,
+                "cached_input_tokens": 340991,
+                "input_tokens": 341618,
+                "output_tokens": 3193,
+                "reasoning_output_tokens": 800,
+                "total_tokens": 344811,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "DIAGNOSE BEFORE YOU BUILD. There is a specific hypothesis below and it may make this node very small; test it first and report the answer either way.\n\nTHE STUCK STATE, measured today. The standard name `beta` is total plasma beta - the harmonic combination 1/beta = 1/beta_poloidal + 1/beta_toroidal - and it is a source-free derived parent: it has ZERO PRODUCED_NAME edges, while `toroidal_beta`, `poloidal_beta` and `plasma_beta` all hold HAS_PARENT edges to it. The data dictionary has no path for total beta at all; every DD leaf named exactly `beta` is the oblique-element inclination angle. So `beta` correctly has no source and never will.\nIt sits at name_stage='reviewed', not 'accepted'. Two consequences block a correction that must happen: `imas-codex sn edit beta --docs ...` refuses because a docs edit requires name_stage='accepted', and no CLI surface clears its rotted `source_path` scalar, which still names `core_profiles/global_quantities/beta_tor` - a toroidal path - because stamp_source_snapshots only ever touches names that have a live PRODUCED_NAME edge. Meanwhile `beta`'s description reads \"Toroidal beta (beta_tor), the ratio of volume-averaged total perpendicular plasma pressure to the magnetic pressure B0 squared over 2 mu0\", which is the TOROIDAL member's definition sitting on the total. That is a physics error that would ship.\n\nTHE HYPOTHESIS TO TEST FIRST: derived parents are abstractions and are meant to reach accepted by STRUCTURAL ACCEPT rather than by review - they skip the name-review step because there is no source to review against. If `beta` is being excluded from that structural-accept path BECAUSE its rotted source_path scalar makes it look sourced, then the whole defect is one stale scalar, and clearing it lets machinery that already exists finish the job. Find the structural-accept path, cite file and line, read the predicate that decides eligibility, and say whether a non-null source_path with no backing edge disqualifies a name from it. Report that answer explicitly - it determines the size of everything after it.\n\nIF THE HYPOTHESIS HOLDS: the deliverable is a sanctioned way to clear a source_path scalar that has no backing PRODUCED_NAME edge, plus whatever lets the existing structural-accept path then admit the name. Prefer repairing the eligibility predicate over adding a new verb if the predicate is simply wrong to consult a scalar the graph contradicts - a shadowed scalar disagreeing with its edge should lose to the edge, which is the standing preference in this repository.\nIF THE HYPOTHESIS FAILS: report the actual reason `beta` cannot reach accepted, cite it, and build the narrowest sanctioned route that lets a source-free derived parent with no producing source reach accepted. Do not build a general force-accept: a route that can accept any name regardless of state is worse than the block it removes.\n\nEITHER WAY, DO NOT EDIT beta's DESCRIPTION and do not run any graph write against the live database. The description recompose is a separate node that runs once your route exists. This node delivers the code path and its tests only.\n\nCONSTRAINTS. Never write Cypher that sets name_stage, status or source_path by hand; the change belongs in the functions that own those transitions. Do not touch review pipeline code. Do not stage the generated build products models.py, dd_models.py, config/models.py or schema_context_data.py. Never pipe, tee or redirect imas-codex CLI output.\n\nEVIDENCE REQUIRED, in tests/standard_names/test_source_free_parent_admission.py: a source-free derived parent with children and no PRODUCED_NAME edge reaching accepted through your route; the same parent NOT reaching accepted when it genuinely has a live producing source, proving you did not widen the gate; a name with a source_path scalar and no backing edge being treated as unsourced, with the scalar cleared or ignored per whichever fix the diagnosis chose; and a refusal for a name that is neither a derived parent nor childless-eligible, asserting no write occurred. Run once at base and once after:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_source_free_parent_admission.py tests/standard_names/test_structural_accept.py -p no:cacheprovider\nIf tests/standard_names/test_structural_accept.py does not exist, substitute the existing test file that covers the structural-accept path you found and say which you chose. Your new tests must fail at base; the existing file must not lose a passing test. Report both counts, and write the diagnosis to /home/ITER/mcintos/.config/reckon/crew/reports/source-free-parent-admission.md.",
+          "estimated_hours": null,
+          "goal": "A source-free derived parent stuck at reviewed can reach accepted through a sanctioned route",
+          "id": "n-sgr-a-source-free-parent-reaches-accepted",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T092806008318-n-sgr-a-source-free-parent-reaches-accepted/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/graph_ops.py",
+            "tests/standard_names/test_source_free_parent_admission.py",
+            "/home/ITER/mcintos/.config/reckon/crew/reports/source-free-parent-admission.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "opus-remainder",
+        "backend": "claude-opus",
+        "local": false,
+        "agent": {
+          "alias": "opus 5",
+          "backend": "claude-opus",
+          "effort": "high",
+          "launch": "cli",
+          "model": "claude-opus-5",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T09:28:16Z",
+        "completed_at": "2026-09-06T09:40:38.074Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 736,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 742,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "aa3d6614c4b160a9577d87513ae8bc22188c22e9",
+        "commits": [
+          "9373dbd4da39ac840003535ee9365fc6c3966d5a"
+        ],
+        "changed_lines": {
+          "added": 398,
+          "removed": 12,
+          "files": 2
+        },
+        "tests_added": 13,
+        "gate": "passed",
+        "gate_check": {
+          "command": "UV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_source_free_parent_admission.py tests/standard_names/test_structural_authority_persist.py -p no:cacheprovider",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T092806008318-n-sgr-a-source-free-parent-reaches-accepted/after_suite.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T092806008318-n-sgr-a-source-free-parent-reaches-accepted/manifest.md",
+        "scope_changed": false,
+        "session_id": "8df1c97c-05df-4cd0-b4fd-71791d5db413",
+        "budget": {
+          "headroom": "known",
+          "utilisation_pct": 37.0,
+          "rate_limit_type": "five_hour",
+          "rate_limit_period_minutes": null,
+          "resets_at": "2026-09-06T13:40:00Z",
+          "threshold_status": "allowed_warning",
+          "surpassed_threshold": 1,
+          "tokens": {
+            "cache_creation_input_tokens": 134792,
+            "cache_creation_input_tokens_cumulative": 134792,
+            "cache_read_input_tokens": 5058486,
+            "cache_read_input_tokens_cumulative": 5058486,
+            "inference_geo": "not_available",
+            "input_tokens": 102,
+            "input_tokens_cumulative": 102,
+            "output_tokens": 46768,
+            "output_tokens_cumulative": 46768,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": 5.046872999999999,
+          "refusal": false,
+          "detail": "backend reports utilisation and reset time",
+          "cost_usd_cumulative": 5.046872999999999
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 7789,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 7803,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3600,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: All four ordered corrections in sn-grammar-refinement \u00a79 are blocked from imas-codex sn edit (and its sibling sn detach / sn supersede surfaces) by real; reproduced preconditions or a pre-existing REFINED_FROM lineage tangle \u2014 see evidence_inputs and the full report for verbatim CLI output and graph queries. Per the node's hard constraint; execution stopped with the graph unchanged rather than reaching for Cypher.",
+              "elapsed_seconds": 669,
+              "external_wait": null,
+              "log_age_seconds": 4089,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/beta-family-corrected.md (only)"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-beta-family-binds-correctly",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly",
+                "session_id": "65312f88-1b49-4e4f-93d8-bbbb654e756b",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 4096,
+              "terminal_at": "2026-09-06T08:19:56Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-beta-family-binds-correctly"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 738.741,
+          "generated_tokens": 46768,
+          "generation_seconds": 600.003,
+          "input_budget_tokens": 1000000,
+          "input_utilisation_pct": 14.8,
+          "machine_seconds": 138.738,
+          "peak_input_tokens": 148006,
+          "tokens_per_second": 77.95,
+          "wall_tokens_per_second": 63.31
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-a-source-free-parent-reaches-accepted",
+          "session_id": "8df1c97c-05df-4cd0-b4fd-71791d5db413",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T09:40:38.074Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names/test_source_free_parent_admission.py",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
+      },
+      {
+        "run_id": "r-20260906T094620253556-n-swct-the-preview-skips-the-catalog-audit",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a76",
+        "node": "n-swct-the-preview-skips-the-catalog-audit",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1477,
+                "cached_input_tokens": 380832,
+                "input_tokens": 382311,
+                "output_tokens": 2932,
+                "reasoning_output_tokens": 504,
+                "total_tokens": 385243,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "THE COUPLING IS EXACT AND I HAVE ITS COORDINATES. Read only the region around imas_codex/cli/sn.py:5940-6010; you do not need the rest of the file.\n\nMEASURED THIS MORNING: `sn review --dry-run` exceeded 900 seconds without ever reaching a batch plan, which makes it unusable on any real cohort and means no brief can cheaply preview what a review would cost.\n\nTHE CAUSE, in the current text. At cli/sn.py:5955 the catalog is loaded with `all_names = await asyncio.to_thread(_load_catalog)`. At :5965 a full-catalog SERIAL audit runs, `state.audit_report = await asyncio.to_thread(run_all_audits, all_names)`. Only at :5966 does `state.all_names = all_names` execute. Then the dry-run branch at :5990 reads `targets = list(state.all_names) if state.all_names else []`. So the one thing dry-run needs is assigned AFTER the expensive audit it does not need, inside the same block, and there is no path to it that skips the audit.\n\nTHE DELIVERABLE: `sn review --dry-run` reports its batch plan without running the full-catalog audit. Populate the loaded catalog onto state independently of the audit so the dry-run branch can reach it - moving the `state.all_names = all_names` assignment to immediately after the load at :5955 is the obvious shape, but satisfy yourself that nothing between the load and :5966 mutates `all_names`, and say what you checked. Where the audit genuinely is needed for a non-dry-run path, leave it exactly as it is. Do not restructure the surrounding command, do not rename anything, and do not touch the `ids` filter at :5993-6000 even though it has a separate known defect (it scopes by source path prefix and therefore cannot take an identity list) - that is another node's work and touching it would make this change unreviewable.\n\nWATCH FOR THE FAIL-OPEN TRAP. If the dry-run branch currently reads any OTHER field that only the audit block populates - `state.audit_report` among them - then skipping the audit will make that field empty rather than absent, and the dry run would silently report a plan computed from nothing. Check every state field the dry-run branch reads, list them in your report, and for each say whether it survives an audit-free path. If one does not, make the dry run REFUSE with a named reason rather than emit a plan it cannot support. An empty plan reported as a plan is worse than the timeout this node is fixing.\n\nEVIDENCE REQUIRED. A test in tests/standard_names/test_cli_preview.py that invokes the dry-run path with the catalog load stubbed and the audit stubbed to raise if called, asserting a batch plan is produced and the audit was never invoked. That negative assertion - audit not called - is the whole point of the test, so do not settle for asserting only that a plan appeared. Add a second test proving the non-dry-run path still runs the audit, so the gate shows you narrowed the coupling rather than deleting the audit.\n\nRun once at base and once after:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_cli_preview.py -p no:cacheprovider\nYour new tests must fail at base. No existing test in that file may lose its pass. Report both counts.\n\nOPERATIONAL RECEIPT REQUIRED IN YOUR MANIFEST, because this run is also evaluating this backend against others. Report, as plainly as you can: your wall-clock from first tool call to manifest write; the number of tool calls you made; how many turns you used; whether any request was retried or refused and why; and one sentence on what in this brief you had to discover versus what was handed to you. Be honest about anything you found under-specified - that is the most useful line in the receipt.",
+          "estimated_hours": null,
+          "goal": "The review preview reports a batch plan without running the full-catalog audit",
+          "id": "n-swct-the-preview-skips-the-catalog-audit",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T094620253556-n-swct-the-preview-skips-the-catalog-audit/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a76",
+          "spec_level": "guided",
+          "time_budget": "45m",
+          "write_paths": [
+            "imas_codex/cli/sn.py",
+            "tests/standard_names/test_cli_preview.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "cx-catalogpin",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T09:46:42Z",
+        "completed_at": "2026-09-06T09:58:10Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 688,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 688,
+        "stalled": false,
+        "time_budget": "45m",
+        "base_sha": "aa3d6614c4b160a9577d87513ae8bc22188c22e9",
+        "commits": [
+          "568999e219c202b1e0b9ac17d58c79a30cccd183"
+        ],
+        "changed_lines": {
+          "added": 95,
+          "removed": 21,
+          "files": 2
+        },
+        "tests_added": 1,
+        "gate": "passed",
+        "gate_check": {
+          "command": "UV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_cli_preview.py -p no:cacheprovider",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T094620253556-n-swct-the-preview-skips-the-catalog-audit/after-pytest.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T094620253556-n-swct-the-preview-skips-the-catalog-audit/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a0761c-ef49-7bc0-a1ce-e06b8526ac83",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 5965952,
+            "cached_input_tokens_cumulative": 5965952,
+            "input_tokens": 6116185,
+            "input_tokens_cumulative": 6116185,
+            "output_tokens": 22763,
+            "output_tokens_cumulative": 22763,
+            "reasoning_output_tokens": 10165,
+            "reasoning_output_tokens_cumulative": 10165
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 8891,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 8905,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3600,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: All four ordered corrections in sn-grammar-refinement \u00a79 are blocked from imas-codex sn edit (and its sibling sn detach / sn supersede surfaces) by real; reproduced preconditions or a pre-existing REFINED_FROM lineage tangle \u2014 see evidence_inputs and the full report for verbatim CLI output and graph queries. Per the node's hard constraint; execution stopped with the graph unchanged rather than reaching for Cypher.",
+              "elapsed_seconds": 669,
+              "external_wait": null,
+              "log_age_seconds": 5192,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/beta-family-corrected.md (only)"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-beta-family-binds-correctly",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly",
+                "session_id": "65312f88-1b49-4e4f-93d8-bbbb654e756b",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 5199,
+              "terminal_at": "2026-09-06T08:19:56Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-beta-family-binds-correctly"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3300,
+              "classification": "completed_unpromoted",
+              "detail": "the worker manifest reports completion and the run is still a pointer; promoting it moves the delivered record into the repository ledger",
+              "elapsed_seconds": 742,
+              "external_wait": null,
+              "log_age_seconds": 357,
+              "log_fresh": true,
+              "manifest_commits": [
+                "9373dbd4da39ac840003535ee9365fc6c3966d5a; changed_paths: imas_codex/standard_names/graph_ops.py",
+                "tests/standard_names/test_source_free_parent_admission.py"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T092806008318-n-sgr-a-source-free-parent-reaches-accepted/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "complete",
+              "manifest_status": "complete",
+              "marker": null,
+              "needs_help_complete": null,
+              "next_action": "reckon crew complete --run r-20260906T092806008318-n-sgr-a-source-free-parent-reaches-accepted --gate <verdict> --commit 9373dbd4da39ac840003535ee9365fc6c3966d5a; changed_paths: imas_codex/standard_names/graph_ops.py --commit tests/standard_names/test_source_free_parent_admission.py",
+              "node": "n-sgr-a-source-free-parent-reaches-accepted",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T092806008318-n-sgr-a-source-free-parent-reaches-accepted",
+              "session": "ship-s10-20260905",
+              "terminal_age_seconds": 372,
+              "terminal_at": "2026-09-06T09:40:23Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-a-source-free-parent-reaches-accepted"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 32928,
+          "peak_input_tokens": 12082137
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swct-the-preview-skips-the-catalog-audit",
+          "session_id": "01a0761c-ef49-7bc0-a1ce-e06b8526ac83",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T09:58:10Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names/test_cli_preview.py",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
+      },
+      {
+        "run_id": "r-20260906T095112179369-n-sli-the-stamp-gate-covers-every-write-path",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-the-stamp-gate-covers-every-write-path",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 319,
+                "cached_input_tokens": 391250,
+                "input_tokens": 391571,
+                "output_tokens": 2392,
+                "reasoning_output_tokens": 228,
+                "total_tokens": 393963,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "A RATCHET, NOT A SWEEP. Read the gate and the auditor; you do not need to read the 16 modules it will start covering.\n\nTHE CURRENT STATE, exact. tests/graph/test_updated_at_coverage.py:15 sets `_GATED_PATH = REPO_ROOT / \"imas_codex\" / \"standard_names\" / \"graph_ops.py\"` and :20 calls `audit_standard_name_touch(_GATED_PATH)`, asserting zero findings. The comment above it says every other module under imas_codex/standard_names/ still has pre-existing gaps and that scoping to one file keeps the gate meaningful. That was an honest choice, and it has the defect every narrow gate has: a NEW unstamped write in any of the other modules is invisible, so the gate protects one file while reporting as though it protects a rule. A census measured 57 findings across 16 files.\n\nDO NOT REPAIR THE 57. That is a separate body of work touching files other workers hold right now, and folding it in here would make both unreviewable.\n\nTHE DELIVERABLE: the gate audits EVERY module under imas_codex/standard_names/ against a DECLARED BASELINE that can only shrink. Concretely - audit the whole package, compare findings against a per-file expected-count baseline recorded in the test module, fail when any file exceeds its baseline, and fail when a file's count falls below its baseline without the baseline being lowered. That second direction matters as much as the first: a ratchet that only catches regressions lets a repaired file silently re-rot later, so a count that drops must force the baseline down.\n\nTHE BASELINE MUST BE MEASURED, NOT ASSUMED. Run the auditor over the package yourself and record what you observe per file. Do not copy the figure 57 into the test as a literal because I said it - I am quoting a census taken at a different head, and several nodes have landed since. Report the number you measured beside the 57 I quoted, and if they differ say so plainly; a disagreement is information rather than an error to reconcile away. graph_ops.py must be asserted at zero findings as a hard zero rather than as a baseline entry, because a baseline that can drift upward is not a gate.\n\nWRITE THE BASELINE SO SOMEONE CAN ACT ON IT. Each entry names the file and its count; the module docstring states in one sentence what the numbers mean, that they are a debt ledger rather than an approval, and the procedure for lowering one. Put no date, plan name, sprint label or ticket reference anywhere in it - the numbers must mean something without any of that context.\n\nCHECK THE AUDITOR TAKES A DIRECTORY. audit_standard_name_touch lives at imas_codex/graph/cypher_property_check.py:615 and is currently called with a single file path. If it cannot walk a directory, extend it to accept one and iterate files, leaving the single-file behaviour byte-identical so existing callers are unaffected. If it already handles a directory, change nothing in it and say so.\n\nEVIDENCE REQUIRED, in tests/graph/test_updated_at_coverage.py: the widened gate passing against your measured baseline; a synthetic case proving a NEW unstamped write in a module other than graph_ops.py FAILS the gate (construct it in a temporary file the auditor is pointed at, never by editing a real module); and a case proving graph_ops.py with one unstamped write fails its hard zero. That middle test is the whole point - it is what proves the gate now reaches the 15 modules it could not see before, so do not omit it.\n\nRun once at base and once after:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/graph/test_updated_at_coverage.py -p no:cacheprovider\nThe default marker set excludes `graph`, so confirm whether this file is graph-marked and state which marker set actually executed it; a gate that never runs is the failure mode this node exists to remove, and reintroducing it here would be self-defeating. Report both counts.\n\nOPERATIONAL RECEIPT REQUIRED IN YOUR MANIFEST, because this run is also evaluating this backend against others. Report your wall-clock from first tool call to manifest write; your number of tool calls; how many turns you used; whether any request was retried or refused and why; and one sentence on what you had to discover versus what this brief handed you. Name anything you found under-specified - that line is the most useful part of the receipt.",
+          "estimated_hours": null,
+          "goal": "The updated_at coverage gate audits every standard-names write path against a baseline that can only shrink",
+          "id": "n-sli-the-stamp-gate-covers-every-write-path",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T095112179369-n-sli-the-stamp-gate-covers-every-write-path/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "guided",
+          "time_budget": "50m",
+          "write_paths": [
+            "tests/graph/test_updated_at_coverage.py",
+            "imas_codex/graph/cypher_property_check.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "cx-guardmocks",
+        "backend": "codex-luna",
+        "local": false,
+        "agent": {
+          "alias": "luna5.6",
+          "backend": "codex-luna",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-luna",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T09:51:24Z",
+        "completed_at": "2026-09-06T10:00:31Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 547,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 547,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "aa3d6614c4b160a9577d87513ae8bc22188c22e9",
+        "commits": [
+          "87c86ada9f1096b1403c742f0c2f2a87df206ebb"
+        ],
+        "changed_lines": {
+          "added": 97,
+          "removed": 7,
+          "files": 1
+        },
+        "tests_added": 4,
+        "gate": "passed",
+        "gate_check": {
+          "command": "UV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/graph/test_updated_at_coverage.py -p no:cacheprovider",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T095112179369-n-sli-the-stamp-gate-covers-every-write-path/after-suite.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T095112179369-n-sli-the-stamp-gate-covers-every-write-path/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07621-3c80-73a3-9654-324e3a5a26cc",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 2947328,
+            "cached_input_tokens_cumulative": 2947328,
+            "input_tokens": 3141482,
+            "input_tokens_cumulative": 3141482,
+            "output_tokens": 21831,
+            "output_tokens_cumulative": 21831,
+            "reasoning_output_tokens": 9264,
+            "reasoning_output_tokens_cumulative": 9264
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 9175,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 9189,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3600,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: All four ordered corrections in sn-grammar-refinement \u00a79 are blocked from imas-codex sn edit (and its sibling sn detach / sn supersede surfaces) by real; reproduced preconditions or a pre-existing REFINED_FROM lineage tangle \u2014 see evidence_inputs and the full report for verbatim CLI output and graph queries. Per the node's hard constraint; execution stopped with the graph unchanged rather than reaching for Cypher.",
+              "elapsed_seconds": 669,
+              "external_wait": null,
+              "log_age_seconds": 5476,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/beta-family-corrected.md (only)"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-beta-family-binds-correctly",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly",
+                "session_id": "65312f88-1b49-4e4f-93d8-bbbb654e756b",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 5483,
+              "terminal_at": "2026-09-06T08:19:56Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-beta-family-binds-correctly"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3300,
+              "classification": "completed_unpromoted",
+              "detail": "the worker manifest reports completion and the run is still a pointer; promoting it moves the delivered record into the repository ledger",
+              "elapsed_seconds": 742,
+              "external_wait": null,
+              "log_age_seconds": 641,
+              "log_fresh": true,
+              "manifest_commits": [
+                "9373dbd4da39ac840003535ee9365fc6c3966d5a; changed_paths: imas_codex/standard_names/graph_ops.py",
+                "tests/standard_names/test_source_free_parent_admission.py"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T092806008318-n-sgr-a-source-free-parent-reaches-accepted/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "complete",
+              "manifest_status": "complete",
+              "marker": null,
+              "needs_help_complete": null,
+              "next_action": "reckon crew complete --run r-20260906T092806008318-n-sgr-a-source-free-parent-reaches-accepted --gate <verdict> --commit 9373dbd4da39ac840003535ee9365fc6c3966d5a; changed_paths: imas_codex/standard_names/graph_ops.py --commit tests/standard_names/test_source_free_parent_admission.py",
+              "node": "n-sgr-a-source-free-parent-reaches-accepted",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T092806008318-n-sgr-a-source-free-parent-reaches-accepted",
+              "session": "ship-s10-20260905",
+              "terminal_age_seconds": 656,
+              "terminal_at": "2026-09-06T09:40:23Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-a-source-free-parent-reaches-accepted"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 31095,
+          "peak_input_tokens": 6088810
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-the-stamp-gate-covers-every-write-path",
+          "session_id": "01a07621-3c80-73a3-9654-324e3a5a26cc",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T10:00:31Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/graph/test_updated_at_coverage.py",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
       }
     ],
     "holds": [
@@ -87831,13 +88859,13 @@
         "backend": "codex",
         "purpose": "dispatch",
         "opened_at": "2026-09-06T08:06:41Z",
-        "closed_at": null,
-        "held_seconds": null,
+        "closed_at": "2026-09-06T09:46:37Z",
+        "held_seconds": 5996,
         "utilisation_pct": 95.0,
         "resets_at": "2026-09-11T04:24:27Z",
         "effective_ceiling_pct": 95.0,
         "reason": "utilisation 95% with burn multiple 3.1x is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
-        "closed_by_purpose": null,
+        "closed_by_purpose": "dispatch",
         "resumption_fired": false
       },
       {
@@ -87845,13 +88873,13 @@
         "backend": "codex-luna",
         "purpose": "dispatch",
         "opened_at": "2026-09-06T08:06:41Z",
-        "closed_at": null,
-        "held_seconds": null,
+        "closed_at": "2026-09-06T09:51:20Z",
+        "held_seconds": 6279,
         "utilisation_pct": 95.0,
         "resets_at": "2026-09-11T04:24:27Z",
         "effective_ceiling_pct": 95.0,
         "reason": "utilisation 95% with burn multiple 3.1x is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
-        "closed_by_purpose": null,
+        "closed_by_purpose": "dispatch",
         "resumption_fired": false
       },
       {
@@ -87881,8 +88909,36 @@
         "reason": "utilisation 95% with burn multiple 3.1x is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
         "closed_by_purpose": null,
         "resumption_fired": false
+      },
+      {
+        "hold_id": "hold-codex-20260906095419",
+        "backend": "codex",
+        "purpose": "dispatch",
+        "opened_at": "2026-09-06T09:54:19Z",
+        "closed_at": null,
+        "held_seconds": null,
+        "utilisation_pct": 96.0,
+        "resets_at": "2026-09-11T04:24:27Z",
+        "effective_ceiling_pct": 95.0,
+        "reason": "utilisation 96% with burn multiple 3.0x is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
+        "closed_by_purpose": null,
+        "resumption_fired": false
+      },
+      {
+        "hold_id": "hold-codex-luna-20260906095419",
+        "backend": "codex-luna",
+        "purpose": "dispatch",
+        "opened_at": "2026-09-06T09:54:19Z",
+        "closed_at": null,
+        "held_seconds": null,
+        "utilisation_pct": 96.0,
+        "resets_at": "2026-09-11T04:24:27Z",
+        "effective_ceiling_pct": 95.0,
+        "reason": "utilisation 96% with burn multiple 3.0x is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
+        "closed_by_purpose": null,
+        "resumption_fired": false
       }
     ],
-    "_version": 1799
+    "_version": 1809
   }
 }
