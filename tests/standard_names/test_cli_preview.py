@@ -1,7 +1,7 @@
-"""Tests for ``sn preview`` CLI verb.
+"""Tests for the Standard Names preview surfaces.
 
-Mocks ``run_preview`` to avoid launching a real server, verifying that
-the CLI forwards ``--staging`` and ``--port`` correctly.
+Mocks external work to verify that preview commands report their plans without
+performing the operations they are intended to preview.
 """
 
 from __future__ import annotations
@@ -14,6 +14,27 @@ from imas_codex.cli.sn import sn
 from imas_codex.standard_names.preview import PreviewHandle
 
 MOCK_TARGET = "imas_codex.standard_names.preview.run_preview"
+
+
+def _review_catalog() -> list[dict[str, object]]:
+    """Return one review-ready catalog row."""
+    return [
+        {
+            "id": "electron_temperature",
+            "source_paths": ["core_profiles/profiles_1d/electrons/temperature"],
+            "physics_domain": "transport",
+            "name_stage": "drafted",
+        }
+    ]
+
+
+def _catalog_client(catalog: list[dict[str, object]]) -> MagicMock:
+    """Return a context-managed graph client that loads ``catalog``."""
+    client = MagicMock()
+    client.query.return_value = catalog
+    client.__enter__.return_value = client
+    client.__exit__.return_value = False
+    return client
 
 
 def _make_handle(*, process=None, url="http://localhost:8000") -> PreviewHandle:
@@ -151,3 +172,54 @@ class TestPreviewErrors:
                 sn, ["preview", "--staging", "staging", "--no-export"]
             )
         assert result.exit_code == 3
+
+
+class TestReviewPreview:
+    """The review preview plans work without executing the catalog audit."""
+
+    def test_dry_run_builds_plan_without_catalog_audit(self):
+        catalog = _review_catalog()
+        client = _catalog_client(catalog)
+
+        with (
+            patch("imas_codex.graph.client.GraphClient", return_value=client),
+            patch(
+                "imas_codex.standard_names.review.audits.run_all_audits",
+                side_effect=AssertionError("catalog audit must not run"),
+            ) as audit,
+            patch(
+                "imas_codex.standard_names.review.enrichment.reconstruct_clusters_batch",
+                return_value={},
+            ),
+            patch(
+                "imas_codex.standard_names.review.enrichment.group_into_review_batches",
+                return_value=[
+                    {
+                        "names": catalog,
+                        "estimated_tokens": 120,
+                        "group_key": "transport",
+                    }
+                ],
+            ),
+        ):
+            result = CliRunner().invoke(sn, ["review", "--dry-run"])
+
+        assert result.exit_code == 0, result.output
+        assert "Would create 1 review batches" in result.output
+        audit.assert_not_called()
+
+    def test_live_review_still_runs_catalog_audit(self):
+        client = _catalog_client(_review_catalog())
+        audit_error = RuntimeError("catalog audit reached")
+
+        with (
+            patch("imas_codex.graph.client.GraphClient", return_value=client),
+            patch(
+                "imas_codex.standard_names.review.audits.run_all_audits",
+                side_effect=audit_error,
+            ) as audit,
+        ):
+            result = CliRunner().invoke(sn, ["review"])
+
+        audit.assert_called_once()
+        assert result.exception is audit_error
