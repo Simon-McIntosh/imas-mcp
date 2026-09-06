@@ -5967,6 +5967,289 @@ def update_review_aggregates(
         return len(list(rows or []))
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Voiding one review dimension
+# ─────────────────────────────────────────────────────────────────────────────
+
+_DIMENSION_SCALE = 20.0
+
+
+class ReviewDimensionVoidRefused(ValueError):
+    """A dimension void was refused; nothing was written."""
+
+
+def _review_tier(score: float) -> str:
+    """Tier label for a normalised score, matching the review persist path."""
+    if score >= 0.85:
+        return "outstanding"
+    if score >= 0.60:
+        return "good"
+    if score >= 0.40:
+        return "inadequate"
+    return "poor"
+
+
+def plan_review_dimension_void(
+    *,
+    scores: dict[str, Any],
+    void_records: list[dict[str, Any]] | None,
+    dimension: str,
+    actor: str,
+    reason: str,
+    grammar_signature: str | None,
+    at: str | None = None,
+) -> dict[str, Any]:
+    """Decide one dimension void without touching the graph.
+
+    The review score is a stored mirror of a derivation — ``sum(dimensions) /
+    (len(dimensions) * 20)`` at review time — so a void is expressible as a
+    recomputation over the surviving dimensions. That is the whole reason this
+    route can be honoured by consumers that know nothing about it: every reader
+    of ``r.score`` reads the recomputed number.
+
+    Refusals are decided here so that a caller writing only on success cannot
+    half-apply one. What justifies a void is the caller's business; what this
+    enforces is that a void is attributable, reasoned, non-duplicating, and
+    never the whole review.
+
+    The original per-dimension scores are NOT modified. ``scores`` is evidence
+    and is returned unchanged; the void record sits beside it.
+
+    Raises :class:`ReviewDimensionVoidRefused` for the four refusals — an
+    absent dimension, the last surviving dimension, an empty reason, and a
+    dimension already voided.
+    """
+    if not str(reason or "").strip():
+        raise ReviewDimensionVoidRefused(
+            f"voiding {dimension!r} needs a reason: the reason is the record, "
+            "and a void without one is indistinguishable from a lost score"
+        )
+    if not str(actor or "").strip():
+        raise ReviewDimensionVoidRefused(
+            f"voiding {dimension!r} needs an actor: an unattributed void "
+            "cannot be adjudicated later"
+        )
+
+    numeric = {
+        key: float(value)
+        for key, value in (scores or {}).items()
+        if isinstance(value, (int, float)) and not isinstance(value, bool)
+    }
+    if dimension not in numeric:
+        raise ReviewDimensionVoidRefused(
+            f"{dimension!r} is not a scored dimension of this review "
+            f"(scored: {', '.join(sorted(numeric)) or 'none'})"
+        )
+
+    records = [dict(record) for record in (void_records or [])]
+    already = [
+        record
+        for record in records
+        if record.get("dimension") == dimension and record.get("void_active", True)
+    ]
+    if already:
+        raise ReviewDimensionVoidRefused(
+            f"{dimension!r} is already voided on this review "
+            f"({already[0].get('void_reason')!r}) — one dimension carries one "
+            "record, so a second void would only duplicate it"
+        )
+
+    voided_names = {
+        record["dimension"]
+        for record in records
+        if record.get("void_active", True) and record.get("dimension") in numeric
+    }
+    surviving = {
+        key: value for key, value in numeric.items() if key not in voided_names
+    }
+    surviving.pop(dimension, None)
+    if not surviving:
+        raise ReviewDimensionVoidRefused(
+            f"{dimension!r} is the last surviving dimension of this review — a "
+            "review with every dimension void is not evidence of anything, and "
+            "discarding it is a whole-review decision, not a dimension void"
+        )
+
+    record = {
+        "dimension": dimension,
+        "void_active": True,
+        "voided_at": at or datetime.now(UTC).isoformat(),
+        "void_actor": str(actor),
+        "void_reason": str(reason),
+        "void_grammar_signature": grammar_signature,
+    }
+    records.append(record)
+    score = (sum(surviving.values()) / len(surviving)) / _DIMENSION_SCALE
+    return {
+        "void_records": records,
+        "void_record": record,
+        "surviving_dimensions": dict(sorted(surviving.items())),
+        "score": score,
+        "tier": _review_tier(score),
+    }
+
+
+_VOID_REVIEW_DIMENSION_READ = """
+MATCH (r:StandardNameReview {id: $review_id})
+RETURN r.id AS id,
+       r.standard_name_id AS standard_name_id,
+       r.review_axis AS review_axis,
+       r.score AS score,
+       r.scores_json AS scores_json,
+       r.voided_dimensions_json AS voided_dimensions_json
+"""
+
+# scores_json is deliberately absent from this SET: the original per-dimension
+# score is evidence and survives the void untouched.
+_VOID_REVIEW_DIMENSION_WRITE = """
+MATCH (r:StandardNameReview {id: $review_id})
+SET r.score = $score,
+    r.tier = $tier,
+    r.voided_dimensions_json = $voided_dimensions_json
+RETURN r.id AS id
+"""
+
+
+def void_review_dimension(
+    review_id: str,
+    dimension: str,
+    *,
+    actor: str,
+    reason: str,
+    grammar_signature: str | None = None,
+    gc: Any | None = None,
+    dry_run: bool = False,
+    refresh_aggregates: bool = True,
+) -> dict[str, Any]:
+    """Void ONE scored dimension of a review and record why in the graph.
+
+    A dimension can be discredited without the rest of the review being wrong.
+    Deleting it would destroy the evidence and leave the surviving score
+    unexplained, so the dimension's number stays exactly where it was and gains
+    a void record beside it carrying the actor, the reason, the timestamp and
+    the vocabulary signature observed at that moment.
+
+    ``reason`` is the caller's free text and carries the entire justification;
+    this route asserts nothing about what discredits a dimension, and must not
+    be read as encoding one cause. The signature and timestamp are recorded as
+    facts about the environment at void time rather than as evidence for the
+    decision — ``isn_version`` is build-time metadata from the installed
+    distribution and reports what was packaged, not which vocabulary or prompt
+    the review ran under, so neither question can be answered after the fact
+    without capturing the answer here.
+
+    The review's ``score`` is recomputed over the surviving dimensions. Because
+    ``score`` was always a derivation of the per-dimension scores, that single
+    write is what makes ``update_review_aggregates``, the canonical-review
+    projection, the reviewer benchmarks and every other reader of ``r.score``
+    honour the void — a marker nothing consults would be worse than no marker.
+
+    ``review_mean_score`` is the one reader that cannot follow on its own: it is
+    a STORED average, refreshed only when ``update_review_aggregates`` runs. So
+    the void refreshes it for the reviewed name, leaving no window in which the
+    review says one thing and the name-level aggregate another. Pass
+    ``refresh_aggregates=False`` when voiding in bulk and aggregating once at
+    the end.
+
+    Also writes a ``StandardNameChange``, the same ledger a detach judgement
+    writes, so the decision survives independently of the review node.
+
+    Refuses — raising :class:`ReviewDimensionVoidRefused` with nothing written —
+    when the dimension is not scored on this review, when it is the last
+    surviving one, when no reason is given, and when it is already voided.
+    """
+    own = gc is None
+    client: Any = GraphClient() if own else gc
+    try:
+        rows = list(client.query(_VOID_REVIEW_DIMENSION_READ, review_id=review_id))
+        if not rows:
+            raise ReviewDimensionVoidRefused(
+                f"no StandardNameReview {review_id!r} — nothing to void"
+            )
+        row = dict(rows[0])
+        try:
+            scores = json.loads(row.get("scores_json") or "{}")
+        except (TypeError, json.JSONDecodeError) as exc:
+            raise ReviewDimensionVoidRefused(
+                f"review {review_id!r} has unreadable per-dimension scores"
+            ) from exc
+        try:
+            existing = json.loads(row.get("voided_dimensions_json") or "[]")
+        except (TypeError, json.JSONDecodeError) as exc:
+            raise ReviewDimensionVoidRefused(
+                f"review {review_id!r} has an unreadable void record"
+            ) from exc
+
+        if grammar_signature is None:
+            with suppress(Exception):
+                grammar_signature = isn_vocabulary_signature()
+
+        plan = plan_review_dimension_void(
+            scores=scores,
+            void_records=existing if isinstance(existing, list) else [],
+            dimension=dimension,
+            actor=actor,
+            reason=reason,
+            grammar_signature=grammar_signature,
+        )
+        result = {
+            "ok": True,
+            "review_id": review_id,
+            "standard_name_id": row.get("standard_name_id"),
+            "review_axis": row.get("review_axis"),
+            "dimension": dimension,
+            "score_before": row.get("score"),
+            "score": plan["score"],
+            "tier": plan["tier"],
+            "surviving_dimensions": plan["surviving_dimensions"],
+            "void_record": plan["void_record"],
+            "dry_run": dry_run,
+        }
+        if dry_run:
+            return result
+
+        client.query(
+            _VOID_REVIEW_DIMENSION_WRITE,
+            review_id=review_id,
+            score=plan["score"],
+            tier=plan["tier"],
+            voided_dimensions_json=json.dumps(plan["void_records"]),
+        )
+
+        sn_id = row.get("standard_name_id")
+        if sn_id:
+            from imas_codex.standard_names.provenance_lifecycle import (
+                record_standard_name_change,
+            )
+
+            result["change_event_id"] = record_standard_name_change(
+                client,
+                sn_id,
+                sn_id,
+                operation="void_review_dimension",
+                reason=(
+                    f"{dimension} voided on review {review_id} by {actor}: {reason}"
+                ),
+                origin="review_dimension_void",
+            )
+            if refresh_aggregates:
+                result["aggregates_refreshed"] = bool(update_review_aggregates([sn_id]))
+    finally:
+        if own:
+            client.close()
+
+    logger.info(
+        "void_review_dimension: %s voided on %s by %s — score %s to %.6f (%s)",
+        dimension,
+        review_id,
+        actor,
+        result.get("score_before"),
+        result["score"],
+        reason,
+    )
+    return result
+
+
 @functools.lru_cache(maxsize=1)
 def _winning_review_resolution_methods(
     schema_path: Path | None = None,
