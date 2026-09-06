@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T13:10:33",
+  "updated": "2026-09-06T14:11:17",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -90308,6 +90308,242 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260906T105700590642-n-swct-a-respelling-is-not-a-disagreement",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a76",
+        "node": "n-swct-a-respelling-is-not-a-disagreement",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1537,
+                "cached_input_tokens": 548449,
+                "input_tokens": 549988,
+                "output_tokens": 2664,
+                "reasoning_output_tokens": 407,
+                "total_tokens": 552652,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "WIRE A HELPER THAT ALREADY EXISTS AND IS CURRENTLY UNUSED. Read only the two regions named below.\n\nTHE MEASUREMENT THAT MOTIVATES THIS, taken this morning over a real review cohort: of 75 reviewer name proposals written after the review prompt was corrected, 58 COMPOSE BACK TO THE EXACT IDENTITY THEY PROPOSED TO REPLACE and 2 do not parse at all, leaving 8 that are genuinely different. So roughly four fifths of what reaches the graph as reviewer disagreement is a different spelling of the same name, and every consumer downstream has to re-derive that to know it.\n\nTHE HELPER, already merged and currently called by nothing: `suggestion_is_semantically_distinct` at imas_codex/standard_names/models.py:1238. It parses both spellings, composes each intermediate representation, and returns whether the proposal is BOTH emittable AND semantically different from the reviewed identity. It is the correct instrument; `normalize_standard_name` is a passthrough that calls every spelling canonical and must never be used for this.\n\nTHE PERSIST SITE: `write_reviews` in imas_codex/standard_names/graph_ops.py, where the batch statement sets `r.suggested_name = b.suggested_name` and `r.suggestion_justification = b.suggestion_justification` around line 5807. The reviewed identity is available there as the standard name the review attaches to.\n\nTHE DELIVERABLE: before a review row is persisted, a suggested_name that is not semantically distinct from the identity it proposes to replace is cleared, along with its justification, and the fact is recorded so the clearing is visible rather than silent. A proposal that IS distinct persists exactly as it does today. Every numeric score, comment and dimension is untouched in both cases - this changes the suggestion field only, never the assessment.\n\nRECORD, DO NOT MERELY DROP. A cleared suggestion must leave something a reader can find: at minimum a count on the batch result or run summary distinguishing suggestions cleared as non-distinct from suggestions cleared as unparseable, so an operator can see that reviewers proposed 58 identical respellings rather than concluding they proposed nothing. A silent drop trades one invisible defect for another.\n\nDO NOT re-implement the comparison. Import and call the helper. If you find it does not fit the call site - for instance because the reviewed identity is not in scope in that statement - say so explicitly and describe what would need to change, rather than writing a second comparison beside it.\n\nWATCH THE ORDER OF OPERATIONS. The response model already clears an unparseable suggestion at validation time, so by the time a row reaches the persist site an unparseable proposal should be gone. Verify that is true rather than assuming it; if a proposal can still arrive unparseable, the helper returns false for it and your code must treat that as the unparseable case in the recorded counts, not the non-distinct one.\n\nEVIDENCE REQUIRED, in tests/standard_names/test_suggestion_persist_gate.py: a proposal composing to the reviewed identity is cleared with its justification and counted as non-distinct; a genuinely different emittable proposal persists byte-identical; scores, comments and per-dimension values are unchanged in both cases, asserted explicitly; and a batch containing both kinds reports the correct counts. Use real spellings that actually parse, never placeholders - a fixture whose name the grammar rejects has broken tests here once already today.\n\nPROVE YOUR NEW TESTS FAIL AT BASE by exporting the tree with `git archive HEAD`, copying the new test file into that export, and running it there. A base run with fewer tests is not a base failure. Report both counts and the method.\n\nRun once at base and once after:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_suggestion_persist_gate.py tests/standard_names/test_review_dimension_void.py -p no:cacheprovider\nThe void file is the blast-radius check because it exercises the same write path; it must not lose a passing test.\n\nDo not repair any existing review row - this closes the write path only, and the 58 already in the graph are a separate decision. Do not touch the review prompt or the quorum path.\n\nOPERATIONAL RECEIPT REQUIRED IN YOUR MANIFEST: wall-clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence naming what you had to discover versus what this brief handed you, including anything under-specified.",
+          "estimated_hours": null,
+          "goal": "A name suggestion that composes back to the identity it replaces is cleared before it reaches the graph",
+          "id": "n-swct-a-respelling-is-not-a-disagreement",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T105700590642-n-swct-a-respelling-is-not-a-disagreement/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a76",
+          "spec_level": "guided",
+          "time_budget": "50m",
+          "write_paths": [
+            "imas_codex/standard_names/graph_ops.py",
+            "tests/standard_names/test_suggestion_persist_gate.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "cx-fitclass",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T10:57:11Z",
+        "completed_at": "2026-09-06T11:09:44Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 753,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 753,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "a3079ca2d94c01195b6106a252d2d70a883db23a",
+        "commits": [
+          "2e1840a0e24b247df148eda2d1b2abe1f9541968"
+        ],
+        "changed_lines": {
+          "added": 177,
+          "removed": 6,
+          "files": 2
+        },
+        "tests_added": 5,
+        "gate": "passed",
+        "gate_check": {
+          "command": "UV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_suggestion_persist_gate.py tests/standard_names/test_review_dimension_void.py -p no:cacheprovider",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T105700590642-n-swct-a-respelling-is-not-a-disagreement/after.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T105700590642-n-swct-a-respelling-is-not-a-disagreement/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a0765d-791b-7832-bf47-b4702f3100ee",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 5570304,
+            "cached_input_tokens_cumulative": 5570304,
+            "input_tokens": 5701561,
+            "input_tokens_cumulative": 5701561,
+            "output_tokens": 28202,
+            "output_tokens_cumulative": 28202,
+            "reasoning_output_tokens": 11680,
+            "reasoning_output_tokens_cumulative": 11680
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 13123,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 13137,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2700,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: `sn supersede normalized_toroidal_plasma_beta --into normalized_toroidal_beta` refuses with \"source 'dd:equilibrium/time_slice/global_quantities/beta_normal' has ambiguous backing cardinality\" because that source has 2 FROM_DD_PATH backings where edit.py:1918-1925 requires exactly 1. The repair needs a verb that does not exist and touches a source binding the plan has deliberately left undecided \u2014 both outside this node's declared write scope. Step one of the node is complete and verified; step two cannot proceed without that decision and that verb.",
+              "elapsed_seconds": 423,
+              "external_wait": null,
+              "log_age_seconds": 714,
+              "log_fresh": true,
+              "manifest_commits": [
+                "none (no repository file changed; worktree clean at base sha); changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/normalised-beta-folded.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T103758527779-n-sgr-the-normalised-spelling-is-revived/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T103758527779-n-sgr-the-normalised-spelling-is-revived/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-normalised-spelling-is-revived",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T103758527779-n-sgr-the-normalised-spelling-is-revived",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T103758527779-n-sgr-the-normalised-spelling-is-revived",
+                "session_id": "b946b2da-c6fa-4b6d-b0be-63f2640c0269",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 729,
+              "terminal_at": "2026-09-06T10:44:57Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-normalised-spelling-is-revived"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 39882,
+          "peak_input_tokens": 11271865
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swct-a-respelling-is-not-a-disagreement",
+          "session_id": "01a0765d-791b-7832-bf47-b4702f3100ee",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T11:09:44Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names/test_suggestion_persist_gate.py",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
       }
     ],
     "holds": [
@@ -90550,6 +90786,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1821
+    "_version": 1822
   }
 }
