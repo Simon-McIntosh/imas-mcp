@@ -174,6 +174,50 @@ RETURN change.id AS change_id,
        remaining_outbound
 """
 
+_SOURCE_BACKING_REMOVAL_PREFLIGHT_QUERY = """
+// FROM_DD_PATH_REMOVAL_PREFLIGHT
+OPTIONAL MATCH (source:StandardNameSource {id: $source_id})
+OPTIONAL MATCH (dd_path:IMASNode {id: $dd_path})
+RETURN source IS NOT NULL AS source_exists,
+       dd_path IS NOT NULL AS dd_path_exists,
+       source.claim_token AS claim_token,
+       source.claimed_at AS claimed_at,
+       COUNT { (source)-[:FROM_DD_PATH]->(dd_path) } AS directed_edges,
+       COUNT { (source)-[:FROM_DD_PATH]->(:IMASNode) } AS backing_count
+"""
+
+_SOURCE_BACKING_REMOVAL_QUERY = """
+// REMOVE_ONE_FROM_DD_PATH_RELATIONSHIP
+MATCH (source:StandardNameSource {id: $source_id}),
+      (dd_path:IMASNode {id: $dd_path})
+WHERE source.claim_token IS NULL
+  AND source.claimed_at IS NULL
+MATCH (source)-[backing:FROM_DD_PATH]->(dd_path)
+WITH source, dd_path, collect(backing) AS backings,
+     COUNT { (source)-[:FROM_DD_PATH]->(:IMASNode) } AS backing_count
+WHERE size(backings) = 1
+  AND backing_count > 1
+OPTIONAL MATCH (source)-[:PRODUCED_NAME]->(owner:StandardName)
+WITH source, dd_path, head(backings) AS backing, backing_count,
+     collect(DISTINCT owner) AS owners
+DELETE backing
+CREATE (change:StandardNameChange {
+  id: $change_id,
+  from_name: $source_id,
+  to_name: $dd_path,
+  operation: 'remove_source_dd_path_backing',
+  reason: $reason,
+  origin: 'source_backing_adjudication',
+  changed_at: datetime($changed_at),
+  internal: true
+})
+FOREACH (owner IN owners |
+  MERGE (owner)-[:HAS_INTERNAL_CHANGE]->(change)
+)
+RETURN change.id AS change_id,
+       backing_count - 1 AS remaining_backings
+"""
+
 
 def remove_refined_from_relationship(
     successor_id: str,
@@ -301,6 +345,126 @@ def remove_refined_from_relationship(
                 ),
             }
         return {**result, "change_id": change_id}
+    finally:
+        if own:
+            client.close()
+
+
+def remove_source_dd_path_backing(
+    source_id: str,
+    dd_path: str,
+    *,
+    reason: str,
+    gc: Any | None = None,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Remove one directed source-to-DD-path backing relationship.
+
+    ``FROM_DD_PATH`` points from a ``StandardNameSource`` to the ``IMASNode``
+    it represents. Removing a backing is an operator judgement, so a non-empty
+    reason is required and the applied change is recorded as a
+    ``StandardNameChange`` against every StandardName produced by the source.
+
+    The source must retain at least one DD-path backing, and an active source
+    claim prevents the removal from racing composition work. Returns
+    ``{"ok": bool, ...}``; a refusal never writes.
+    """
+    source_id = (source_id or "").strip()
+    dd_path = (dd_path or "").strip()
+    reason = (reason or "").strip()
+    if not source_id or not dd_path:
+        return {"ok": False, "reason": "both source and DD path are required"}
+    if not reason:
+        raise ValueError("a non-empty source-backing-removal reason is required")
+
+    own = gc is None
+    client: Any = GraphClient() if own else gc
+    try:
+        rows = list(
+            client.query(
+                _SOURCE_BACKING_REMOVAL_PREFLIGHT_QUERY,
+                source_id=source_id,
+                dd_path=dd_path,
+            )
+        )
+        row = rows[0] if rows else {}
+        if not row.get("source_exists"):
+            return {
+                "ok": False,
+                "reason": f"standard-name source not found: {source_id}",
+            }
+        if not row.get("dd_path_exists"):
+            return {"ok": False, "reason": f"DD path not found: {dd_path}"}
+        if row.get("claim_token") is not None or row.get("claimed_at") is not None:
+            return {"ok": False, "reason": f"source {source_id!r} is actively claimed"}
+
+        directed_edges = int(row.get("directed_edges") or 0)
+        direction = f"{source_id!r} -[:FROM_DD_PATH]-> {dd_path!r}"
+        if directed_edges == 0:
+            return {
+                "ok": False,
+                "reason": (
+                    "no FROM_DD_PATH relationship exists in checked direction "
+                    f"{direction}"
+                ),
+            }
+        if directed_edges != 1:
+            return {
+                "ok": False,
+                "reason": (
+                    f"checked direction {direction} has {directed_edges} relationships; "
+                    "exactly one is required"
+                ),
+            }
+
+        backing_count = int(row.get("backing_count") or 0)
+        remaining_backings = backing_count - 1
+        if remaining_backings < 1:
+            return {
+                "ok": False,
+                "reason": (
+                    f"removing {direction} would leave source {source_id!r} "
+                    "with zero DD-path backings"
+                ),
+            }
+
+        result = {
+            "ok": True,
+            "source_id": source_id,
+            "dd_path": dd_path,
+            "direction": direction,
+            "backing_count": backing_count,
+            "remaining_backings": remaining_backings,
+            "dry_run": dry_run,
+        }
+        if dry_run:
+            return result
+
+        change_id = f"sn-change:{uuid.uuid4()}"
+        changed_at = datetime.now(UTC).isoformat()
+        applied = list(
+            client.query(
+                _SOURCE_BACKING_REMOVAL_QUERY,
+                source_id=source_id,
+                dd_path=dd_path,
+                change_id=change_id,
+                reason=reason,
+                changed_at=changed_at,
+            )
+        )
+        if not applied:
+            return {
+                "ok": False,
+                "reason": (
+                    f"source backing changed before removal of {direction}; no "
+                    "relationship or ledger record was written"
+                ),
+            }
+        return {
+            **result,
+            "change_id": change_id,
+            "remaining_backings": int(applied[0]["remaining_backings"]),
+        }
     finally:
         if own:
             client.close()
