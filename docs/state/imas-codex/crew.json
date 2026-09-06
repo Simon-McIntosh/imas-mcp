@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T12:32:14",
+  "updated": "2026-09-06T12:35:54",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -89192,6 +89192,245 @@
           "role": "implement",
           "status": "compatible"
         }
+      },
+      {
+        "run_id": "r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a79",
+        "node": "n-sgr-the-beta-family-binds-correctly",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1778,
+                "cached_input_tokens": 168071,
+                "input_tokens": 169851,
+                "output_tokens": 3037,
+                "reasoning_output_tokens": 999,
+                "total_tokens": 172888,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "THE SPEC IS ALREADY WRITTEN. Read /home/ITER/mcintos/.config/reckon/crew/reports/beta-family-state.md sections 1, 4 and 5. Section 5 carries a per-member correction table; execute it. Do not re-survey the family, and do not re-derive what that report measured.\n\nThe physics the lead fixed, which every description must respect:\n    1/beta = 1/beta_poloidal + 1/beta_toroidal        beta_N = beta_toroidal / I_N\nAll four members are wanted. Total beta is the harmonic combination of the two components; it is NOT the toroidal quantity, which is the single mistake that produced every defect below.\n\nFOUR CORRECTIONS, in this order.\n\nONE, total beta, identity `beta`. It has zero PRODUCED_NAME edges while its `source_path` scalar still names a toroidal DD path. The data dictionary has no path for total beta at all - every DD leaf named exactly `beta` is the oblique-element inclination ANGLE, all seven of them. So do NOT rebind it. Clear the rotted scalar and let `beta` stand as a source-free derived parent, which it already is structurally, since `toroidal_beta`, `poloidal_beta` and `plasma_beta` all hold HAS_PARENT to it. Its description today reads \"Toroidal beta (beta_tor), the ratio of volume-averaged total perpendicular plasma pressure to the magnetic pressure B0 squared over 2 mu0\" - that is the toroidal member's definition sitting on the total. Re-compose it to the harmonic identity above.\n\nTWO, poloidal beta, identity `poloidal_beta`. Its six beta_pol bindings are already correct. Change nothing. Confirm it in your census and move on.\n\nTHREE, toroidal beta, identity `toroidal_beta`. It holds two paths today and should hold the five plain-`beta_tor` paths. Consolidate onto it the three that are currently misplaced: `core_profiles/global_quantities/beta_tor`, which today exists only as the dead scalar on `beta`; `equilibrium/time_slice/global_quantities/beta_tor`, which today sits on the normalised identity; and `summary/global_quantities/beta_tor/value`, which today sits on `plasma_beta`.\n\nFOUR, normalised beta. The correct spelling `normalized_toroidal_beta` already EXISTS as superseded with no bindings, so this is a revival and not a mint - do not compose a new name. Revive it, carry onto it the five `beta_tor_norm` paths the report marks yes in section 4, and fold the current spelling `normalized_toroidal_plasma_beta` into it. Its plain `beta_tor` path goes to member three per correction three. The `beta_thermal` and removed-lifecycle `beta_normal` paths are a SEPARATE decision: do not admit them, and say in your report what admitting each would mean.\n\nHARD CONSTRAINTS. `imas-codex sn edit` is the ONLY sanctioned way to change graph text or bindings - never write Cypher against StandardName or its edges, and never hand-edit a description. Never pipe, tee or redirect any imas-codex CLI output; run the command and read its log under ~/.local/share/imas-codex/logs afterwards. Do not touch any identity outside the six the report names.\n\nEVIDENCE REQUIRED, written to /home/ITER/mcintos/.config/reckon/crew/reports/beta-family-corrected.md: a before-and-after table over all six identities giving, per identity, the spelling, name_stage, status, the count of PRODUCED_NAME edges and the DD paths behind them. The after state must show `beta` at zero bindings with a cleared scalar and a harmonic description, `toroidal_beta` at five plain-`beta_tor` paths, `normalized_toroidal_beta` live with the five `beta_tor_norm` paths and no plain `beta_tor` among them, and `poloidal_beta` unchanged at six. State the total PRODUCED_NAME edge count over the family before and after; a path must not be lost, so account for every one that moved. If any correction cannot be made through `sn edit`, stop at that correction, leave the graph consistent, and report which edit surface is missing rather than reaching for Cypher.",
+          "estimated_hours": null,
+          "goal": "The beta family resolves to four correctly bound identities under the harmonic beta identity",
+          "id": "n-sgr-the-beta-family-binds-correctly",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "60m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/beta-family-corrected.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "opus-betafamily2",
+        "backend": "claude",
+        "local": false,
+        "agent": {
+          "alias": "sonnet 5",
+          "backend": "claude",
+          "effort": "high",
+          "launch": "cli",
+          "model": "claude-sonnet-5",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T08:08:54Z",
+        "completed_at": "2026-09-06T08:20:03.393Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 663,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 669,
+        "stalled": false,
+        "time_budget": "60m",
+        "base_sha": "a4ec180a0d58ad481bb1d5329ea94b108a8b1a42",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": 0,
+        "gate": "not-run",
+        "gate_check": null,
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md",
+        "scope_changed": false,
+        "session_id": "65312f88-1b49-4e4f-93d8-bbbb654e756b",
+        "budget": {
+          "headroom": "known",
+          "utilisation_pct": 89.0,
+          "rate_limit_type": "five_hour",
+          "rate_limit_period_minutes": null,
+          "resets_at": "2026-09-06T10:10:00Z",
+          "threshold_status": "allowed_warning",
+          "surpassed_threshold": 1,
+          "tokens": {
+            "cache_creation_input_tokens": 143661,
+            "cache_creation_input_tokens_cumulative": 143661,
+            "cache_read_input_tokens": 4056792,
+            "cache_read_input_tokens_cumulative": 4056792,
+            "inference_geo": "not_available",
+            "input_tokens": 68,
+            "input_tokens_cumulative": 68,
+            "output_tokens": 43931,
+            "output_tokens_cumulative": 43931,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": 1.8254484000000004,
+          "refusal": false,
+          "detail": "backend reports utilisation and reset time",
+          "cost_usd_cumulative": 1.8254484000000004
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3300,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: The measure is partly unmet. The stage-movement figures ARE produced and; ARE zero; with both causes established; but the node ran out of its 55m; fence with 5 of 7 scoped invocations unrun and the Layer 3 rollup missing; on the two that did run. The unmet condition is wall clock; not budget:; $4.19 of an authorised $50 was spent; and the remaining work is ~$0.75.",
+              "elapsed_seconds": 2528,
+              "external_wait": null,
+              "log_age_seconds": 3380,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/drafted-successors-review.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-swct-the-drafted-successors-earn-acceptance",
+              "phase": "starting",
+              "plan": "sn-west-cohort-treatment",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance",
+                "session_id": "e173a3db-d9ac-4583-a818-6ac8bffc5ebe",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 3400,
+              "terminal_at": "2026-09-06T07:12:11Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swct-the-drafted-successors-earn-acceptance"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 3027,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 3041,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 666.01,
+          "generated_tokens": 43931,
+          "generation_seconds": 500.675,
+          "input_budget_tokens": 1000000,
+          "input_utilisation_pct": 16.8,
+          "machine_seconds": 165.335,
+          "peak_input_tokens": 168084,
+          "tokens_per_second": 87.74,
+          "wall_tokens_per_second": 65.96
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "no repository file was in scope and the graph was deliberately left unchanged",
+        "resume_waiver": {
+          "session_id": "65312f88-1b49-4e4f-93d8-bbbb654e756b",
+          "source": "stream",
+          "reason": "every capability this run was blocked on has since merged - sn attach, the source-free parent admission route, and sn remove-lineage - and none of them exist at this worktree base, so a resumed session would work against a tree that cannot execute the corrections. Its findings are preserved in beta-family-corrected.md and its capability list has been executed, so the resume path has no remaining value"
+        },
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-beta-family-binds-correctly",
+          "session_id": "65312f88-1b49-4e4f-93d8-bbbb654e756b",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T08:20:03.393Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -89420,6 +89659,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1813
+    "_version": 1814
   }
 }
