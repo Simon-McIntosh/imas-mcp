@@ -479,7 +479,7 @@ def _apply_descendant_cascade_atomically(
                 """
                 UNWIND $renames AS r
                 MATCH (sn:StandardName {id: r.from})
-                SET sn.id = r.to
+                SET sn.id = r.to, sn.updated_at = datetime()
                 """,
                 renames=renames,
             )
@@ -1033,7 +1033,7 @@ def rename_cascade(
         """
         UNWIND $renames AS r
         MATCH (sn:StandardName {id: r.from})
-        SET sn.id = r.to
+        SET sn.id = r.to, sn.updated_at = datetime()
         """,
         renames=renamed_list,
     )

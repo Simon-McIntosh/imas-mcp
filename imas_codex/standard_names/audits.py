@@ -4373,7 +4373,8 @@ def repair_invariant_sign_convention_documents(
                       AND sn.claimed_at IS NULL
                       AND sn.claim_token IS NULL
                       AND sn.documentation = expected.documentation_before
-                    SET sn.documentation = expected.documentation_after
+                    SET sn.updated_at = datetime(),
+                        sn.documentation = expected.documentation_after
                     RETURN collect(sn.id) AS ids
                     """,
                     rows=actions,
@@ -4403,7 +4404,8 @@ def repair_invariant_sign_convention_documents(
                         MATCH (sn)-[edge:HAS_COCOS]->(:COCOS {id: 17})
                         WHERE elementId(edge) =
                               expected.prior_cocos_edges[0].element_id
-                        SET sn.cocos_transformation_type = null,
+                        SET sn.updated_at = datetime(),
+                            sn.cocos_transformation_type = null,
                             sn.cocos = null
                         DELETE edge
                         RETURN collect(sn.id) AS ids
@@ -4815,7 +4817,8 @@ def repair_structural_cocos_transformation_metadata(
                       AND sn.cocos = 17
                     MATCH (sn)-[edge:HAS_COCOS]->(:COCOS {id: 17})
                     WHERE elementId(edge) = $edge_element_id
-                    SET sn.cocos_transformation_type = $expected_after
+                    SET sn.updated_at = datetime(),
+                        sn.cocos_transformation_type = $expected_after
                     RETURN sn.id AS id
                     """,
                     name_id=name_id,
