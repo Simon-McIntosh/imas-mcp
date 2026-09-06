@@ -16,7 +16,7 @@ _STANDARD_NAMES_ROOT = REPO_ROOT / "imas_codex" / "standard_names"
 # file reaches zero so an unrecorded improvement fails until its debt is
 # explicitly lowered. New findings also fail until their file is accounted for.
 #
-# The four survivors are named, justified entries rather than part of an
+# The two survivors are named, justified entries rather than part of an
 # opaque total, so a future finding cannot hide inside the count: the package
 # test also asserts that the live (path, properties) identities equal
 # _SURVIVING_FINDINGS exactly, and _EXPECTED_FINDINGS is derived from it so the
@@ -37,16 +37,6 @@ _SURVIVING_FINDINGS = {
         "drain-scope lease heartbeat: writes only liveness on a name whose "
         "ownership it does not change, so a stamp would make updated_at track "
         "heartbeat cadence instead of name modifications."
-    ),
-    ("parents.py", ("_structural_authority_replay_lock",)): (
-        "structural-authority lock: set-then-remove in one statement marks "
-        "contention, not modification - the same allowance the checker already "
-        "gives _structural_authority_lock."
-    ),
-    ("parents.py", ("_structural_authority_grounding_lock",)): (
-        "structural-authority lock: set-then-remove in one statement marks "
-        "contention, not modification - the same allowance the checker already "
-        "gives _structural_authority_lock."
     ),
 }
 
@@ -105,12 +95,12 @@ def test_debt_baseline_rejects_unrecorded_count_changes() -> None:
     _assert_findings_match_baseline(Counter(_EXPECTED_FINDINGS))
 
     increased = Counter(_EXPECTED_FINDINGS)
-    increased["parents.py"] += 1
+    increased["catalog_import.py"] += 1
     with pytest.raises(AssertionError, match="exceed the debt baseline"):
         _assert_findings_match_baseline(increased)
 
     decreased = Counter(_EXPECTED_FINDINGS)
-    decreased["parents.py"] -= 1
+    decreased["catalog_import.py"] -= 1
     with pytest.raises(AssertionError, match="fell below the debt baseline"):
         _assert_findings_match_baseline(decreased)
 
