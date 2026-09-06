@@ -17669,9 +17669,10 @@ def rename_preserves_meaning(old_name: str, new_name: str) -> bool:
     """True when two spellings denote the same quantity.
 
     The grammar's intermediate representation is the meaning; the string is
-    one rendering of it. Re-rendering an identity under a corrected operator
-    order or locus tail leaves the IR untouched, so IR equality is the exact
-    test for "the name moved and the quantity did not".
+    one rendering of it. Exact IR equality therefore preserves meaning. A
+    locus-token substitution also preserves meaning when the locus relation,
+    type, qualifiers, and value stay fixed and every non-locus part of the IR
+    is unchanged.
 
     A spelling either side cannot parse yields no evidence of sameness, and
     absence of evidence answers False here: carrying an accepted document
@@ -17681,7 +17682,32 @@ def rename_preserves_meaning(old_name: str, new_name: str) -> bool:
     from imas_standard_names.grammar import parser as isn_parser
 
     try:
-        return isn_parser.parse(old_name).ir == isn_parser.parse(new_name).ir
+        old_ir = isn_parser.parse(old_name).ir
+        new_ir = isn_parser.parse(new_name).ir
+        if old_ir == new_ir:
+            return True
+
+        old_locus = old_ir.locus
+        new_locus = new_ir.locus
+        if (
+            old_locus is None
+            or new_locus is None
+            or old_locus.token == new_locus.token
+            or old_locus.relation != new_locus.relation
+            or old_locus.type != new_locus.type
+            or old_locus.qualifiers != new_locus.qualifiers
+            or old_locus.value != new_locus.value
+        ):
+            return False
+
+        return (
+            old_ir.model_copy(
+                update={
+                    "locus": old_locus.model_copy(update={"token": new_locus.token})
+                }
+            )
+            == new_ir
+        )
     except Exception:
         return False
 
