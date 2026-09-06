@@ -5,7 +5,9 @@ from __future__ import annotations
 from typing import Any
 from unittest.mock import MagicMock, patch
 
+from imas_codex.standard_names.export import _classify_export_population
 from imas_codex.standard_names.graph_ops import (
+    mark_names_validated,
     persist_reviewed_name,
     reconcile_catalog_status,
     stop_refine_name_attempt,
@@ -28,22 +30,14 @@ class _CatalogGraph:
                 and name["status"] in (None, "draft")
             ]
             target = "superseded"
-        elif (
-            "SET sn.status = 'draft'," in cypher
-            and "sn.validation_status = 'quarantined'" in cypher
-        ):
+        elif "sn.name_stage = 'exhausted'" in cypher:
             matches = [
                 name
                 for name in self.names
-                if name["name_stage"] == "exhausted"
-                and (
-                    name["status"] != "draft"
-                    or name["validation_status"] != "quarantined"
-                )
+                if name["name_stage"] == "exhausted" and name["status"] != "draft"
             ]
             for name in matches:
                 name["status"] = "draft"
-                name["validation_status"] = "quarantined"
             return [{"changed": len(matches)}]
         elif "SET sn.status = 'draft'" in cypher:
             matches = [name for name in self.names if name["status"] is None]
@@ -134,11 +128,11 @@ def test_reconcile_maps_unset_and_terminal_statuses_idempotently() -> None:
     graph = _CatalogGraph(names)
 
     assert reconcile_catalog_status(gc=graph) == {
-        "drafted": 1,
+        "drafted": 5,
         "superseded": 2,
-        "quarantined": 5,
+        "quarantined": 0,
         "deprecated": 0,
-        "total_changed": 8,
+        "total_changed": 7,
     }
     assert {
         name["id"]: (name["status"], name["validation_status"]) for name in names
@@ -148,13 +142,13 @@ def test_reconcile_maps_unset_and_terminal_statuses_idempotently() -> None:
         "superseded_unset": ("superseded", "valid"),
         "superseded_draft": ("superseded", "valid"),
         "superseded_terminal": ("superseded", "valid"),
-        "exhausted_unset": ("draft", "quarantined"),
-        "exhausted_draft": ("draft", "quarantined"),
-        "exhausted_terminal": ("draft", "quarantined"),
+        "exhausted_unset": ("draft", "valid"),
+        "exhausted_draft": ("draft", "valid"),
+        "exhausted_terminal": ("draft", "valid"),
         "exhausted_quarantined": ("draft", "quarantined"),
         "live_active": ("active", "valid"),
         "superseded_active": ("active", "valid"),
-        "exhausted_active": ("draft", "quarantined"),
+        "exhausted_active": ("draft", "valid"),
     }
     assert reconcile_catalog_status(gc=graph) == {
         "drafted": 0,
@@ -167,6 +161,101 @@ def test_reconcile_maps_unset_and_terminal_statuses_idempotently() -> None:
     assert all("SET sn.status = 'deprecated'" not in query for query in graph.queries)
 
 
+def test_reconcile_does_not_turn_exhaustion_into_validation_failure() -> None:
+    names = [
+        {
+            "id": "exhausted_valid",
+            "name_stage": "exhausted",
+            "status": None,
+            "validation_status": "valid",
+            "validation_issues": [],
+        },
+        {
+            "id": "exhausted_failed",
+            "name_stage": "exhausted",
+            "status": None,
+            "validation_status": "quarantined",
+            "validation_issues": ["[semantic] invalid unit"],
+        },
+    ]
+    graph = _CatalogGraph(names)
+
+    reconcile_catalog_status(gc=graph)
+
+    assert names == [
+        {
+            "id": "exhausted_valid",
+            "name_stage": "exhausted",
+            "status": "draft",
+            "validation_status": "valid",
+            "validation_issues": [],
+        },
+        {
+            "id": "exhausted_failed",
+            "name_stage": "exhausted",
+            "status": "draft",
+            "validation_status": "quarantined",
+            "validation_issues": ["[semantic] invalid unit"],
+        },
+    ]
+    assert all(
+        "validation_status = 'quarantined'" not in query for query in graph.queries
+    )
+
+
+def test_validation_failure_writer_keeps_quarantine_and_issues() -> None:
+    graph = _context_graph([{"marked": 1}])
+
+    with patch("imas_codex.standard_names.graph_ops.GraphClient", return_value=graph):
+        assert (
+            mark_names_validated(
+                "validation-token",
+                [
+                    {
+                        "id": "failed_name",
+                        "validation_issues": ["[semantic] invalid unit"],
+                        "validation_layer_summary": {"semantic": {"passed": False}},
+                        "validation_status": "quarantined",
+                    }
+                ],
+            )
+            == 1
+        )
+
+    query = graph.query.call_args.args[0]
+    params = graph.query.call_args.kwargs
+    assert "sn.validation_issues = b.issues" in query
+    assert "sn.validation_status = b.validation_status" in query
+    assert params["batch"][0]["validation_status"] == "quarantined"
+    assert params["batch"][0]["issues"] == ["[semantic] invalid unit"]
+
+
+def test_export_reader_withholds_valid_but_exhausted_names() -> None:
+    eligible, excluded = _classify_export_population(
+        [
+            {
+                "id": "exhausted_valid",
+                "name_stage": "exhausted",
+                "validation_status": "valid",
+                "physics_domain": [],
+            },
+            {
+                "id": "accepted_valid",
+                "name_stage": "accepted",
+                "validation_status": "valid",
+                "physics_domain": [],
+            },
+        ],
+        domain=None,
+        names_only=True,
+    )
+
+    assert [row["id"] for row in eligible] == ["accepted_valid"]
+    assert [(row.standard_name_id, row.reason) for row in excluded] == [
+        ("exhausted_valid", "name_not_accepted")
+    ]
+
+
 def _context_graph(*query_results: list[dict[str, Any]]) -> MagicMock:
     graph = MagicMock()
     graph.__enter__ = MagicMock(return_value=graph)
@@ -175,7 +264,7 @@ def _context_graph(*query_results: list[dict[str, Any]]) -> MagicMock:
     return graph
 
 
-def test_review_exhaustion_quarantines_at_the_stage_write() -> None:
+def test_review_exhaustion_does_not_quarantine_at_the_stage_write() -> None:
     graph = _context_graph(
         [
             {
@@ -207,10 +296,11 @@ def test_review_exhaustion_quarantines_at_the_stage_write() -> None:
 
     write_query = graph.query.call_args_list[1].args[0]
     assert stage == "exhausted"
-    assert "WHEN $target_stage = 'exhausted' THEN 'quarantined'" in write_query
+    assert "WHEN $grammar_issue IS NOT NULL THEN 'quarantined'" in write_query
+    assert "WHEN $target_stage = 'exhausted' THEN 'quarantined'" not in write_query
 
 
-def test_stopped_refinement_quarantines_when_it_exhausts() -> None:
+def test_stopped_refinement_does_not_quarantine_when_it_exhausts() -> None:
     graph = _context_graph([{"stage": "exhausted"}])
 
     with patch("imas_codex.standard_names.graph_ops.GraphClient", return_value=graph):
@@ -223,4 +313,9 @@ def test_stopped_refinement_quarantines_when_it_exhausts() -> None:
 
     write_query = graph.query.call_args.args[0]
     assert stage == "exhausted"
-    assert "WHEN target_stage = 'exhausted' THEN 'quarantined'" in write_query
+    write_query = " ".join(write_query.split())
+    assert (
+        "WHEN target_stage = 'exhausted'"
+        " AND $reason IN ['grammar_invalid', 'vocabulary_gap']" in write_query
+    )
+    assert "THEN 'quarantined'" in write_query

@@ -616,7 +616,12 @@ class TestRefineTerminalClaimFence:
         assert "coalesce(sn.reviewer_comments_name, '')" in cypher
         assert (
             "sn.validation_status = CASE WHEN target_stage = 'exhausted' "
+            "AND $reason IN ['grammar_invalid', 'vocabulary_gap'] "
             "THEN 'quarantined' ELSE sn.validation_status END" in cypher
+        )
+        assert (
+            "sn.validation_status = CASE WHEN target_stage = 'exhausted' "
+            "THEN 'quarantined' ELSE sn.validation_status END" not in cypher
         )
         for preserved in (
             "chain_length",
