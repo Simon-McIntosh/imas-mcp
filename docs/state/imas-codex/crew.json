@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T15:28:44",
+  "updated": "2026-09-06T15:53:25",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -91392,6 +91392,802 @@
           "role": "implement",
           "status": "compatible"
         }
+      },
+      {
+        "run_id": "r-20260906T125154883806-n-sli-the-promote-writes-stamp-their-time",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-the-promote-writes-stamp-their-time",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2857,
+                "cached_input_tokens": 748315,
+                "input_tokens": 751174,
+                "output_tokens": 3202,
+                "reasoning_output_tokens": 1038,
+                "total_tokens": 754376,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "A MECHANICAL DEBT PAYDOWN WITH AN EXACT INSTRUMENT. Your files are: promote.py. Expected finding count across them: 6.\n\nTHE DEFECT. A Cypher statement that modifies a StandardName without stamping updated_at leaves the row's modification time lying about when it last changed, so every staleness and drift check downstream reads a false age. A coverage auditor already finds these; a ratchet gate now holds the package to a measured baseline of 55 findings across 15 files, and your lane owns 6 of them.\n\nFIND YOURS EXACTLY, do not grep by eye:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync python -c \"\nfrom pathlib import Path\nfrom imas_codex.graph.cypher_property_check import audit_standard_name_touch\nfor f in audit_standard_name_touch(Path('imas_codex/standard_names')):\n    print(f)\" \nFilter that output to your own files. The auditor is the specification; if its finding count for your files is not 6, report the number you measured and continue on what you actually found rather than on my figure.\n\nTHE DELIVERABLE: every finding in YOUR files cleared, so the auditor returns zero for them. Add the stamp to the statement the auditor names. Match the surrounding convention exactly - read a nearby already-correct write in the same file and copy its form rather than inventing one. Where a statement writes several properties, the stamp joins that same SET clause; do not add a second statement.\n\nREFUSE TO CLEAR A FINDING YOU CANNOT JUSTIFY. Some writes legitimately must not stamp - a pure read-modify that only touches a mirror scalar, a migration deliberately preserving an original timestamp, or a statement whose MATCH cannot bind a StandardName at all. If you meet one, LEAVE IT and report it with the reason and its line. A finding suppressed to reach zero is worse than a finding left with an argument, and I would rather your lane reports 7 of 9 cleared with two reasoned exceptions than a clean sweep I cannot trust.\n\nDO NOT TOUCH tests/graph/test_updated_at_coverage.py. Eight lanes are running in parallel and all would edit its baseline; I lower it once after merging. Your gate is the auditor over your own files, not that test. Do not touch any file outside the list above.\n\nEVIDENCE REQUIRED. Report the auditor's finding count for your files before and after, which must go from 6 to zero or to the number of reasoned exceptions you name. Then run the focused tests covering your modules:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names -k \"promote\" -p no:cacheprovider\nReport its count before and after; it must not lose a passing test. If a test asserts an exact updated_at value or a row's unchanged timestamp, your stamp will break it legitimately - name it and stop rather than editing it.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, one sentence on what you had to discover versus what this brief handed you, and the count of api_retry records carrying error_status 429 in your own stream, since a fleet-wide concurrency measurement is being collected.",
+          "estimated_hours": null,
+          "goal": "Every StandardName write in the assigned modules stamps its modification time",
+          "id": "n-sli-the-promote-writes-stamp-their-time",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T125154883806-n-sli-the-promote-writes-stamp-their-time/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "imas_codex/standard_names/promote.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-gate",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T12:52:22Z",
+        "completed_at": "2026-09-06T13:31:48.420Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 2308,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 2366,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "95811e251f8006cbd67bf4454dedf00b204b5ab0",
+        "commits": [
+          "96fd5069ed661881343765969c5b35573dbd9127"
+        ],
+        "changed_lines": {
+          "added": 11,
+          "removed": 6,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "auditor over the lane's own files: audit_standard_name_touch returns zero findings",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T125154883806-n-sli-the-promote-writes-stamp-their-time/manifest.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T125154883806-n-sli-the-promote-writes-stamp-their-time/manifest.md",
+        "scope_changed": false,
+        "session_id": "0b59ef29-91ad-4c5a-a2b3-9c8e899e8858",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 3187725,
+            "input_tokens_cumulative": 3187725,
+            "output_tokens": 20408,
+            "output_tokens_cumulative": 20408,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 20032,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 20046,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 2359.596,
+          "generated_tokens": 20408,
+          "generation_seconds": 2247.511,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 9.2,
+          "machine_seconds": 112.085,
+          "peak_input_tokens": 93978,
+          "tokens_per_second": 9.08,
+          "wall_tokens_per_second": 8.65
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-the-promote-writes-stamp-their-time",
+          "session_id": "0b59ef29-91ad-4c5a-a2b3-9c8e899e8858",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T13:31:48.420Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "run the focused tests",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
+      },
+      {
+        "run_id": "r-20260906T125154883777-n-sli-the-manifest-writes-stamp-their-time",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-the-manifest-writes-stamp-their-time",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2857,
+                "cached_input_tokens": 748315,
+                "input_tokens": 751174,
+                "output_tokens": 3202,
+                "reasoning_output_tokens": 1038,
+                "total_tokens": 754376,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "A MECHANICAL DEBT PAYDOWN WITH AN EXACT INSTRUMENT. Your files are: signed_manifest.py. Expected finding count across them: 9.\n\nTHE DEFECT. A Cypher statement that modifies a StandardName without stamping updated_at leaves the row's modification time lying about when it last changed, so every staleness and drift check downstream reads a false age. A coverage auditor already finds these; a ratchet gate now holds the package to a measured baseline of 55 findings across 15 files, and your lane owns 9 of them.\n\nFIND YOURS EXACTLY, do not grep by eye:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync python -c \"\nfrom pathlib import Path\nfrom imas_codex.graph.cypher_property_check import audit_standard_name_touch\nfor f in audit_standard_name_touch(Path('imas_codex/standard_names')):\n    print(f)\" \nFilter that output to your own files. The auditor is the specification; if its finding count for your files is not 9, report the number you measured and continue on what you actually found rather than on my figure.\n\nTHE DELIVERABLE: every finding in YOUR files cleared, so the auditor returns zero for them. Add the stamp to the statement the auditor names. Match the surrounding convention exactly - read a nearby already-correct write in the same file and copy its form rather than inventing one. Where a statement writes several properties, the stamp joins that same SET clause; do not add a second statement.\n\nREFUSE TO CLEAR A FINDING YOU CANNOT JUSTIFY. Some writes legitimately must not stamp - a pure read-modify that only touches a mirror scalar, a migration deliberately preserving an original timestamp, or a statement whose MATCH cannot bind a StandardName at all. If you meet one, LEAVE IT and report it with the reason and its line. A finding suppressed to reach zero is worse than a finding left with an argument, and I would rather your lane reports 7 of 9 cleared with two reasoned exceptions than a clean sweep I cannot trust.\n\nDO NOT TOUCH tests/graph/test_updated_at_coverage.py. Eight lanes are running in parallel and all would edit its baseline; I lower it once after merging. Your gate is the auditor over your own files, not that test. Do not touch any file outside the list above.\n\nEVIDENCE REQUIRED. Report the auditor's finding count for your files before and after, which must go from 9 to zero or to the number of reasoned exceptions you name. Then run the focused tests covering your modules:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names -k \"signed_manifest\" -p no:cacheprovider\nReport its count before and after; it must not lose a passing test. If a test asserts an exact updated_at value or a row's unchanged timestamp, your stamp will break it legitimately - name it and stop rather than editing it.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, one sentence on what you had to discover versus what this brief handed you, and the count of api_retry records carrying error_status 429 in your own stream, since a fleet-wide concurrency measurement is being collected.",
+          "estimated_hours": null,
+          "goal": "Every StandardName write in the assigned modules stamps its modification time",
+          "id": "n-sli-the-manifest-writes-stamp-their-time",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T125154883777-n-sli-the-manifest-writes-stamp-their-time/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "imas_codex/standard_names/signed_manifest.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-census",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T12:52:22Z",
+        "completed_at": "2026-09-06T13:40:00.970Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 2806,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 2858,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "95811e251f8006cbd67bf4454dedf00b204b5ab0",
+        "commits": [
+          "4990ba5406b559081bca9a7eadabf0e8797e0d09"
+        ],
+        "changed_lines": {
+          "added": 15,
+          "removed": 7,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "auditor over the lane's own files: audit_standard_name_touch returns zero findings",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T125154883777-n-sli-the-manifest-writes-stamp-their-time/manifest.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T125154883777-n-sli-the-manifest-writes-stamp-their-time/manifest.md",
+        "scope_changed": false,
+        "session_id": "46682fc3-6182-49ac-867e-a68d82ac9a2e",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 2473870,
+            "input_tokens_cumulative": 2473870,
+            "output_tokens": 25928,
+            "output_tokens_cumulative": 25928,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 20032,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 20046,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 2852.116,
+          "generated_tokens": 25928,
+          "generation_seconds": 2726.224,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 9.8,
+          "machine_seconds": 125.892,
+          "peak_input_tokens": 99659,
+          "tokens_per_second": 9.51,
+          "wall_tokens_per_second": 9.09
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-the-manifest-writes-stamp-their-time",
+          "session_id": "46682fc3-6182-49ac-867e-a68d82ac9a2e",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T13:40:00.970Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "run the focused tests",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
+      },
+      {
+        "run_id": "r-20260906T125154883788-n-sli-the-lifecycle-writes-stamp-their-time",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-the-lifecycle-writes-stamp-their-time",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2857,
+                "cached_input_tokens": 748315,
+                "input_tokens": 751174,
+                "output_tokens": 3202,
+                "reasoning_output_tokens": 1038,
+                "total_tokens": 754376,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "A MECHANICAL DEBT PAYDOWN WITH AN EXACT INSTRUMENT. Your files are: provenance_lifecycle.py. Expected finding count across them: 5.\n\nTHE DEFECT. A Cypher statement that modifies a StandardName without stamping updated_at leaves the row's modification time lying about when it last changed, so every staleness and drift check downstream reads a false age. A coverage auditor already finds these; a ratchet gate now holds the package to a measured baseline of 55 findings across 15 files, and your lane owns 5 of them.\n\nFIND YOURS EXACTLY, do not grep by eye:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync python -c \"\nfrom pathlib import Path\nfrom imas_codex.graph.cypher_property_check import audit_standard_name_touch\nfor f in audit_standard_name_touch(Path('imas_codex/standard_names')):\n    print(f)\" \nFilter that output to your own files. The auditor is the specification; if its finding count for your files is not 5, report the number you measured and continue on what you actually found rather than on my figure.\n\nTHE DELIVERABLE: every finding in YOUR files cleared, so the auditor returns zero for them. Add the stamp to the statement the auditor names. Match the surrounding convention exactly - read a nearby already-correct write in the same file and copy its form rather than inventing one. Where a statement writes several properties, the stamp joins that same SET clause; do not add a second statement.\n\nREFUSE TO CLEAR A FINDING YOU CANNOT JUSTIFY. Some writes legitimately must not stamp - a pure read-modify that only touches a mirror scalar, a migration deliberately preserving an original timestamp, or a statement whose MATCH cannot bind a StandardName at all. If you meet one, LEAVE IT and report it with the reason and its line. A finding suppressed to reach zero is worse than a finding left with an argument, and I would rather your lane reports 7 of 9 cleared with two reasoned exceptions than a clean sweep I cannot trust.\n\nDO NOT TOUCH tests/graph/test_updated_at_coverage.py. Eight lanes are running in parallel and all would edit its baseline; I lower it once after merging. Your gate is the auditor over your own files, not that test. Do not touch any file outside the list above.\n\nEVIDENCE REQUIRED. Report the auditor's finding count for your files before and after, which must go from 5 to zero or to the number of reasoned exceptions you name. Then run the focused tests covering your modules:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names -k \"provenance_lifecycle\" -p no:cacheprovider\nReport its count before and after; it must not lose a passing test. If a test asserts an exact updated_at value or a row's unchanged timestamp, your stamp will break it legitimately - name it and stop rather than editing it.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, one sentence on what you had to discover versus what this brief handed you, and the count of api_retry records carrying error_status 429 in your own stream, since a fleet-wide concurrency measurement is being collected.",
+          "estimated_hours": null,
+          "goal": "Every StandardName write in the assigned modules stamps its modification time",
+          "id": "n-sli-the-lifecycle-writes-stamp-their-time",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T125154883788-n-sli-the-lifecycle-writes-stamp-their-time/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "imas_codex/standard_names/provenance_lifecycle.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-ledger",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T12:52:22Z",
+        "completed_at": "2026-09-06T13:41:46.099Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 2911,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 2964,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "95811e251f8006cbd67bf4454dedf00b204b5ab0",
+        "commits": [
+          "3248f229fc064c5c2057829aace198d0c0590760"
+        ],
+        "changed_lines": {
+          "added": 9,
+          "removed": 4,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "auditor over the lane's own files: audit_standard_name_touch returns zero findings",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T125154883788-n-sli-the-lifecycle-writes-stamp-their-time/manifest.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T125154883788-n-sli-the-lifecycle-writes-stamp-their-time/manifest.md",
+        "scope_changed": false,
+        "session_id": "1908850a-3165-419f-99bc-8031753c4154",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 3976863,
+            "input_tokens_cumulative": 3976863,
+            "output_tokens": 23952,
+            "output_tokens_cumulative": 23952,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 20032,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 20046,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 2957.149,
+          "generated_tokens": 23952,
+          "generation_seconds": 2739.643,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 10.3,
+          "machine_seconds": 217.506,
+          "peak_input_tokens": 104284,
+          "tokens_per_second": 8.74,
+          "wall_tokens_per_second": 8.1
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-the-lifecycle-writes-stamp-their-time",
+          "session_id": "1908850a-3165-419f-99bc-8031753c4154",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T13:41:46.099Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "run the focused tests",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
+      },
+      {
+        "run_id": "r-20260906T125154883785-n-sli-the-edit-writes-stamp-their-time",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-the-edit-writes-stamp-their-time",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2857,
+                "cached_input_tokens": 748315,
+                "input_tokens": 751174,
+                "output_tokens": 3202,
+                "reasoning_output_tokens": 1038,
+                "total_tokens": 754376,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "A MECHANICAL DEBT PAYDOWN WITH AN EXACT INSTRUMENT. Your files are: edit.py. Expected finding count across them: 8.\n\nTHE DEFECT. A Cypher statement that modifies a StandardName without stamping updated_at leaves the row's modification time lying about when it last changed, so every staleness and drift check downstream reads a false age. A coverage auditor already finds these; a ratchet gate now holds the package to a measured baseline of 55 findings across 15 files, and your lane owns 8 of them.\n\nFIND YOURS EXACTLY, do not grep by eye:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync python -c \"\nfrom pathlib import Path\nfrom imas_codex.graph.cypher_property_check import audit_standard_name_touch\nfor f in audit_standard_name_touch(Path('imas_codex/standard_names')):\n    print(f)\" \nFilter that output to your own files. The auditor is the specification; if its finding count for your files is not 8, report the number you measured and continue on what you actually found rather than on my figure.\n\nTHE DELIVERABLE: every finding in YOUR files cleared, so the auditor returns zero for them. Add the stamp to the statement the auditor names. Match the surrounding convention exactly - read a nearby already-correct write in the same file and copy its form rather than inventing one. Where a statement writes several properties, the stamp joins that same SET clause; do not add a second statement.\n\nREFUSE TO CLEAR A FINDING YOU CANNOT JUSTIFY. Some writes legitimately must not stamp - a pure read-modify that only touches a mirror scalar, a migration deliberately preserving an original timestamp, or a statement whose MATCH cannot bind a StandardName at all. If you meet one, LEAVE IT and report it with the reason and its line. A finding suppressed to reach zero is worse than a finding left with an argument, and I would rather your lane reports 7 of 9 cleared with two reasoned exceptions than a clean sweep I cannot trust.\n\nDO NOT TOUCH tests/graph/test_updated_at_coverage.py. Eight lanes are running in parallel and all would edit its baseline; I lower it once after merging. Your gate is the auditor over your own files, not that test. Do not touch any file outside the list above.\n\nEVIDENCE REQUIRED. Report the auditor's finding count for your files before and after, which must go from 8 to zero or to the number of reasoned exceptions you name. Then run the focused tests covering your modules:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names -k \"edit\" -p no:cacheprovider\nReport its count before and after; it must not lose a passing test. If a test asserts an exact updated_at value or a row's unchanged timestamp, your stamp will break it legitimately - name it and stop rather than editing it.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, one sentence on what you had to discover versus what this brief handed you, and the count of api_retry records carrying error_status 429 in your own stream, since a fleet-wide concurrency measurement is being collected.",
+          "estimated_hours": null,
+          "goal": "Every StandardName write in the assigned modules stamps its modification time",
+          "id": "n-sli-the-edit-writes-stamp-their-time",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T125154883785-n-sli-the-edit-writes-stamp-their-time/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "imas_codex/standard_names/edit.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-drain",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T12:52:22Z",
+        "completed_at": "2026-09-06T13:50:03.318Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 3408,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 3461,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "95811e251f8006cbd67bf4454dedf00b204b5ab0",
+        "commits": [
+          "a8bd01c90aba331d8efa02c08261a3c982ea992b"
+        ],
+        "changed_lines": {
+          "added": 15,
+          "removed": 7,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "uv run --no-sync pytest tests/standard_names -k \"edit\" -p no:cacheprovider",
+          "exit_status": 1,
+          "log_path": "/tmp/sli_after_tests.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T125154883785-n-sli-the-edit-writes-stamp-their-time/manifest.md",
+        "scope_changed": false,
+        "session_id": "5e73a5c1-c787-4279-9235-f6e60eece815",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 5903274,
+            "input_tokens_cumulative": 5903274,
+            "output_tokens": 29027,
+            "output_tokens_cumulative": 29027,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 20032,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 20046,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 3454.462,
+          "generated_tokens": 29027,
+          "generation_seconds": 3172.38,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 11.5,
+          "machine_seconds": 282.082,
+          "peak_input_tokens": 117327,
+          "tokens_per_second": 9.15,
+          "wall_tokens_per_second": 8.4
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-the-edit-writes-stamp-their-time",
+          "session_id": "5e73a5c1-c787-4279-9235-f6e60eece815",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T13:50:03.318Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "run the focused tests",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
       }
     ],
     "holds": [
@@ -91634,6 +92430,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1829
+    "_version": 1833
   }
 }
