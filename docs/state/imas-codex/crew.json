@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T08:59:13",
+  "updated": "2026-09-06T09:04:48",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -4082,6 +4082,15 @@
       },
       {
         "id": "opus-generators",
+        "harness": "claude-opus",
+        "role": "test",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-06"
+      },
+      {
+        "id": "opus-knot",
         "harness": "claude-opus",
         "role": "test",
         "session_id": null,
@@ -85097,6 +85106,148 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260906T065346459113-n-sli-which-shortfalls-are-real",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-which-shortfalls-are-real",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1969,
+                "cached_input_tokens": 761113,
+                "input_tokens": 763084,
+                "output_tokens": 1572,
+                "reasoning_output_tokens": 558,
+                "total_tokens": 764656,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "110 names sit at name_stage reviewed carrying a non-null review_quorum_shortfall - verify that count. The shortfall makes a row unclaimable, because the refine claim requires it to be null. A locked ruling holds that the semantic gate wrote a NULL resolution_method, that the null method is what created a shortfall, and that the gate never routed anything anywhere, so a shortfall created that way blocks a rotation for no reason. A separate finding is that 14 migrated successors are held below accepted with winning scores from 0.85 to 0.925 against a 0.85 threshold, described as blocked by the shortfall alone. For EVERY name carrying a shortfall, classify it: ARTIFACT, where the shortfall traces to a gate row with a null or gate-typed resolution method and a real quorum did in fact reach a verdict; or REAL, where no quorum formed and the shortfall states something true. Give the count of each. For the artifact class, state precisely what clearing it would change - which names become claimable, and which would cross the acceptance threshold on scores they ALREADY hold, because those are names the project has already paid to review and is not banking. Name the code that writes the shortfall and the code that reads it, by file and line, and say whether clearing it is a data repair, a predicate change, or both. Do NOT clear anything and run no rotation: a wrong clear would make unreviewed names claimable, which is the failure this marker exists to prevent.",
+          "estimated_hours": null,
+          "goal": "A verdict on whether each recorded quorum shortfall reflects a real shortfall or an artifact of the inert gate",
+          "id": "n-sli-which-shortfalls-are-real",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T065346459113-n-sli-which-shortfalls-are-real/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "test",
+          "section": "\u00a75",
+          "spec_level": "open",
+          "time_budget": "40m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/shortfall-artifact-or-real.md"
+          ]
+        },
+        "role": "test",
+        "spec_level": "open",
+        "member": "opus-shortfall",
+        "backend": "claude-opus",
+        "local": false,
+        "agent": {
+          "alias": "opus 5",
+          "backend": "claude-opus",
+          "effort": "high",
+          "launch": "cli",
+          "model": "claude-opus-5",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T06:53:58Z",
+        "completed_at": "2026-09-06T07:02:30.206Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 505,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 512,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "376fff936f7106a7edd10972d0c112caeab0452d",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "live-graph classification of every row carrying a review_quorum_shortfall against its review records, resolution methods and reviewer chain size",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/shortfall-artifact-or-real.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T065346459113-n-sli-which-shortfalls-are-real/manifest.md",
+        "scope_changed": false,
+        "session_id": "275567b0-0536-4d66-988d-9f7ecd2398cf",
+        "budget": {
+          "headroom": "known",
+          "utilisation_pct": 55.00000000000001,
+          "rate_limit_type": "five_hour",
+          "rate_limit_period_minutes": null,
+          "resets_at": "2026-09-06T10:10:00Z",
+          "threshold_status": "allowed_warning",
+          "surpassed_threshold": 1,
+          "tokens": {
+            "cache_creation_input_tokens": 115911,
+            "cache_creation_input_tokens_cumulative": 115911,
+            "cache_read_input_tokens": 3374753,
+            "cache_read_input_tokens_cumulative": 3374753,
+            "inference_geo": "not_available",
+            "input_tokens": 76,
+            "input_tokens_cumulative": 76,
+            "output_tokens": 30233,
+            "output_tokens_cumulative": 30233,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": 3.6026915,
+          "refusal": false,
+          "detail": "backend reports utilisation and reset time",
+          "cost_usd_cumulative": 3.6026915
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": []
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 509.157,
+          "generated_tokens": 30233,
+          "generation_seconds": 407.947,
+          "input_budget_tokens": 1000000,
+          "input_utilisation_pct": 12.9,
+          "machine_seconds": 101.21,
+          "peak_input_tokens": 129125,
+          "tokens_per_second": 74.11,
+          "wall_tokens_per_second": 59.38
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "read-only classification; nothing was cleared, no rotation was run and the repository was unmodified",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-which-shortfalls-are-real",
+          "session_id": "275567b0-0536-4d66-988d-9f7ecd2398cf",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T07:02:30.206Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "test",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -85241,6 +85392,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1779
+    "_version": 1781
   }
 }
