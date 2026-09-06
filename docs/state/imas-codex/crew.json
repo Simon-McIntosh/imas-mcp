@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T20:15:30",
+  "updated": "2026-09-06T21:11:50",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -94598,6 +94598,159 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260906T161255084097-n-sgr-an-aggregation-token-leads-joiner-free",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a72",
+        "node": "n-sgr-an-aggregation-token-leads-joiner-free",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 5593,
+                "cached_input_tokens": 410637,
+                "input_tokens": 416232,
+                "output_tokens": 620,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 416852,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "TWO AGGREGATION TOKENS MUST LEAD THEIR NAMES, JOINER-FREE, LIKE THE FLUX-SURFACE-AVERAGE PATTERN. The lead has specified the outcome; the measurements below are already made, so your work is the grammar change and the proof, not the census.\n\nTHE RULE THE LEAD SET. An aggregation operator leads the name and takes no joiner. flux_surface_averaged already behaves this way: flux_surface_averaged_toroidal_lithium_velocity_at_plasma_boundary. Two tokens do not, and both must:\n  accumulated      -> accumulated_helium_4_count_due_to_gas_injection   (leads; today the renderer moves it to the back)\n  root_mean_square -> root_mean_square_wave_current_of_antenna_strap    (leads AND drops the _of_ joiner)\n\nMEASURED STATE, confirm each figure yourself and report what you measure; where yours differs, yours governs.\n\nThe leading class is selected by THREE conditions, in imas_standard_names/grammar/parser.py:952-970 (_reduction_prefix_operators) and mirrored in model.py:275-284 (_leading_transformations): kind == unary_prefix, membership in BARE_PREFIX_OPERATORS (defined at ir.py:158), and precedence == 30 (_REDUCTION_PRECEDENCE, parser.py:950 and model.py:271). Nine operators satisfy all three and lead: flux_surface_averaged, line_averaged, line_integrated, maximum_over_flux_surface, minimum_over_flux_surface, surface_integrated, time_averaged, volume_averaged, volume_integrated.\n\nroot_mean_square is unary_prefix at precedence 30 and is the ONLY precedence-30 unary_prefix operator absent from BARE_PREFIX_OPERATORS. Two accepted names use it, both as an operator: root_mean_square_of_wave_current_of_antenna_strap and spectral_width_root_mean_square_of_spectrometer_channel.\n\naccumulated is IN BARE_PREFIX_OPERATORS but sits at precedence 15, with cumulative, cumulative_inside_flux_surface, normalized and perturbed. Sixteen accepted names carry it and ALL SIXTEEN parse it as a QUALIFIER; none parses it as an operator. Twelve spell it leading and are already canonical because nothing follows them; four spell it trailing (neutral_count_accumulated_at_wall, oxygen_count_accumulated_due_to_gas_injection, radiated_energy_accumulated_due_to_impurity_radiation, coolant_absorbed_energy_accumulated_of_plasma_facing_component); and one leading name with a mechanism clause is currently re-rendered to the back.\n\nTHE CONSTRAINT THAT GOVERNS EVERYTHING BELOW: MEANING MUST NOT CHANGE. Descriptions and documentation stay untouched, and a spelling move must not alter what the token IS in the intermediate representation. This is the live hazard on accumulated specifically: promoting it from the qualifier reading to the operator reading would change the intermediate representation of all sixteen accepted names, which is a meaning change and is FORBIDDEN. If leading placement for accumulated cannot be achieved without changing its role in the representation, STOP, report that finding with the evidence, and change nothing. That outcome is a success for this node.\n\nWHY ADDING root_mean_square TO THE BARE SET IS NOT SUFFICIENT ON ITS OWN, already probed so you need not rediscover it. With the token added to BARE_PREFIX_OPERATORS in every module that holds a reference, the bare spelling and the _of_ spelling BOTH become canonical, because they parse to different representations: the bare form resolves root_mean_square into the qualifier chain (operators empty) while the _of_ form resolves it as a unary_prefix operator. Two canonical spellings for one quantity is precisely the defect the reduction fix already in main was written to remove. So the deliverable includes convergence: the _of_ spelling must render to the bare leading spelling, and the two must share one representation.\n\nTHE DELIVERABLE: for each of the two tokens, one canonical spelling, leading and joiner-free, with every alternative authored spelling converging on it and carrying an identical representation.\n\nPROOF REQUIRED, and the representation comparison is the important half because a full suite already passed once on a wrong deliverable in this exact area. For every spelling pair you touch, print the intermediate representation of the authored form beside the canonical form and assert equality field by field. A pair that composes to the same string while carrying different representations is a failure even if every test passes.\n\nTHEN CENSUS THE WHOLE COHORT. A file of 2348 accepted names is at /run/user/39486/claude-39486/-home-ITER-mcintos-Code-imas-codex/11b50f59-c77b-4356-8bb3-6dafc6d0a4c0/scratchpad/accepted_names.txt. Before your change it yields 2329 stable, 19 migrating, 0 parse or compose errors. Report the same three figures after. Errors must stay at 0. Report every name whose verdict changes, before and after spellings side by side, and account for each one: the expected changes are the two root_mean_square names and the five accumulated names described above. A change outside that set needs an explanation or is a regression.\n\nTREAT THE SIBLING TOKENS CONSISTENTLY OR SAY WHY NOT. cumulative and cumulative_inside_flux_surface share accumulated's precedence and its accumulation semantics, and no accepted name currently uses either. Whatever placement rule you land for accumulated, state explicitly what it does to those two and whether you applied it to them.\n\nDO NOT change normalized, perturbed or change_in. They modify the base itself and keep their place inside the projection; the registry comment at model.py:265-270 states this and seven contracts depend on it.\n\nYOUR WRITE SCOPE is the imas-standard-names repository only: the grammar package and its contracts and tests. Do not touch the imas-codex repository, do not rename any catalog name, do not write any graph row, and do not tag or release.\n\nRUN THE FULL GRAMMAR SUITE and report its count before and after against a stated base revision, reporting added failures rather than an absolute count. Repoint any contract that encodes an old spelling, and list each one you changed with the reason.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.9,
+          "goal": "The accumulation and root-mean-square operators lead their names joiner-free with one representation per quantity",
+          "id": "n-sgr-an-aggregation-token-leads-joiner-free",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-leading-ops/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a72",
+          "spec_level": "exact",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_standard_names/grammar",
+            "tests"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-graphtarget",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T16:13:07Z",
+        "completed_at": "2026-09-06T18:13:34.564Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 7043,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 7227,
+        "stalled": true,
+        "time_budget": "55m",
+        "base_sha": "41015bff68b3ecc0256b51fdf0154ea73d6c2fcb",
+        "commits": [
+          "81e7dd1f91177de4be36d2ddef143aa08d8106b8"
+        ],
+        "changed_lines": {
+          "added": 85,
+          "removed": 21,
+          "files": 8
+        },
+        "tests_added": 2,
+        "gate": "passed",
+        "gate_check": {
+          "command": "uv run --no-sync pytest -p no:cacheprovider (full grammar suite) plus a parse-compose census over the 2348 accepted names",
+          "exit_status": 0,
+          "log_path": "/tmp/sgr_suite_after.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "Both aggregation tokens now lead joiner-free. root_mean_square joined the bare-prefix reduction class and the unary _of_ peel carries the bare flag for reductions, so the _of_-authored and bare spellings share ONE representation and converge rather than both becoming canonical. accumulated stays a QUALIFIER in the representation, so none of the sixteen accepted names changed meaning; the renderer simply stopped relocating the accumulation family behind the base. Full suite 2132 to 2134 passed, exit 0 both sides, zero added. Cohort census 19 to 23 migrating, reconciling exactly. Corrected my brief: two cohort names do use cumulative_inside_flux_surface.",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-leading-ops/manifest.md",
+        "scope_changed": false,
+        "session_id": "9f20462c-d13e-4ccc-a9fa-dafcccbb8bee",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 32651904,
+            "input_tokens_cumulative": 32651904,
+            "output_tokens": 99456,
+            "output_tokens_cumulative": 99456,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 7223.672,
+          "generated_tokens": 99456,
+          "generation_seconds": 6131.954,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 35.7,
+          "machine_seconds": 1091.718,
+          "peak_input_tokens": 363347,
+          "tokens_per_second": 16.22,
+          "wall_tokens_per_second": 13.77
+        },
+        "follow_on_paths": [
+          "before/after);",
+          "parse/compose",
+          "/"
+        ],
+        "dispute_count": 1,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-standard-names-5be88ee0fdc3/ship-s10-20260905/n-sgr-an-aggregation-token-leads-joiner-free",
+          "session_id": "9f20462c-d13e-4ccc-a9fa-dafcccbb8bee",
+          "session_source": "pointer",
+          "retained_at": "2026-09-06T18:13:34.564Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -94840,6 +94993,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1849
+    "_version": 1850
   }
 }
