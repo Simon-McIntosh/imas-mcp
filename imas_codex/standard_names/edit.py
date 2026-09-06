@@ -120,6 +120,192 @@ _LIVE_SOURCE_STATUSES = frozenset({"composed", "attached"})
 _ENTRY_BY_MODE = {"rename": "review_name", "docs": "review_docs", "hint": "generate"}
 
 
+_LINEAGE_REMOVAL_PREFLIGHT_QUERY = """
+// REFINED_FROM_REMOVAL_PREFLIGHT
+OPTIONAL MATCH (successor:StandardName {id: $successor_id})
+OPTIONAL MATCH (predecessor:StandardName {id: $predecessor_id})
+RETURN successor IS NOT NULL AS successor_exists,
+       predecessor IS NOT NULL AS predecessor_exists,
+       predecessor.name_stage AS predecessor_stage,
+       COUNT { (successor)-[:REFINED_FROM]->(predecessor) } AS directed_edges,
+       COUNT { (predecessor)-[:REFINED_FROM]->(successor) } AS reverse_edges,
+       COUNT {
+         (other:StandardName)-[:REFINED_FROM]->(predecessor)
+         WHERE other <> successor
+       } AS remaining_inbound,
+       COUNT { (predecessor)-[:REFINED_FROM]->(:StandardName) }
+         AS remaining_outbound
+"""
+
+_LINEAGE_REMOVAL_QUERY = """
+// REMOVE_ONE_REFINED_FROM_RELATIONSHIP
+MATCH (successor:StandardName {id: $successor_id}),
+      (predecessor:StandardName {id: $predecessor_id})
+MATCH (successor)-[lineage:REFINED_FROM]->(predecessor)
+WITH successor, predecessor, collect(lineage) AS lineages,
+     COUNT {
+       (other:StandardName)-[:REFINED_FROM]->(predecessor)
+       WHERE other <> successor
+     } AS remaining_inbound,
+     COUNT { (predecessor)-[:REFINED_FROM]->(:StandardName) }
+       AS remaining_outbound
+WHERE size(lineages) = 1
+  AND (
+    coalesce(predecessor.name_stage, '') <> 'superseded'
+    OR remaining_inbound > 0
+  )
+WITH successor, predecessor, head(lineages) AS lineage,
+     remaining_inbound, remaining_outbound
+DELETE lineage
+CREATE (change:StandardNameChange {
+  id: $change_id,
+  from_name: $predecessor_id,
+  to_name: $successor_id,
+  operation: 'remove_refined_from_relationship',
+  reason: $reason,
+  origin: 'lineage_adjudication',
+  changed_at: datetime($changed_at),
+  internal: true
+})
+MERGE (successor)-[:HAS_INTERNAL_CHANGE]->(change)
+MERGE (predecessor)-[:HAS_INTERNAL_CHANGE]->(change)
+RETURN change.id AS change_id,
+       remaining_inbound,
+       remaining_outbound
+"""
+
+
+def remove_refined_from_relationship(
+    successor_id: str,
+    predecessor_id: str,
+    *,
+    reason: str,
+    gc: Any | None = None,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Remove one directed successor-to-predecessor lineage relationship.
+
+    ``REFINED_FROM`` points from the newer identity to the identity it
+    superseded. Removing one is an operator judgement, so a non-empty reason is
+    required and the applied change is recorded as a ``StandardNameChange``.
+
+    A superseded predecessor must retain at least one incoming successor edge
+    after the requested deletion. Its outgoing predecessor lineage is measured
+    too, but cannot substitute for a successor: without an incoming edge the
+    superseded identity cannot resolve forward. A live predecessor needs no
+    successor and may therefore lose its last incoming lineage edge.
+
+    Returns ``{"ok": bool, ...}``; a refusal never writes.
+    """
+    successor_id = (successor_id or "").strip()
+    predecessor_id = (predecessor_id or "").strip()
+    reason = (reason or "").strip()
+    if not successor_id or not predecessor_id:
+        return {"ok": False, "reason": "both successor and predecessor are required"}
+    if successor_id == predecessor_id:
+        return {"ok": False, "reason": "successor and predecessor are the same name"}
+    if not reason:
+        raise ValueError("a non-empty lineage-removal reason is required")
+
+    own = gc is None
+    client: Any = GraphClient() if own else gc
+    try:
+        rows = list(
+            client.query(
+                _LINEAGE_REMOVAL_PREFLIGHT_QUERY,
+                successor_id=successor_id,
+                predecessor_id=predecessor_id,
+            )
+        )
+        row = rows[0] if rows else {}
+        missing = [
+            name
+            for name, exists in (
+                (successor_id, row.get("successor_exists")),
+                (predecessor_id, row.get("predecessor_exists")),
+            )
+            if not exists
+        ]
+        if missing:
+            return {
+                "ok": False,
+                "reason": "standard-name endpoint(s) not found: " + ", ".join(missing),
+            }
+
+        directed_edges = int(row.get("directed_edges") or 0)
+        direction = f"{successor_id!r} -[:REFINED_FROM]-> {predecessor_id!r}"
+        if directed_edges == 0:
+            reverse = ""
+            if int(row.get("reverse_edges") or 0):
+                reverse = (
+                    f"; the reverse direction {predecessor_id!r} "
+                    f"-[:REFINED_FROM]-> {successor_id!r} exists"
+                )
+            return {
+                "ok": False,
+                "reason": f"no REFINED_FROM relationship exists in checked direction {direction}{reverse}",
+            }
+        if directed_edges != 1:
+            return {
+                "ok": False,
+                "reason": (
+                    f"checked direction {direction} has {directed_edges} relationships; "
+                    "exactly one is required"
+                ),
+            }
+
+        remaining_inbound = int(row.get("remaining_inbound") or 0)
+        remaining_outbound = int(row.get("remaining_outbound") or 0)
+        predecessor_stage = row.get("predecessor_stage")
+        if predecessor_stage == "superseded" and remaining_inbound == 0:
+            return {
+                "ok": False,
+                "reason": (
+                    f"removing {direction} would strand superseded predecessor "
+                    f"{predecessor_id!r}: 0 remaining incoming successor edges "
+                    f"and {remaining_outbound} remaining outgoing predecessor edges"
+                ),
+            }
+
+        result = {
+            "ok": True,
+            "successor_id": successor_id,
+            "predecessor_id": predecessor_id,
+            "direction": direction,
+            "predecessor_stage": predecessor_stage,
+            "remaining_inbound": remaining_inbound,
+            "remaining_outbound": remaining_outbound,
+            "dry_run": dry_run,
+        }
+        if dry_run:
+            return result
+
+        change_id = f"sn-change:{uuid.uuid4()}"
+        changed_at = datetime.now(UTC).isoformat()
+        applied = list(
+            client.query(
+                _LINEAGE_REMOVAL_QUERY,
+                successor_id=successor_id,
+                predecessor_id=predecessor_id,
+                change_id=change_id,
+                reason=reason,
+                changed_at=changed_at,
+            )
+        )
+        if not applied:
+            return {
+                "ok": False,
+                "reason": (
+                    f"lineage changed before removal of {direction}; no relationship "
+                    "or ledger record was written"
+                ),
+            }
+        return {**result, "change_id": change_id}
+    finally:
+        if own:
+            client.close()
+
+
 @dataclass(frozen=True)
 class EditPlan:
     """Outcome of an :func:`apply_edit` invocation.

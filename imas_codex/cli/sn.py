@@ -6650,6 +6650,67 @@ def sn_attach(dd_path: str, standard_name: str, reason: str, dry_run: bool) -> N
     )
 
 
+@sn.command("remove-lineage")
+@click.argument("successor")
+@click.argument("predecessor")
+@click.option(
+    "--reason",
+    required=True,
+    help=(
+        "Why this directed REFINED_FROM relationship is wrong. Recorded in the "
+        "change ledger because removing lineage is a judgement."
+    ),
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    help="Report the directed lineage removal without writing to the graph.",
+)
+def sn_remove_lineage(
+    successor: str, predecessor: str, reason: str, dry_run: bool
+) -> None:
+    """Remove one incorrect successor-to-predecessor lineage relationship.
+
+    REFINED_FROM points from the newer identity to the identity it superseded.
+    Arguments therefore name SUCCESSOR first and PREDECESSOR second. The exact
+    direction is checked; reversing the arguments is a refusal rather than an
+    idempotent success.
+
+    A superseded predecessor must retain another successor after the removal.
+    A live predecessor does not need a successor and may lose its last incoming
+    lineage edge.
+
+    \b
+    Example:
+      imas-codex sn remove-lineage beta normalized_toroidal_plasma_beta \\
+        --reason "beta is live and did not supersede the normalized identity"
+    """
+    from imas_codex.standard_names.edit import remove_refined_from_relationship
+
+    try:
+        result = remove_refined_from_relationship(
+            successor,
+            predecessor,
+            reason=reason,
+            dry_run=dry_run,
+        )
+    except ValueError as e:
+        raise click.UsageError(str(e)) from e
+    if not result.get("ok"):
+        raise click.UsageError(result.get("reason", "lineage removal refused"))
+
+    verb = "would remove" if dry_run else "removed"
+    click.echo(f"{verb} {result['direction']}")
+    click.echo(
+        "  predecessor "
+        f"name_stage={result['predecessor_stage']!r}; "
+        f"remaining lineage inbound={result['remaining_inbound']}, "
+        f"outbound={result['remaining_outbound']}"
+    )
+    if result.get("change_id"):
+        click.echo(f"change: {result['change_id']}")
+
+
 @sn.command("supersede")
 @click.argument("old_name")
 @click.option(
