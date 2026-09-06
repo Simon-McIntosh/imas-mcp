@@ -399,6 +399,32 @@ def test_reference_path_and_value_must_be_paired() -> None:
         write_dd_gaps([report], dry_run=True)
 
 
+def test_write_boundary_still_raises_when_response_model_repairs() -> None:
+    """The one-layer narrowing is deliberate, not a weakened second guard.
+
+    A half reference pair now repairs at the response model boundary, but the
+    persistence path keeps its own hard raise: write_dd_gaps reads a plain
+    dict and rejects the pair rather than storing one without its other half.
+    This pins that the write boundary was not loosened alongside the model.
+    """
+    from imas_codex.standard_names.models import DDGapEvidence
+
+    repaired = DDGapEvidence.model_validate(
+        {
+            "path": "equilibrium/path",
+            "kind": "unit_defect",
+            "reason": "measured twin declares Pa",
+            "reference_path": "equilibrium/reference",
+        }
+    )
+    assert (repaired.reference_path, repaired.reference_value) == (None, None)
+
+    report = _evidence()
+    report["reference_path"] = "equilibrium/reference"
+    with pytest.raises(ValueError, match="must be supplied together"):
+        write_dd_gaps([report], dry_run=True)
+
+
 def test_duplicate_fact_preserves_distinct_observations() -> None:
     mock_gc = MagicMock()
     mock_gc.query.side_effect = [
