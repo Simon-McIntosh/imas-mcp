@@ -13482,15 +13482,15 @@ def reconcile_catalog_status(gc: Any | None = None) -> dict[str, int]:
     catalog may publish. New and historical names without a catalog status are
     drafts. Superseded identities carry the successor-aware terminal catalog
     status, while exhausted identities remain drafts because they never entered
-    a catalog and are quarantined for repair.
+    a catalog. Exhaustion is a pipeline outcome, not a validation result, so
+    this reconcile never changes ``validation_status``.
 
     Approval is the sole writer of ``'active'``. Accordingly, this reconcile
     makes superseded pipeline identities ``'superseded'``, repairs every
-    exhausted identity to ``status='draft'`` and
-    ``validation_status='quarantined'``, and makes any remaining null status
-    ``'draft'``. It never writes ``'deprecated'``; that transition belongs only
-    to withdrawal of a name that was actually active. Terminal transitions run
-    first so each changed name is counted once.
+    exhausted identity to ``status='draft'``, and makes any remaining null
+    status ``'draft'``. It never writes ``'deprecated'``; that transition
+    belongs only to withdrawal of a name that was actually active. Terminal
+    transitions run first so each changed name is counted once.
 
     Returns dict: {drafted, superseded, quarantined, deprecated, total_changed}.
     """
@@ -13506,15 +13506,12 @@ def reconcile_catalog_status(gc: Any | None = None) -> dict[str, int]:
             RETURN count(sn) AS changed
             """
         )
-        quarantined_rows = client.query(
+        exhausted_rows = client.query(
             """
             MATCH (sn:StandardName)
             WHERE sn.name_stage = 'exhausted'
-              AND (coalesce(sn.status, '') <> 'draft'
-                   OR coalesce(sn.validation_status, '') <> 'quarantined')
-            SET sn.status = 'draft',
-                sn.validation_status = 'quarantined',
-                sn.updated_at = datetime()
+              AND coalesce(sn.status, '') <> 'draft'
+            SET sn.status = 'draft', sn.updated_at = datetime()
             RETURN count(sn) AS changed
             """
         )
@@ -13531,20 +13528,20 @@ def reconcile_catalog_status(gc: Any | None = None) -> dict[str, int]:
             client.close()
 
     result = {
-        "drafted": drafted_rows[0]["changed"] if drafted_rows else 0,
+        "drafted": (drafted_rows[0]["changed"] if drafted_rows else 0)
+        + (exhausted_rows[0]["changed"] if exhausted_rows else 0),
         "superseded": superseded_rows[0]["changed"] if superseded_rows else 0,
-        "quarantined": quarantined_rows[0]["changed"] if quarantined_rows else 0,
+        "quarantined": 0,
         "deprecated": 0,
     }
     result["total_changed"] = sum(result.values())
     if result["total_changed"]:
         logger.info(
             "reconcile_catalog_status: set %d name(s) to draft, %d to "
-            "superseded, and %d exhausted name(s) to draft/quarantined; "
+            "superseded; exhausted names remain validation-neutral; "
             "deprecated writes: 0",
             result["drafted"],
             result["superseded"],
-            result["quarantined"],
         )
     return result
 
@@ -16520,7 +16517,7 @@ def persist_reviewed_name(
                 sn.claim_token                = null,
                 sn.claimed_at                 = null,
                 sn.validation_status = CASE
-                  WHEN $target_stage = 'exhausted' THEN 'quarantined'
+                  WHEN $grammar_issue IS NOT NULL THEN 'quarantined'
                   ELSE sn.validation_status
                 END,
                 sn.validation_issues = CASE
@@ -23523,7 +23520,9 @@ def stop_refine_name_attempt(
                    THEN 'exhausted' ELSE 'reviewed' END AS target_stage
             SET sn.updated_at = datetime(), sn.name_stage = target_stage,
                 sn.validation_status = CASE
-                    WHEN target_stage = 'exhausted' THEN 'quarantined'
+                    WHEN target_stage = 'exhausted'
+                     AND $reason IN ['grammar_invalid', 'vocabulary_gap']
+                    THEN 'quarantined'
                     ELSE sn.validation_status END,
                 sn.refine_stop_reason = CASE
                     WHEN target_stage = 'exhausted' AND NOT $terminal
