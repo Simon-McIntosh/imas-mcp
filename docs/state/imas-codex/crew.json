@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T11:05:39",
+  "updated": "2026-09-06T11:08:42",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -87435,6 +87435,254 @@
           "role": "test",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260906T082810344178-n-swct-a-voided-dimension-carries-its-reason",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a76",
+        "node": "n-swct-a-voided-dimension-carries-its-reason",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 4306,
+                "cached_input_tokens": 221801,
+                "input_tokens": 226109,
+                "output_tokens": 3189,
+                "reasoning_output_tokens": 440,
+                "total_tokens": 229298,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "BUILD THE SANCTIONED ROUTE. An earlier node proved none exists and sized this work; you are executing that sizing. Do NOT void anything on the live graph in this node - the route is the deliverable, applying it to the 78-identity cohort is a separate node.\n\nTHE REQUIREMENT, from the plan owner: a review dimension can be voided, and the void is recorded in the graph when it is applied, carrying the REASONING for the void, so a name later produced or accepted on the strength of the surviving dimensions can be traced back to why the voided one was discarded. Evidence is kept and never deleted - the original per-dimension score is still returned by whatever accessor returns it today, and carries a void marker beside it.\n\nTHE PRECEDENT TO MIRROR is the VocabGap editorial field group at imas_codex/schemas/standard_name.yaml:2434-2454, which carries editorial_grammar_signature, editorial_grammar_version, editorial_active, editorial_invalidated_at, editorial_invalidation_actor, editorial_invalidation_reason and editorial_invalidation_grammar_signature. It lives on a different node type so it is not reusable as-is, but its shape is right: an active flag, a timestamp, an actor, a reason, and the grammar signature in force when the decision was made. Your marker carries all five.\n\nTHE SHAPE IS DECIDED, so do not weigh alternatives: use a structured per-dimension record, one entry per voided dimension, each carrying the dimension name, the actor, the reason, the timestamp and the grammar signature. A flat scalar field group is ruled out because one review has several dimensions and any subset may be voided, so a second void would overwrite the first.\n\nTHE HAZARD THAT MATTERS MOST, and the reason this is one node and not two: A MARKER NOTHING CONSULTS IS WORSE THAN NO MARKER, because it reports a protection it does not provide. imas_codex/standard_names/graph_ops.py:5941-5964 is update_review_aggregates; it averages r.score over every HAS_REVIEW edge and is both axis-blind and method-blind. So answer this wiring question FIRST, before writing any schema, and state the answer in your report: is a StandardNameReview's `score` derived from its per-dimension scores, or stored independently? If it is derived, recompute that review's score from the surviving dimensions when a void is applied, which makes every existing reader of r.score honour the void with no further change - prefer that route where the code allows it. If it is stored independently, name every consumer and wire each one. Either way, audit and report every reader of the per-dimension scores and of the review score: update_review_aggregates, the axis-specific score mirrors its docstring mentions, benchmark.py, campaign_pricing.py, and anything else your grep finds. A consumer you did not check is a consumer that silently ignores the void.\n\nALSO REQUIRED: the void writes a change-ledger record, the same way a physics judgement already does. imas_codex/standard_names/attachment_audit.py:2300 detach_one_attachment writes a StandardNameChange so the judgement and its reason survive in the ledger; a dimension void is the same kind of act and needs the same durability. Reuse that ledger surface rather than inventing a second audit trail.\n\nREFUSE, with the reason named and nothing written: voiding a dimension that does not exist on that review; voiding the last surviving dimension, because a review with every dimension void is not evidence of anything and must be handled as a whole-review decision instead; voiding without a reason, because the reason is the point; and re-voiding an already-voided dimension, which must leave exactly one record rather than accumulating a second.\n\nCODEGEN: after changing the schema run, from inside your worktree,\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync build-models --force\nDo NOT run uv sync from the worktree - it repoints the shared environment at your tree and breaks it for every peer. NEVER STAGE THE GENERATED FILES: models.py, dd_models.py, config/models.py and schema_context_data.py are gitignored build products, and staging one is a defect even though it will look like part of your change.\n\nNO CLI VERB IN THIS NODE. imas_codex/cli/sn.py is being written by another worker right now and is not in your scope; a thin command wrapper follows once that lands. Expose the route as a tested function other code can call.\n\nEVIDENCE REQUIRED, in tests/standard_names/test_review_dimension_void.py, every assertion a concrete observation:\n 1. after voiding one dimension, the review's other dimension scores are byte-identical to their pre-void values.\n 2. the score the graph derives for that review equals the arithmetic mean of the surviving dimension scores, asserted against a computed number rather than a range.\n 3. the voided dimension's original numeric score is still returned by the same accessor that returned it before the void, and the void record beside it names the dimension, the actor, the reason, the timestamp and the grammar signature.\n 4. update_review_aggregates run after the void sets review_mean_score to the value computed from the recomputed review scores, asserted against a computed number.\n 5. a second void of the same dimension leaves exactly one void record and does not change any score.\n 6. each of the four refusals exits non-zero AND asserts a zero-row count for the write it would have made.\nRun once at base and once after:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_review_dimension_void.py tests/standard_names/test_multi_reviewer.py -p no:cacheprovider\nYour new tests must fail at base and test_multi_reviewer.py must not lose a passing test. Report both counts.\n\nWrite the consumer audit to /home/ITER/mcintos/.config/reckon/crew/reports/review-dimension-void-route.md, naming every reader you found, whether it now honours the void, and for any that does not, the reason it does not.",
+          "estimated_hours": null,
+          "goal": "A review dimension can be voided through a sanctioned route that records its reasoning in the graph",
+          "id": "n-swct-a-voided-dimension-carries-its-reason",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T082810344178-n-swct-a-voided-dimension-carries-its-reason/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a76",
+          "spec_level": "guided",
+          "time_budget": "60m",
+          "write_paths": [
+            "imas_codex/schemas/standard_name.yaml",
+            "imas_codex/standard_names/graph_ops.py",
+            "tests/standard_names/test_review_dimension_void.py",
+            "/home/ITER/mcintos/.config/reckon/crew/reports/review-dimension-void-route.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "opus-shortfall",
+        "backend": "claude-opus",
+        "local": false,
+        "agent": {
+          "alias": "opus 5",
+          "backend": "claude-opus",
+          "effort": "high",
+          "launch": "cli",
+          "model": "claude-opus-5",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T08:28:18Z",
+        "completed_at": "2026-09-06T09:04:33.708Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 2170,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 2175,
+        "stalled": false,
+        "time_budget": "60m",
+        "base_sha": "8d97fb1d559f9c086c3f858f0d5d3e311cc7cc83",
+        "commits": [
+          "4c7dcb4ab4e128050637ff1de7edb6d2469ee007",
+          "89330181089a265272cff198fdaa1092495c2917"
+        ],
+        "changed_lines": {
+          "added": 816,
+          "removed": 0,
+          "files": 3
+        },
+        "tests_added": 29,
+        "gate": "passed",
+        "gate_check": {
+          "command": "UV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_review_dimension_void.py tests/standard_names/test_multi_reviewer.py -p no:cacheprovider",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T082810344178-n-swct-a-voided-dimension-carries-its-reason/after-void.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T082810344178-n-swct-a-voided-dimension-carries-its-reason/manifest.md",
+        "scope_changed": false,
+        "session_id": "24e4315d-e1a0-4e1e-bcfb-ec54ede75b9b",
+        "budget": {
+          "headroom": "known",
+          "utilisation_pct": 32.0,
+          "rate_limit_type": "seven_day",
+          "rate_limit_period_minutes": null,
+          "resets_at": "2026-09-10T18:00:00Z",
+          "threshold_status": "allowed_warning",
+          "surpassed_threshold": 1,
+          "tokens": {
+            "cache_creation_input_tokens": 171492,
+            "cache_creation_input_tokens_cumulative": 171492,
+            "cache_read_input_tokens": 7870332,
+            "cache_read_input_tokens_cumulative": 7870332,
+            "inference_geo": "not_available",
+            "input_tokens": 100,
+            "input_tokens_cumulative": 100,
+            "output_tokens": 34462,
+            "output_tokens_cumulative": 34462,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": 6.512136000000001,
+          "refusal": false,
+          "detail": "backend reports utilisation and reset time",
+          "cost_usd_cumulative": 6.512136000000001
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 4191,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 4205,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3600,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: All four ordered corrections in sn-grammar-refinement \u00a79 are blocked from imas-codex sn edit (and its sibling sn detach / sn supersede surfaces) by real; reproduced preconditions or a pre-existing REFINED_FROM lineage tangle \u2014 see evidence_inputs and the full report for verbatim CLI output and graph queries. Per the node's hard constraint; execution stopped with the graph unchanged rather than reaching for Cypher.",
+              "elapsed_seconds": 669,
+              "external_wait": null,
+              "log_age_seconds": 491,
+              "log_fresh": true,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/beta-family-corrected.md (only)"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-beta-family-binds-correctly",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly",
+                "session_id": "65312f88-1b49-4e4f-93d8-bbbb654e756b",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 499,
+              "terminal_at": "2026-09-06T08:19:56Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-beta-family-binds-correctly"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 1044.563,
+          "generated_tokens": 34462,
+          "generation_seconds": 472.684,
+          "input_budget_tokens": 1000000,
+          "input_utilisation_pct": 18.5,
+          "machine_seconds": 571.879,
+          "peak_input_tokens": 184706,
+          "tokens_per_second": 72.91,
+          "wall_tokens_per_second": 32.99
+        },
+        "attempt": 2,
+        "attempt_kind": "resume",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swct-a-voided-dimension-carries-its-reason",
+          "session_id": "24e4315d-e1a0-4e1e-bcfb-ec54ede75b9b",
+          "session_source": "pointer",
+          "retained_at": "2026-09-06T09:04:33.708Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names/test_review_dimension_void.py",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
       }
     ],
     "holds": [
@@ -87635,6 +87883,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1798
+    "_version": 1799
   }
 }
