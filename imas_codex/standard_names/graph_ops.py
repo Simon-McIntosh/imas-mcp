@@ -17327,6 +17327,27 @@ class RefinedNamePersistenceRefusal(RuntimeError):
         )
 
 
+def rename_preserves_meaning(old_name: str, new_name: str) -> bool:
+    """True when two spellings denote the same quantity.
+
+    The grammar's intermediate representation is the meaning; the string is
+    one rendering of it. Re-rendering an identity under a corrected operator
+    order or locus tail leaves the IR untouched, so IR equality is the exact
+    test for "the name moved and the quantity did not".
+
+    A spelling either side cannot parse yields no evidence of sameness, and
+    absence of evidence answers False here: carrying an accepted document
+    across a rename that might have changed the meaning would publish a
+    statement nobody wrote about the successor.
+    """
+    from imas_standard_names.grammar import parser as isn_parser
+
+    try:
+        return isn_parser.parse(old_name).ir == isn_parser.parse(new_name).ir
+    except Exception:
+        return False
+
+
 def _classify_refined_name_persistence_refusal(
     tx: Any,
     *,
@@ -17437,7 +17458,14 @@ def persist_refined_name(
 
     1. Compare-and-set the predecessor stage and claim, then provision a
        drafted successor carrying the unit and semantic fields the attachment
-       guard needs.
+       guard needs. When the two spellings parse to the same grammar IR the
+       rename is a re-rendering, so the successor also inherits the
+       predecessor's documentation and its whole docs lifecycle
+       (``docs_stage``, ``docs_chain_length``, ``docs_model``,
+       ``docs_generated_at``) — the description already carried across
+       unchanged, and the two prose fields describe one meaning. Any other
+       rename leaves the docs axis at ``pending`` with no text, because the
+       predecessor's document was written about a different meaning.
     2. Require the full authoritative source set to pass the attachment guard.
     3. Create lineage, supersede the predecessor, and migrate every source
        edge, scalar, upstream projection, and source-path cache.
@@ -17482,6 +17510,7 @@ def persist_refined_name(
     inherit_open_edit = (
         edit_mode is None and edit_reason is None and edit_status is None
     )
+    meaning_preserved = rename_preserves_meaning(old_name, new_name)
 
     escalation_set = ""
     if escalated:
@@ -17570,7 +17599,28 @@ def persist_refined_name(
                         MERGE (new:StandardName {{id: $new_name}})
                         ON CREATE SET new.updated_at = datetime(),
                           new.name_stage        = 'drafted',
-                          new.docs_stage        = 'pending',
+                          // Documentation is prose written about a meaning,
+                          // so it travels with the meaning and not with the
+                          // spelling. A re-rendering keeps the predecessor's
+                          // text and its whole docs lifecycle — the identity
+                          // moved, nothing it documents did. A rename that
+                          // states something else starts the docs axis over,
+                          // because publishing the old document under the new
+                          // meaning would assert what nobody wrote.
+                          new.docs_stage        = CASE
+                            WHEN $meaning_preserved
+                             AND coalesce(old.documentation, '') <> ''
+                            THEN coalesce(old.docs_stage, 'pending')
+                            ELSE 'pending' END,
+                          new.documentation     = CASE
+                            WHEN $meaning_preserved THEN old.documentation
+                            ELSE null END,
+                          new.docs_model        = CASE
+                            WHEN $meaning_preserved THEN old.docs_model
+                            ELSE null END,
+                          new.docs_generated_at = CASE
+                            WHEN $meaning_preserved THEN old.docs_generated_at
+                            ELSE null END,
                           new.validation_status = 'valid',
                           new.origin            = 'pipeline',
                           new.chain_length      = $new_chain_length,
@@ -17581,7 +17631,10 @@ def persist_refined_name(
                           new.refine_attempts   = coalesce(
                             old.refine_attempts, $new_chain_length
                           ),
-                          new.docs_chain_length = 0,
+                          new.docs_chain_length = CASE
+                            WHEN $meaning_preserved
+                            THEN coalesce(old.docs_chain_length, 0)
+                            ELSE 0 END,
                           new.description       = $description,
                           new.kind              = $kind,
                           new.unit              = $unit,
@@ -17686,6 +17739,7 @@ def persist_refined_name(
                         expected_old_stage=expected_old_stage,
                         expected_claim_token=expected_claim_token,
                         inherit_open_edit=inherit_open_edit,
+                        meaning_preserved=meaning_preserved,
                         new_chain_length=new_chain_length,
                         description=description,
                         kind=kind,
