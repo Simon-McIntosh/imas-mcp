@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T09:11:23",
+  "updated": "2026-09-06T09:59:01",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -4072,6 +4072,15 @@
         "created": "2026-09-06"
       },
       {
+        "id": "opus-escalator",
+        "harness": "claude-opus",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-06"
+      },
+      {
         "id": "opus-failreason",
         "harness": "claude-opus",
         "role": "implement",
@@ -4124,6 +4133,15 @@
         "session_model": null,
         "sessions": {},
         "created": "2026-09-05"
+      },
+      {
+        "id": "opus-promptrule",
+        "harness": "claude-opus",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-06"
       },
       {
         "id": "opus-remainder",
@@ -4307,6 +4325,15 @@
         "session_model": null,
         "sessions": {},
         "created": "2026-09-05"
+      },
+      {
+        "id": "son-voidgrammar",
+        "harness": "claude",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-06"
       },
       {
         "id": "spec-axisspell",
@@ -85399,6 +85426,986 @@
           "role": "test",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260906T073950964899-n-sgr-the-review-prompt-stops-restating-the-grammar",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a72",
+        "node": "n-sgr-the-review-prompt-stops-restating-the-grammar",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1818,
+                "cached_input_tokens": 815884,
+                "input_tokens": 817704,
+                "output_tokens": 1055,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 818759,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "imas_codex/llm/prompts/sn/review_names_system.md lines 113 and 114 ask whether prefix operators carry an explicit _of_ scope marker and whether postfix operators are appended. That encodes the convention the lead REPLACED on 2026-09-04 with operator-renders-by-arity, choice single-base-operand-renders-adjacent. Measured consequence: a scored review of 78 migrated names returned a 78 of 78 revision rate, all three reviewers unanimously proposing the pre-ruling spelling, at a cost of 4.19 USD for verdicts that are void. FIRST, THE FALSIFIER, AND STOP IF IT FAILS: the fix rests on the grammar being authoritative, so prove it. Take a sample of at least 10 migrated names, parse and recompose each through the ISN grammar, and confirm compose() returns the MIGRATED spelling rather than the pre-ruling one. If it does not, deleting these criteria would leave the rule unchecked by anything - report that and stop, changing nothing. THEN delete those two criteria. Line 109 of the same prompt already states that structural decomposition is done by the grammar and not by hand, and the round-trip criterion above them already asks whether parse then compose returns the name, so the deleted lines were a second and now-divergent source of truth for a rule the composer owns. Verify the round-trip criterion survives. If a reviewer genuinely needs the ordering stated rather than checked, INJECT it from imas_standard_names at render time as closed_vocab_full already is, never as hand-written prose. Report a rendered before-and-after of the grammar-correctness section, and confirm no other prompt in that directory restates the same rule.",
+          "estimated_hours": null,
+          "goal": "The review prompt stops stating an operator-ordering rule the grammar already enforces",
+          "id": "n-sgr-the-review-prompt-stops-restating-the-grammar",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T073950964899-n-sgr-the-review-prompt-stops-restating-the-grammar/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a72",
+          "spec_level": "guided",
+          "time_budget": "40m",
+          "write_paths": [
+            "imas_codex/llm/prompts/sn/review_names_system.md",
+            "tests/standard_names/test_review_prompt_defers_to_grammar.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "opus-promptrule",
+        "backend": "claude-opus",
+        "local": false,
+        "agent": {
+          "alias": "opus 5",
+          "backend": "claude-opus",
+          "effort": "high",
+          "launch": "cli",
+          "model": "claude-opus-5",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T07:39:59Z",
+        "completed_at": "2026-09-06T07:48:25.420Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 498,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 506,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "03717d1e6b7359baa679fde90a3d3766eb99428b",
+        "commits": [
+          "a55dff4dc1991517a8b1ae292eee0bec93ad6d91"
+        ],
+        "changed_lines": {
+          "added": 65,
+          "removed": 2,
+          "files": 2
+        },
+        "tests_added": 3,
+        "gate": "passed",
+        "gate_check": {
+          "command": "parse+compose falsifier over the whole 120-name migrated cohort in both directions, plus a new non-vacuity-proved prompt guard and the derived gate over every test referencing the review-names prompt",
+          "exit_status": 0,
+          "log_path": "/tmp/sgr/falsifier.json",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T073950964899-n-sgr-the-review-prompt-stops-restating-the-grammar/manifest.md",
+        "scope_changed": false,
+        "session_id": "fe46aedb-7962-4bef-bf5c-bb7b76f78024",
+        "budget": {
+          "headroom": "known",
+          "utilisation_pct": 74.0,
+          "rate_limit_type": "five_hour",
+          "rate_limit_period_minutes": null,
+          "resets_at": "2026-09-06T10:10:00Z",
+          "threshold_status": "allowed_warning",
+          "surpassed_threshold": 1,
+          "tokens": {
+            "cache_creation_input_tokens": 93829,
+            "cache_creation_input_tokens_cumulative": 93829,
+            "cache_read_input_tokens": 3758568,
+            "cache_read_input_tokens_cumulative": 3758568,
+            "inference_geo": "not_available",
+            "input_tokens": 90,
+            "input_tokens_cumulative": 90,
+            "output_tokens": 21482,
+            "output_tokens_cumulative": 21482,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": 3.3550739999999997,
+          "refusal": false,
+          "detail": "backend reports utilisation and reset time",
+          "cost_usd_cumulative": 3.3550739999999997
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3300,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: The measure is partly unmet. The stage-movement figures ARE produced and; ARE zero; with both causes established; but the node ran out of its 55m; fence with 5 of 7 scoped invocations unrun and the Layer 3 rollup missing; on the two that did run. The unmet condition is wall clock; not budget:; $4.19 of an authorised $50 was spent; and the remaining work is ~$0.75.",
+              "elapsed_seconds": 2528,
+              "external_wait": null,
+              "log_age_seconds": 1646,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/drafted-successors-review.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-swct-the-drafted-successors-earn-acceptance",
+              "phase": "starting",
+              "plan": "sn-west-cohort-treatment",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance",
+                "session_id": "e173a3db-d9ac-4583-a818-6ac8bffc5ebe",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 1666,
+              "terminal_at": "2026-09-06T07:12:11Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swct-the-drafted-successors-earn-acceptance"
+            },
+            {
+              "budget_overrun": true,
+              "budget_overrun_seconds": 590,
+              "budget_seconds": 2100,
+              "classification": "completed_unpromoted",
+              "detail": "the worker manifest reports completion and the run is still a pointer; promoting it moves the delivered record into the repository ledger",
+              "elapsed_seconds": 2690,
+              "external_wait": null,
+              "log_age_seconds": 1223,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none (report-only role; read-only repository \u2014 no code change)"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T063434202964-n-sli-can-these-defects-still-be-minted/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "complete",
+              "manifest_status": "complete",
+              "marker": null,
+              "needs_help_complete": null,
+              "next_action": "reckon crew complete --run r-20260906T063434202964-n-sli-can-these-defects-still-be-minted --gate <verdict> --commit none (report-only role; read-only repository \u2014 no code change)",
+              "node": "n-sli-can-these-defects-still-be-minted",
+              "phase": "starting",
+              "plan": "sn-lifecycle-integrity",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T063434202964-n-sli-can-these-defects-still-be-minted",
+              "session": "ship-s10-20260905",
+              "terminal_age_seconds": 1289,
+              "terminal_at": "2026-09-06T07:18:28Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-can-these-defects-still-be-minted"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 1293,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 1307,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 502.577,
+          "generated_tokens": 21482,
+          "generation_seconds": 289.872,
+          "input_budget_tokens": 1000000,
+          "input_utilisation_pct": 10.7,
+          "machine_seconds": 212.705,
+          "peak_input_tokens": 107043,
+          "tokens_per_second": 74.11,
+          "wall_tokens_per_second": 42.74
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-review-prompt-stops-restating-the-grammar",
+          "session_id": "fe46aedb-7962-4bef-bf5c-bb7b76f78024",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T07:48:25.420Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260906T063434202964-n-sli-can-these-defects-still-be-minted",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-can-these-defects-still-be-minted",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1533,
+                "cached_input_tokens": 720565,
+                "input_tokens": 722100,
+                "output_tokens": 839,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 722939,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "The graph half is already measured and is NOT your job: no StandardNameSource has entered status stale since 2026-07-04, while 30 attachment-conflict rows were re-attempted on 2026-09-04 and all 30 re-failed. So the second mechanism is proven live and the first is only proven quiet. This is a CODE question. For EACH of the two, find the path that produces it, cite file and line, and classify it CLOSED (path gone or unreachable), GUARDED (exists but a named check refuses the condition - cite the guard and say what happens when it trips) or OPEN (would produce the same row again). For the stale path specifically: does a DD refresh that marks a backing IMASNode lifecycle_status removed still drive its bound source to stale with no successor? If yes the 18 are not residue and the next refresh re-mints them. For the attachment path: name the routing decision that puts a proposal onto an identity another source already feeds, and say whether the attachment guard refuses it, admits it, or is never consulted - the third is the likely answer and it matters, because a guard that refuses only after the wrong identity is claimed records the conflict rather than preventing it. Where a path is OPEN do not fix it; state what closing it would require. Report only: no code change, no graph write.",
+          "estimated_hours": null,
+          "goal": "A verdict on whether the code paths that mint removed-source and attachment-conflict rows can still fire today",
+          "id": "n-sli-can-these-defects-still-be-minted",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T063434202964-n-sli-can-these-defects-still-be-minted/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "test",
+          "section": "\u00a75",
+          "spec_level": "open",
+          "time_budget": "35m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/defect-generators-still-live.md"
+          ]
+        },
+        "role": "test",
+        "spec_level": "open",
+        "member": "clive-ledger",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "xhigh",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T06:34:44Z",
+        "completed_at": "2026-09-06T07:19:34.534Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 2670,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 2690,
+        "stalled": false,
+        "time_budget": "35m",
+        "base_sha": "71217f5c4e93788e2d6043081cacd5f2387fdaca",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "code-path audit of both defect generators at HEAD, classified closed, guarded or open with file and line",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/defect-generators-still-live.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T063434202964-n-sli-can-these-defects-still-be-minted/manifest.md",
+        "scope_changed": false,
+        "session_id": "eb093dc9-f00b-4e50-bb0b-dc150d5a78bc",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 7509910,
+            "input_tokens_cumulative": 7509910,
+            "output_tokens": 40685,
+            "output_tokens_cumulative": 40685,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": []
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 2686.973,
+          "generated_tokens": 40685,
+          "generation_seconds": 2658.39,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 15.4,
+          "machine_seconds": 28.583,
+          "peak_input_tokens": 156820,
+          "tokens_per_second": 15.3,
+          "wall_tokens_per_second": 15.14
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "report-only audit; read-only repository and no code change",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-can-these-defects-still-be-minted",
+          "session_id": "eb093dc9-f00b-4e50-bb0b-dc150d5a78bc",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T07:19:34.534Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "test",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260906T074206295864-n-sli-the-escalator-seat-returns-no-row",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-the-escalator-seat-returns-no-row",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1475,
+                "cached_input_tokens": 817702,
+                "input_tokens": 819179,
+                "output_tokens": 993,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 820172,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "129 of 132 quorum shortfalls are REAL and share one mechanism: at review/pipeline.py:1400-1412, max_cycles_reached is written on a chain of three or more only in the branch where the ESCALATOR BATCH RETURNED NO ROW for that item, and the two blind seats are then merged by mean. Corroborated on the graph: 77 of the 106 names at reviewed carry review records from exactly TWO distinct models where three were configured. So the escalator seat is configured, is invoked, and produces nothing for a large share of items - and every name behind it is unclaimable and unpublishable. Find out WHY. Distinguish the candidate causes by evidence rather than by plausibility: a request that errored, a response that failed to parse, a response that parsed but was filtered out before persistence, a timeout, a per-item budget refusal, or a model returning an empty or malformed verdict. Read the captured run streams and CLI auto-logs for runs that produced these rows rather than reasoning from the code alone - the code shows where the branch is taken, the logs show why. Report the RATE with a denominator, name the cause with a file and line for the handling that swallows it, and say whether the escalator's output is being discarded silently. If more than one cause is present, give the split. You may fix it ONLY if the cause is a swallowed error whose remedy is to surface it; any change to reviewer routing, chain composition or scoring is a design decision and must be reported rather than taken. This gates 129 names including 13 in the WEST cut cohort.",
+          "estimated_hours": null,
+          "goal": "The cause of the escalator seat producing no row on a three-seat review chain",
+          "id": "n-sli-the-escalator-seat-returns-no-row",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T074206295864-n-sli-the-escalator-seat-returns-no-row/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "open",
+          "time_budget": "45m",
+          "write_paths": [
+            "imas_codex/standard_names/review/pipeline.py",
+            "/home/ITER/mcintos/.config/reckon/crew/reports/escalator-no-row-cause.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "open",
+        "member": "opus-escalator",
+        "backend": "claude-opus",
+        "local": false,
+        "agent": {
+          "alias": "opus 5",
+          "backend": "claude-opus",
+          "effort": "high",
+          "launch": "cli",
+          "model": "claude-opus-5",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T07:42:14Z",
+        "completed_at": "2026-09-06T07:53:06.372Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 646,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 652,
+        "stalled": false,
+        "time_budget": "45m",
+        "base_sha": "03717d1e6b7359baa679fde90a3d3766eb99428b",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "graph census of 2008 disputed name-axis review groups joined against the run ledger and the six retained sn logs, cause traced to a cited code path",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/escalator-no-row-cause.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T074206295864-n-sli-the-escalator-seat-returns-no-row/manifest.md",
+        "scope_changed": false,
+        "session_id": "fb7c97ae-edde-40e5-95ce-a190e10b6720",
+        "budget": {
+          "headroom": "known",
+          "utilisation_pct": 78.0,
+          "rate_limit_type": "five_hour",
+          "rate_limit_period_minutes": null,
+          "resets_at": "2026-09-06T10:10:00Z",
+          "threshold_status": "allowed_warning",
+          "surpassed_threshold": 1,
+          "tokens": {
+            "cache_creation_input_tokens": 129519,
+            "cache_creation_input_tokens_cumulative": 129519,
+            "cache_read_input_tokens": 4293577,
+            "cache_read_input_tokens_cumulative": 4293577,
+            "inference_geo": "not_available",
+            "input_tokens": 88,
+            "input_tokens_cumulative": 88,
+            "output_tokens": 35030,
+            "output_tokens_cumulative": 35030,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": 4.3181685,
+          "refusal": false,
+          "detail": "backend reports utilisation and reset time",
+          "cost_usd_cumulative": 4.3181685
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3300,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: The measure is partly unmet. The stage-movement figures ARE produced and; ARE zero; with both causes established; but the node ran out of its 55m; fence with 5 of 7 scoped invocations unrun and the Layer 3 rollup missing; on the two that did run. The unmet condition is wall clock; not budget:; $4.19 of an authorised $50 was spent; and the remaining work is ~$0.75.",
+              "elapsed_seconds": 2528,
+              "external_wait": null,
+              "log_age_seconds": 1780,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/drafted-successors-review.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-swct-the-drafted-successors-earn-acceptance",
+              "phase": "starting",
+              "plan": "sn-west-cohort-treatment",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance",
+                "session_id": "e173a3db-d9ac-4583-a818-6ac8bffc5ebe",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 1800,
+              "terminal_at": "2026-09-06T07:12:11Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swct-the-drafted-successors-earn-acceptance"
+            },
+            {
+              "budget_overrun": true,
+              "budget_overrun_seconds": 590,
+              "budget_seconds": 2100,
+              "classification": "completed_unpromoted",
+              "detail": "the worker manifest reports completion and the run is still a pointer; promoting it moves the delivered record into the repository ledger",
+              "elapsed_seconds": 2690,
+              "external_wait": null,
+              "log_age_seconds": 1357,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none (report-only role; read-only repository \u2014 no code change)"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T063434202964-n-sli-can-these-defects-still-be-minted/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "complete",
+              "manifest_status": "complete",
+              "marker": null,
+              "needs_help_complete": null,
+              "next_action": "reckon crew complete --run r-20260906T063434202964-n-sli-can-these-defects-still-be-minted --gate <verdict> --commit none (report-only role; read-only repository \u2014 no code change)",
+              "node": "n-sli-can-these-defects-still-be-minted",
+              "phase": "starting",
+              "plan": "sn-lifecycle-integrity",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T063434202964-n-sli-can-these-defects-still-be-minted",
+              "session": "ship-s10-20260905",
+              "terminal_age_seconds": 1423,
+              "terminal_at": "2026-09-06T07:18:28Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-can-these-defects-still-be-minted"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 1427,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 1441,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 649.059,
+          "generated_tokens": 35030,
+          "generation_seconds": 471.391,
+          "input_budget_tokens": 1000000,
+          "input_utilisation_pct": 14.3,
+          "machine_seconds": 177.668,
+          "peak_input_tokens": 142733,
+          "tokens_per_second": 74.31,
+          "wall_tokens_per_second": 53.97
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "cause identified and quantified; the remedy sits in workers.py which this node may not write",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-the-escalator-seat-returns-no-row",
+          "session_id": "fb7c97ae-edde-40e5-95ce-a190e10b6720",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T07:53:06.372Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260906T074404192984-n-swct-the-void-grammar-scores-are-marked",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a76",
+        "node": "n-swct-the-void-grammar-scores-are-marked",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1409,
+                "cached_input_tokens": 819177,
+                "input_tokens": 820588,
+                "output_tokens": 1422,
+                "reasoning_output_tokens": 491,
+                "total_tokens": 822010,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "A scored review on 2026-09-06 produced 200 StandardNameReview records over 78 distinct migrated names, with a 78 of 78 revision rate, because the review prompt asked for an operator convention the lead replaced on 2026-09-04. The lead has ruled: KEEP these records as evidence, NEVER act on their suggested_name, and void the GRAMMAR dimension so a later rescore is not polluted by a score reached under a dead rule. The physics dimension was reached against a correct description and a real source and stays valid. Identify the exact records - the run report at crew/reports/drafted-successors-review.md names the run and the cohort - and report the count you find against the stated 200 over 78. Then find the LEAST INVASIVE SANCTIONED route to void the grammar dimension: a typed resolution or dimension marker the schema already declares is strongly preferred over a bespoke property, and this project's standing rule is to repair through backing code rather than hand-patching graph text. If NO sanctioned route exists, report that plainly with what adding one would take, and change NOTHING - an invented marker no reader consults is worse than the current state, which is the exact defect this sprint has closed three times tonight. Do not delete records, do not touch the physics dimensions, do not change any name_stage, docs_stage or status, and do not act on any suggested_name. Report before and after, and prove idempotence.",
+          "estimated_hours": null,
+          "goal": "The review records scored under the superseded operator rule stop presenting a valid grammar verdict",
+          "id": "n-swct-the-void-grammar-scores-are-marked",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T074404192984-n-swct-the-void-grammar-scores-are-marked/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a76",
+          "spec_level": "guided",
+          "time_budget": "35m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/void-grammar-dimension.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "son-voidgrammar",
+        "backend": "claude",
+        "local": false,
+        "agent": {
+          "alias": "sonnet 5",
+          "backend": "claude",
+          "effort": "high",
+          "launch": "cli",
+          "model": "claude-sonnet-5",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T07:44:13Z",
+        "completed_at": "2026-09-06T07:51:22.125Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 420,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 429,
+        "stalled": false,
+        "time_budget": "35m",
+        "base_sha": "03717d1e6b7359baa679fde90a3d3766eb99428b",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "schema and consumer audit of StandardNameReview for a sanctioned single-dimension void route, plus an exact re-identification of the 200-record cohort",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/void-grammar-dimension.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T074404192984-n-swct-the-void-grammar-scores-are-marked/manifest.md",
+        "scope_changed": false,
+        "session_id": "5e815541-fad8-47ea-9c37-7140537765c2",
+        "budget": {
+          "headroom": "known",
+          "utilisation_pct": 76.0,
+          "rate_limit_type": "five_hour",
+          "rate_limit_period_minutes": null,
+          "resets_at": "2026-09-06T10:10:00Z",
+          "threshold_status": "allowed_warning",
+          "surpassed_threshold": 1,
+          "tokens": {
+            "cache_creation_input_tokens": 137073,
+            "cache_creation_input_tokens_cumulative": 137073,
+            "cache_read_input_tokens": 4718347,
+            "cache_read_input_tokens_cumulative": 4718347,
+            "inference_geo": "not_available",
+            "input_tokens": 84,
+            "input_tokens_cumulative": 84,
+            "output_tokens": 31155,
+            "output_tokens_cumulative": 31155,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": 1.8036794000000003,
+          "refusal": false,
+          "detail": "backend reports utilisation and reset time",
+          "cost_usd_cumulative": 1.8036794000000003
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3300,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: The measure is partly unmet. The stage-movement figures ARE produced and; ARE zero; with both causes established; but the node ran out of its 55m; fence with 5 of 7 scoped invocations unrun and the Layer 3 rollup missing; on the two that did run. The unmet condition is wall clock; not budget:; $4.19 of an authorised $50 was spent; and the remaining work is ~$0.75.",
+              "elapsed_seconds": 2528,
+              "external_wait": null,
+              "log_age_seconds": 1899,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/drafted-successors-review.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-swct-the-drafted-successors-earn-acceptance",
+              "phase": "starting",
+              "plan": "sn-west-cohort-treatment",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance",
+                "session_id": "e173a3db-d9ac-4583-a818-6ac8bffc5ebe",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 1919,
+              "terminal_at": "2026-09-06T07:12:11Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swct-the-drafted-successors-earn-acceptance"
+            },
+            {
+              "budget_overrun": true,
+              "budget_overrun_seconds": 590,
+              "budget_seconds": 2100,
+              "classification": "completed_unpromoted",
+              "detail": "the worker manifest reports completion and the run is still a pointer; promoting it moves the delivered record into the repository ledger",
+              "elapsed_seconds": 2690,
+              "external_wait": null,
+              "log_age_seconds": 1476,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none (report-only role; read-only repository \u2014 no code change)"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T063434202964-n-sli-can-these-defects-still-be-minted/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "complete",
+              "manifest_status": "complete",
+              "marker": null,
+              "needs_help_complete": null,
+              "next_action": "reckon crew complete --run r-20260906T063434202964-n-sli-can-these-defects-still-be-minted --gate <verdict> --commit none (report-only role; read-only repository \u2014 no code change)",
+              "node": "n-sli-can-these-defects-still-be-minted",
+              "phase": "starting",
+              "plan": "sn-lifecycle-integrity",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T063434202964-n-sli-can-these-defects-still-be-minted",
+              "session": "ship-s10-20260905",
+              "terminal_age_seconds": 1542,
+              "terminal_at": "2026-09-06T07:18:28Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-can-these-defects-still-be-minted"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 1546,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 1561,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 425.504,
+          "generated_tokens": 31155,
+          "generation_seconds": 391.409,
+          "input_budget_tokens": 1000000,
+          "input_utilisation_pct": 15.6,
+          "machine_seconds": 34.095,
+          "peak_input_tokens": 156304,
+          "tokens_per_second": 79.6,
+          "wall_tokens_per_second": 73.22
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "no sanctioned void route exists to use, so the measure resolved to the report branch with nothing written",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swct-the-void-grammar-scores-are-marked",
+          "session_id": "5e815541-fad8-47ea-9c37-7140537765c2",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T07:51:22.125Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -85543,6 +86550,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1783
+    "_version": 1790
   }
 }
