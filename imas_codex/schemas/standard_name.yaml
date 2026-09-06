@@ -3698,6 +3698,28 @@ classes:
         description: >-
           JSON-encoded per-dimension reviewer comments matching scores_json
           dimensions. Values are optional strings (null for no comment).
+      voided_dimensions_json:
+        description: >-
+          JSON array of per-dimension void records — the sanctioned way to
+          discard one scored dimension while keeping its evidence. One entry
+          per voided dimension, each a mapping with ``dimension``,
+          ``void_active``, ``voided_at``, ``void_actor``, ``void_reason`` and
+          ``void_grammar_signature`` (the vocabulary digest in force when the
+          void was applied, so a decision taken under a superseded grammar is
+          identifiable later).
+
+          Evidence is kept and never deleted: ``scores_json`` still carries the
+          voided dimension's original numeric score, and ``score`` is
+          recomputed as the mean of the SURVIVING dimensions so that every
+          consumer of the review score — the ``review_mean_score`` aggregate,
+          the canonical-review projection, reviewer benchmarks — honours the
+          void without needing to know about it.
+
+          A dimension is voided at most once: re-voiding is refused rather than
+          appended, so the array never carries two records for one dimension.
+          Voiding the last surviving dimension is refused too — a review with
+          every dimension void is not evidence of anything, and is a
+          whole-review decision instead.
       tier:
         description: Quality tier (outstanding, good, inadequate, poor, unknown)
       comments:
