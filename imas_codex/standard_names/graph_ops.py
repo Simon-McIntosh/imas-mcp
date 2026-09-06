@@ -5724,7 +5724,28 @@ def write_standard_names(
     return written
 
 
-def write_reviews(records: list[dict[str, Any]], *, skip_cost: bool = False) -> int:
+class ReviewWriteResult(int):
+    """Written review count with suggestion-clearing measurements."""
+
+    suggestions_cleared_non_distinct: int
+    suggestions_cleared_unparseable: int
+
+    def __new__(
+        cls,
+        written: int,
+        *,
+        suggestions_cleared_non_distinct: int = 0,
+        suggestions_cleared_unparseable: int = 0,
+    ) -> ReviewWriteResult:
+        result = super().__new__(cls, written)
+        result.suggestions_cleared_non_distinct = suggestions_cleared_non_distinct
+        result.suggestions_cleared_unparseable = suggestions_cleared_unparseable
+        return result
+
+
+def write_reviews(
+    records: list[dict[str, Any]], *, skip_cost: bool = False
+) -> ReviewWriteResult:
     """MERGE ``StandardNameReview`` nodes and ``HAS_REVIEW`` edges from StandardName.
 
     Each record must contain:
@@ -5763,14 +5784,41 @@ def write_reviews(records: list[dict[str, Any]], *, skip_cost: bool = False) -> 
         already persisted inline (crash-safety path) to avoid
         double-counting.
 
-    Returns the number of StandardNameReview records written.
+    Returns the number of StandardNameReview records written, with counts of
+    suggestions cleared as non-distinct or unparseable on the integer result.
     """
     if not records:
-        return 0
+        return ReviewWriteResult(0)
     # Guard: must attach to an existing StandardName.
     valid = [r for r in records if r.get("id") and r.get("standard_name_id")]
     if not valid:
-        return 0
+        return ReviewWriteResult(0)
+
+    from imas_standard_names import compose, parse
+
+    from imas_codex.standard_names.models import suggestion_is_semantically_distinct
+
+    suggestions_cleared_non_distinct = 0
+    suggestions_cleared_unparseable = 0
+    prepared: list[dict[str, Any]] = []
+    for record in valid:
+        proposed_spelling = record.get("suggested_name")
+        if proposed_spelling and not suggestion_is_semantically_distinct(
+            str(record["standard_name_id"]), str(proposed_spelling)
+        ):
+            try:
+                compose(parse(str(proposed_spelling)).ir)
+            except Exception:
+                suggestions_cleared_unparseable += 1
+            else:
+                suggestions_cleared_non_distinct += 1
+            record = {
+                **record,
+                "suggested_name": None,
+                "suggestion_justification": None,
+            }
+        prepared.append(record)
+    valid = prepared
 
     # Auto-inject codex and ISN versions (same pattern as persist_generated_name_batch)
     try:
@@ -5927,8 +5975,18 @@ def write_reviews(records: list[dict[str, Any]], *, skip_cost: bool = False) -> 
                     ],
                 )
 
-    logger.info("Wrote %d StandardNameReview nodes", len(valid))
-    return len(valid)
+    logger.info(
+        "Wrote %d StandardNameReview nodes; cleared suggestions: "
+        "non-distinct=%d, unparseable=%d",
+        len(valid),
+        suggestions_cleared_non_distinct,
+        suggestions_cleared_unparseable,
+    )
+    return ReviewWriteResult(
+        len(valid),
+        suggestions_cleared_non_distinct=suggestions_cleared_non_distinct,
+        suggestions_cleared_unparseable=suggestions_cleared_unparseable,
+    )
 
 
 def update_review_aggregates(
