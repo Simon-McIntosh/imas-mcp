@@ -679,7 +679,7 @@ def _clear_claim(sn_id: str, gc: GraphClient) -> None:
         """
         // APPROVAL_CLEAR_CLAIM
         MATCH (sn:StandardName {id: $id})
-        SET sn.claim_token = null, sn.claimed_at = null
+        SET sn.claim_token = null, sn.claimed_at = null, sn.updated_at = datetime()
         """,
         id=sn_id,
     )
@@ -915,7 +915,8 @@ def resolve_contested_override(
                 sn.edit_status = CASE WHEN sn.edit_mode IN ['docs', 'rename']
                                       THEN 'applied' ELSE sn.edit_status END,
                 sn.contested_resolution = $reason,
-                sn.catalog_approved_at = coalesce(sn.catalog_approved_at, datetime())
+                sn.catalog_approved_at = coalesce(sn.catalog_approved_at, datetime()),
+                sn.updated_at = datetime()
             CREATE (change:StandardNameChange {
               id: 'sn-change:' + randomUUID(),
               from_name: prior_name,
@@ -951,7 +952,8 @@ def revert_contested(name: str, *, reason: str, gc: GraphClient | None = None) -
             MATCH (sn:StandardName {id: $name, name_stage: 'contested'})
             SET sn.name_stage = 'accepted',
                 sn.contested_resolution = $reason,
-                sn.edit_status = null
+                sn.edit_status = null,
+                sn.updated_at = datetime()
             RETURN sn.id AS id
             """,
             name=name,
@@ -1481,7 +1483,8 @@ def undo_approval(
                 sn.catalog_pr_url = null,
                 sn.catalog_merge_commit_sha = null,
                 sn.catalog_reviewer_actor = null,
-                sn.catalog_approved_at = null
+                sn.catalog_approved_at = null,
+                sn.updated_at = datetime()
             RETURN sn.id AS id ORDER BY id
             """,
             pr=pr_number,
@@ -1502,7 +1505,8 @@ def undo_approval(
                     sn.catalog_pr_number = null,
                     sn.catalog_pr_url = null,
                     sn.catalog_merge_commit_sha = null,
-                    sn.catalog_reviewer_actor = null
+                    sn.catalog_reviewer_actor = null,
+                    sn.updated_at = datetime()
                 RETURN sn.id AS id ORDER BY id
                 """,
                 batch=batch,
@@ -1548,7 +1552,8 @@ def mark_catalog_name_approved(
             sn.catalog_pr_url = $pr_url,
             sn.catalog_merge_commit_sha = $merge_commit,
             sn.catalog_reviewer_actor = $reviewer_actor,
-            sn.catalog_approved_at = coalesce(sn.catalog_approved_at, datetime())
+            sn.catalog_approved_at = coalesce(sn.catalog_approved_at, datetime()),
+            sn.updated_at = datetime()
         CREATE (change:StandardNameChange {
           id: 'sn-change:' + randomUUID(),
           from_name: sn.id,
