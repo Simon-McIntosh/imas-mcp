@@ -679,7 +679,8 @@ def _stamp_successor_validation(
         MATCH (sn:StandardName {id: $id})
         SET sn.validation_status = $status,
             sn.validation_issues = $issues,
-            sn.validated_at = datetime()
+            sn.validated_at = datetime(),
+            sn.updated_at = datetime()
         """,
         id=successor,
         status=status,
@@ -860,7 +861,8 @@ def _stamp_edit_fields(
                                         THEN sn.refine_stopped_at ELSE null END,
             sn.refine_collision_name = CASE
                 WHEN $name_hint IS NULL
-                THEN sn.refine_collision_name ELSE null END
+                THEN sn.refine_collision_name ELSE null END,
+            sn.updated_at = datetime()
         """,
         id=sn_id,
         edit_mode=edit_mode,
@@ -1025,7 +1027,8 @@ def apply_edit(
                 """
                 // EDIT_STAMP_REVIEW_ONLY
                 MATCH (sn:StandardName {id: $id})
-                SET sn.edit_refine = false
+                SET sn.edit_refine = false,
+                    sn.updated_at = datetime()
                 """,
                 id=stamped,
             )
@@ -1183,7 +1186,8 @@ def reclassify_kind(
                   AND (n.validation_status = $validation_status
                        OR (n.validation_status IS NULL
                            AND $validation_status IS NULL))
-                SET n.kind = $to_kind
+                SET n.kind = $to_kind,
+                    n.updated_at = datetime()
                 CREATE (change:StandardNameChange {
                   id: $change_id,
                   from_name: $id,
@@ -1516,8 +1520,10 @@ SET old.superseded_from_stage = $predecessor_stage,
       WHEN old.edit_status = 'open' THEN 'applied'
       ELSE old.edit_status
     END,
+    old.updated_at = datetime(),
     target.source_paths = $target_paths,
-    target.name_stage = coalesce($target_revived_stage, target.name_stage)
+    target.name_stage = coalesce($target_revived_stage, target.name_stage),
+    target.updated_at = datetime()
 MERGE (target)-[:REFINED_FROM]->(old)
 RETURN old.name_stage AS old_stage,
        old.superseded_from_stage AS predecessor_stage,
@@ -3198,7 +3204,8 @@ def _apply_docs(
         MATCH (sn:StandardName {id: $id})
         WHERE sn.name_stage = 'accepted'
         SET sn.docs_stage = 'refining', sn.claim_token = $token,
-            sn.claimed_at = datetime()
+            sn.claimed_at = datetime(),
+            sn.updated_at = datetime()
         """,
         id=target,
         token=token,
@@ -3730,7 +3737,8 @@ WHERE elementId(sn) = target.element_id
   AND sn.drain_scope_id IS NULL
   AND sn.drain_scope_claimed_at IS NULL
   AND sn.drain_claim_scope_id IS NULL
-SET sn.name_stage = 'drafted', sn.run_id = $run_id
+SET sn.name_stage = 'drafted', sn.run_id = $run_id,
+    sn.updated_at = datetime()
 RETURN collect(sn.id) AS staged_ids
 """
 
