@@ -8241,8 +8241,11 @@ async def process_review_name_batch(
         # Compute cosine similarity between name-as-text and description.
         # Names below the critical threshold are semantically ambiguous
         # (e.g. "co_passing_density" — density of what?).  Skip the
-        # expensive LLM review and persist a synthetic low score that
-        # records the score; the name is routed to no pool.
+        # expensive LLM review and persist a synthetic low score as a
+        # non-winning diagnostic verdict: the gate's resolution method
+        # records a review_quorum_shortfall, and a refine claim requires
+        # that shortfall to be null — so the row is unclaimable by the
+        # refine_name pool.
         #
         # The name-side text comes from ``semantic_gate_name_text``: a name
         # that is a single defined vocabulary token is scored against the
