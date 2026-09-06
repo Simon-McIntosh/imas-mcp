@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T12:05:40",
+  "updated": "2026-09-06T12:09:30",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -88711,6 +88711,248 @@
           "role": "implement",
           "status": "compatible"
         }
+      },
+      {
+        "run_id": "r-20260906T085606573727-n-sgr-the-normalised-lineage-is-dated",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a79",
+        "node": "n-sgr-the-normalised-lineage-is-dated",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1780,
+                "cached_input_tokens": 259490,
+                "input_tokens": 261272,
+                "output_tokens": 2115,
+                "reasoning_output_tokens": 156,
+                "total_tokens": 263387,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "A REPORT-ONLY NODE. Write no graph row, run no sn edit, sn attach, sn detach or sn supersede, and change no code. Your output is the evidence a decision will be taken on.\n\nTHE PROBLEM, already measured: `sn supersede normalized_toroidal_plasma_beta --into normalized_toroidal_beta --dry-run` refuses with \"name has another successor lineage; fold is ambiguous\", because `normalized_toroidal_plasma_beta` carries THREE outbound REFINED_FROM edges - to `normalized_beta`, to `beta`, and to `normalized_toroidal_beta` - and the verb requires exactly one. That fold is the last of four beta-family corrections and it cannot proceed until somebody decides which edge records the real lineage and which are accretion.\n\nTHE PHYSICS THAT CONSTRAINS THE ANSWER: normalised beta is beta_toroidal divided by normalised plasma current. `beta` is TOTAL beta, the harmonic combination of the poloidal and toroidal components, and is a source-free derived parent. So an edge asserting that the normalised identity was refined from TOTAL beta is physically suspect on its face; say whether the evidence supports or contradicts that reading rather than assuming it.\n\nESTABLISH, FOR EACH OF THE THREE EDGES SEPARATELY: every property the edge itself carries, in full, including any timestamp, actor, model, run id, or refine-event reference. Which SNRun or refine event wrote it, with that run's time and status. Whether the edge is corroborated by anything else in the graph - a HAS_SUCCESSOR edge, a superseded_by scalar, a StandardNameChange ledger row, a HAS_RETRY_EVENT, a matching StandardNameReview - or stands alone with no corroboration. Report a null property as null; do not omit a field because it is empty, because an absent timestamp is itself the finding that an edge cannot be dated.\n\nTHEN ESTABLISH THE FOUR IDENTITIES' OWN STATE: for `normalized_toroidal_plasma_beta`, `normalized_toroidal_beta`, `normalized_beta` and `beta`, give name_stage, status, docs_stage, created_at, updated_at, the count and list of PRODUCED_NAME source paths, and every inbound and outbound REFINED_FROM, HAS_SUCCESSOR and HAS_PARENT edge with the identity at the other end. A named spelling that exists only as a superseded shell with no bindings is a different thing from one with live sources, and the decision turns on which is which.\n\nANSWER THESE FOUR QUESTIONS EXPLICITLY.\nONE. Do the three edges disagree about DIRECTION of lineage, or only about which predecessor? State what REFINED_FROM means in this schema by finding where it is written in the source and citing the file and line, rather than inferring it from the name.\nTWO. Can the three edges be ordered in time? If yes give the order and say which is newest. If any cannot be dated, say so and say what that implies about ordering the others.\nTHREE. Is there a single edge that every other piece of evidence corroborates, or is the set genuinely undetermined by the graph alone? Answer no if that is the answer; an honest undetermined is more useful than a confident guess.\nFOUR. Which single edge would you keep, and what exactly would retiring the other two require - name the verb or the absent verb, because an earlier node established that several beta corrections have no sanctioned route at all and this may be another.\n\nAccess the graph through the project's own driver helper; find how a module under imas_codex/standard_names obtains a session and reuse it. Run python as:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync python\nWrite to /home/ITER/mcintos/.config/reckon/crew/reports/normalized-beta-lineage-tangle.md with the four answers in the first fifteen lines and the per-edge evidence tables after them.",
+          "estimated_hours": null,
+          "goal": "A dated per-edge account of the three competing refine lineages on the normalised beta spelling",
+          "id": "n-sgr-the-normalised-lineage-is-dated",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T085606573727-n-sgr-the-normalised-lineage-is-dated/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "test",
+          "section": "\u00a79",
+          "spec_level": "open",
+          "time_budget": "35m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/normalized-beta-lineage-tangle.md"
+          ]
+        },
+        "role": "test",
+        "spec_level": "open",
+        "member": "clive-tail",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "xhigh",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T08:56:24Z",
+        "completed_at": "2026-09-06T09:49:59.203Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 3195,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 3215,
+        "stalled": false,
+        "time_budget": "35m",
+        "base_sha": "105cfac681a9a9305bf3ddf8eae123d989222785",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "per-edge property and ledger-provenance account of every REFINED_FROM relationship incident to the normalised spelling, with the fold guard predicate read from source",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/normalized-beta-lineage-tangle.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T085606573727-n-sgr-the-normalised-lineage-is-dated/manifest.md",
+        "scope_changed": false,
+        "session_id": "8575c313-dfa9-457d-a215-99d927934a2d",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 3030123,
+            "input_tokens_cumulative": 3030123,
+            "output_tokens": 26775,
+            "output_tokens_cumulative": 26775,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 5875,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 5889,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3600,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: All four ordered corrections in sn-grammar-refinement \u00a79 are blocked from imas-codex sn edit (and its sibling sn detach / sn supersede surfaces) by real; reproduced preconditions or a pre-existing REFINED_FROM lineage tangle \u2014 see evidence_inputs and the full report for verbatim CLI output and graph queries. Per the node's hard constraint; execution stopped with the graph unchanged rather than reaching for Cypher.",
+              "elapsed_seconds": 669,
+              "external_wait": null,
+              "log_age_seconds": 2176,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/beta-family-corrected.md (only)"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-beta-family-binds-correctly",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly",
+                "session_id": "65312f88-1b49-4e4f-93d8-bbbb654e756b",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 2183,
+              "terminal_at": "2026-09-06T08:19:56Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-beta-family-binds-correctly"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 1177.101,
+          "generated_tokens": 26775,
+          "generation_seconds": 1174.112,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 18.7,
+          "machine_seconds": 2.989,
+          "peak_input_tokens": 190540,
+          "tokens_per_second": 22.8,
+          "wall_tokens_per_second": 22.75
+        },
+        "attempt": 3,
+        "attempt_kind": "resume",
+        "no_commit": "report-only; zero graph writes, zero sn calls, zero code changes",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-normalised-lineage-is-dated",
+          "session_id": "8575c313-dfa9-457d-a215-99d927934a2d",
+          "session_source": "pointer",
+          "retained_at": "2026-09-06T09:49:59.203Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "test",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -88939,6 +89181,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1809
+    "_version": 1810
   }
 }
