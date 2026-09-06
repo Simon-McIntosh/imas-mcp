@@ -112,11 +112,21 @@ def test_dd_gap_evidence_rejects_lifecycle_or_behavior_fields(forbidden: str) ->
         DDGapEvidence.model_validate({**EVIDENCE, forbidden: "accepted"})
 
 
-def test_reference_evidence_requires_path_and_value_together() -> None:
+def test_half_reference_pair_is_repaired_and_recorded() -> None:
+    """A model-generated half pair is repaired at the response boundary.
+
+    The write boundary keeps its own hard raise on the same invariant
+    (write_dd_gaps in dd_gaps.py); only the model-parse boundary narrows.
+    """
     payload = {**EVIDENCE}
     payload.pop("reference_value")
-    with pytest.raises(ValidationError, match="reference_path and reference_value"):
-        DDGapEvidence.model_validate(payload)
+
+    evidence = DDGapEvidence.model_validate(payload)
+
+    assert evidence.reference_path is None
+    assert evidence.reference_value is None
+    assert evidence.reference_evidence_repaired is True
+    assert evidence.reference_field_missing == "reference_value"
 
 
 def test_schema_exposes_only_schema_owned_dd_gap_kinds() -> None:
