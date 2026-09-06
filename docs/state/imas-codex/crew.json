@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T13:02:44",
+  "updated": "2026-09-06T13:10:33",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -4045,7 +4045,8 @@
         "session_id": "bbf54e3e-1b44-4f14-a4d1-ab085184e8bf",
         "session_model": "claude-sonnet-5",
         "sessions": {
-          "{\"alias\":\"sonnet 5\",\"backend\":\"claude\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"claude-sonnet-5\",\"sandbox\":\"worktree-full\"}": "bbf54e3e-1b44-4f14-a4d1-ab085184e8bf"
+          "{\"alias\":\"sonnet 5\",\"backend\":\"claude\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"claude-sonnet-5\",\"sandbox\":\"worktree-full\"}": "bbf54e3e-1b44-4f14-a4d1-ab085184e8bf",
+          "{\"alias\":\"opus 5\",\"backend\":\"claude-opus\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"claude-opus-5\",\"sandbox\":\"worktree-full\"}": "b946b2da-c6fa-4b6d-b0be-63f2640c0269"
         },
         "created": "2026-09-05"
       },
@@ -90116,6 +90117,197 @@
           "role": "implement",
           "status": "compatible"
         }
+      },
+      {
+        "run_id": "r-20260906T103758527779-n-sgr-the-normalised-spelling-is-revived",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a79",
+        "node": "n-sgr-the-normalised-spelling-is-revived",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1082,
+                "cached_input_tokens": 511187,
+                "input_tokens": 512271,
+                "output_tokens": 2163,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 514434,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "BOTH VERBS YOU NEED MERGED TO MAIN IN THE LAST HOUR, and your worktree is fresh from main so both are available. `sn remove-lineage SUCCESSOR PREDECESSOR --reason TEXT [--dry-run]` removes exactly one directed REFINED_FROM relationship and writes a StandardNameChange. `sn supersede OLD --into NEW` performs the fold. Read /home/ITER/mcintos/.config/reckon/crew/reports/normalized-beta-lineage-tangle.md for the full per-edge evidence; do not re-derive it.\n\nTHE PHYSICS, which fixes which spelling survives. There are four betas: total beta, poloidal, toroidal, and normalised, with 1/beta = 1/beta_poloidal + 1/beta_toroidal and beta_N = beta_toroidal divided by normalised plasma current. The normalised member's correct spelling is `normalized_toroidal_beta`, which already EXISTS as superseded with no source bindings - so this is a revival, not a mint. The current live spelling `normalized_toroidal_plasma_beta` carries the redundant `plasma` qualifier and folds into it.\n\nTHE STATE, measured today. `normalized_toroidal_plasma_beta` carries FOUR incident REFINED_FROM relationships. Three are outbound and schema-correct (successor to predecessor): to `normalized_beta`, to `beta`, and to `normalized_toroidal_beta`. One is INBOUND and mis-directed: `beta -REFINED_FROM-> normalized_toroidal_plasma_beta`, asserting that live total beta superseded the normalised spelling. That inbound edge is the only relationship whose END node is the name being folded, and it alone trips the fold guard at edit.py:1692-1711.\n\nSTEP ONE: remove the mis-directed edge with `sn remove-lineage beta normalized_toroidal_plasma_beta --reason ...`. The reason must state the mechanism: `beta` is live at name_stage reviewed, a live name cannot head a supersede edge, and total beta did not supersede the normalised quantity. Dry-run it first and read what it reports. The verb refuses if removal would strand a superseded predecessor with no incoming successor edge - if it refuses here, STOP and report the refusal text verbatim, because that would mean this edge is the normalised spelling's only remaining successor record and the fold plan is wrong.\n\nSTEP TWO: fold with `sn supersede normalized_toroidal_plasma_beta --into normalized_toroidal_beta`. Dry-run first. If it still refuses for a lineage reason after step one, STOP and report the refusal verbatim rather than removing further edges to force it through - the evidence says one edge is the blocker, and a second refusal would mean the evidence is incomplete.\n\nDO NOT REMOVE THE OTHER TWO OUTBOUND EDGES in this node. The edge to `beta` is a false record and the edge to `normalized_beta` is a competing one, but a name may legitimately carry several predecessors, neither blocks the fold, and removing a lineage record is not something to do while the reason is merely tidiness. Report their state after the fold instead.\n\nCONSTRAINTS. `sn` verbs only - never Cypher against StandardName or its relationships. Never pipe, tee or redirect imas-codex CLI output; run the command and read its log under ~/.local/share/imas-codex/logs afterwards. Touch no identity other than the four named here. Do not edit any description in this node - `beta` still carries the toroidal definition and that repair is owned elsewhere and needs `beta` to reach accepted first.\n\nEVIDENCE REQUIRED, written to /home/ITER/mcintos/.config/reckon/crew/reports/normalised-beta-folded.md: a before-and-after table over `normalized_toroidal_plasma_beta`, `normalized_toroidal_beta`, `normalized_beta` and `beta` giving per identity the name_stage, status, count of PRODUCED_NAME edges with the DD paths behind them, and every incident REFINED_FROM relationship with its direction and other endpoint. After must show `normalized_toroidal_beta` live and carrying the source bindings the folded spelling held, `normalized_toroidal_plasma_beta` superseded into it, and `beta` with no REFINED_FROM relationship to either. State the total PRODUCED_NAME count across the four before and after and account for every path that moved - none may be lost. Record the StandardNameChange ledger ids both commands wrote.",
+          "estimated_hours": null,
+          "goal": "The normalised beta quantity stands on its correct spelling with the redundant one folded into it",
+          "id": "n-sgr-the-normalised-spelling-is-revived",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T103758527779-n-sgr-the-normalised-spelling-is-revived/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "exact",
+          "time_budget": "45m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/normalised-beta-folded.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "opus-betafamily",
+        "backend": "claude-opus",
+        "local": false,
+        "agent": {
+          "alias": "opus 5",
+          "backend": "claude-opus",
+          "effort": "high",
+          "launch": "cli",
+          "model": "claude-opus-5",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T10:38:10Z",
+        "completed_at": "2026-09-06T11:08:18.090Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 1798,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 1808,
+        "stalled": false,
+        "time_budget": "45m",
+        "base_sha": "657266f402cbd262f8c2e1ecdb963b2be18c7eb1",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "before-and-after census over the four normalised-family identities with every incident lineage relationship and source binding enumerated, and the fold guard re-probed after each repair",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/normalised-beta-folded.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T103758527779-n-sgr-the-normalised-spelling-is-revived/manifest.md",
+        "scope_changed": false,
+        "session_id": "b946b2da-c6fa-4b6d-b0be-63f2640c0269",
+        "budget": {
+          "headroom": "known",
+          "utilisation_pct": 87.0,
+          "rate_limit_type": "five_hour",
+          "rate_limit_period_minutes": null,
+          "resets_at": "2026-09-06T13:40:00Z",
+          "threshold_status": "allowed_warning",
+          "surpassed_threshold": 1,
+          "tokens": {
+            "cache_creation_input_tokens": 122820,
+            "cache_creation_input_tokens_cumulative": 122820,
+            "cache_read_input_tokens": 1670141,
+            "cache_read_input_tokens_cumulative": 1670141,
+            "inference_geo": "not_available",
+            "input_tokens": 30,
+            "input_tokens_cumulative": 30,
+            "output_tokens": 14452,
+            "output_tokens_cumulative": 14452,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": 2.4247205,
+          "refusal": false,
+          "detail": "backend reports utilisation and reset time",
+          "cost_usd_cumulative": 2.4247205
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 11982,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 11997,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 288.944,
+          "generated_tokens": 14452,
+          "generation_seconds": 188.047,
+          "input_budget_tokens": 1000000,
+          "input_utilisation_pct": 13.4,
+          "machine_seconds": 100.897,
+          "peak_input_tokens": 133522,
+          "tokens_per_second": 76.85,
+          "wall_tokens_per_second": 50.02
+        },
+        "attempt": 2,
+        "attempt_kind": "resume",
+        "no_commit": "graph migration through the sanctioned verbs; no repository file was in scope",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-normalised-spelling-is-revived",
+          "session_id": "b946b2da-c6fa-4b6d-b0be-63f2640c0269",
+          "session_source": "pointer",
+          "retained_at": "2026-09-06T11:08:18.090Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -90358,6 +90550,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1819
+    "_version": 1821
   }
 }
