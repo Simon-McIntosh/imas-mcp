@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T17:06:01",
+  "updated": "2026-09-06T18:38:03",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -257,6 +257,15 @@
         "role": "implement",
         "session_id": "01a02a5c-3067-7de0-90c5-7796b7ea5328",
         "created": "2026-08-22"
+      },
+      {
+        "id": "cx-storedenergy",
+        "harness": "codex",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-06"
       },
       {
         "id": "cx-verify",
@@ -93133,6 +93142,281 @@
           "role": "implement",
           "status": "compatible"
         }
+      },
+      {
+        "run_id": "r-20260906T152235745014-n-swcr-the-edit-review-scope-is-priced",
+        "plan": "sn-west-catalog-release",
+        "section": "Hard entry gate",
+        "node": "n-swcr-the-edit-review-scope-is-priced",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1118,
+                "cached_input_tokens": 318300,
+                "input_tokens": 319420,
+                "output_tokens": 434,
+                "reasoning_output_tokens": 193,
+                "total_tokens": 319854,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "PRICE AND PROVE A PAID RUN BEFORE IT IS AUTHORISED. You spend nothing on inference. No review pool, no refine pool, no docs pool may execute. Your deliverable is the selected set and its cost, established by reading the selection path and evaluating it against the live graph.\n\nWHAT IS ABOUT TO BE SPENT. The release cut is blocked because identities renamed by a whole-cohort migration have successors sitting at name_stage drafted with edit_status open, so a cut carries neither spelling and those names silently vanish from the batch. The intended remedy is a paid run of the form:\n  uv run imas-codex sn run --only review --edits\nThat run costs real money per name reviewed. The lead has authorised the spend in principle. Before it happens the coordinator needs to know exactly which names it would touch and what it would cost, because a scope wider than intended pays to review names nobody asked about.\n\nTHE FLAG ALREADY EXISTS, which is the thing to verify rather than assume. imas_codex/cli/sn.py:1550 defines --edits with the help text: scope the run to pending sn-edit successors with edit_status equal to open, no focus or DD path needed because an edit is already focused, pairs with --only review, and if combined with --focus the two scopes are ANDed. Trace where edits_only actually flows from that option into pool selection and into the claim query. Report every file and line in the chain.\n\nMEASURED FIGURES TO CONFIRM OR CORRECT. Against the live graph: 203 StandardName rows carry edit_status = 'open', spread across name_stage as drafted 91, reviewed 50, exhausted 22, accepted 27, superseded 13. Of those 203, exactly 12 resolve inside the WEST release manifest at imas_codex/standard_names/manifests/west_production_dd_paths.yaml, whose 355 source paths produce 227 batch identities. Re-derive all of these yourself and report what you measure; where your figure differs from mine, yours governs and mine was taken earlier in the day when rows were still moving.\n\nTHE QUESTION THAT DECIDES THE COST. Establish which of the 203 the run would actually claim, not which carry the flag's property. A review pool claims on more than one condition, so read the claim query and report every predicate in it: the stage it requires, whether it excludes rows already reviewed, whether it excludes exhausted rows, and whether a docs-axis stage participates. A row carrying edit_status open that the pool cannot claim costs nothing and must not be counted in the price.\n\nTHEN PRICE IT. Report the number of names that would enter the review pool, the number of reviewer seats configured per name for the name axis, and therefore the number of model calls the run implies. Read the configured reviewer chain from the project configuration rather than assuming a count. Give the coordinator a call count, and the per-name seat count you multiplied by.\n\nALSO ANSWER WHETHER NARROWING IS POSSIBLE. Determine whether ANDing --focus over the WEST manifest with --edits narrows the selection to the 12 in-batch rows. If it does, report the exact command line that would review only those 12, because a cut needs only those and the other 191 open edits are not release-blocking. If the two scopes cannot be combined that way, say so and quote the code that prevents it.\n\nA HAZARD YOU MUST CHECK BEFORE USING ANY DRY RUN. A sibling command's dry run was found to mint a real release artifact and advance the release-candidate counter, because its freeze step runs before its dry-run branch is consulted. Another node is repairing that one. Before you use --dry-run on sn run, read its path and establish whether it has any write side effect of its own. If it writes anything, do not use it: read the selection code and evaluate the equivalent query read-only instead. Report which route you took and why.\n\nDO NOT run any pool that calls a model. Do not pass --flush. Do not modify any source file. Do not write any graph row. Your only output is your report.\n\nEVIDENCE REQUIRED: the option-to-claim-query chain with file and line for each hop; every predicate in the claim query; the claimable count against the 203; the 12-in-batch subset listed by name; the model-call price with its seat multiplier; the narrowing command line or the code that forbids it; and a statement of which rows carry edit_status open but cannot be claimed, with the predicate that excludes each group.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, one sentence on what you had to discover versus what this brief handed you, and the count of api_retry records carrying error_status 429 in your own stream, since a fleet-wide concurrency measurement is being collected.",
+          "estimated_hours": 0.8,
+          "goal": "The paid edit-successor review run has a measured selection set and a model-call price before it is authorised",
+          "id": "n-swcr-the-edit-review-scope-is-priced",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-edits-scope/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "test",
+          "section": "Hard entry gate",
+          "spec_level": "exact",
+          "time_budget": "50m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/edit-review-scope-price.md"
+          ]
+        },
+        "role": "test",
+        "spec_level": "exact",
+        "member": "cl-release",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T15:23:07Z",
+        "completed_at": "2026-09-06T15:39:47Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1000,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1000,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "e17675406da3b6798af110e8aa29f4c06fd900d9",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "uv run --no-sync imas-codex sn run --only review_name --edits --dry-run",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/edit-review-scope-price.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-edits-scope/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07750-f314-7a13-b605-81e0d2326c54",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 9251072,
+            "cached_input_tokens_cumulative": 9251072,
+            "input_tokens": 9604161,
+            "input_tokens_cumulative": 9604161,
+            "output_tokens": 33598,
+            "output_tokens_cumulative": 33598,
+            "reasoning_output_tokens": 12110,
+            "reasoning_output_tokens_cumulative": 12110
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 45708,
+          "peak_input_tokens": 18855233
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "a measurement and pricing node: its deliverable is the report, and it was forbidden from changing source, graph rows or running any paid pool",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-edit-review-scope-is-priced",
+          "session_id": "01a07750-f314-7a13-b605-81e0d2326c54",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T15:39:47Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "test",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260906T152327961443-n-sli-the-ratchet-holds-the-measured-floor",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-the-ratchet-holds-the-measured-floor",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 577,
+                "cached_input_tokens": 323403,
+                "input_tokens": 323982,
+                "output_tokens": 304,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 324286,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "LOWER A RATCHET TO WHAT THE PACKAGE NOW MEASURES, AND NAME WHAT REMAINS. One file, one constant, and the four surviving findings documented beside it.\n\nTHE SITUATION. tests/graph/test_updated_at_coverage.py holds a ratcheting baseline for an auditor that finds Cypher statements modifying a StandardName without stamping updated_at. The baseline was set at 55 findings across 15 files. Eight parallel lanes have since landed and every one of them was forbidden from touching this file, precisely so that you could lower it once at the end. That is your node.\n\nMEASURE IT YOURSELF, do not take my number:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync python -c \"\nfrom pathlib import Path\nfrom imas_codex.graph.cypher_property_check import audit_standard_name_touch\nfor f in audit_standard_name_touch(Path('imas_codex/standard_names')):\n    print(f)\"\nI measured 4 at the merged head. If you measure a different number, yours governs and you set the baseline to what you measured.\n\nTHE FOUR I EXPECT, each one a write whose lane argued for leaving it rather than a lane running out of time:\n  catalog_import.py - the provenance receipt writes exactly two properties under a positive allow-list that a locked import-write-authority decision pins, and a test asserts that exact assigned-property set.\n  orphan_sweep.py - the drain-scope lease heartbeat writes only liveness, so stamping it would make the modification time track heartbeat cadence instead of name changes.\n  parents.py, two sites - structural-authority locks.\n\nTHE DELIVERABLE: the baseline equals the measured count, and a reader of that file can tell why each surviving finding survives. Record the four as named, justified entries rather than as an opaque total, so that a future finding cannot hide inside the number. Follow whatever structure the file already uses for its baseline; read it before changing it and match its form rather than imposing a new one.\n\nTHE RATCHET MUST STILL BITE. After your change, prove that the gate fails when a finding is ADDED. Introduce one unstamped StandardName write in a scratch copy outside the repository, or otherwise exercise the check against a deliberately worse input, show the failure, and then show the gate passing against the real tree. A ratchet lowered to a number that no longer catches a regression is worse than one left too high, because it reports a protection it does not provide. This proof is the most important evidence in the node.\n\nDO NOT clear, exempt or suppress any of the four. If you believe one of them should be stamped after all, leave it in the baseline and say so in your follow-ons; changing a write in another lane's file is out of your scope.\n\nYOUR ONLY WRITE PATH is tests/graph/test_updated_at_coverage.py. Touch nothing else.\n\nEVIDENCE REQUIRED: the auditor's output verbatim; the old and new baseline values; the added-finding proof showing the gate failing then passing; and the test result for this file before and after, against a stated base revision, reporting added failures rather than an absolute count.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, one sentence on what you had to discover versus what this brief handed you, and the count of api_retry records carrying error_status 429 in your own stream, since a fleet-wide concurrency measurement is being collected.",
+          "estimated_hours": 0.6,
+          "goal": "The modification-stamp ratchet baseline equals the measured finding count with each survivor justified",
+          "id": "n-sli-the-ratchet-holds-the-measured-floor",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sli-ratchet-floor/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "tests/graph/test_updated_at_coverage.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-vocab",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T15:24:20Z",
+        "completed_at": "2026-09-06T16:35:15.311Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 4236,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 4255,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "e17675406da3b6798af110e8aa29f4c06fd900d9",
+        "commits": [
+          "f155dd6e1cc34449bda5cc1ee7dc2386ce7692cc"
+        ],
+        "changed_lines": {
+          "added": 48,
+          "removed": 18,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "uv run --no-sync pytest tests/graph/test_updated_at_coverage.py",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sli-ratchet-floor/evidence_after_test.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sli-ratchet-floor/manifest.md",
+        "scope_changed": false,
+        "session_id": "7a213bfe-3427-442a-9bbf-b75af8416e67",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 3899463,
+            "input_tokens_cumulative": 3899463,
+            "output_tokens": 43283,
+            "output_tokens_cumulative": 43283,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 4250.156,
+          "generated_tokens": 43283,
+          "generation_seconds": 4185.305,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 12.4,
+          "machine_seconds": 64.851,
+          "peak_input_tokens": 125951,
+          "tokens_per_second": 10.34,
+          "wall_tokens_per_second": 10.18
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-the-ratchet-holds-the-measured-floor",
+          "session_id": "7a213bfe-3427-442a-9bbf-b75af8416e67",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T16:35:15.311Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -93375,6 +93659,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1838
+    "_version": 1841
   }
 }
