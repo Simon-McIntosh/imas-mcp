@@ -1,9 +1,9 @@
 """The sanctioned route that voids one review dimension and records why.
 
 A review dimension can be discredited without the rest of the review being
-wrong — a grammar score taken under a rule that has since been superseded is
-the case this exists for. These tests pin the two halves that make the route
-worth having:
+wrong. The route takes no position on WHAT discredits one — the reason is the
+caller's free text — so these tests pin the two halves that make it worth
+having rather than any particular cause:
 
 * evidence is kept — the voided dimension's original number is still returned
   by the accessor that returned it before, with a void record beside it naming
@@ -23,6 +23,7 @@ statement against Neo4j under the ``graph`` marker.
 from __future__ import annotations
 
 import json
+from unittest.mock import patch
 
 import pytest
 
@@ -39,6 +40,8 @@ SN_ID = "electron_temperature"
 # grammar 12, semantic 18, convention 16, completeness 14 -> 60/80 = 0.75
 DIMENSIONS = {"grammar": 12, "semantic": 18, "convention": 16, "completeness": 14}
 SIGNATURE = "vocab-digest-12b5573"
+# The reason is whatever the caller says it is; the route stores it verbatim.
+REASON = "review prompt encoded a retired operator convention"
 
 
 class FakeGraph:
@@ -141,10 +144,16 @@ def _review(
 
 
 def _void(gc, dimension="grammar", **kwargs):
+    """Apply a void through the real route, with *gc* as the whole graph.
+
+    The route refreshes ``review_mean_score`` through its own client, so the
+    double stands in for that connection too.
+    """
     kwargs.setdefault("actor", "catalog-editor")
-    kwargs.setdefault("reason", "scored under a superseded operator-order rule")
+    kwargs.setdefault("reason", REASON)
     kwargs.setdefault("grammar_signature", SIGNATURE)
-    return void_review_dimension(REVIEW_ID, dimension, gc=gc, **kwargs)
+    with patch("imas_codex.standard_names.graph_ops.GraphClient", lambda *a, **k: gc):
+        return void_review_dimension(REVIEW_ID, dimension, gc=gc, **kwargs)
 
 
 # ---------------------------------------------------------------------------
@@ -208,7 +217,7 @@ def test_voided_score_survives_in_the_canonical_projection():
     record = json.loads(gc.reviews[REVIEW_ID]["voided_dimensions_json"])[0]
     assert record["dimension"] == "grammar"
     assert record["void_actor"] == "catalog-editor"
-    assert record["void_reason"] == "scored under a superseded operator-order rule"
+    assert record["void_reason"] == REASON
     assert record["void_grammar_signature"] == SIGNATURE
     assert record["void_active"] is True
     assert record["voided_at"]
@@ -221,7 +230,56 @@ def test_void_writes_a_change_ledger_record():
     change = gc.changes[0]
     assert change["operation"] == "void_review_dimension"
     assert change["to_name"] == SN_ID
-    assert "superseded operator-order rule" in change["reason"]
+    assert REASON in change["reason"]
+
+
+def test_the_reason_is_the_callers_and_the_signature_is_an_observation():
+    """The route stores the reason verbatim and infers no cause of its own.
+
+    Two voids with unrelated reasons produce records that differ only in what
+    the caller said, and the recorded signature is the vocabulary digest
+    observed at void time — an environment fact, not a justification, and not
+    read back out of the review being voided.
+    """
+    stated = [
+        "review prompt encoded a retired operator convention",
+        "reviewer scored the wrong quantity",
+    ]
+    records = []
+    for reason in stated:
+        gc = FakeGraph([_review()])
+        _void(gc, reason=reason)
+        records.append(json.loads(gc.reviews[REVIEW_ID]["voided_dimensions_json"])[0])
+
+    assert [r["void_reason"] for r in records] == stated
+    # nothing else about the record varies with the reason
+    for record in records:
+        assert record["dimension"] == "grammar"
+        assert record["void_grammar_signature"] == SIGNATURE
+        assert record["void_active"] is True
+    # the signature is not sourced from the review under void
+    assert "isn_version" not in json.dumps(records)
+
+
+def test_signature_is_captured_at_void_time_when_the_caller_omits_it(monkeypatch):
+    """An omitted signature is observed from the environment, not left null."""
+    monkeypatch.setattr(
+        "imas_codex.standard_names.graph_ops.isn_vocabulary_signature",
+        lambda: "observed-at-void-time",
+    )
+    gc = FakeGraph([_review()])
+    monkeypatch.setattr(
+        "imas_codex.standard_names.graph_ops.GraphClient", lambda *a, **k: gc
+    )
+    void_review_dimension(
+        REVIEW_ID,
+        "grammar",
+        actor="catalog-editor",
+        reason=REASON,
+        gc=gc,
+    )
+    record = json.loads(gc.reviews[REVIEW_ID]["voided_dimensions_json"])[0]
+    assert record["void_grammar_signature"] == "observed-at-void-time"
 
 
 # ---------------------------------------------------------------------------
@@ -239,11 +297,16 @@ def test_update_review_aggregates_follows_the_void(monkeypatch):
     update_review_aggregates([SN_ID])
     assert gc.names[SN_ID]["review_mean_score"] == pytest.approx(0.75)
 
-    _void(gc)
-    update_review_aggregates([SN_ID])
+    result = _void(gc)
 
     expected = (0.8 + 0.75) / 2.0  # voided review 0.8, untouched review 0.75
     assert expected == pytest.approx(0.775)
+    # the route leaves no window where the aggregate disagrees with the reviews
+    assert result["aggregates_refreshed"] is True
+    assert gc.names[SN_ID]["review_mean_score"] == pytest.approx(expected)
+
+    # and a later aggregate pass is a no-op rather than a correction
+    update_review_aggregates([SN_ID])
     assert gc.names[SN_ID]["review_mean_score"] == pytest.approx(expected)
 
 
@@ -409,11 +472,10 @@ def test_aggregate_mean_follows_the_void_live(graph_client):
             review_id,
             "grammar",
             actor="catalog-editor",
-            reason="scored under a superseded operator-order rule",
+            reason=REASON,
             grammar_signature=SIGNATURE,
             gc=graph_client,
         )
-        update_review_aggregates([sn_id])
         after = graph_client.query(
             """
             MATCH (sn:StandardName {id: $id})-[:HAS_REVIEW]->(r:StandardNameReview)
@@ -427,7 +489,7 @@ def test_aggregate_mean_follows_the_void_live(graph_client):
         assert row["m"] == pytest.approx(0.8)
         assert row["score"] == pytest.approx(0.8)
         assert json.loads(row["scores_json"])["grammar"] == 12
-        assert json.loads(row["voided"])[0]["void_reason"].startswith("scored under")
+        assert json.loads(row["voided"])[0]["void_reason"] == REASON
     finally:
         graph_client.query(
             """

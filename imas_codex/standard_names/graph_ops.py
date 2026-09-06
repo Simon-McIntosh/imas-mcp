@@ -6007,13 +6007,17 @@ def plan_review_dimension_void(
     route can be honoured by consumers that know nothing about it: every reader
     of ``r.score`` reads the recomputed number.
 
+    Refusals are decided here so that a caller writing only on success cannot
+    half-apply one. What justifies a void is the caller's business; what this
+    enforces is that a void is attributable, reasoned, non-duplicating, and
+    never the whole review.
+
     The original per-dimension scores are NOT modified. ``scores`` is evidence
     and is returned unchanged; the void record sits beside it.
 
     Raises :class:`ReviewDimensionVoidRefused` for the four refusals — an
     absent dimension, the last surviving dimension, an empty reason, and a
-    dimension already voided — so a caller that writes only on success cannot
-    half-apply one.
+    dimension already voided.
     """
     if not str(reason or "").strip():
         raise ReviewDimensionVoidRefused(
@@ -6115,21 +6119,37 @@ def void_review_dimension(
     grammar_signature: str | None = None,
     gc: Any | None = None,
     dry_run: bool = False,
+    refresh_aggregates: bool = True,
 ) -> dict[str, Any]:
     """Void ONE scored dimension of a review and record why in the graph.
 
-    A dimension can be discredited without the rest of the review being wrong —
-    a grammar score taken under a rule that has since been superseded is the
-    case this exists for. Deleting it would destroy the evidence and leave the
-    surviving score unexplained, so the dimension's number stays exactly where
-    it was and gains a void record beside it carrying the actor, the reason,
-    the timestamp and the grammar signature in force.
+    A dimension can be discredited without the rest of the review being wrong.
+    Deleting it would destroy the evidence and leave the surviving score
+    unexplained, so the dimension's number stays exactly where it was and gains
+    a void record beside it carrying the actor, the reason, the timestamp and
+    the vocabulary signature observed at that moment.
+
+    ``reason`` is the caller's free text and carries the entire justification;
+    this route asserts nothing about what discredits a dimension, and must not
+    be read as encoding one cause. The signature and timestamp are recorded as
+    facts about the environment at void time rather than as evidence for the
+    decision — ``isn_version`` is build-time metadata from the installed
+    distribution and reports what was packaged, not which vocabulary or prompt
+    the review ran under, so neither question can be answered after the fact
+    without capturing the answer here.
 
     The review's ``score`` is recomputed over the surviving dimensions. Because
     ``score`` was always a derivation of the per-dimension scores, that single
     write is what makes ``update_review_aggregates``, the canonical-review
     projection, the reviewer benchmarks and every other reader of ``r.score``
     honour the void — a marker nothing consults would be worse than no marker.
+
+    ``review_mean_score`` is the one reader that cannot follow on its own: it is
+    a STORED average, refreshed only when ``update_review_aggregates`` runs. So
+    the void refreshes it for the reviewed name, leaving no window in which the
+    review says one thing and the name-level aggregate another. Pass
+    ``refresh_aggregates=False`` when voiding in bulk and aggregating once at
+    the end.
 
     Also writes a ``StandardNameChange``, the same ledger a detach judgement
     writes, so the decision survives independently of the review node.
@@ -6212,6 +6232,8 @@ def void_review_dimension(
                 ),
                 origin="review_dimension_void",
             )
+            if refresh_aggregates:
+                result["aggregates_refreshed"] = bool(update_review_aggregates([sn_id]))
     finally:
         if own:
             client.close()

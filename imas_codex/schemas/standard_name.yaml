@@ -3704,9 +3704,18 @@ classes:
           discard one scored dimension while keeping its evidence. One entry
           per voided dimension, each a mapping with ``dimension``,
           ``void_active``, ``voided_at``, ``void_actor``, ``void_reason`` and
-          ``void_grammar_signature`` (the vocabulary digest in force when the
-          void was applied, so a decision taken under a superseded grammar is
-          identifiable later).
+          ``void_grammar_signature``.
+
+          ``void_reason`` is free text supplied by the caller and is the only
+          statement of WHY: the route asserts nothing about what discredited
+          the dimension. ``void_grammar_signature`` and ``voided_at`` are facts
+          about the environment at the moment of the void, not a justification
+          for it — the signature is the vocabulary digest observed then, and the
+          timestamp is when the decision was taken. Both are recorded because
+          ``isn_version`` cannot answer either question: it is build-time
+          metadata read from the installed distribution, so it reports what was
+          packaged rather than which vocabulary or prompt the review actually
+          ran under.
 
           Evidence is kept and never deleted: ``scores_json`` still carries the
           voided dimension's original numeric score, and ``score`` is
