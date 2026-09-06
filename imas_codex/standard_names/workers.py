@@ -2572,6 +2572,24 @@ def _enrich_batch_items(items: list[dict]) -> None:
                 if docs:
                     item["dd_paths_docs"] = docs
 
+        # Accepted family siblings — a member composed inside a detected
+        # vector/geometric family follows its accepted siblings' established
+        # spellings rather than inventing one. Mirrors the docs-side
+        # child_components injection (same sort_by_axis_convention ordering,
+        # same {name, description, axis} per-entry fields) in the sibling
+        # direction; the tag is simply absent on any failure.
+        try:
+            from imas_codex.standard_names.enrichment import (
+                attach_family_accepted_siblings,
+            )
+
+            attach_family_accepted_siblings(items, gc=gc)
+        except Exception:
+            logger.debug(
+                "family accepted-sibling enrichment failed",
+                exc_info=True,
+            )
+
 
 #: A DD path segment naming a time derivative. The DD writes the differential
 #: explicitly: the differentiated quantity carries a leading ``d`` and the time
@@ -5665,6 +5683,47 @@ async def compose_batch(
             existing_names_set.update(cluster_names)
     except Exception:
         logger.debug("Cluster-aware existing_names lookup failed", exc_info=True)
+
+    # ── Accepted family siblings into the prompt ───────────────────────
+    # A family member that belongs to a detected vector/geometric family
+    # already carries its accepted siblings (see
+    # attach_family_accepted_siblings / _enrich_batch_items). Fold those
+    # spellings into each item's EXISTING neighbour block — the template
+    # renders hybrid_neighbours as reusable ``name:`` entries — and into the
+    # existing-name roster, so the composer follows the family's established
+    # spelling instead of inventing one. No parallel prompt section is added.
+    for item in batch:
+        sibs = item.get("family_accepted_siblings")
+        if not sibs or not item.get("path"):
+            continue
+        for s in sibs:
+            existing_names_set.add(s["name"])
+        neighbours = item.setdefault("hybrid_neighbours", [])
+        seen_tags = {n.get("tag") for n in neighbours}
+        for s in sibs:
+            tag = f"name:{s['name']}"
+            if tag in seen_tags:
+                continue
+            seen_tags.add(tag)
+            neighbours.append(
+                {
+                    "tag": tag,
+                    "path": s.get("path"),
+                    "ids": "",
+                    "unit": s.get("unit", ""),
+                    "physics_domain": s.get("physics_domain", ""),
+                    "doc_short": (
+                        f"{s.get('description') or ''} (family axis: "
+                        f"{s.get('axis') or ''})"
+                    ).strip(),
+                    "cocos_label": "",
+                    "lifecycle": "accepted",
+                    "node_type": "",
+                    "score": None,
+                    "_family_sibling": True,
+                }
+            )
+
     existing_names = sorted(existing_names_set)[:200]
 
     # ── Render user prompt ─────────────────────────────────────────────
