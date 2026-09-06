@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T14:11:17",
+  "updated": "2026-09-06T15:28:44",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -194,7 +194,8 @@
         "session_id": "01a06b0e-a7f8-7d52-9e78-00f90a86583a",
         "session_model": "gpt-5.6-sol",
         "sessions": {
-          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"medium\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a06b0e-a7f8-7d52-9e78-00f90a86583a"
+          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"medium\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a06b0e-a7f8-7d52-9e78-00f90a86583a",
+          "{\"alias\":\"luna5.6\",\"backend\":\"codex-luna\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-luna\",\"sandbox\":\"worktree-full\"}": "01a076c9-34ae-77a2-a449-e59edb435b6e"
         },
         "created": "2026-09-04"
       },
@@ -90544,6 +90545,853 @@
           "role": "implement",
           "status": "compatible"
         }
+      },
+      {
+        "run_id": "r-20260906T111752209819-n-swcr-the-batch-arithmetic-is-accounted",
+        "plan": "sn-west-catalog-release",
+        "section": "Hard entry gate",
+        "node": "n-swcr-the-batch-arithmetic-is-accounted",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 775,
+                "cached_input_tokens": 614513,
+                "input_tokens": 615290,
+                "output_tokens": 2572,
+                "reasoning_output_tokens": 626,
+                "total_tokens": 617862,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "THE LEAD BELIEVES THE BATCH IS UNDERCOUNTED AND I THINK THEY ARE RIGHT. Establish the arithmetic with evidence and say where the missing names went.\n\nWHAT I HAVE ALREADY ESTABLISHED, so you do not repeat it. The committed manifest imas_codex/standard_names/manifests/west_production_dd_paths.yaml declares `eligible_sources: 355` alongside `raw_leaves: 744`, `after_structural_filter: 507`, `excluded_ineligible: 114`, `removed_no_v4_equivalent: 22`. A release preview taken today reported `manifest_size=355` and `batch_size=224`, of which 191 export and 33 are withheld. And `imas_codex/standard_names/catalog_release.py` contains ZERO occurrences of the word family, while `imas_codex/standard_names/families.py` exists and defines VectorFamily, FamilyMember and detect_families.\n\nTHE POLICY THE LEAD STATES: a family of names is published when ANY ONE of its members is in the WEST batch. Read families.py to establish what a family IS in this codebase - detect_families at families.py:184 and the suffix classifier at :138 - and say precisely which relation it encodes (vector components in one frame, or something wider). Quote its own definition rather than paraphrasing.\n\nANSWER FIVE QUESTIONS, each with a number and the query or file:line that produced it.\n\nONE. How do 355 manifest sources become 224 identities? Give the collapse factor and the largest collapse groups - which identities absorb the most sources, with counts. A line-of-sight point appearing in six diagnostics collapsing to one identity is legitimate; say how much of the 131 difference is that shape and how much is something else.\n\nTWO. Does the release path expand to families at all? Trace from run_review_release at catalog_release.py:1356 to the set of identities it emits, and state whether any step consults families.py, HAS_PARENT, or any sibling relation. If it does not, say so plainly - that is the finding.\n\nTHREE. What would family expansion ADD? For the 224 identities in the batch, compute how many additional accepted catalog identities are family members of a batch identity but are not themselves in the batch. Break that down by the relation you used. This number is the answer to whether 191 is low, so derive it carefully and state the relation explicitly - a reader must be able to disagree with your definition and recompute.\n\nFOUR. What did the previous release actually carry? Find the last catalog release or review branch and count the entries it published. Look for tags matching v0.4.0rc* in this repository, the branch names the release path constructs (review/v0.4.0rc*), any committed catalog artifact under the release or staging directories, and the ExportReport ledger of prior runs. If 355 entries were published before while 224 are selected now, say what changed between the two selections. If you cannot find the previous artifact, say that rather than inferring.\n\nFIVE. Does `sn run --flush` generate the tail? Read the flush flag through cli/sn.py:130 and :647 into the pipeline and state exactly what it gates - which stages run, which names it selects, and whether it would produce accepted names for manifest sources that currently have none. Say how many manifest sources currently have NO accepted standard name at all, because that is the tail the lead is asking about.\n\nAccess the graph through the project's own driver helper - find how a module under imas_codex/standard_names obtains a session and reuse it. Run python as:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync python\nReport only: change no code, write no graph row, run no release. Write to /home/ITER/mcintos/.config/reckon/crew/reports/west-batch-arithmetic.md with the five numbered answers in the first twenty lines and the evidence after. Write the file incrementally as each answer lands rather than at the end.",
+          "estimated_hours": null,
+          "goal": "An account of why the batch selects 224 identities from 355 sources and what family expansion would add",
+          "id": "n-swcr-the-batch-arithmetic-is-accounted",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T111752209819-n-swcr-the-batch-arithmetic-is-accounted/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "test",
+          "section": "Hard entry gate",
+          "spec_level": "open",
+          "time_budget": "45m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/west-batch-arithmetic.md"
+          ]
+        },
+        "role": "test",
+        "spec_level": "open",
+        "member": "clive-census",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "xhigh",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T11:18:01Z",
+        "completed_at": "2026-09-06T12:21:58.824Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 3823,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 3837,
+        "stalled": false,
+        "time_budget": "45m",
+        "base_sha": "7c1fc9e74faf44a934e8929005476fbddd803490",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "manifest resolution run verbatim through the release path plus a full export into a temporary directory, reproducing the preview counts independently",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/west-batch-arithmetic.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T111752209819-n-swcr-the-batch-arithmetic-is-accounted/manifest.md",
+        "scope_changed": false,
+        "session_id": "9d1b9570-e157-4767-a9c7-b8d96cb1365d",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 13562475,
+            "input_tokens_cumulative": 13562475,
+            "output_tokens": 53556,
+            "output_tokens_cumulative": 53556,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 14374,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 14389,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3000,
+              "classification": "completed_unpromoted",
+              "detail": "the worker manifest reports completion and the run is still a pointer; promoting it moves the delivered record into the repository ledger",
+              "elapsed_seconds": 753,
+              "external_wait": null,
+              "log_age_seconds": 494,
+              "log_fresh": true,
+              "manifest_commits": [
+                "2e1840a0e24b247df148eda2d1b2abe1f9541968\"]; changed_paths: [\"imas_codex/standard_names/graph_ops.py",
+                "tests/standard_names/test_suggestion_persist_gate.py"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T105700590642-n-swct-a-respelling-is-not-a-disagreement/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "complete",
+              "manifest_status": "complete",
+              "marker": null,
+              "needs_help_complete": null,
+              "next_action": "reckon crew complete --run r-20260906T105700590642-n-swct-a-respelling-is-not-a-disagreement --gate <verdict> --commit 2e1840a0e24b247df148eda2d1b2abe1f9541968\"]; changed_paths: [\"imas_codex/standard_names/graph_ops.py --commit tests/standard_names/test_suggestion_persist_gate.py",
+              "node": "n-swct-a-respelling-is-not-a-disagreement",
+              "phase": "starting",
+              "plan": "sn-west-cohort-treatment",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T105700590642-n-swct-a-respelling-is-not-a-disagreement",
+              "session": "ship-s10-20260905",
+              "terminal_age_seconds": 514,
+              "terminal_at": "2026-09-06T11:09:24Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swct-a-respelling-is-not-a-disagreement"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 3834.052,
+          "generated_tokens": 53556,
+          "generation_seconds": 3552.71,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 20.6,
+          "machine_seconds": 281.342,
+          "peak_input_tokens": 209837,
+          "tokens_per_second": 15.07,
+          "wall_tokens_per_second": 13.97
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "read-only attribution; the live export was the instrument rather than the subject, and no code or graph row changed",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-batch-arithmetic-is-accounted",
+          "session_id": "9d1b9570-e157-4767-a9c7-b8d96cb1365d",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T12:21:58.824Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "test",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260906T113459858739-n-sgr-the-naming-objections-are-sized",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a78",
+        "node": "n-sgr-the-naming-objections-are-sized",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 544,
+                "cached_input_tokens": 660710,
+                "input_tokens": 661256,
+                "output_tokens": 2234,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 663490,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "A SIZING CENSUS FOR A NAMING TRIAGE. Report only: change no code, write no graph row, run no pipeline, and propose no fix. The lead wants populations so a decision can be costed before anything is regenerated.\n\nFOR EVERY GROUP report two counts separately: over ALL StandardName rows whose status or name_stage is accepted, and restricted to the WEST batch. Derive the batch from imas_codex/standard_names/manifests/west_production_dd_paths.yaml by taking each IDS key under the sources block, joining that IDS name to each path listed beneath it with a slash, and following PRODUCED_NAME from the matching StandardNameSource rows. State the batch size you derived so it can be compared with the 224 a release preview reported. Give up to 8 examples per group chosen to show the range rather than the first 8 alphabetically.\n\nONE - UNDER-DETERMINED LOCUS. Count accepted names ending in each of at_measurement_position, at_outboard_midplane, of_closest_wall_point, at_measurement_point. Then produce the deliverable the lead actually needs: every distinct tail beginning at_ or of_ across the accepted cohort with its usage count, ordered by count descending, top 30. The four named tails are examples; the inventory is what shows which loci are generic.\n\nTWO - GENERIC BASE WITHOUT A QUALIFIER. For each of plasma_current, mhd_energy, effective_charge and gap: report whether the identity exists, its name_stage and status, its bound DD paths, and whether a MORE specific sibling already exists in the cohort, for instance a net or ion or mhd variant. The question behind this is whether the specific name is missing or merely unbound, so answer that per identity.\n\nTHREE - REDUNDANT IDENTITY PAIRS. For each pair give both identities' name_stage, status, docs_stage, PRODUCED_NAME count with DD paths, and any HAS_PARENT or REFINED_FROM relation between them: beta with plasma_beta; x_point with primary_x_point, including every radial and vertical variant of either that exists. For the x_point group state which of the four combinations of two spellings by two components are present and which are absent.\n\nFOUR - INCOMPLETE COORDINATE SETS. Accepted identities of the shape radial_coordinate_of_something or radial_position_of_something, or otherwise carrying a radial component, where NO vertical sibling identity exists in the accepted cohort; and the mirror case. Report the count of incomplete sets and list up to 12 naming the missing member. Use radial_coordinate_of_poloidal_field_coil as the worked example and state whether its vertical partner exists.\n\nFIVE - FIT AND CONSTRAINT ARTIFACTS NAMED AS QUANTITIES. Count accepted identities whose name contains weight, constraint, reconstructed or measured AND whose bound DD path lies under a constraints or fit subtree. Then read imas_codex/core/node_categories.py: the manifest declares its eligibility policy as sn_source_categories over quantity, geometry and coordinate, excluding fit_artifact. Report whether these identities were minted from sources that policy should have excluded, citing the category each source actually carries. equilibrium_weight_of_flux_loop is the lead's example and is already superseded, so report whether the CLASS still has live members.\n\nSIX - GEOMETRY GROUPING GAP. imas_codex/standard_names/families.py detects families by axis suffix through the map named _SUFFIX_TO_AXIS, which covers r, z, phi, tor, pol, x and y. Count DD structural parents under a geometry or outline subtree that carry BOTH an axis-suffixed leaf and at least one non-axis leaf such as width, height, thickness, phi_extensions, length, radius or angle. Those are the geometric objects whose non-axis fields the current detector cannot see. Report the count, and for up to 10 give the parent path with its axis leaves and its invisible leaves listed separately.\n\nAccess the graph through the project's own driver helper - find how a module under imas_codex/standard_names obtains a session and reuse it. Run python as:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync python\nWrite to /home/ITER/mcintos/.config/reckon/crew/reports/naming-triage-sizing.md with a summary table of the six counts at the top. WRITE THE FILE INCREMENTALLY as each group lands and update the summary table as you go, because a partial census naming three groups is usable while a deferred one is indistinguishable from a crash.",
+          "estimated_hours": null,
+          "goal": "A population count for every naming objection family over the accepted cohort and the WEST batch",
+          "id": "n-sgr-the-naming-objections-are-sized",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T113459858739-n-sgr-the-naming-objections-are-sized/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "test",
+          "section": "\u00a78",
+          "spec_level": "open",
+          "time_budget": "50m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/naming-triage-sizing.md"
+          ]
+        },
+        "role": "test",
+        "spec_level": "open",
+        "member": "clive-scout",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "xhigh",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T11:35:08Z",
+        "completed_at": "2026-09-06T12:38:24.624Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 3777,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 3796,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "d8b61496c05c3420fa517c6a881e54a638d5bc1f",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "six-family population census over the accepted cohort and an independently derived WEST batch, with the full locus-tail inventory",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/naming-triage-sizing.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T113459858739-n-sgr-the-naming-objections-are-sized/manifest.md",
+        "scope_changed": false,
+        "session_id": "157ed71a-f100-449d-b33e-297aaef72327",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 8413146,
+            "input_tokens_cumulative": 8413146,
+            "output_tokens": 54850,
+            "output_tokens_cumulative": 54850,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 15401,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 15416,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3000,
+              "classification": "completed_unpromoted",
+              "detail": "the worker manifest reports completion and the run is still a pointer; promoting it moves the delivered record into the repository ledger",
+              "elapsed_seconds": 753,
+              "external_wait": null,
+              "log_age_seconds": 1521,
+              "log_fresh": false,
+              "manifest_commits": [
+                "2e1840a0e24b247df148eda2d1b2abe1f9541968\"]; changed_paths: [\"imas_codex/standard_names/graph_ops.py",
+                "tests/standard_names/test_suggestion_persist_gate.py"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T105700590642-n-swct-a-respelling-is-not-a-disagreement/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "complete",
+              "manifest_status": "complete",
+              "marker": null,
+              "needs_help_complete": null,
+              "next_action": "reckon crew complete --run r-20260906T105700590642-n-swct-a-respelling-is-not-a-disagreement --gate <verdict> --commit 2e1840a0e24b247df148eda2d1b2abe1f9541968\"]; changed_paths: [\"imas_codex/standard_names/graph_ops.py --commit tests/standard_names/test_suggestion_persist_gate.py",
+              "node": "n-swct-a-respelling-is-not-a-disagreement",
+              "phase": "starting",
+              "plan": "sn-west-cohort-treatment",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T105700590642-n-swct-a-respelling-is-not-a-disagreement",
+              "session": "ship-s10-20260905",
+              "terminal_age_seconds": 1541,
+              "terminal_at": "2026-09-06T11:09:24Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swct-a-respelling-is-not-a-disagreement"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 3792.744,
+          "generated_tokens": 54850,
+          "generation_seconds": 3651.615,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 16.2,
+          "machine_seconds": 141.129,
+          "peak_input_tokens": 164229,
+          "tokens_per_second": 15.02,
+          "wall_tokens_per_second": 14.46
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "read-only sizing census; no code, no graph row, no pipeline",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-naming-objections-are-sized",
+          "session_id": "157ed71a-f100-449d-b33e-297aaef72327",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T12:38:24.624Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "test",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260906T123834785740-n-sgr-a-geometric-object-groups-every-field",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a74",
+        "node": "n-sgr-a-geometric-object-groups-every-field",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2612,
+                "cached_input_tokens": 730376,
+                "input_tokens": 732990,
+                "output_tokens": 3453,
+                "reasoning_output_tokens": 871,
+                "total_tokens": 736443,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "BUILD THE DETECTOR, DO NOT WIRE IT. The lead is mid-triage on naming and has said explicitly that no name-changing work lands yet, so this node delivers a tested class and an impact report, not a behaviour change.\n\nWHAT EXISTS AND WHY IT IS INSUFFICIENT. imas_codex/standard_names/families.py defines FamilyMember at :107 and VectorFamily at :117, whose family_type field already carries the three values physical_vector, geometric_coordinate and derivative - so the class name is a misnomer for something holding three kinds. Detection at detect_families :184 groups DD paths by structural parent and admits a member only when its leaf suffix classifies as an AXIS through _classify_suffix :138 against _SUFFIX_TO_AXIS, which covers r, z, phi, tor, pol, x and y. Consequence, measured: for pf_active/coil/element/geometry/rectangle it sees r and z and CANNOT SEE width or height. A rectangle is four fields describing one object and the detector captures half of it.\n\nTHE MEASURED POPULATION, from /home/ITER/mcintos/.config/reckon/crew/reports/naming-triage-sizing.md section SIX - read it rather than re-deriving. 28 DD structural parents under a geometry or outline subtree carry both an axis-suffixed leaf and at least one non-axis leaf, and they collapse to 9 distinct leaf-sets across owners. The primitives and their invisible fields:\n  rectangle        axis r, z   invisible width, height\n  annulus          axis r, z   invisible radius_inner, radius_outer\n  arcs_of_circle   axis r, z   invisible curvature_radii\n  oblique          axis r, z   invisible alpha, beta, length, length_alpha, length_beta, thickness\n  outline          axis r, z   invisible closed\nOwners repeating these shapes: pf_active/coil, pf_active/coil/element, pf_passive/loop/element, pf_plasma/element, iron_core/segment, ic_antennas/antenna/module/strap, plus four outline parents including cryostat/description_2d/cryostat/unit/element/outline. Two oblique sets drop the length leaf.\n\nTHE DELIVERABLE: a GeometryFamily class in families.py grouping every leaf that jointly describes ONE geometric object, together with a detector that finds them. Key detection on the DD geometric PRIMITIVE - the structural parent's own name is rectangle, annulus, oblique, arcs_of_circle or outline - rather than on leaf suffixes, because the defining property of these sets is that they are the fields of a named shape, and that is exactly what a suffix test cannot see. Carry the primitive kind on the class so a consumer can tell a rectangle from an annulus. Exclude error and uncertainty fields, the *_error_lower, *_error_upper and *_error_index leaves, as the census did.\n\nDO NOT BREAK THE EXISTING DETECTOR. detect_families is consumed at enrichment.py:367-426 and workers.py:9133, both generation-time composers. Its behaviour must be byte-identical after your change: same families, same members, same family_type values, same ordering. Add beside it; do not refactor it, do not rename VectorFamily even though the name is wrong, and do not change _classify_suffix or _SUFFIX_TO_AXIS. If you believe a shared helper is worth extracting, say so in your report and leave it un-extracted.\n\nDO NOT WIRE THE NEW DETECTOR INTO ANY CONSUMER. Neither enrichment.py nor workers.py may change. Instead report what wiring WOULD change: for each of the 9 leaf-sets, which non-axis leaves currently have no standard name at all, and which have one that was composed without knowledge of its siblings. That impact list is what the lead will decide on.\n\nEVIDENCE REQUIRED, in tests/standard_names/test_geometry_family.py: a rectangle parent detected with all four leaves and primitive kind recorded; an oblique parent detected with all eight; an annulus and an arcs_of_circle each detected with their invisible fields; error and uncertainty leaves excluded; a parent carrying ONLY axis leaves not producing a GeometryFamily, so the new detector does not duplicate the old one; and a regression test asserting detect_families returns exactly what it returned before your change over the same input, which is the guard that matters most.\n\nPROVE THE NEW TESTS FAIL AT BASE by exporting the tree with git archive HEAD, copying the new test file into that export, and running it there - a base run with fewer tests is not a base failure. Run once at base and once after:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_geometry_family.py tests/standard_names/test_vector_family.py -p no:cacheprovider\nIf tests/standard_names/test_vector_family.py does not exist, substitute the existing file covering detect_families and say which you chose; it is the blast-radius check and must not lose a passing test. Report both counts and the method.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence naming what you had to discover versus what this brief handed you. Also report, from your own run directory, the count of api_retry records carrying error_status 429 in your stream, because a concurrency measurement is being collected across the fleet.",
+          "estimated_hours": null,
+          "goal": "Every field describing one geometric object is grouped by a detector keyed on the shape rather than on axis suffixes",
+          "id": "n-sgr-a-geometric-object-groups-every-field",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T123834785740-n-sgr-a-geometric-object-groups-every-field/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a74",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/families.py",
+            "tests/standard_names/test_geometry_family.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "cx-verify",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T12:38:47Z",
+        "completed_at": "2026-09-06T12:55:36Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1009,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1009,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "95811e251f8006cbd67bf4454dedf00b204b5ab0",
+        "commits": [
+          "bca0c5fe182fa5557b77f888ed52776a50c81326"
+        ],
+        "changed_lines": {
+          "added": 265,
+          "removed": 0,
+          "files": 2
+        },
+        "tests_added": 8,
+        "gate": "passed",
+        "gate_check": {
+          "command": "UV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_geometry_family.py tests/standard_names/test_families.py -p no:cacheprovider",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T123834785740-n-sgr-a-geometric-object-groups-every-field/after.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T123834785740-n-sgr-a-geometric-object-groups-every-field/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a02da8-07c8-77c2-b63e-2417a7aed6fa",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 10757760,
+            "cached_input_tokens_cumulative": 31299712,
+            "input_tokens": 11081797,
+            "input_tokens_cumulative": 32688326,
+            "output_tokens": 36083,
+            "output_tokens_cumulative": 91201,
+            "reasoning_output_tokens": 12318,
+            "reasoning_output_tokens_cumulative": 29303
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 19218,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 19232,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 120504,
+          "peak_input_tokens": 63988038
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-a-geometric-object-groups-every-field",
+          "session_id": "01a02da8-07c8-77c2-b63e-2417a7aed6fa",
+          "session_source": "pointer",
+          "retained_at": "2026-09-06T12:55:36Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names/test_geometry_family.py",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
+      },
+      {
+        "run_id": "r-20260906T125431462330-n-srr-exhaustion-is-not-a-validation-failure",
+        "plan": "sn-release-readiness",
+        "section": "\u00a77",
+        "node": "n-srr-exhaustion-is-not-a-validation-failure",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1358,
+                "cached_input_tokens": 755836,
+                "input_tokens": 757196,
+                "output_tokens": 1941,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 759137,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "QUARANTINE MEANS TWO DIFFERENT THINGS AND THE GRAPH CANNOT SAY WHICH. Close that conflation.\n\nTHE MEASUREMENT. Across the catalog, 608 identities carry validation_status quarantined. Of those, 239 sit at name_stage exhausted with ZERO entries in validation_issues, and a further 10 superseded rows likewise - so 249 of 608, 41 percent, failed no validation check at all. The cause is cited at imas_codex/standard_names/graph_ops.py:13451-13458, where reconcile_catalog_status forces quarantined onto every exhausted node. Read that block first and confirm it is the writer before changing anything; if the count you measure differs from 249, report yours and work from it.\n\nWHY IT MATTERS RATHER THAN BEING UNTIDY. An operator reading validation_status cannot distinguish a row that FAILED a check from a row that merely reached the end of its attempts. A release gate that withholds on quarantine therefore withholds two populations for one stated reason, and a repair worker asked to clear quarantine has no way to know which rows have anything to fix. This is the same defect shape as one token standing for two conditions that was closed twice today elsewhere in this pipeline.\n\nTHE DELIVERABLE: an exhausted row is no longer described as having failed validation. Prefer the narrowest change that makes the two conditions distinguishable, and choose between these on evidence rather than taste - state which you chose and why. Either stop forcing quarantined on the exhausted transition and let validation_status carry only the outcome of an actual validation, with exhaustion already visible in name_stage; or keep a quarantine marker but record the cause so a reader can separate exhaustion from a failed check. What you must NOT do is leave a row asserting a failure that never happened.\n\nCHECK EVERY CONSUMER BEFORE YOU CHOOSE, and list them in your report. Find every reader of validation_status - the export classifier and the release gate among them - and say for each whether it would change behaviour under your fix. If a reader currently relies on exhausted rows being quarantined in order to withhold them, then removing the marker would let them through, and you must keep them withheld by their real condition instead. That is the trap in this node: the conflation may be load-bearing somewhere, and a fix that silently admits 239 exhausted rows into a release would be far worse than the confusion it removes.\n\nDO NOT BACKFILL THE EXISTING ROWS. This node closes the write path. Repairing the 249 already in the graph is a separate decision, and I want to see your consumer audit before authorising it.\n\nEVIDENCE REQUIRED, in tests/standard_names/test_catalog_status_reconcile.py if it exists or a new file named for the mechanism: an exhausted row not acquiring a validation failure it did not earn; a row that genuinely failed validation still carrying its quarantine and its issues; and a test proving whichever release or export reader you identified still withholds exhausted rows, so the fix cannot be read as admitting them. Prove the new tests fail at base by exporting the tree with git archive HEAD and running the new file against that export; a base run with fewer tests is not a base failure. Run once at base and once after:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names -k \"catalog_status or reconcile or validation\" -p no:cacheprovider\nReport both counts and the method.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, one sentence on what you had to discover versus what this brief handed you, and the count of api_retry records carrying error_status 429 in your own stream.",
+          "estimated_hours": null,
+          "goal": "An exhausted identity is no longer recorded as having failed a validation it never ran",
+          "id": "n-srr-exhaustion-is-not-a-validation-failure",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T125431462330-n-srr-exhaustion-is-not-a-validation-failure/manifest.md",
+          "plan": "sn-release-readiness",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a77",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/graph_ops.py",
+            "tests/standard_names/test_catalog_status_reconcile.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "cx-fitclass",
+        "backend": "codex-luna",
+        "local": false,
+        "agent": {
+          "alias": "luna5.6",
+          "backend": "codex-luna",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-luna",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T12:54:52Z",
+        "completed_at": "2026-09-06T13:23:21Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1709,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1709,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "95811e251f8006cbd67bf4454dedf00b204b5ab0",
+        "commits": [
+          "d42a873d7ec95284381d1e6ca90d2b762c6cb3e4",
+          "490d5c80ad3d685168c2804c486bf01905d06e36"
+        ],
+        "changed_lines": {
+          "added": 138,
+          "removed": 39,
+          "files": 3
+        },
+        "tests_added": 6,
+        "gate": "passed",
+        "gate_check": {
+          "command": "UV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names -k \"catalog_status or reconcile or validation\" -p no:cacheprovider",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T125431462330-n-srr-exhaustion-is-not-a-validation-failure/stream.jsonl",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T125431462330-n-srr-exhaustion-is-not-a-validation-failure/manifest.md",
+        "scope_changed": true,
+        "session_id": "01a076c9-34ae-77a2-a449-e59edb435b6e",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 1153792,
+            "cached_input_tokens_cumulative": 1153792,
+            "input_tokens": 1417886,
+            "input_tokens_cumulative": 1417886,
+            "output_tokens": 9210,
+            "output_tokens_cumulative": 9210,
+            "reasoning_output_tokens": 2362,
+            "reasoning_output_tokens_cumulative": 2362
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 20179,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 20194,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 11572,
+          "peak_input_tokens": 2571678
+        },
+        "attempt": 2,
+        "attempt_kind": "resume",
+        "scope_acceptances": [
+          {
+            "path": "tests/standard_names/test_refine_name_chain.py",
+            "reason": "the one contract that pinned the removed unconditional quarantine; I authorised repointing it after re-running the file myself and confirming it failed for that reason"
+          }
+        ],
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-srr-exhaustion-is-not-a-validation-failure",
+          "session_id": "01a076c9-34ae-77a2-a449-e59edb435b6e",
+          "session_source": "pointer",
+          "retained_at": "2026-09-06T13:23:21Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
       }
     ],
     "holds": [
@@ -90762,13 +91610,13 @@
         "backend": "codex-luna",
         "purpose": "dispatch",
         "opened_at": "2026-09-06T09:54:19Z",
-        "closed_at": null,
-        "held_seconds": null,
+        "closed_at": "2026-09-06T12:54:45Z",
+        "held_seconds": 10826,
         "utilisation_pct": 96.0,
         "resets_at": "2026-09-11T04:24:27Z",
         "effective_ceiling_pct": 95.0,
         "reason": "utilisation 96% with burn multiple 3.0x is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
-        "closed_by_purpose": null,
+        "closed_by_purpose": "dispatch",
         "resumption_fired": false
       },
       {
@@ -90776,16 +91624,16 @@
         "backend": "codex",
         "purpose": "dispatch",
         "opened_at": "2026-09-06T10:59:06Z",
-        "closed_at": null,
-        "held_seconds": null,
+        "closed_at": "2026-09-06T12:38:43Z",
+        "held_seconds": 5977,
         "utilisation_pct": 98.0,
         "resets_at": "2026-09-11T04:24:27Z",
         "effective_ceiling_pct": 95.0,
         "reason": "utilisation 98% with burn multiple 3.0x is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
-        "closed_by_purpose": null,
+        "closed_by_purpose": "dispatch",
         "resumption_fired": false
       }
     ],
-    "_version": 1822
+    "_version": 1829
   }
 }
