@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T10:59:56",
+  "updated": "2026-09-06T11:05:39",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -87240,6 +87240,201 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260906T081519501537-n-srr-the-cut-blockers-are-counted",
+        "plan": "sn-release-readiness",
+        "section": "\u00a71",
+        "node": "n-srr-the-cut-blockers-are-counted",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1274,
+                "cached_input_tokens": 180926,
+                "input_tokens": 182202,
+                "output_tokens": 1897,
+                "reasoning_output_tokens": 298,
+                "total_tokens": 184099,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "A REPORT-ONLY CENSUS. Write no graph row, change no code, cut no release, and push nothing.\n\nTHE QUESTION: what stands between this head and a cuttable WEST batch pull request on our fork, expressed as counts rather than adjectives.\n\nUSE THE REPOSITORY'S OWN INSTRUMENTS, not a hand-rolled query where one exists. The release workflow is documented in imas_codex/cli/AGENTS.md - read that first and find the release and preview commands it names, including any dry-run or preview mode. Also read the section titled \"Hard entry gate\" in docs/plans/sn-west-catalog-release.html; it states the conditions a cut must satisfy, and your census is against those conditions and not against your own idea of readiness. Never pipe, tee or redirect imas-codex CLI output; run the command and read its log under ~/.local/share/imas-codex/logs afterwards.\n\nANSWER FIVE QUESTIONS, each with a number.\n\nONE. How many StandardName identities would a cut include today? Give the count the release or preview surface itself reports, not a count you derive, and name the command that produced it. If that surface refuses to run, report the refusal text verbatim - a refusal is a finding, not a failure of the node.\n\nTWO. For every identity that is NOT included, give the reason and the count per reason, sorted by count descending. Distinguish at minimum: not yet accepted; accepted with documentation not accepted; missing an embedding; missing a lifecycle field; carrying a review quorum shortfall; deliberately excluded by the exclusion ledger. Report the exclusion-ledger count separately from the defect counts, because an excluded name is not a blocker.\n\nTHREE. Classify each reason from question two into exactly one of three kinds, and say which: A CODE DEFECT that a source change fixes, A GRAPH ROW that a data repair fixes, or A DECISION that only the plan owner can settle. This classification is the deliverable the lead needs, so do not leave a reason unclassified.\n\nFOUR. Check each condition in the hard entry gate against the live state, one row per condition, each marked MET or NOT MET with the number that decides it. Do not soften a NOT MET into a caveat.\n\nFIVE. Name the single largest blocking class by identity count, and state what closing it requires in one sentence.\n\nTwo conditions you may treat as given rather than re-measuring, both established today: 129 identities carry a review quorum shortfall whose cause is an escalator seat the run budget refused, and a write-path fix for that is in flight in another worktree right now; and the four beta identities are being corrected in another worktree, so report their current state without waiting for it.\n\nWrite everything to /home/ITER/mcintos/.config/reckon/crew/reports/west-cut-readiness-census.md with the five numbered answers first and the supporting queries and command transcripts after them. Access the graph through the project's own driver helper - find how a module under imas_codex/standard_names obtains a session and reuse it - and run python as:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync python",
+          "estimated_hours": null,
+          "goal": "A census of what stands between the current head and a cuttable WEST batch pull request",
+          "id": "n-srr-the-cut-blockers-are-counted",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T081519501537-n-srr-the-cut-blockers-are-counted/manifest.md",
+          "plan": "sn-release-readiness",
+          "requires_decisions": [],
+          "role": "test",
+          "section": "\u00a71",
+          "spec_level": "open",
+          "time_budget": "40m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/west-cut-readiness-census.md"
+          ]
+        },
+        "role": "test",
+        "spec_level": "open",
+        "member": "clive-drain",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "xhigh",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T08:15:27Z",
+        "completed_at": "2026-09-06T09:01:51.075Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 2721,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 2784,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "a4ec180a0d58ad481bb1d5329ea94b108a8b1a42",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "release preview over the committed WEST manifest plus the export ledger and the hard entry gate checked condition by condition against live state",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/west-cut-readiness-census.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T081519501537-n-srr-the-cut-blockers-are-counted/manifest.md",
+        "scope_changed": false,
+        "session_id": "50853d97-2c40-4db7-840a-7439675f7044",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": "backpressure",
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 9665256,
+            "input_tokens_cumulative": 9665256,
+            "output_tokens": 52303,
+            "output_tokens_cumulative": 52303,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "run died after 10 consumer-queue retries (api_retry 429); the lane refused (queue full) \u2014 backpressure on an unmetered lane, not a spent budget",
+          "lane_backpressure": true,
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 3420,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 3434,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 2780.602,
+          "generated_tokens": 52303,
+          "generation_seconds": 2003.102,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 19.7,
+          "machine_seconds": 777.5,
+          "peak_input_tokens": 199990,
+          "tokens_per_second": 26.11,
+          "wall_tokens_per_second": 18.81
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "report-only census; the release preview was invoked in-process with its artifacts redirected to scratch so the repository stayed read-only",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-srr-the-cut-blockers-are-counted",
+          "session_id": "50853d97-2c40-4db7-840a-7439675f7044",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T09:01:51.075Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "test",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -87440,6 +87635,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1797
+    "_version": 1798
   }
 }
