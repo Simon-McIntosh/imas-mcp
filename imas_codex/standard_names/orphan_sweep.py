@@ -39,7 +39,8 @@ _SWEEP_QUERIES: Final[list[tuple[str, str]]] = [
                OR sn.claimed_at < datetime() - duration({seconds: $timeout_s}))
         SET sn.name_stage = 'reviewed',
             sn.claim_token = null,
-            sn.claimed_at  = null
+            sn.claimed_at  = null,
+            sn.updated_at  = datetime()
         RETURN count(*) AS n
         """,
     ),
@@ -52,7 +53,8 @@ _SWEEP_QUERIES: Final[list[tuple[str, str]]] = [
                OR sn.claimed_at < datetime() - duration({seconds: $timeout_s}))
         SET sn.docs_stage  = 'reviewed',
             sn.claim_token = null,
-            sn.claimed_at  = null
+            sn.claimed_at  = null,
+            sn.updated_at  = datetime()
         RETURN count(*) AS n
         """,
     ),
@@ -66,7 +68,8 @@ _SWEEP_QUERIES: Final[list[tuple[str, str]]] = [
           AND NOT sn.name_stage = 'refining'
           AND NOT sn.docs_stage = 'refining'
         SET sn.claim_token = null,
-            sn.claimed_at  = null
+            sn.claimed_at  = null,
+            sn.updated_at  = datetime()
         RETURN count(*) AS n
         """,
     ),
@@ -309,7 +312,8 @@ def recover_manifest_drain_scope(
                             sn.claim_token = CASE WHEN worker_stale THEN null
                               ELSE sn.claim_token END,
                             sn.claimed_at = CASE WHEN worker_stale THEN null
-                              ELSE sn.claimed_at END
+                              ELSE sn.claimed_at END,
+                            sn.updated_at = datetime()
                         REMOVE sn.drain_scope_id, sn.drain_scope_claimed_at,
                                sn.drain_scope_paths, sn.drain_claim_scope_id
                         RETURN count(sn) AS names,
