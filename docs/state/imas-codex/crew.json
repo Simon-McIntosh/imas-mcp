@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T09:59:01",
+  "updated": "2026-09-06T10:19:32",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -4019,9 +4019,11 @@
         "id": "opus-batchreview",
         "harness": "claude-opus",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "e173a3db-d9ac-4583-a818-6ac8bffc5ebe",
+        "session_model": "claude-opus-5",
+        "sessions": {
+          "{\"alias\":\"opus 5\",\"backend\":\"claude-opus\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"claude-opus-5\",\"sandbox\":\"worktree-full\"}": "e173a3db-d9ac-4583-a818-6ac8bffc5ebe"
+        },
         "created": "2026-09-06"
       },
       {
@@ -86406,6 +86408,254 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260906T080359266029-n-sli-an-unfunded-escalator-defers-the-name",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-an-unfunded-escalator-defers-the-name",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2558,
+                "cached_input_tokens": 152494,
+                "input_tokens": 155054,
+                "output_tokens": 2326,
+                "reasoning_output_tokens": 93,
+                "total_tokens": 157380,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "DO NOT EXPLORE. Every coordinate you need is below; read only these three regions of imas_codex/standard_names/workers.py.\n\nTHE DEFECT, measured: 161 of 2008 disputed name-axis review groups have no cycle-2 record because budget_manager.reserve() refused the escalator seat's reservation. The seat is never called, the refusal is recorded into a local list named unfunded, and the branch that publishes the verdict never reads that list.\n\nREGION A, workers.py:7684-7698, the refusal site. Current text begins:\n            cycle_lease = budget_manager.reserve(maximum_exposure, phase=phase)\n            if cycle_lease is None:\n                unfunded.append((cycle_idx, model, maximum_exposure))\n                logger.debug(\nfollowed by a message string ending \"the reviewer was never called\", then return None.\nCHANGE ONE: raise that logger.debug to logger.warning. Its two siblings for an empty response and an unusable response are already logger.warning at 7741 and 7755; a seat that was never called is not less important than one that answered badly.\n\nREGION B, workers.py:7855-7889, the precedent you must mirror. A comment there explains why a base-seat shortfall defers instead of accepting, then reads verbatim:\n    # for a total failure), and count the deferral so the run summary can\n    # surface the shortfall. Cycle 2 need not be considered - it only fires when\n    # both base cycles already succeeded, which is a complete quorum.\nTHAT LAST SENTENCE IS FALSE AND IS THE ROOT OF THE DEFECT. Two base seats that AGREE are a complete quorum; two that DISAGREE are exactly the case the escalator exists to break, so a disagreeing pair with no funded escalator is an INCOMPLETE quorum. Rewrite that sentence to state the true rule. Below it, at 7867-7886, is the pattern to copy: when unfunded is non-empty it joins one entry per refused seat carrying the cycle index, the model name and the dollar exposure into a cause string prefixed \"budget refused\", logs logger.warning naming that cause, calls _record_quorum_incomplete(run_id, review_axis), and returns None.\n\nREGION C, workers.py:7978-7982, the swallow site. Current text verbatim:\n        if disagreement:\n            # Disputed but no escalator available\n            resolution_method = \"max_cycles_reached\"\n        else:\n            resolution_method = \"quorum_consensus\"\nCHANGE TWO, the deliverable: when disagreement is true AND unfunded is non-empty, do NOT set a resolution_method and do NOT publish. Defer exactly as Region B does, building the cause string from unfunded the same way, logging logger.warning saying the disputed name is being deferred because the tie-breaker could not be funded, calling _record_quorum_incomplete(run_id, review_axis), then returning None. Reuse Region B's cause-string construction rather than duplicating it; a small module-level helper taking the unfunded list and returning that string is the right shape, with Region B calling it too. When disagreement is true and unfunded is EMPTY, keep max_cycles_reached exactly as now, because that is the legitimate fewer-than-three-models-configured case and it must stay distinguishable.\n\nDO NOT add a new resolution_method value. The enum is schema-backed and a new token needs codegen and a consumer audit; deferring writes no record at all, which is why it is the cheap correct fix.\n\nEVIDENCE REQUIRED: three tests in tests/standard_names/test_rd_quorum_integrity.py, using that file's existing fixture and mocking style, all three passing after your change.\nTest 1, disagreeing base pair with the cycle-2 reservation refused: assert the function returns None, that _record_quorum_incomplete was called, and that NO review record carrying max_cycles_reached is persisted.\nTest 2, disagreeing base pair with cycle 2 funded and answering: assert the escalator resolution is published as it is today, proving the branch was narrowed rather than disabled.\nTest 3, disagreeing base pair on a two-model profile where no escalator was ever configured: assert max_cycles_reached is still written, proving the legitimate case survives.\n\nNON-VACUOUSNESS IS PART OF THE MEASURE: run all three against the file as it is now BEFORE your change and record the base result in the manifest. Test 1 must FAIL at base, tests 2 and 3 must PASS at base. Report the exact passed and failed counts at base and after.\n\nRun only this command, once at base and once after:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_rd_quorum_integrity.py -p no:cacheprovider\nDo not run the wider suite. Do not touch review/pipeline.py. Do not repair any existing graph row, because this node closes the write path only.",
+          "estimated_hours": null,
+          "goal": "A disputed name whose escalator seat the run budget refused is deferred with its cause named rather than published at a mean score",
+          "id": "n-sli-an-unfunded-escalator-defers-the-name",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080359266029-n-sli-an-unfunded-escalator-defers-the-name/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "imas_codex/standard_names/workers.py",
+            "tests/standard_names/test_rd_quorum_integrity.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-gate",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T08:04:13Z",
+        "completed_at": "2026-09-06T08:15:22.996Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 664,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 669,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "a4ec180a0d58ad481bb1d5329ea94b108a8b1a42",
+        "commits": [
+          "74c55b15d3797a2337faa03d852c05c76dfc88d4"
+        ],
+        "changed_lines": {
+          "added": 160,
+          "removed": 7,
+          "files": 2
+        },
+        "tests_added": 3,
+        "gate": "passed",
+        "gate_check": {
+          "command": "UV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_rd_quorum_integrity.py -p no:cacheprovider",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080359266029-n-sli-an-unfunded-escalator-defers-the-name/after-suite.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080359266029-n-sli-an-unfunded-escalator-defers-the-name/manifest.md",
+        "scope_changed": false,
+        "session_id": "27c3788f-caf7-4ab7-bb43-c55d8f6c3c63",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 4623871,
+            "input_tokens_cumulative": 4623871,
+            "output_tokens": 36780,
+            "output_tokens_cumulative": 36780,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3300,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: The measure is partly unmet. The stage-movement figures ARE produced and; ARE zero; with both causes established; but the node ran out of its 55m; fence with 5 of 7 scoped invocations unrun and the Layer 3 rollup missing; on the two that did run. The unmet condition is wall clock; not budget:; $4.19 of an authorised $50 was spent; and the remaining work is ~$0.75.",
+              "elapsed_seconds": 2528,
+              "external_wait": null,
+              "log_age_seconds": 3098,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/drafted-successors-review.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-swct-the-drafted-successors-earn-acceptance",
+              "phase": "starting",
+              "plan": "sn-west-cohort-treatment",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T063012330031-n-swct-the-drafted-successors-earn-acceptance",
+                "session_id": "e173a3db-d9ac-4583-a818-6ac8bffc5ebe",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 3118,
+              "terminal_at": "2026-09-06T07:12:11Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swct-the-drafted-successors-earn-acceptance"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 2745,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 2759,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 666.336,
+          "generated_tokens": 36780,
+          "generation_seconds": 578.726,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 11.8,
+          "machine_seconds": 87.61,
+          "peak_input_tokens": 119790,
+          "tokens_per_second": 63.55,
+          "wall_tokens_per_second": 55.2
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-an-unfunded-escalator-defers-the-name",
+          "session_id": "27c3788f-caf7-4ab7-bb43-c55d8f6c3c63",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T08:15:22.996Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names/test_rd_quorum_integrity.py",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
       }
     ],
     "holds": [
@@ -86548,8 +86798,64 @@
         "reason": "utilisation 100.0% is at or above the 100.0% ceiling for a resume",
         "closed_by_purpose": "resume",
         "resumption_fired": false
+      },
+      {
+        "hold_id": "hold-codex-20260906080641",
+        "backend": "codex",
+        "purpose": "dispatch",
+        "opened_at": "2026-09-06T08:06:41Z",
+        "closed_at": null,
+        "held_seconds": null,
+        "utilisation_pct": 95.0,
+        "resets_at": "2026-09-11T04:24:27Z",
+        "effective_ceiling_pct": 95.0,
+        "reason": "utilisation 95% with burn multiple 3.1x is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
+        "closed_by_purpose": null,
+        "resumption_fired": false
+      },
+      {
+        "hold_id": "hold-codex-luna-20260906080641",
+        "backend": "codex-luna",
+        "purpose": "dispatch",
+        "opened_at": "2026-09-06T08:06:41Z",
+        "closed_at": null,
+        "held_seconds": null,
+        "utilisation_pct": 95.0,
+        "resets_at": "2026-09-11T04:24:27Z",
+        "effective_ceiling_pct": 95.0,
+        "reason": "utilisation 95% with burn multiple 3.1x is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
+        "closed_by_purpose": null,
+        "resumption_fired": false
+      },
+      {
+        "hold_id": "hold-codex-spark-20260906080641",
+        "backend": "codex-spark",
+        "purpose": "dispatch",
+        "opened_at": "2026-09-06T08:06:41Z",
+        "closed_at": null,
+        "held_seconds": null,
+        "utilisation_pct": 95.0,
+        "resets_at": "2026-09-11T04:24:27Z",
+        "effective_ceiling_pct": 95.0,
+        "reason": "utilisation 95% with burn multiple 3.1x is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
+        "closed_by_purpose": null,
+        "resumption_fired": false
+      },
+      {
+        "hold_id": "hold-codex-terra-20260906080641",
+        "backend": "codex-terra",
+        "purpose": "dispatch",
+        "opened_at": "2026-09-06T08:06:41Z",
+        "closed_at": null,
+        "held_seconds": null,
+        "utilisation_pct": 95.0,
+        "resets_at": "2026-09-11T04:24:27Z",
+        "effective_ceiling_pct": 95.0,
+        "reason": "utilisation 95% with burn multiple 3.1x is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
+        "closed_by_purpose": null,
+        "resumption_fired": false
       }
     ],
-    "_version": 1790
+    "_version": 1793
   }
 }
