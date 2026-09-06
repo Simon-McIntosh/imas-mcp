@@ -23,8 +23,8 @@
   <title>WEST Cohort Treatment and Batch Scoping | imas-codex</title>
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
-<meta name="plan-modified" content="2026-09-05">
-<meta name="plan-version" content="17">
+<meta name="plan-modified" content="2026-09-06">
+<meta name="plan-version" content="18">
 <meta name="plan-impl" content="0.75">
 <meta name="plan-commits" content="2d9d674a">
 </head>
@@ -293,6 +293,9 @@ scalar to follow lineage at all, and must traverse edges every time.</p>
 </div>
 <div class="r-comment" data-section="s6" data-id="c-20260904T062500" data-who="reckon-ship" data-when="2026-09-04T06:25:00Z">
     <div class="r-comment-body"><p><strong>A sixth blocked name, found by the halted recut and confirmed against the graph: <code>neutron_rate</code>.</strong> It sits <code>drafted</code> / <code>pending</code> at Hz with subject <code>neutron</code>, and its whole family is retired around it — <code>neutron_rate_of_detector</code> exhausted, <code>neutron_rate_of_neutron_detector</code> superseded, <code>total_neutron_rate_due_to_fusion_reactions</code> superseded. No accepted successor exists anywhere in that lineage, so <strong>a cut made today would drop the neutron quantity pull request 12 already published</strong>, and the carry-over count cannot reach zero from the recut node alone.</p><p>This is the same failure mode §6 already records for the hard-x-ray cluster, and the same one this sprint met on the volumetric-rate names: a rename supersedes its predecessor immediately while the successor still has to earn acceptance, so a window opens in which the identity is unpublishable from both ends. It should be treated with the other Group E names, and it is one review rotation away rather than a physics problem — <code>drafted</code> is exactly the stage the review pool claims.</p><p>Recorded here rather than left in a stopped node's manifest, because the count of names a new cut would drop is a release gate and this is the sixth contributor to it.</p></div>
+</div>
+<div class="r-comment" data-section="s6" data-id="c-run-r-20260906T064003929378-n-swct-the-non-drafted-remainder-is-dispositioned" data-who="opus-remainder" data-when="2026-09-06T06:52:43.659Z">
+    <div class="r-comment-body"><p>all 18 dispositioned by cause: 14 drive-through-review, 2 fold into an existing higher-scoring identity, 1 governed edit for a name past its rotation cap, 1 leave-and-explain whose fate belongs to the fit-artifact classification repair so a rotation now is wasted either way. THE FINDING THAT MATTERS: most of the 14 are held below accepted by a recorded review_quorum_shortfall rather than by physics, several scoring 0.85 to 0.925 against a 0.85 threshold - the same inert marker the section audit measured on 110 names under a ruling that the gate creating those shortfalls never routed anything. It also declined a secondary reviewer on physics grounds rather than obeying it, and flagged three names whose missing source binding should be resolved before any spend, because a sourceless name should not be reviewed</p></div>
 </div>
 <div class="r-comment" data-section="s1" data-id="c-run-r-20260904T095941740347-n-wct-batch-admission-site" data-who="inv-batchmint" data-when="2026-09-04T10:08:33Z">
     <div class="r-comment-body"><p>the widening is mint_sn_list step 2 at minting.py:100-120, a parent/sibling/child closure whose only check is that the related name is not dead; 150 out-of-manifest names plus 42 structural parents plus 1 source-less name equal exactly the 193 surplus over 218 manifest-bound identities. It is a batch-list defect, not an exporter-gate defect, and export.py needs no change. The any-binding reading is already what the base join implements, and test_mint_live_closure at test_minting.py:181-198 currently pins the over-broad behaviour</p></div>

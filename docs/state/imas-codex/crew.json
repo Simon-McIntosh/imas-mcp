@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T08:49:01",
+  "updated": "2026-09-06T08:59:13",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -4063,6 +4063,15 @@
         "created": "2026-09-05"
       },
       {
+        "id": "opus-docsbackfill",
+        "harness": "claude-opus",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-06"
+      },
+      {
         "id": "opus-failreason",
         "harness": "claude-opus",
         "role": "implement",
@@ -4142,6 +4151,15 @@
         "session_model": null,
         "sessions": {},
         "created": "2026-09-05"
+      },
+      {
+        "id": "opus-shortfall",
+        "harness": "claude-opus",
+        "role": "test",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-06"
       },
       {
         "id": "opus-sixteen",
@@ -84795,6 +84813,290 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260906T064003929378-n-swct-the-non-drafted-remainder-is-dispositioned",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a76",
+        "node": "n-swct-the-non-drafted-remainder-is-dispositioned",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 943,
+                "cached_input_tokens": 728979,
+                "input_tokens": 729924,
+                "output_tokens": 1508,
+                "reasoning_output_tokens": 447,
+                "total_tokens": 731432,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "Of the 137 successors minted by the 2026-09-05 migration, 15 sit at name_stage reviewed and 3 at exhausted - re-measure both counts yourself, the figures are hours old and the graph is being mutated. A drafted name can be driven by review; these cannot, and each needs a reason. For EACH of the 15 reviewed: report its review rows ordered by reviewed_at (NOT created_at, which is null on every review row in this graph), the winning score and resolution_method, whether review_quorum_shortfall is null, and name what specifically holds it below accepted - a real reviewer consensus is a different disposition from an unclaimable row. For EACH of the 3 exhausted: report refine_stop_reason, how many rotations it consumed, and whether an accepted identity already holds the spelling it wanted, because a successor_collision against a live identity is a fold and not a retry. End with a per-name recommendation from exactly this set: drive through review, fold into an existing identity, governed edit, or leave and explain. Make no graph write and run no rotation; this is the disposition the repair follows.",
+          "estimated_hours": null,
+          "goal": "A per-name disposition for the migrated successors that are neither drafted nor accepted",
+          "id": "n-swct-the-non-drafted-remainder-is-dispositioned",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T064003929378-n-swct-the-non-drafted-remainder-is-dispositioned/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requires_decisions": [],
+          "role": "test",
+          "section": "\u00a76",
+          "spec_level": "guided",
+          "time_budget": "35m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/non-drafted-remainder.md"
+          ]
+        },
+        "role": "test",
+        "spec_level": "guided",
+        "member": "opus-remainder",
+        "backend": "claude-opus",
+        "local": false,
+        "agent": {
+          "alias": "opus 5",
+          "backend": "claude-opus",
+          "effort": "high",
+          "launch": "cli",
+          "model": "claude-opus-5",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T06:40:11Z",
+        "completed_at": "2026-09-06T06:52:43.659Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 746,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 752,
+        "stalled": false,
+        "time_budget": "35m",
+        "base_sha": "8a4c5d2a8e3185e6115e73a963e16db4ec3851f4",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "per-name census of the reviewed and exhausted successors with their review rows ordered by reviewed_at, winning scores, resolution methods, shortfall state and rotation budget",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/non-drafted-remainder.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T064003929378-n-swct-the-non-drafted-remainder-is-dispositioned/manifest.md",
+        "scope_changed": false,
+        "session_id": "21579dc0-6045-44d5-8e98-7c35fe5a096b",
+        "budget": {
+          "headroom": "known",
+          "utilisation_pct": 49.0,
+          "rate_limit_type": "five_hour",
+          "rate_limit_period_minutes": null,
+          "resets_at": "2026-09-06T10:10:00Z",
+          "threshold_status": "allowed_warning",
+          "surpassed_threshold": 1,
+          "tokens": {
+            "cache_creation_input_tokens": 145472,
+            "cache_creation_input_tokens_cumulative": 145472,
+            "cache_read_input_tokens": 6624278,
+            "cache_read_input_tokens_cumulative": 6624278,
+            "inference_geo": "not_available",
+            "input_tokens": 126,
+            "input_tokens_cumulative": 126,
+            "output_tokens": 39847,
+            "output_tokens_cumulative": 39847,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": 5.7636639999999995,
+          "refusal": false,
+          "detail": "backend reports utilisation and reset time",
+          "cost_usd_cumulative": 5.7636639999999995
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": []
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 749.247,
+          "generated_tokens": 39847,
+          "generation_seconds": 544.365,
+          "input_budget_tokens": 1000000,
+          "input_utilisation_pct": 15.9,
+          "machine_seconds": 204.882,
+          "peak_input_tokens": 158686,
+          "tokens_per_second": 73.2,
+          "wall_tokens_per_second": 53.18
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "read-only disposition; the deliverable is the per-name recommendation and no graph write or rotation was in scope",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swct-the-non-drafted-remainder-is-dispositioned",
+          "session_id": "21579dc0-6045-44d5-8e98-7c35fe5a096b",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T06:52:43.659Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "test",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260906T064940020769-n-sgr-the-migrated-names-recover-their-documentation",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a78",
+        "node": "n-sgr-the-migrated-names-recover-their-documentation",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 5373,
+                "cached_input_tokens": 750734,
+                "input_tokens": 756109,
+                "output_tokens": 1600,
+                "reasoning_output_tokens": 355,
+                "total_tokens": 757709,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "The write path is fixed and merged: rename_preserves_meaning in graph_ops.py decides, by grammar IR equality, whether a rename moved the name without moving the quantity. Existing rows were deliberately left unrepaired so the evidence survived; repair them now. For the 137 successors minted by the 2026-09-05 migration, call that SAME predicate per row rather than assuming all qualify - the fixing node measured all 137 as equal-IR but re-derive it, and report any row that answers no and is therefore skipped. For every eligible row whose predecessor holds documentation, copy documentation, docs_stage, docs_chain_length, docs_model and docs_generated_at from the predecessor. THIS IS A COPY AND NOT A REGENERATION: do not invoke the docs pipeline, do not call an LLM, and spend nothing - the prose already exists on the superseded predecessor and regenerating it would pay for text we hold. Report before and after: successors with null documentation whose predecessor has text (measured at 113), and the docs_stage distribution across the 137. Write a StandardNameChange per repaired row so the restoration is recorded rather than silent. Prove idempotence by running twice and showing the second pass changes zero rows. Leave name_stage, status, sources and descriptions untouched.",
+          "estimated_hours": null,
+          "goal": "The successors of meaning-preserving renames recover the documentation their predecessors still hold",
+          "id": "n-sgr-the-migrated-names-recover-their-documentation",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T064940020769-n-sgr-the-migrated-names-recover-their-documentation/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a78",
+          "spec_level": "guided",
+          "time_budget": "40m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/documentation-backfill.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "opus-docsbackfill",
+        "backend": "claude-opus",
+        "local": false,
+        "agent": {
+          "alias": "opus 5",
+          "backend": "claude-opus",
+          "effort": "high",
+          "launch": "cli",
+          "model": "claude-opus-5",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T06:49:49Z",
+        "completed_at": "2026-09-06T06:57:00.699Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 426,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 431,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "376fff936f7106a7edd10972d0c112caeab0452d",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "pytest tests/standard_names/test_rename_carries_documentation.py, the file pinning the copy semantics this repair reproduces, plus before and after graph census",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T064940020769-n-sgr-the-migrated-names-recover-their-documentation/logs/gate-tests.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T064940020769-n-sgr-the-migrated-names-recover-their-documentation/manifest.md",
+        "scope_changed": false,
+        "session_id": "23a67d80-9dcf-4630-ac6c-a778ec61516b",
+        "budget": {
+          "headroom": "known",
+          "utilisation_pct": 52.0,
+          "rate_limit_type": "five_hour",
+          "rate_limit_period_minutes": null,
+          "resets_at": "2026-09-06T10:10:00Z",
+          "threshold_status": "allowed_warning",
+          "surpassed_threshold": 1,
+          "tokens": {
+            "cache_creation_input_tokens": 95079,
+            "cache_creation_input_tokens_cumulative": 95079,
+            "cache_read_input_tokens": 2662098,
+            "cache_read_input_tokens_cumulative": 2662098,
+            "inference_geo": "not_available",
+            "input_tokens": 64,
+            "input_tokens_cumulative": 64,
+            "output_tokens": 21400,
+            "output_tokens_cumulative": 21400,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": 2.8171590000000006,
+          "refusal": false,
+          "detail": "backend reports utilisation and reset time",
+          "cost_usd_cumulative": 2.8171590000000006
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": []
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 428.672,
+          "generated_tokens": 21400,
+          "generation_seconds": 284.1,
+          "input_budget_tokens": 1000000,
+          "input_utilisation_pct": 10.8,
+          "machine_seconds": 144.572,
+          "peak_input_tokens": 108293,
+          "tokens_per_second": 75.33,
+          "wall_tokens_per_second": 49.92
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "graph data repair with a report artifact; no repository source changed and the worktree is clean",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-migrated-names-recover-their-documentation",
+          "session_id": "23a67d80-9dcf-4630-ac6c-a778ec61516b",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T06:57:00.699Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -84939,6 +85241,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1775
+    "_version": 1779
   }
 }
