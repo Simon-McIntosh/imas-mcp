@@ -250,7 +250,8 @@ WITH src, sn, item
 SET sn.source_paths = [
       p IN coalesce(sn.source_paths, [])
       WHERE NOT (p = 'dd:' + item.dd_path OR p = item.dd_path)
-    ]
+    ],
+    sn.updated_at = datetime()
 WITH src, item
 OPTIONAL MATCH (src)-[:PRODUCED_NAME]->(remaining:StandardName)
 WHERE NOT (coalesce(remaining.name_stage, '') IN $historical)
@@ -276,7 +277,8 @@ WITH sn
 SET sn.source_paths = [
       p IN coalesce(sn.source_paths, [])
       WHERE NOT (p = 'dd:' + $dd_path OR p = $dd_path)
-    ]
+    ],
+    sn.updated_at = datetime()
 RETURN count(*) AS detached
 """
 
@@ -406,7 +408,8 @@ DELETE pn, hsn
 SET sn.source_paths = [
       path IN coalesce(sn.source_paths, [])
       WHERE NOT (path = 'dd:' + $dd_path OR path = $dd_path)
-    ]
+    ],
+    sn.updated_at = datetime()
 CREATE (retry:StandardNameSourceRetry {id: $retry_event_id})
 SET retry.source_id = src.id,
     retry.previous_status = previous_status,
@@ -576,7 +579,8 @@ DELETE binding, projection
 SET name.source_paths = [
       path IN coalesce(name.source_paths, [])
       WHERE NOT (path = 'dd:' + item.dd_path OR path = item.dd_path)
-    ]
+    ],
+    name.updated_at = datetime()
 CREATE (retry:StandardNameSourceRetry)
 SET retry = item.retry_event,
     retry.retried_at = datetime(item.retry_event.retried_at),

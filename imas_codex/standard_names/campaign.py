@@ -662,7 +662,8 @@ def default_clear_quarantine(gc: Any, ids: Sequence[str]) -> int:
         WHERE sn.name_stage = 'accepted'
           AND coalesce(sn.validation_status, '') = 'quarantined'
         SET sn.validation_status = 'pending',
-            sn.quarantine_reason = null
+            sn.quarantine_reason = null,
+            sn.updated_at = datetime()
         RETURN count(sn) AS n
         """,
         ids=list(ids),
@@ -709,7 +710,8 @@ def default_revalidate(
             UNWIND $ids AS sid
             MATCH (sn:StandardName {id: sid})
             SET sn.validation_status = 'quarantined',
-                sn.quarantine_reason = 'campaign: banned prose persisted after refine'
+                sn.quarantine_reason = 'campaign: banned prose persisted after refine',
+                sn.updated_at = datetime()
             RETURN count(sn) AS n
             """,
             ids=list(reintroduced_ids),
@@ -721,7 +723,8 @@ def default_revalidate(
             UNWIND $ids AS sid
             MATCH (sn:StandardName {id: sid})
             WHERE coalesce(sn.validation_status, '') <> 'quarantined'
-            SET sn.validation_status = 'valid'
+            SET sn.validation_status = 'valid',
+                sn.updated_at = datetime()
             RETURN count(sn) AS n
             """,
             ids=list(clean_ids),
@@ -767,7 +770,8 @@ def default_audit_revalidate(
         """
         UNWIND $ids AS sid
         MATCH (sn:StandardName {id: sid})
-        SET sn.validated_at = null, sn.claimed_at = null, sn.claim_token = null
+        SET sn.validated_at = null, sn.claimed_at = null, sn.claim_token = null,
+            sn.updated_at = datetime()
         RETURN count(sn) AS n
         """,
         ids=ids,
