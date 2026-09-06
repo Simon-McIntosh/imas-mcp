@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T08:30:11",
+  "updated": "2026-09-06T08:39:33",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -78,7 +78,7 @@
       {
         "id": "clive-ledger",
         "harness": "clive",
-        "role": "implement",
+        "role": "test",
         "session_id": null,
         "session_model": null,
         "sessions": {},
@@ -135,7 +135,7 @@
       {
         "id": "clive-tail",
         "harness": "clive",
-        "role": "implement",
+        "role": "test",
         "session_id": null,
         "session_model": null,
         "sessions": {},
@@ -4034,6 +4034,15 @@
           "{\"alias\":\"sonnet 5\",\"backend\":\"claude\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"claude-sonnet-5\",\"sandbox\":\"worktree-full\"}": "bbf54e3e-1b44-4f14-a4d1-ab085184e8bf"
         },
         "created": "2026-09-05"
+      },
+      {
+        "id": "opus-betafamily2",
+        "harness": "claude-opus",
+        "role": "test",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-06"
       },
       {
         "id": "opus-clearsixteen",
@@ -84345,6 +84354,148 @@
           "role": "test",
           "status": "compatible"
         }
+      },
+      {
+        "run_id": "r-20260906T062912278422-n-sli-the-sixteen-stop-claiming-a-successor",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-the-sixteen-stop-claiming-a-successor",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 727,
+                "cached_input_tokens": 697841,
+                "input_tokens": 698570,
+                "output_tokens": 1760,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 700330,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "Sixteen live names sit at name_stage accepted and status draft while carrying a superseded_by scalar naming a successor they do not refine into. A disposition ruled all sixteen clear-the-scalar and none execute-the-supersede: the named successor is a DIFFERENT data-dictionary quantity, predecessors binding summary/local/separatrix paths and successors summary/local/separatrix_average, and the averaged role already has its own live name, so executing them would delete sixteen quantities. The guard that would now refuse minting these landed at 403febd5c and is merged, so the write path is closed and this repair is safe. Re-verify the cohort yourself first and report its size, because a prior read found 16 and another found 14 and the graph is mutated concurrently. Then clear superseded_by AND the paired HAS_SUCCESSOR edge on every row as ONE operation with ONE recorded reason, writing a StandardNameChange naming the retarget, since the original defect is that it recorded nothing. Leave status, name_stage, docs_stage, sources and documents untouched because those are correct. Two rows additionally carry a spurious second HAS_STANDARD_NAME edge from the averaged path; drop those two so the local name stops claiming the averaged path. Report before and after counts for both the scalar and the edge, and prove idempotence by running twice and showing the second pass changes zero rows.",
+          "estimated_hours": null,
+          "goal": "The live names that falsely claim to have been superseded stop claiming it",
+          "id": "n-sli-the-sixteen-stop-claiming-a-successor",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T062912278422-n-sli-the-sixteen-stop-claiming-a-successor/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "guided",
+          "time_budget": "35m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/sixteen-cleared.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "opus-clearsixteen",
+        "backend": "claude-opus",
+        "local": false,
+        "agent": {
+          "alias": "opus 5",
+          "backend": "claude-opus",
+          "effort": "high",
+          "launch": "cli",
+          "model": "claude-opus-5",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T06:29:22Z",
+        "completed_at": "2026-09-06T06:36:19.313Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 411,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 417,
+        "stalled": false,
+        "time_budget": "35m",
+        "base_sha": "9cb6a00f0643423906fb695c524d96198f0cae72",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "before/after graph census run twice in one Cypher transaction, with the second pass required to change zero rows",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T062912278422-n-sli-the-sixteen-stop-claiming-a-successor/repair.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T062912278422-n-sli-the-sixteen-stop-claiming-a-successor/manifest.md",
+        "scope_changed": false,
+        "session_id": "1a3ffd59-714b-4cf4-8ff6-e4155bc18fca",
+        "budget": {
+          "headroom": "known",
+          "utilisation_pct": 37.0,
+          "rate_limit_type": "five_hour",
+          "rate_limit_period_minutes": null,
+          "resets_at": "2026-09-06T10:10:00Z",
+          "threshold_status": "allowed_warning",
+          "surpassed_threshold": 1,
+          "tokens": {
+            "cache_creation_input_tokens": 100875,
+            "cache_creation_input_tokens_cumulative": 100875,
+            "cache_read_input_tokens": 2447667,
+            "cache_read_input_tokens_cumulative": 2447667,
+            "inference_geo": "not_available",
+            "input_tokens": 62,
+            "input_tokens_cumulative": 62,
+            "output_tokens": 25710,
+            "output_tokens_cumulative": 25710,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": 2.8756435000000007,
+          "refusal": false,
+          "detail": "backend reports utilisation and reset time",
+          "cost_usd_cumulative": 2.8756435000000007
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": []
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 414.069,
+          "generated_tokens": 25710,
+          "generation_seconds": 327.906,
+          "input_budget_tokens": 1000000,
+          "input_utilisation_pct": 11.4,
+          "machine_seconds": 86.163,
+          "peak_input_tokens": 114089,
+          "tokens_per_second": 78.41,
+          "wall_tokens_per_second": 62.09
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "the repair is a live-graph mutation with a report artifact; no repository change was in scope",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-the-sixteen-stop-claiming-a-successor",
+          "session_id": "1a3ffd59-714b-4cf4-8ff6-e4155bc18fca",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T06:36:19.313Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -84489,6 +84640,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1768
+    "_version": 1772
   }
 }
