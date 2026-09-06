@@ -15,23 +15,42 @@ _STANDARD_NAMES_ROOT = REPO_ROOT / "imas_codex" / "standard_names"
 # These are observed omissions by package-relative file. Keep an entry when a
 # file reaches zero so an unrecorded improvement fails until its debt is
 # explicitly lowered. New findings also fail until their file is accounted for.
-_EXPECTED_FINDINGS = {
-    "attachment_audit.py": 4,
-    "audits.py": 3,
-    "campaign.py": 4,
-    "cascade.py": 2,
-    "catalog_import.py": 1,
-    "catalog_reconcile.py": 1,
-    "edit.py": 8,
-    "orphan_sweep.py": 5,
-    "parents.py": 2,
-    "promote.py": 6,
-    "provenance_lifecycle.py": 5,
-    "review/audits.py": 1,
-    "signed_manifest.py": 9,
-    "source_refresh.py": 2,
-    "workers.py": 2,
+#
+# The four survivors are named, justified entries rather than part of an
+# opaque total, so a future finding cannot hide inside the count: the package
+# test also asserts that the live (path, properties) identities equal
+# _SURVIVING_FINDINGS exactly, and _EXPECTED_FINDINGS is derived from it so the
+# counts cannot drift from the names. Each survivor is a write its lane argued
+# for leaving unstamped, not a debt awaiting repair.
+_SURVIVING_FINDINGS = {
+    (
+        "catalog_import.py",
+        ("catalog_commit_sha", "imported_at"),
+    ): (
+        "provenance receipt: the import stamps imported_at and "
+        "catalog_commit_sha through a positive allow-list under a locked "
+        "import-write-authority decision, and a test asserts that exact "
+        "assigned-property set; stamping updated_at would expand the import "
+        "path's authority over name content."
+    ),
+    ("orphan_sweep.py", ("drain_scope_claimed_at",)): (
+        "drain-scope lease heartbeat: writes only liveness on a name whose "
+        "ownership it does not change, so a stamp would make updated_at track "
+        "heartbeat cadence instead of name modifications."
+    ),
+    ("parents.py", ("_structural_authority_replay_lock",)): (
+        "structural-authority lock: set-then-remove in one statement marks "
+        "contention, not modification - the same allowance the checker already "
+        "gives _structural_authority_lock."
+    ),
+    ("parents.py", ("_structural_authority_grounding_lock",)): (
+        "structural-authority lock: set-then-remove in one statement marks "
+        "contention, not modification - the same allowance the checker already "
+        "gives _structural_authority_lock."
+    ),
 }
+
+_EXPECTED_FINDINGS = Counter(path for path, _properties in _SURVIVING_FINDINGS)
 
 _GATED_PATH = REPO_ROOT / "imas_codex" / "standard_names" / "graph_ops.py"
 
@@ -68,6 +87,17 @@ def test_standard_name_package_matches_updated_at_debt_baseline() -> None:
     """Every package module is audited against its measured omission count."""
     findings = audit_standard_name_touch(_STANDARD_NAMES_ROOT)
     _assert_findings_match_baseline(_finding_counts(findings))
+    live_identities = {
+        (
+            finding.path.relative_to(_STANDARD_NAMES_ROOT).as_posix(),
+            finding.properties,
+        )
+        for finding in findings
+    }
+    assert live_identities == set(_SURVIVING_FINDINGS), (
+        "surviving updated_at omissions changed identity; add or rename the "
+        "justified entry in _SURVIVING_FINDINGS"
+    )
 
 
 def test_debt_baseline_rejects_unrecorded_count_changes() -> None:
@@ -75,12 +105,12 @@ def test_debt_baseline_rejects_unrecorded_count_changes() -> None:
     _assert_findings_match_baseline(Counter(_EXPECTED_FINDINGS))
 
     increased = Counter(_EXPECTED_FINDINGS)
-    increased["audits.py"] += 1
+    increased["parents.py"] += 1
     with pytest.raises(AssertionError, match="exceed the debt baseline"):
         _assert_findings_match_baseline(increased)
 
     decreased = Counter(_EXPECTED_FINDINGS)
-    decreased["audits.py"] -= 1
+    decreased["parents.py"] -= 1
     with pytest.raises(AssertionError, match="fell below the debt baseline"):
         _assert_findings_match_baseline(decreased)
 
