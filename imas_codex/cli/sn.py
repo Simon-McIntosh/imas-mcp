@@ -6711,6 +6711,62 @@ def sn_remove_lineage(
         click.echo(f"change: {result['change_id']}")
 
 
+@sn.command("remove-source-backing")
+@click.argument("source")
+@click.argument("dd_path")
+@click.option(
+    "--reason",
+    required=True,
+    help=(
+        "Why this directed FROM_DD_PATH relationship is wrong. Recorded in the "
+        "change ledger because removing source provenance is a judgement."
+    ),
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    help="Report the directed source-backing removal without writing to the graph.",
+)
+def sn_remove_source_backing(
+    source: str, dd_path: str, reason: str, dry_run: bool
+) -> None:
+    """Remove one incorrect source-to-DD-path backing relationship.
+
+    FROM_DD_PATH points from a StandardNameSource to the IMASNode it represents.
+    Arguments therefore name SOURCE first and DD_PATH second. The exact
+    direction is checked, and the source must retain at least one other backing.
+
+    \b
+    Example:
+      imas-codex sn remove-source-backing \\
+        dd:equilibrium/time_slice/global_quantities/beta_normal \\
+        equilibrium/time_slice/global_quantities/beta_tor_norm \\
+        --reason "the source already retains its own beta_normal path"
+    """
+    from imas_codex.standard_names.edit import remove_source_dd_path_backing
+
+    try:
+        result = remove_source_dd_path_backing(
+            source,
+            dd_path,
+            reason=reason,
+            dry_run=dry_run,
+        )
+    except ValueError as e:
+        raise click.UsageError(str(e)) from e
+    if not result.get("ok"):
+        raise click.UsageError(result.get("reason", "source-backing removal refused"))
+
+    verb = "would remove" if dry_run else "removed"
+    click.echo(f"{verb} {result['direction']}")
+    click.echo(
+        f"  source backings before={result['backing_count']}, "
+        f"remaining={result['remaining_backings']}"
+    )
+    if result.get("change_id"):
+        click.echo(f"change: {result['change_id']}")
+
+
 @sn.command("supersede")
 @click.argument("old_name")
 @click.option(
