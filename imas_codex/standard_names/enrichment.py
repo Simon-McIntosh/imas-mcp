@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import logging
 from collections import defaultdict
+from typing import Any
 
 from imas_codex.standard_names.families import VectorFamily, detect_families
 from imas_codex.standard_names.sources.base import ExtractionBatch, SourceCandidate
@@ -378,6 +379,231 @@ def _detect_families_from_items(items: list[dict]) -> list[VectorFamily]:
     if not family_inputs:
         return []
     return detect_families(family_inputs)
+
+
+def load_accepted_sibling_standard_names(
+    paths: list[str],
+    gc: Any | None = None,
+) -> dict[str, dict[str, Any]]:
+    """Map DD source paths to the established accepted StandardName each has.
+
+    Resolution is exact-first, pattern-fallback:
+
+    * Exact: an accepted StandardName bound to that source path itself.
+    * Fallback: a sibling leaf that carries no accepted name of its own still
+      has an established spelling — the family's spelling is the dominant
+      accepted name bound to sources of the same ``<parent>/<leaf>`` DD shape
+      across instruments (e.g. every ``*/position/r`` resolves to
+      ``radial_coordinate_of_measurement_position``). The family detector
+      groups by the parent's last segment, so this is the same key.
+
+    Only ``name_stage = 'accepted'`` is admitted - a name at drafted,
+    reviewed, exhausted or superseded is not an established spelling and must
+    not be offered as one.
+
+    Returns ``{source_path: {name, description, unit, physics_domain}}``.
+    """
+    from imas_codex.graph.client import GraphClient
+
+    nonempty = [p for p in paths if p]
+    if not nonempty:
+        return {}
+    own = gc is None
+    client = GraphClient() if own else gc
+    try:
+        rows = client.query(
+            """
+            UNWIND $paths AS p
+            MATCH (sns:StandardNameSource {id: 'dd:' + p})-[:PRODUCED_NAME]->(
+              sn:StandardName)
+            WHERE sn.name_stage = 'accepted'
+            RETURN p AS path,
+                   sn.id AS name,
+                   coalesce(sn.description, '') AS description,
+                   coalesce(sn.unit, '') AS unit,
+                   sn.physics_domain AS physics_domain
+            """,
+            paths=nonempty,
+        )
+        resolved = {
+            str(r["path"]): {
+                "name": str(r["name"]),
+                "description": str(r.get("description") or ""),
+                "unit": str(r.get("unit") or ""),
+                "physics_domain": r.get("physics_domain"),
+            }
+            for r in rows or []
+            if r.get("path")
+        }
+        missing = [p for p in nonempty if p not in resolved]
+        if missing:
+            # Fallback: inherit the family's established spelling from the
+            # dominant accepted name sharing the same <parent>/<leaf> shape.
+            suffixes = [
+                f"/{p.split('/')[-2]}/{p.rsplit('/', 1)[-1]}"
+                for p in missing
+                if "/" in p
+            ]
+            if suffixes:
+                pattern_rows = client.query(
+                    """
+                    UNWIND $suffixes AS suffix
+                    MATCH (sns:StandardNameSource)-[:PRODUCED_NAME]->(
+                      sn:StandardName)
+                    WHERE sns.id ENDS WITH suffix
+                      AND sn.name_stage = 'accepted'
+                    WITH suffix, sn, count(*) AS cnt
+                    ORDER BY cnt DESC
+                    WITH suffix,
+                         collect({
+                           name: sn.id,
+                           description: coalesce(sn.description, ''),
+                           unit: coalesce(sn.unit, ''),
+                           physics_domain: sn.physics_domain
+                         })[0] AS pick
+                    RETURN suffix, pick
+                    """,
+                    suffixes=list(dict.fromkeys(suffixes)),
+                )
+                picks = {
+                    str(r["suffix"]): r["pick"]
+                    for r in pattern_rows or []
+                    if r.get("suffix") and r.get("pick")
+                }
+                for path, suffix in zip(missing, suffixes, strict=False):
+                    pick = picks.get(suffix)
+                    if pick:
+                        resolved[path] = {
+                            "name": str(pick.get("name") or ""),
+                            "description": str(pick.get("description") or ""),
+                            "unit": str(pick.get("unit") or ""),
+                            "physics_domain": pick.get("physics_domain"),
+                        }
+        return resolved
+    finally:
+        if own:
+            client.close()
+
+
+def attach_family_accepted_siblings(
+    items: list[dict[str, Any]],
+    *,
+    gc: Any | None = None,
+) -> None:
+    """Tag family-member items with their ACCEPTED siblings' standard names.
+
+    Family detection groups DD paths structurally, so a family conveys member
+    *paths*, not the spellings the family has already settled on. For each item
+    that is a member of a detected vector/geometric family, this resolves the
+    accepted StandardName bound to every sibling source path and writes
+    ``item["family_accepted_siblings"]`` — an axis-ordered list of ``{name,
+    description, axis, path}`` (same per-entry fields and
+    :func:`sort_by_axis_convention` ordering as the docs-side
+    ``child_components`` injection, mirrored in the other direction).
+
+    The family is reconstructed from the DD containment structure (the item's
+    parent via ``HAS_PARENT`` and the parent's other children), so a family
+    member composed alone — a pool claim batch is grouped by cluster/unit and
+    may not carry its axis siblings — still sees them here.
+
+    Defensive: any detection or graph failure leaves items untouched and the
+    tag simply absent.
+    """
+    from imas_codex.standard_names.families import (
+        detect_families,
+        sort_by_axis_convention,
+    )
+
+    try:
+        paths = [item["path"] for item in items if item.get("path")]
+        if not paths:
+            return
+        from imas_codex.graph.client import GraphClient
+
+        own = gc is None
+        client = GraphClient() if own else gc
+        try:
+            # Containment is modelled upward in this graph (a node points at
+            # its parent via HAS_PARENT), so the candidate siblings of a path
+            # are the other children of the same parent node. Coordinate
+            # family members (position/r, position/z, position/phi) are
+            # themselves STRUCTURE containers whose axis suffix is what
+            # detect_families keys on, so structure children are NOT excluded
+            # here — family detection upstream filters by axis suffix.
+            sibling_rows = client.query(
+                """
+                UNWIND $paths AS p
+                MATCH (n:IMASNode {id: p})-[:HAS_PARENT]->(parent:IMASNode)
+                OPTIONAL MATCH (parent)<-[:HAS_PARENT]-(sib:IMASNode)
+                RETURN p AS path, collect(DISTINCT sib.id) AS sibling_ids
+                """,
+                paths=paths,
+            )
+            siblings_by_path: dict[str, list[str]] = {
+                str(r["path"]): [str(s) for s in (r.get("sibling_ids") or []) if s]
+                for r in sibling_rows or []
+            }
+        finally:
+            if own:
+                client.close()
+
+        candidate_bysrc: dict[str, list[dict[str, str]]] = {}
+        for item in items:
+            path = item.get("path")
+            if not path:
+                continue
+            local = [{"path": path, "unit": str(item.get("unit") or "")}]
+            for spath in siblings_by_path.get(path, []):
+                if spath != path:
+                    local.append({"path": spath, "unit": ""})
+            candidate_bysrc[path] = local
+        if not candidate_bysrc:
+            return
+        family_inputs = [entry for local in candidate_bysrc.values() for entry in local]
+        member_of: dict[str, VectorFamily] = {}
+        for family in detect_families(family_inputs):
+            for member in family.members:
+                member_of[member.dd_path] = family
+        # Families that contain at least one in-scope item (dedup by identity).
+        owned_families: list[VectorFamily] = []
+        seen_ids: set[int] = set()
+        for path in candidate_bysrc:
+            family = member_of.get(path)
+            if family is not None and id(family) not in seen_ids:
+                seen_ids.add(id(family))
+                owned_families.append(family)
+        all_sibling_paths = sorted(
+            {m.dd_path for f in owned_families for m in f.members}
+        )
+        if not all_sibling_paths:
+            return
+        accepted = load_accepted_sibling_standard_names(all_sibling_paths, gc=gc)
+        if not accepted:
+            return
+        for item in items:
+            path = item.get("path")
+            family = member_of.get(path)
+            if family is None:
+                continue
+            entries = [
+                {
+                    "name": accepted[p.dd_path]["name"],
+                    "description": accepted[p.dd_path]["description"],
+                    "axis": p.axis,
+                    "unit": accepted[p.dd_path].get("unit") or "",
+                    "physics_domain": accepted[p.dd_path].get("physics_domain"),
+                    "path": p.dd_path,
+                }
+                for p in family.members
+                if p.dd_path != path and p.dd_path in accepted
+            ]
+            if entries:
+                item["family_accepted_siblings"] = sort_by_axis_convention(entries)
+    except Exception:
+        logger.debug(
+            "family accepted-sibling context failed",
+            exc_info=True,
+        )
 
 
 def group_by_concept_and_unit(
