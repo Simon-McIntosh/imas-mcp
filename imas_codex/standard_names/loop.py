@@ -462,11 +462,14 @@ def _build_pool_specs(
         async def _adapter() -> dict[str, Any] | None:
             items = []
             if priority_scope_run_id:
-                items = await asyncio.to_thread(
-                    claim_fn,
-                    **kwargs,
-                    scope_run_id=priority_scope_run_id,
-                )
+                # Build the priority call's arguments as one mapping so the
+                # priority scope RUNS IN PLACE OF any caller-supplied scope
+                # instead of colliding with it — passing the scope twice raises
+                # before the claim function is ever reached. The caller's own
+                # scope still gets its turn on the fallback call below.
+                priority_kwargs = dict(kwargs)
+                priority_kwargs["scope_run_id"] = priority_scope_run_id
+                items = await asyncio.to_thread(claim_fn, **priority_kwargs)
             if not items:
                 items = await asyncio.to_thread(claim_fn, **kwargs)
             if not items:
