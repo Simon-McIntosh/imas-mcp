@@ -3106,6 +3106,42 @@ def _structural_source_revival_refusal(
     return None
 
 
+def _retarget_supersede_refusal(query: _Query, action: dict[str, Any]) -> str | None:
+    """Refuse a supersede whose successor denotes a different bound DD path.
+
+    A predecessor with no bound source denotes nothing, so nothing is being
+    retargeted; that case is a retirement, not a replacement, and is left to
+    the identity-clear paths that already govern it.
+    """
+    row: _LoadedRow = action["row"]
+    snapshots = action["participant_snapshots"]
+    for mutation in row.mutations:
+        if str(mutation["kind"]) != RepairMutationKind.supersede.value:
+            continue
+        successor_id = _signed_supersede_successor(mutation)
+        if successor_id is None:
+            continue
+        predecessor_id = str(mutation["participant_id"])
+        predecessor_snapshot = snapshots.get(predecessor_id)
+        successor_snapshot = snapshots.get(successor_id)
+        if predecessor_snapshot is None or successor_snapshot is None:
+            continue
+        predecessor_paths = set(
+            predecessor_snapshot.get("properties", {}).get("source_paths") or []
+        )
+        if not predecessor_paths:
+            continue
+        successor_paths = set(
+            successor_snapshot.get("properties", {}).get("source_paths") or []
+        )
+        if predecessor_paths.isdisjoint(successor_paths):
+            return (
+                f"supersede of {predecessor_id!r} onto {successor_id!r} shares no "
+                "bound source path with the predecessor"
+            )
+    return None
+
+
 def _removed_binding_snapshots(action: dict[str, Any]) -> list[dict[str, Any]]:
     row: _LoadedRow = action["row"]
     removed_participant_ids = {
@@ -3444,6 +3480,8 @@ def _build_preview(query: _Query, authority: _Authority, reason: str) -> _Previe
             refusal = _source_target_reconciliation_refusal(query, action)
         if refusal is None:
             refusal = _structural_source_revival_refusal(query, action)
+        if refusal is None:
+            refusal = _retarget_supersede_refusal(query, action)
         if refusal is None and _STRUCTURAL_LEGITIMACY in _guard_names(row):
             refusal = _structural_refusal(query, action)
         if refusal is not None:
