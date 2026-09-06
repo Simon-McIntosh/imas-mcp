@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T21:11:50",
+  "updated": "2026-09-06T21:53:28",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -94751,6 +94751,161 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260906T191209837912-n-sgr-the-destination-loci-are-registered",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a78",
+        "node": "n-sgr-the-destination-loci-are-registered",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 739,
+                "cached_input_tokens": 598229,
+                "input_tokens": 598970,
+                "output_tokens": 1494,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 600464,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "ADD FOUR MEASUREMENT-DESTINATION LOCI, ONE DEVICE LOCUS, AND GIVE THE GENERIC ONE A REAL DEFINITION. Vocabulary only, in the standard-names repository; you rename nothing and you touch no catalog.\n\nTHE LEAD HAS RULED. The generic locus measurement_position survives for EXACTLY the coordinate triple - radial_coordinate, toroidal_angle and vertical_coordinate of a measurement position - which together name the location of any diagnostic channel in the cylindrical frame and legitimately serve 25, 13 and 15 diagnostic families respectively. Every quantity whose instrument is known must instead carry that instrument's locus. Your node supplies the tokens that make the second half possible.\n\nADD THESE FIVE TOKENS to imas_standard_names/grammar/vocabularies/locus_registry.yml, each with allowed_relations [of, at] except where noted:\n\n  reflectometer_cutoff_position - the plasma layer at which a reflectometer channel samples: where the probing frequency meets the local cutoff, or for Doppler reflectometry the backscatter resonance condition.\n  charge_exchange_channel - the sample volume of a charge-exchange recombination spectroscopy channel, where beam-induced charge-exchange emission is collected.\n  thomson_scattering_channel_position - the scattering volume assigned to one Thomson-scattering channel.\n  langmuir_probe_position - the location at which a Langmuir probe tip samples the local plasma, embedded or reciprocating. Note the registry already carries a langmuir_probe ENTITY token restricted to the of relation for intrinsic properties of the probe itself; this new token is the sampling location and the two must remain distinct.\n  calorimetry_component - a discrete element of a calorimetry group whose extracted thermal energy and power are measured. This one unblocks three release-manifest sources whose composition failed for want of exactly this token; the composer named it in its own error text.\n\nREDEFINE measurement_position IN PLACE. Its current definition reads \"The spatial location identified as the measurement position in the relevant plasma, diagnostic, or plant context\", which restates the token and states nothing. Replace it with a definition saying what the location IS: the position in the cylindrical frame at which a diagnostic channel samples, used for the coordinates of that position where the coordinate serves many instrument families. Do not change its type or its allowed relations.\n\nDO NOT COPY THE SURROUNDING DEFINITION STYLE - and this instruction overrides the usual match-the-convention rule. 113 of the 181 loci carry one of two empty templates: 80 read \"The X treated as a distinct physical, plant, or diagnostic object in a standard name\" and 33 read \"The spatial location identified as the X in the relevant plasma, diagnostic, or plant context\". Both restate the token. Every definition you write must let a reader who does not know the token learn what the place is. Adding a 114th template instance is a failure of this node.\n\nCHECK BEFORE YOU ADD. For each of the five, search the whole vocabularies directory for an existing token that already names that destination, and report what you found and why it does not serve. The registry holds 181 loci and near-duplicates are the failure mode: ece_channel and ece_channel_emission_position already coexist as distinct tokens for the channel and the emission location, which is the distinction to respect rather than collapse.\n\nCODEGEN IS PART OF THE DELIVERABLE. The strict validation path resolves against generated model enums, not the runtime YAML, so a token added to the registry alone is not yet strictly valid. Regenerate whatever the repository's own build step regenerates and confirm that each new token strict-validates in a composed name. Report the command you ran.\n\nPROVE EACH TOKEN IN A REAL NAME. For every added token, compose one name that uses it and show it parses, round-trips, and strict-validates. Use these, which the catalog will adopt: normalized_poloidal_flux_coordinate_at_reflectometer_cutoff_position, poloidal_ion_velocity_at_charge_exchange_channel, toroidal_offset_at_thomson_scattering_channel_position, electrostatic_potential_at_langmuir_probe_position, and any grammatical name using calorimetry_component.\n\nTHE COHORT MUST NOT MOVE. A file of 2348 accepted names sits at /run/user/39486/claude-39486/-home-ITER-mcintos-Code-imas-codex/11b50f59-c77b-4356-8bb3-6dafc6d0a4c0/scratchpad/accepted_names.txt. Before your change it yields 2325 stable, 23 migrating, 0 errors. Report the same three after. Adding vocabulary must not change any existing name's canonical form: if the migrating count moves, something you added collides with an existing spelling and you must report which.\n\nRUN THE FULL SUITE and report its count before and after against a stated base revision, reporting added failures rather than an absolute count.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.8,
+          "goal": "Five destination loci are registered with definitions that state what each place is, and the generic locus is redefined",
+          "id": "n-sgr-the-destination-loci-are-registered",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-locus-vocab/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a78",
+          "spec_level": "exact",
+          "time_budget": "50m",
+          "write_paths": [
+            "imas_standard_names/grammar/vocabularies",
+            "tests"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-vocab",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T19:12:18Z",
+        "completed_at": "2026-09-06T19:49:55.395Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 2249,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 2257,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "1502cbf1abadccb4bdaff936f4808f96d09bf5b4",
+        "commits": [
+          "563562a36ff74c396d6584b29f8f9204dd07141d"
+        ],
+        "changed_lines": {
+          "added": 48,
+          "removed": 1,
+          "files": 2
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "full grammar suite plus strict parse and round-trip of five proof names on both relations",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-locus-vocab/manifest.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "Registry 181 to 186 loci with definitions stating what each place is, measurement_position redefined in place per the ruling that it survives only for the coordinate triple, codegen regenerated so the strict path resolves the tokens, cohort provably unchanged at 2325 stable / 23 migrating / 0 errors. Its strict-versus-non-strict comparison exposed three accepted names carrying an unregistered safety-factor locus.",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-locus-vocab/manifest.md",
+        "scope_changed": false,
+        "session_id": "385694e5-c7f9-4f47-a8a6-fdff17dbf5fd",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 6292598,
+            "input_tokens_cumulative": 6292598,
+            "output_tokens": 38361,
+            "output_tokens_cumulative": 38361,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 2253.414,
+          "generated_tokens": 38361,
+          "generation_seconds": 1309.497,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 12.8,
+          "machine_seconds": 943.917,
+          "peak_input_tokens": 130536,
+          "tokens_per_second": 29.29,
+          "wall_tokens_per_second": 17.02
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "scope_acceptances": [
+          {
+            "path": "imas_standard_names/grammar/model_types.py",
+            "reason": "the brief required codegen so the strict path resolves the new tokens, and this is the generated enum module that codegen rewrites; my write-path declaration omitted it, which is a scoping error of mine rather than a stray write"
+          }
+        ],
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-standard-names-5be88ee0fdc3/ship-s10-20260905/n-sgr-the-destination-loci-are-registered",
+          "session_id": "385694e5-c7f9-4f47-a8a6-fdff17dbf5fd",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T19:49:55.395Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "RUN THE FULL SUITE",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
       }
     ],
     "holds": [
@@ -94993,6 +95148,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1850
+    "_version": 1851
   }
 }
