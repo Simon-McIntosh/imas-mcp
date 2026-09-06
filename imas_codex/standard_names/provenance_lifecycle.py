@@ -171,7 +171,8 @@ def cancel_staged_rename(
                 END,
                 predecessor.superseded_from_stage = null,
                 predecessor.claimed_at = null,
-                predecessor.claim_token = null
+                predecessor.claim_token = null,
+                predecessor.updated_at = datetime()
             FOREACH (source IN sources |
               SET source.standard_name_id = predecessor.id,
                   source.claimed_at = null,
@@ -556,7 +557,9 @@ def retarget_standard_name_sources(
                 AND current.source_id STARTS WITH 'derived:'
                THEN current.source_id ELSE current.id END) AS new_paths
         SET old.source_paths = [path IN old_paths WHERE path IS NOT NULL],
-            new.source_paths = [path IN new_paths WHERE path IS NOT NULL]
+            new.source_paths = [path IN new_paths WHERE path IS NOT NULL],
+            old.updated_at = datetime(),
+            new.updated_at = datetime()
         RETURN size(moved) AS moved
         """,
         old_name=old_name,
@@ -949,7 +952,8 @@ def bind_sources_exclusively(
              collect(DISTINCT CASE WHEN dd IS NULL THEN null ELSE 'dd:' + dd.id END) +
              collect(DISTINCT CASE WHEN signal IS NULL THEN null ELSE signal.id END)
              AS paths
-        SET sn.source_paths = [p IN paths WHERE p IS NOT NULL]
+        SET sn.source_paths = [p IN paths WHERE p IS NOT NULL],
+            sn.updated_at = datetime()
         RETURN size(bound) AS bound
         """,
         name=name,
@@ -1183,7 +1187,8 @@ ORDER BY id
 _SEMANTIC_SOURCE_PATH_WRITE = """
 UNWIND $updates AS update
 MATCH (sn:StandardName {id: update.id})
-SET sn.source_paths = update.paths
+SET sn.source_paths = update.paths,
+    sn.updated_at = datetime()
 RETURN sn.id AS id, sn.source_paths AS paths
 ORDER BY id
 """
