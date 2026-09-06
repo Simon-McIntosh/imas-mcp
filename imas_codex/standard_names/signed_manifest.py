@@ -307,7 +307,7 @@ def _apply_normalization_peel_unit_repair(gc: Any) -> list[str]:
                             WHERE t IN ['normalized', 'normalised']))
         OPTIONAL MATCH (sn)-[r:HAS_UNIT]->(:Unit {id: '1'})
         DELETE r
-        SET sn.unit = null
+        SET sn.updated_at = datetime(), sn.unit = null
         RETURN sn.id AS id
         ORDER BY id
         """
@@ -2067,7 +2067,8 @@ def _apply_error_sibling_query_handle(query: _Query) -> dict[str, int]:
             """
             UNWIND $ids AS sid
             MATCH (sn:StandardName {id: sid})
-            SET sn.validation_status = 'quarantined',
+            SET sn.updated_at = datetime(),
+                sn.validation_status = 'quarantined',
                 sn.quarantine_reason = 'orphaned error sibling (parent name deleted)'
             """,
             ids=orphan_ids,
@@ -4390,7 +4391,9 @@ def _apply_ordinary_source_migration(query: _Query, action: dict[str, Any]) -> i
                WHEN current.source_type = 'derived'
                 AND current.source_id STARTS WITH 'derived:'
                THEN current.source_id ELSE current.id END) AS new_paths
-        SET old.source_paths = [path IN old_paths WHERE path IS NOT NULL],
+        SET old.updated_at = datetime(),
+            old.source_paths = [path IN old_paths WHERE path IS NOT NULL],
+            new.updated_at = datetime(),
             new.source_paths = [path IN new_paths WHERE path IS NOT NULL]
         RETURN source.id AS source_id
         """,
@@ -4453,6 +4456,7 @@ def _apply_unbound_source_attachment(query: _Query, action: dict[str, Any]) -> i
             source.claim_token = null,
             source.produced_sn_id = target.id,
             source.last_error = null,
+            target.updated_at = datetime(),
             target.source_paths = CASE
               WHEN $source_id IN coalesce(target.source_paths, [])
               THEN target.source_paths
@@ -4504,7 +4508,8 @@ def _apply_mutation(query: _Query, action: dict[str, Any]) -> int:
             FOREACH (target IN targets |
               SET target.source_paths = [path IN coalesce(target.source_paths, [])
                 WHERE NOT (path = source.id OR path = source.source_id
-                           OR path = 'dd:' + source.source_id)])
+                           OR path = 'dd:' + source.source_id)],
+                  target.updated_at = datetime())
             RETURN source.id AS source_id,
                    size(bindings) AS bindings_removed,
                    size(projections) AS projections_removed
@@ -5213,7 +5218,8 @@ def _apply_dual_authority_retirement(
                           AND NOT (coalesce(child.status, '') IN
                             ['deprecated', 'superseded'])
                       }
-                    SET target.superseded_from_stage = coalesce(
+                    SET target.updated_at = datetime(),
+                        target.superseded_from_stage = coalesce(
                           target.superseded_from_stage, target.name_stage),
                         target.name_stage = 'superseded',
                         target.status = 'superseded',
@@ -5624,7 +5630,8 @@ def _apply_catalog_source_dispositions(
                       WHEN source.source_type = 'derived'
                         AND source.source_id STARTS WITH 'derived:'
                       THEN source.source_id ELSE source.id END) AS paths
-                    SET target.source_paths = [path IN paths WHERE path IS NOT NULL]
+                    SET target.updated_at = datetime(),
+                        target.source_paths = [path IN paths WHERE path IS NOT NULL]
                     """,
                     target_ids=target_ids,
                 )
@@ -6146,7 +6153,8 @@ def _apply_ineligible_source_retirement(
                       WHEN source.source_type = 'derived'
                         AND source.source_id STARTS WITH 'derived:'
                       THEN source.source_id ELSE source.id END) AS paths
-                    SET target.source_paths = [path IN paths WHERE path IS NOT NULL]
+                    SET target.updated_at = datetime(),
+                        target.source_paths = [path IN paths WHERE path IS NOT NULL]
                     """,
                     target_ids=target_ids,
                 )
