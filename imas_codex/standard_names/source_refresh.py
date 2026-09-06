@@ -137,7 +137,8 @@ def stamp_source_snapshots(
                     sn.source_dd_resolution_ids = update.resolution_ids,
                     sn.source_dd_resolution_converged_ids = update.converged_ids,
                     sn.source_dd_resolution_manifest_digest = update.manifest_digest,
-                    sn.source_dd_resolution_marker = update.resolution_marker
+                    sn.source_dd_resolution_marker = update.resolution_marker,
+                    sn.updated_at = datetime()
                 """,
                 updates=updates,
             )
@@ -413,7 +414,7 @@ def refresh_drifted_sources(
                 gc.query(
                     """
                     MATCH (sn:StandardName {id: $id})
-                    SET sn.run_id = $scope_run_id
+                    SET sn.run_id = $scope_run_id, sn.updated_at = datetime()
                     """,
                     id=d["sn_id"],
                     scope_run_id=scope_run_id,

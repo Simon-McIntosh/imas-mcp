@@ -78,7 +78,8 @@ _APPLY_SCALAR_DELTAS = """
     MATCH (sn:StandardName {id: b.id})
     SET sn.description = b.description,
         sn.documentation = b.documentation,
-        sn.unit = b.unit
+        sn.unit = b.unit,
+        sn.updated_at = datetime()
 """
 
 

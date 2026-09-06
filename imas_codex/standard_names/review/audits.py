@@ -198,7 +198,8 @@ def run_embedding_preflight(names: list[dict[str, Any]]) -> EmbeddingReport:
                     MATCH (sn:StandardName {id: b.id})
                     SET sn.embedding = b.embedding,
                         sn.review_input_hash = b.hash,
-                        sn.embedded_at = datetime()
+                        sn.embedded_at = datetime(),
+                        sn.updated_at = datetime()
                     """,
                     batch=[
                         {

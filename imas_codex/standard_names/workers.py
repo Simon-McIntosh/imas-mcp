@@ -4967,7 +4967,7 @@ def claim_ids_for_validation(
               AND (sn.claimed_at IS NULL
                    OR sn.claimed_at < datetime() - duration($timeout))
             WITH sn ORDER BY rand() LIMIT $limit
-            SET sn.claimed_at = datetime(), sn.claim_token = $token
+            SET sn.claimed_at = datetime(), sn.claim_token = $token, sn.updated_at = datetime()
             """,
             ids=list(ids),
             limit=limit,
@@ -8402,7 +8402,7 @@ async def process_review_name_batch(
                     with _GC() as gc:
                         gc.query(
                             "MATCH (sn:StandardName {id: $id}) "
-                            "SET sn.semantic_sim = $sim",
+                            "SET sn.semantic_sim = $sim, sn.updated_at = datetime()",
                             id=_id,
                             sim=_sim,
                         )
