@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T12:46:46",
+  "updated": "2026-09-06T12:55:42",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -89659,6 +89659,270 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260906T090139963549-n-swct-a-repairable-field-keeps-its-review",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a76",
+        "node": "n-swct-a-repairable-field-keeps-its-review",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2232,
+                "cached_input_tokens": 273274,
+                "input_tokens": 275508,
+                "output_tokens": 3895,
+                "reasoning_output_tokens": 1556,
+                "total_tokens": 279403,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "ONE PRINCIPLE, APPLIED TWICE: at the boundary between a language model and a schema, a repairable defect in an OPTIONAL field must repair that field and record the repair - never discard the whole document. A paid review thrown away over one optional nested field is the same waste as a guard that never runs, and it is currently happening reproducibly.\n\nMEASURED THIS MORNING: 15 reviewer verdicts were billed and discarded because the structured output failed its own schema, reproducibly on the summary IDS. Separately, of 75 reviewer name proposals, 2 do not parse at all and 58 compose back to the exact identity they were proposing to replace - so only a handful are real objections, while the rest are spelling noise that reaches the graph as though it were disagreement.\n\nREPAIR ONE, imas_codex/standard_names/models.py:788-793. The current text is:\n    @model_validator(mode=\"after\")\n    def _reference_evidence_is_complete(self) -> DDGapEvidence:\n        if (self.reference_path is None) != (self.reference_value is None):\n            raise ValueError(\n                \"reference_path and reference_value must be supplied together\"\n            )\n        return self\nThis raise is what discards the 15. The invariant it defends is genuine - half a reference pair means nothing - so PRESERVE THE INVARIANT AND CHANGE THE BLAST RADIUS: when exactly one of the pair is present, clear BOTH to None so no half pair is ever stored, record on the model that this repair happened and which field was missing, and return self instead of raising. The stored data stays as clean as it is today; what changes is that a repairable inconsistency in optional evidence stops destroying the review that carried it. Do not widen the sibling validator at models.py:778-786 - a wildcard in a DD path is not repairable, and rejecting it is correct.\n\nREPAIR TWO, the suggested_name field at imas_codex/standard_names/models.py:1274 and the second identical field at :1352. A proposal that cannot be parsed by the grammar is not a proposal. Add validation that clears a suggested_name which raises on a strict parse, records that it was cleared and why, and leaves every score in the review intact. Clear suggestion_justification alongside it, because its own description already says it is null when suggested_name is null and a justification for a discarded proposal is worse than none.\n\nBUILD, WITH TESTS, THE HELPER FOR THE LARGER CASE BUT DO NOT WIRE IT. A pure function taking a reviewed identity and a proposed spelling, returning whether the proposal is BOTH emittable AND semantically different - that is, it parses, and compose(parse(proposal).ir) differs from compose(parse(identity).ir). Equal composed forms mean the reviewer proposed a different spelling of the same name and there is no objection to record. The instrument is compose(parse(n).ir); normalize_standard_name is a PASSTHROUGH that calls every spelling canonical and must not be used here, which was measured this morning and cost a wrong conclusion. Give the helper a docstring stating that it decides suggestion identity rather than suggestion quality. The call site that would use it is in imas_codex/standard_names/graph_ops.py, which ANOTHER WORKER IS WRITING RIGHT NOW and is not in your scope - a follow-up node wires it once that lands, so leave it unwired and say so in your manifest.\n\nEVIDENCE REQUIRED, in tests/standard_names/test_review_response_repair.py:\n 1. a DD-gap evidence payload with reference_path and no reference_value constructs successfully, carries both fields as None, and records the repair naming the missing field.\n 2. the same payload with both fields supplied keeps both values unchanged.\n 3. a payload with neither field constructs unchanged and records no repair.\n 4. a wildcard DD path still RAISES, proving you narrowed one validator without weakening its sibling.\n 5. a review carrying an unparseable suggested_name constructs successfully with suggested_name and suggestion_justification both None, the repair recorded, and every numeric score byte-identical to the input.\n 6. a review carrying a parseable suggested_name keeps it unchanged.\n 7. the helper returns false for a proposal that composes to the identity, false for one that does not parse, and true for one that is emittable and different - with a real name in each case, not a placeholder.\nRun once at base and once after:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_review_response_repair.py tests/standard_names/test_review_model_compat.py tests/standard_names/test_dd_gap_response_contracts.py tests/standard_names/test_review_artifact_schema.py -p no:cacheprovider\nYour new tests must fail at base. The three existing files are the blast-radius check and must not lose a single passing test - if any expectation in them has to change, STOP and report it rather than adjusting it, because that means the invariant moved and that is my decision rather than yours. Report both counts.",
+          "estimated_hours": null,
+          "goal": "A repairable field in a reviewer response is repaired and recorded rather than discarding the whole paid review",
+          "id": "n-swct-a-repairable-field-keeps-its-review",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T090139963549-n-swct-a-repairable-field-keeps-its-review/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a76",
+          "spec_level": "exact",
+          "time_budget": "45m",
+          "write_paths": [
+            "imas_codex/standard_names/models.py",
+            "tests/standard_names/test_review_response_repair.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-units",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T09:01:48Z",
+        "completed_at": "2026-09-06T10:52:42.294Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 6542,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 6654,
+        "stalled": true,
+        "time_budget": "45m",
+        "base_sha": "3757c9631a575d5c88ca4eb8a32e627173cd256d",
+        "commits": [
+          "6a100a4592cd2a37b3988a8113b04ac8b5f0442c",
+          "0b386e6310ba578da257a541a68cb3686be3dd02",
+          "128b658d746dad522777428e01a62399f239bc84"
+        ],
+        "changed_lines": {
+          "added": 319,
+          "removed": 16,
+          "files": 5
+        },
+        "tests_added": 10,
+        "gate": "passed",
+        "gate_check": {
+          "command": "UV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_review_response_repair.py tests/standard_names/test_dd_gap_response_contracts.py tests/standard_names/test_dd_gap_reporting.py tests/standard_names/test_review_names_context.py -p no:cacheprovider",
+          "exit_status": 0,
+          "log_path": "/run/user/39486/claude-39486/-home-ITER-mcintos-Code-imas-codex/11b50f59-c77b-4356-8bb3-6dafc6d0a4c0/scratchpad/repair2.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T090139963549-n-swct-a-repairable-field-keeps-its-review/manifest.md",
+        "scope_changed": true,
+        "session_id": "58deb95c-6560-459b-bc4f-cc376549c4ef",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 2525491,
+            "input_tokens_cumulative": 2525491,
+            "output_tokens": 12315,
+            "output_tokens_cumulative": 12315,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 6201,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 6215,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3600,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: All four ordered corrections in sn-grammar-refinement \u00a79 are blocked from imas-codex sn edit (and its sibling sn detach / sn supersede surfaces) by real; reproduced preconditions or a pre-existing REFINED_FROM lineage tangle \u2014 see evidence_inputs and the full report for verbatim CLI output and graph queries. Per the node's hard constraint; execution stopped with the graph unchanged rather than reaching for Cypher.",
+              "elapsed_seconds": 669,
+              "external_wait": null,
+              "log_age_seconds": 2502,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/beta-family-corrected.md (only)"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-beta-family-binds-correctly",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly",
+                "session_id": "65312f88-1b49-4e4f-93d8-bbbb654e756b",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 2509,
+              "terminal_at": "2026-09-06T08:19:56Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-beta-family-binds-correctly"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 928.028,
+          "generated_tokens": 12315,
+          "generation_seconds": 616.323,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 19.8,
+          "machine_seconds": 311.705,
+          "peak_input_tokens": 201206,
+          "tokens_per_second": 19.98,
+          "wall_tokens_per_second": 13.27
+        },
+        "attempt": 3,
+        "attempt_kind": "resume",
+        "scope_acceptances": [
+          {
+            "path": "tests/standard_names/test_dd_gap_reporting.py",
+            "reason": "carries the test that was the CONDITION of that authorisation - proving the persistence path keeps its own hard raise, so the narrowing is at one layer only"
+          },
+          {
+            "path": "tests/standard_names/test_dd_gap_response_contracts.py",
+            "reason": "the blast-radius expectation the node stopped on; I authorised moving it to the repair behaviour and it was renamed to match what it now asserts"
+          },
+          {
+            "path": "tests/standard_names/test_review_names_context.py",
+            "reason": "two fixtures the change broke by clearing unparseable suggestions; I required the node to repair what it broke rather than leave added failures"
+          }
+        ],
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swct-a-repairable-field-keeps-its-review",
+          "session_id": "58deb95c-6560-459b-bc4f-cc376549c4ef",
+          "session_source": "pointer",
+          "retained_at": "2026-09-06T10:52:42.294Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names/test_review_response_repair.py",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
       }
     ],
     "holds": [
@@ -89887,6 +90151,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1815
+    "_version": 1816
   }
 }
