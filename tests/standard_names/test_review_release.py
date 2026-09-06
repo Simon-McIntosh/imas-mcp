@@ -17,6 +17,8 @@ import yaml
 from imas_codex.graph.client import GraphClient
 from imas_codex.standard_names.catalog_release import (
     _assert_approved_entries_unchanged,
+    batch_build_metadata,
+    compute_next_version,
     run_release,
     run_review_release,
 )
@@ -803,12 +805,50 @@ def test_review_release_dry_run_no_push_no_pr(isnc_repo, tmp_path):
     assert report.errors == []
     assert report.pushed is False
     assert report.pr_number is None
-    # Export still ran (staging built), artifact still frozen (no PR fields).
+    # Export still ran (staging built) — a dry run stays a faithful rehearsal.
     assert record.get("review_batch") == ["plasma_current", "poloidal_flux"]
-    doc = yaml.safe_load(Path(report.artifact_path).read_text())
-    assert doc["pr_number"] is None
+    # But it writes no roster: the release-shaped path it reports does not
+    # exist, so no candidate-named artifact is left for a release that never
+    # happens.
+    assert report.artifact_path.endswith(".sn_names.yaml")
+    assert not Path(report.artifact_path).exists()
     # No review branch created on a dry run.
     assert "review/" not in _git("branch", cwd=isnc_repo).stdout
+
+
+def test_dry_run_writes_no_roster_and_moves_no_candidate(isnc_repo, tmp_path):
+    """A rehearsal leaves the reviews directory unchanged and the candidate
+    the next cut would take unmoved."""
+    focus = _write_names_focus(tmp_path, name="west-task-2e")
+    reviews = tmp_path / "reviews"
+    reviews.mkdir()
+    label = batch_build_metadata(focus)
+    before_listing = sorted(p.name for p in reviews.iterdir())
+    before_candidate = compute_next_version(
+        isnc_repo, "minor", final=False, build=label
+    )
+
+    report = run_review_release(
+        isnc_repo,
+        focus,
+        "x",
+        staging_dir=tmp_path / "staging",
+        bump="minor",
+        dry_run=True,
+        reviews_dir=reviews,
+        exporter=_stub_exporter({}),
+        publisher=_stub_publisher(isnc_repo),
+        pr_creator=_stub_pr(),
+        **_PR_TARGET,
+    )
+
+    assert report.errors == [], report.errors
+    after_listing = sorted(p.name for p in reviews.iterdir())
+    after_candidate = compute_next_version(isnc_repo, "minor", final=False, build=label)
+    assert after_listing == before_listing
+    assert after_candidate == before_candidate
+    # The rehearsal still reports the candidate it would have taken.
+    assert report.rc_version == before_candidate[0]
 
 
 def test_review_release_empty_focus_errors(isnc_repo, tmp_path):
@@ -871,8 +911,11 @@ def test_review_release_source_batch_excludes_unbound_family(
     assert report.errors == [], report.errors
     assert report.names == [bound_name]
     assert record["review_batch"] == [bound_name]
-    frozen = yaml.safe_load(Path(report.artifact_path).read_text(encoding="utf-8"))
-    assert frozen["names"] == [bound_name]
+    # The batch contents are observed through the report and the export; a
+    # rehearsal also reports the roster path it would freeze without writing
+    # it.
+    assert report.artifact_path.endswith(".sn_names.yaml")
+    assert not Path(report.artifact_path).exists()
     assert set(broader_family) - set(report.names) == {
         parent_name,
         sibling_name,
@@ -1817,7 +1860,11 @@ def test_batch_rc_counter_continues_past_a_labelled_tag(isnc_repo, tmp_path):
 
 
 def test_frozen_artifact_is_schema_valid_with_the_label(isnc_repo, tmp_path):
-    """The label field must not break the sn_names schema the merge side loads."""
+    """The label field must not break the sn_names schema the merge side loads.
+
+    Driven by a real run: a label-carrying roster is only observable on an
+    artifact that was actually written, which a rehearsal no longer does.
+    """
     from imas_codex.standard_names.sources_manifest import load_names_file
 
     focus = _write_names_focus(tmp_path, name="west-task-2e")
@@ -1827,13 +1874,14 @@ def test_frozen_artifact_is_schema_valid_with_the_label(isnc_repo, tmp_path):
         "x",
         staging_dir=tmp_path / "staging",
         bump="minor",
-        dry_run=True,
         reviews_dir=tmp_path / "reviews",
         exporter=_stub_exporter({}),
         publisher=_stub_publisher(isnc_repo),
         pr_creator=_stub_pr(),
         **_PR_TARGET,
     )
+    assert report.errors == [], report.errors
+    assert Path(report.artifact_path).exists()
     assert load_names_file(report.artifact_path) == [
         "plasma_current",
         "poloidal_flux",
