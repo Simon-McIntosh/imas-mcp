@@ -1380,7 +1380,7 @@ def run_review_release(
     pr_body: str | None = None,
     pr_head_reader: Any | None = None,
 ) -> ReviewReleaseReport:
-    """Mint → freeze → export → branch → tag → optional PR, in one call.
+    """Mint → export → assemble → freeze → branch → tag → optional PR, in one call.
 
     A single orchestrating step so the frozen sn-names artifact, the pushed RC
     catalog, and the PR stay in lock-step. The focus file drives the batch: an
@@ -1536,19 +1536,7 @@ def run_review_release(
     report.batch_label = batch_label
     report.branch = f"review/{git_tag}"
 
-    # ── 3. Freeze the batch artifact (pre-PR fields) ───────────────────
-    artifact = _freeze_review_artifact(
-        reviews_dir,
-        rc_version=git_tag,
-        names=report.names,
-        minted_from=str(focus_file),
-        unmatched=report.unmatched_sources,
-        manifest_sources=manifest_sources,
-        batch_label=batch_label,
-    )
-    report.artifact_path = str(artifact)
-
-    # ── 4. Export approved ∪ batch (review_batch stamped) ──────────────
+    # ── 3. Export approved ∪ batch (review_batch stamped) ──────────────
     staging_dir.mkdir(parents=True, exist_ok=True)
     try:
         export_report = exporter(
@@ -1595,13 +1583,35 @@ def run_review_release(
         return report
 
     if dry_run:
+        # A rehearsal reports the roster it would freeze and the branch it
+        # would cut, but writes neither: the repository stays byte-identical
+        # and the RC counter does not move for a release that never happens.
+        report.artifact_path = str(reviews_dir / f"{git_tag}.sn_names.yaml")
         logger.info(
-            "[dry-run] would branch %s, publish, and tag on %s%s",
+            "[dry-run] would freeze %s (not written), branch %s, publish, "
+            "and tag on %s%s",
+            report.artifact_path,
             report.branch,
             effective_remote,
             ", then open a PR" if open_pr else " without opening a PR",
         )
         return report
+
+    # ── 4. Freeze the batch artifact (pre-PR fields) ───────────────────
+    # The roster is the reproducible batch identity carried through export →
+    # branch → tag → PR; it is only written once the export and the
+    # approved-baseline check have passed, so a failed or dry run leaves no
+    # candidate-named artifact behind.
+    artifact = _freeze_review_artifact(
+        reviews_dir,
+        rc_version=git_tag,
+        names=report.names,
+        minted_from=str(focus_file),
+        unmatched=report.unmatched_sources,
+        manifest_sources=manifest_sources,
+        batch_label=batch_label,
+    )
+    report.artifact_path = str(artifact)
 
     # ── 5. Branch, publish (copy + commit), push to the fork ───────────
     reclaimed_from, branch_error = _prepare_release_branch(
