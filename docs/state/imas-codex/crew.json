@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T12:09:30",
+  "updated": "2026-09-06T12:32:14",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -151,9 +151,11 @@
         "id": "clive-units",
         "harness": "clive",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "58deb95c-6560-459b-bc4f-cc376549c4ef",
+        "session_model": "deepseek-v4-flash",
+        "sessions": {
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "58deb95c-6560-459b-bc4f-cc376549c4ef"
+        },
         "created": "2026-09-05"
       },
       {
@@ -88953,6 +88955,243 @@
           "role": "test",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260906T101236069618-n-sgr-a-lineage-edge-can-be-removed",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a79",
+        "node": "n-sgr-a-lineage-edge-can-be-removed",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 624,
+                "cached_input_tokens": 438013,
+                "input_tokens": 438639,
+                "output_tokens": 2462,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 441101,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "BUILD THE DELETE HALF OF A LINEAGE EDGE. A measurement today established that no sanctioned surface can remove a StandardName-to-StandardName REFINED_FROM relationship: `sn supersede` only MERGEs one, `sn detach` touches PRODUCED_NAME source bindings only, `sn edit` never writes REFINED_FROM, `sn provenance-cleanup` compacts superseded name candidates rather than edges, and the reconcile at graph_ops.py:21686 documents deleting none. The only alternative is operator Cypher on exact element ids, which is outside the sanctioned surface and is why this verb is needed.\n\nTHE PATTERN TO MIRROR is imas_codex/standard_names/attachment_audit.py:2300, `detach_one_attachment(dd_path, sn_id, *, reason, dry_run=False)`. It removes a realization, requires a reason because the act is a judgement, writes a StandardNameChange so the judgement and its argument survive in the ledger, and is exposed at imas_codex/cli/sn.py:6543 as `sn detach` with a required --reason and a --dry-run flag. Reuse that shape exactly, including the required reason and the dry-run flag, and reuse its ledger surface rather than inventing a second audit trail.\n\nTHE SEMANTICS. The schema is `MERGE (successor)-[:REFINED_FROM]->(predecessor)` - see graph_ops.py:17887, :18521, :18719 and edit.py:1171, read back as the predecessor at graph_ops.py:16113. So the edge points from the new or live name to the name it superseded. Your verb removes exactly one such relationship, identified by its two endpoint names, and nothing else.\n\nTHE MOTIVATING CASE, which your test must cover with these exact identities. A mis-directed edge `beta -REFINED_FROM-> normalized_toroidal_plasma_beta` asserts that the live total-beta name `beta` superseded the normalised spelling, which is false: `beta` sits at name_stage `reviewed` and is live, and a live name cannot head a supersede edge. That single reverse edge is what blocks a legitimate fold, because the guard at edit.py:1692-1711 counts relationships whose END node is the name being folded. Removing it is the deliverable's purpose.\n\nREFUSE, WITH THE REASON NAMED AND NOTHING WRITTEN, in each of these cases. Either endpoint name does not exist. No REFINED_FROM relationship exists between them in the given direction - and say which direction you looked in, because a caller who reversed the arguments must be told that rather than silently succeeding. And the one that matters most: REFUSE IF REMOVING THE EDGE WOULD LEAVE A SUPERSEDED NAME WITH NO SUCCESSOR ANYWHERE. A superseded name whose lineage is deleted becomes unresolvable, that class of orphan already exists in this graph in quantity, and a repair verb that manufactures more of it is worse than the gap it fills. Check the predecessor's remaining outbound and inbound lineage after the hypothetical delete, and refuse when it would be stranded - unless the predecessor is itself live rather than superseded, in which case it needs no successor and the delete is safe.\n\nEVIDENCE REQUIRED, in tests/standard_names/test_lineage_edge_removal.py: the successful removal of one edge with the change-ledger record carrying the reason; the dry run reporting the same intent and writing nothing; a refusal for a nonexistent endpoint; a refusal for a reversed direction that names the direction checked; a refusal that would strand a superseded predecessor, asserting the edge still exists afterwards; and the permitted case where the predecessor is live and therefore needs no successor. Every refusal test must assert the relationship count is unchanged, not merely that the exit was non-zero.\n\nRun once at base and once after:\nUV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_lineage_edge_removal.py -p no:cacheprovider\nThen run the existing test file that covers the fold guard at edit.py:1692-1711 as a blast-radius check, naming which file you chose, and report its count before and after unchanged. PROVE YOUR NEW TESTS FAIL AT BASE by exporting the base tree with `git archive HEAD` and running the new file against that export, rather than reporting that the base run had fewer tests - a smaller passing count is not a base failure, and one of today's runs made exactly that mistake. Report both counts and which method you used.\n\nDO NOT run this verb against the live graph in this node - not even on the beta case. The tests are the proof; applying it is a separate node under its own review. Do not modify the fold guard itself. Never write ad-hoc Cypher outside the function you are adding.\n\nOPERATIONAL RECEIPT REQUIRED IN YOUR MANIFEST, because this run is also evaluating this backend. Report your wall-clock from first tool call to manifest write; your number of tool calls; how many turns you used; whether any request was retried or refused and why; and one sentence naming what you had to discover versus what this brief handed you, including anything you found under-specified.",
+          "estimated_hours": null,
+          "goal": "One mis-directed lineage relationship can be removed through a sanctioned verb that refuses to strand a superseded name",
+          "id": "n-sgr-a-lineage-edge-can-be-removed",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T101236069618-n-sgr-a-lineage-edge-can-be-removed/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "50m",
+          "write_paths": [
+            "imas_codex/standard_names/edit.py",
+            "imas_codex/cli/sn.py",
+            "tests/standard_names/test_lineage_edge_removal.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "cx-fitclass",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T10:12:45Z",
+        "completed_at": "2026-09-06T10:29:21Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 996,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 996,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "87ac0d3bd57bf62d312b7ba7c98d3d5b8a41b82d",
+        "commits": [
+          "49e2aeb0fcdd269b4104db9a91affd00d6e28038"
+        ],
+        "changed_lines": {
+          "added": 514,
+          "removed": 0,
+          "files": 3
+        },
+        "tests_added": 7,
+        "gate": "passed",
+        "gate_check": {
+          "command": "UV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=\"$PWD\" uv run --no-sync pytest tests/standard_names/test_lineage_edge_removal.py -p no:cacheprovider",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T101236069618-n-sgr-a-lineage-edge-can-be-removed/final_lineage_edge_removal.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T101236069618-n-sgr-a-lineage-edge-can-be-removed/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07634-c7f6-7270-97d1-a157ca693436",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 11768704,
+            "cached_input_tokens_cumulative": 11768704,
+            "input_tokens": 12017408,
+            "input_tokens_cumulative": 12017408,
+            "output_tokens": 32392,
+            "output_tokens_cumulative": 32392,
+            "reasoning_output_tokens": 11734,
+            "reasoning_output_tokens_cumulative": 11734
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: STEP 1 has no audited route. `sn detach` refuses (would orphan a name with one",
+              "elapsed_seconds": 411,
+              "external_wait": null,
+              "log_age_seconds": 10457,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/antenna-strap-settled.md"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-antenna-strap-rows-are-settled",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T071124320467-n-sgr-the-antenna-strap-rows-are-settled",
+                "session_id": "f46e6d80-db9c-47be-ba7e-25eae7ba9bf8",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 10471,
+              "terminal_at": "2026-09-06T07:18:09Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-antenna-strap-rows-are-settled"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3600,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: All four ordered corrections in sn-grammar-refinement \u00a79 are blocked from imas-codex sn edit (and its sibling sn detach / sn supersede surfaces) by real; reproduced preconditions or a pre-existing REFINED_FROM lineage tangle \u2014 see evidence_inputs and the full report for verbatim CLI output and graph queries. Per the node's hard constraint; execution stopped with the graph unchanged rather than reaching for Cypher.",
+              "elapsed_seconds": 669,
+              "external_wait": null,
+              "log_age_seconds": 6757,
+              "log_fresh": false,
+              "manifest_commits": [
+                "none; changed_paths: /home/ITER/mcintos/.config/reckon/crew/reports/beta-family-corrected.md (only)"
+              ],
+              "manifest_derived": false,
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-beta-family-binds-correctly",
+              "phase": "starting",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260906T080842888785-n-sgr-the-beta-family-binds-correctly",
+                "session_id": "65312f88-1b49-4e4f-93d8-bbbb654e756b",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 6764,
+              "terminal_at": "2026-09-06T08:19:56Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-beta-family-binds-correctly"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 44126,
+          "peak_input_tokens": 23786112
+        },
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-a-lineage-edge-can-be-removed",
+          "session_id": "01a07634-c7f6-7270-97d1-a157ca693436",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T10:29:21Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names/test_lineage_edge_removal.py",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
       }
     ],
     "holds": [
@@ -89157,13 +89396,13 @@
         "backend": "codex",
         "purpose": "dispatch",
         "opened_at": "2026-09-06T09:54:19Z",
-        "closed_at": null,
-        "held_seconds": null,
+        "closed_at": "2026-09-06T10:12:42Z",
+        "held_seconds": 1103,
         "utilisation_pct": 96.0,
         "resets_at": "2026-09-11T04:24:27Z",
         "effective_ceiling_pct": 95.0,
         "reason": "utilisation 96% with burn multiple 3.0x is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
-        "closed_by_purpose": null,
+        "closed_by_purpose": "dispatch",
         "resumption_fired": false
       },
       {
@@ -89181,6 +89420,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1810
+    "_version": 1813
   }
 }
