@@ -25325,12 +25325,21 @@ def _persist_structural_authority(
     *,
     parent_updates: dict[str, Any] | None = None,
     require_derived: bool = True,
+    require_source_free: bool = False,
 ) -> bool:
-    """Persist one authority and optional accept transition in one statement."""
+    """Persist one authority and optional accept transition in one statement.
+
+    ``require_source_free`` re-checks inside the same guarded statement that no
+    ``StandardNameSource`` produces the parent. A caller that admits a parent on
+    the strength of it having no producer must hold that fact through the write,
+    or a source attached in between would be accepted without its name reviewed.
+    """
     rows = gc.query(
         """
         MATCH (parent:StandardName {id: $parent_id})
         WHERE ($require_derived = false OR parent.origin = 'derived')
+          AND ($require_source_free = false OR NOT EXISTS {
+                MATCH (:StandardNameSource)-[:PRODUCED_NAME]->(parent) })
           AND parent.name_stage = $expected_name_stage
           AND (parent.claim_token = $expected_claim_token
                OR (parent.claim_token IS NULL AND $expected_claim_token IS NULL))
@@ -25392,6 +25401,7 @@ def _persist_structural_authority(
         expected_name_stage=record["expected_name_stage"],
         expected_claim_token=record["expected_claim_token"],
         require_derived=require_derived,
+        require_source_free=require_source_free,
         parent_updates=parent_updates or {},
         authority_properties={
             key: record[key]
@@ -25530,6 +25540,42 @@ def persist_enriched_parent(
     return new_stage
 
 
+#: Path scalars that a ``PRODUCED_NAME`` edge is meant to back. On a name no
+#: source produces they are stale copies of a source that has since moved away,
+#: and they read as provenance the graph itself contradicts.
+_UNBACKED_SOURCE_PATH_SCALARS = ("source_path", "source_paths")
+
+
+def _structural_accept_route(
+    *, origin: str | None, producer_count: int, live_child_count: int
+) -> str | None:
+    """Return how a stuck structural parent may be accepted, or ``None``.
+
+    ``derived``
+        The parent already carries the derived-scaffold origin. Unchanged
+        behaviour: a derived parent's name is a grammar peel over its children
+        and is never name-reviewed, whether or not a source also produces it.
+
+    ``source_free``
+        The origin scalar is absent, yet the edges say this name is a structural
+        parent that NO source produces. There is nothing to review the name
+        against — the review it would need can never be earned — so its children
+        entail it exactly as they entail a stamped derived parent. Decided from
+        the edges rather than from ``origin``/``source_path``, because a scalar
+        that disagrees with the topology is the stale half of the pair.
+
+    A name with a live producing source and no scaffold origin is a reviewable
+    name and is refused, as is any name without a live child.
+    """
+    if live_child_count < 1:
+        return None
+    if origin == "derived":
+        return "derived"
+    if origin is None and producer_count == 0:
+        return "source_free"
+    return None
+
+
 @retry_on_deadlock()
 def structural_accept_derived_parents(gc: Any | None = None) -> int:
     """Accept any derived parent stuck on the name axis structurally.
@@ -25552,6 +25598,16 @@ def structural_accept_derived_parents(gc: Any | None = None) -> int:
     self-healing — safe to call at every ``sn run`` startup. Placeholder-
     description parents are left for the enrich pool (or are childless zombies).
     Returns the count promoted.
+
+    A parent can also be a structural scaffold WITHOUT carrying the origin —
+    a name whose producing source moved to another identity, leaving children
+    attached and no ``PRODUCED_NAME`` edge behind. Its name cannot be reviewed
+    either (there is no source to review it against), so it strands in exactly
+    the same way. :func:`_structural_accept_route` admits that case from the
+    edges, and the promotion stamps the scaffold origin and clears the path
+    scalars no edge backs. The widening is fenced by ``require_source_free``:
+    a name with a live producing source is refused, in the selection and again
+    inside the guarded write.
     """
     from imas_codex.standard_names.defaults import (
         DETERMINISTIC_PARENT_DESCRIPTION_PLACEHOLDER,
@@ -25564,36 +25620,63 @@ def structural_accept_derived_parents(gc: Any | None = None) -> int:
         rows = gc.query(
             """
             MATCH (sn:StandardName)
-            WHERE sn.origin = 'derived'
+            WHERE (sn.origin = 'derived' OR sn.origin IS NULL)
               AND sn.name_stage IN ['drafted', 'reviewed', 'exhausted', 'refining']
               AND sn.description IS NOT NULL
               AND sn.description <> $ph
               AND NOT (sn)-[:HAS_STRUCTURAL_AUTHORITY]->(
                 :StructuralNameAuthority)
-            RETURN sn.id AS id
+              AND EXISTS { MATCH (:StandardName)-[:HAS_PARENT]->(sn) }
+            RETURN sn.id AS id,
+                   sn.origin AS origin,
+                   count {
+                     (:StandardNameSource)-[:PRODUCED_NAME]->(sn)
+                   } AS producer_count,
+                   count {
+                     (child:StandardName)-[:HAS_PARENT]->(sn)
+                     WHERE NOT coalesce(child.name_stage, '') IN
+                       ['superseded', 'exhausted', 'contested']
+                   } AS live_child_count
             ORDER BY sn.id
             """,
             ph=DETERMINISTIC_PARENT_DESCRIPTION_PLACEHOLDER,
         )
         promoted = 0
         for row in rows:
+            route = _structural_accept_route(
+                origin=row.get("origin"),
+                producer_count=int(row.get("producer_count") or 0),
+                live_child_count=int(row.get("live_child_count") or 0),
+            )
+            if route is None:
+                continue
             snapshot = _structural_authority_snapshot(gc, str(row["id"]))
             if snapshot is None or not snapshot.get("children"):
                 continue
             record = _structural_authority_record(snapshot, accepting=True)
             now = datetime.now(UTC)
+            parent_updates = {
+                "name_stage": "accepted",
+                "reviewer_model_name": "structural-inheritance",
+                "reviewed_name_at": snapshot.get("reviewed_name_at") or now,
+                "docs_stage": snapshot.get("docs_stage") or "pending",
+                "chain_length": snapshot.get("chain_length") or 0,
+                "claim_token": None,
+                "claimed_at": None,
+            }
+            if route == "source_free":
+                # Promotion is the statement that this name is a source-free
+                # scaffold, so it stamps the scaffold origin and drops the path
+                # scalars no edge backs in the same guarded write. Leaving them
+                # would keep a path this name never had readable as provenance.
+                parent_updates["origin"] = "derived"
+                parent_updates.update(dict.fromkeys(_UNBACKED_SOURCE_PATH_SCALARS))
             if not _persist_structural_authority(
                 gc,
                 record,
-                parent_updates={
-                    "name_stage": "accepted",
-                    "reviewer_model_name": "structural-inheritance",
-                    "reviewed_name_at": snapshot.get("reviewed_name_at") or now,
-                    "docs_stage": snapshot.get("docs_stage") or "pending",
-                    "chain_length": snapshot.get("chain_length") or 0,
-                    "claim_token": None,
-                    "claimed_at": None,
-                },
+                parent_updates=parent_updates,
+                require_derived=route == "derived",
+                require_source_free=route == "source_free",
             ):
                 raise StructuralAuthorityConflict(
                     f"derived parent {row['id']!r} changed before atomic acceptance"
