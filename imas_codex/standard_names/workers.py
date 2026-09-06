@@ -7557,6 +7557,20 @@ def _record_quorum_incomplete(run_id: str | None, review_axis: str) -> None:
     _quorum_incomplete_deferrals[key] = _quorum_incomplete_deferrals.get(key, 0) + 1
 
 
+def _unfunded_cause(unfunded: list[tuple[int, str, float]]) -> str:
+    """One cause line naming every seat the run budget refused to fund.
+
+    Renders each refused reservation as ``c<idx> <model> $<exposure>`` so an
+    operator can see at a glance which seat a run's cost limit or reviewer
+    replica count starved, rather than debugging the reviewer chain for a
+    provider outage that never happened.
+    """
+    seats = ", ".join(
+        f"c{idx} {model} ${exposure:.4f}" for idx, model, exposure in unfunded
+    )
+    return f"budget refused {len(unfunded)} seat(s): {seats}"
+
+
 def quorum_incomplete_snapshot(run_id: str | None) -> dict[str, int]:
     """Return ``{review_axis: deferrals}`` for *run_id* (empty when none)."""
     rid = run_id or ""
@@ -7684,7 +7698,7 @@ async def _run_rd_quorum_cycles(
             cycle_lease = budget_manager.reserve(maximum_exposure, phase=phase)
             if cycle_lease is None:
                 unfunded.append((cycle_idx, model, maximum_exposure))
-                logger.debug(
+                logger.warning(
                     "rd_quorum %s cycle %d unfunded for %s (model=%s): the run "
                     "budget could not reserve $%.4f of pre-launch exposure — "
                     "the reviewer was never called",
@@ -7860,8 +7874,11 @@ async def _run_rd_quorum_cycles(
     # silently advance names on ONE review. Defer instead: return None so the
     # caller releases the claim back to ``drafted`` (same path it already takes
     # for a total failure), and count the deferral so the run summary can
-    # surface the shortfall. Cycle 2 need not be considered — it only fires when
-    # both base cycles already succeeded, which is a complete quorum.
+    # surface the shortfall. Cycle 2 is not part of this guard: two base seats
+    # that AGREE are a complete quorum, but two that DISAGREE are exactly the
+    # case the escalator exists to break — a disagreeing pair whose escalator
+    # seat the budget refuses to fund is an INCOMPLETE quorum, and the
+    # disagreement branch below defers it rather than publishing a mean.
     intended_model_count = len(models)
     successful_cycles = len(cycles)
     if intended_model_count >= 2 and successful_cycles < 2:
@@ -7870,10 +7887,7 @@ async def _run_rd_quorum_cycles(
         # provider outage when the fix is the run's cost limit or its reviewer
         # replica count.
         if unfunded:
-            seats = ", ".join(
-                f"c{idx} {model} ${exposure:.4f}" for idx, model, exposure in unfunded
-            )
-            cause = f"budget refused {len(unfunded)} seat(s): {seats}"
+            cause = _unfunded_cause(unfunded)
         else:
             cause = "reviewer call failed"
         logger.warning(
@@ -7975,6 +7989,24 @@ async def _run_rd_quorum_cycles(
         else:
             winning_comments = c1_comments or c0_comments
         winning_comments_per_dim = c1["comments_per_dim"] or c0["comments_per_dim"]
+        if disagreement and unfunded:
+            # Both base seats succeeded but DISAGREE, and the run budget refused
+            # to fund the escalator seat that exists to break the tie. A mean of
+            # two disagreeing blind seats is not a verdict, and publishing it
+            # under max_cycles_reached would make a funding shortfall
+            # indistinguishable from a profile with no tie-breaker configured.
+            # Defer exactly as an incomplete quorum does: release the claim,
+            # name the refused seats, and count the deferral.
+            cause = _unfunded_cause(unfunded)
+            logger.warning(
+                "rd_quorum %s deferring disputed name %s — tie-breaker seat "
+                "could not be funded (%s)",
+                review_axis,
+                sn_id,
+                cause,
+            )
+            _record_quorum_incomplete(run_id, review_axis)
+            return None
         if disagreement:
             # Disputed but no escalator available
             resolution_method = "max_cycles_reached"

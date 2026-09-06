@@ -431,3 +431,124 @@ class TestDeferredReviewReleasesClaim:
         assert rc.get("from_stage") == "drafted"
         assert rc.get("to_stage") == "drafted"
         assert "tok-defer" in str(rc.get("claim_token", ""))
+
+
+# ---------------------------------------------------------------------------
+# Escalator seat the budget refused to fund: a disagreeing base pair whose
+# cycle-2 seat is never funded has NO verdict, so it must defer rather than
+# publish a mean of two disagreeing blind seats under max_cycles_reached —
+# the same token as the legitimate fewer-than-three-models case, which must
+# stay distinguishable.
+# ---------------------------------------------------------------------------
+
+
+def _disagreeing_dims() -> tuple[dict, dict]:
+    """Two per-dim maps that disagree on one dim past the 0.15 threshold."""
+    dims = dict(_NAMES_DIMS)
+    dims_b = dict(dims)
+    dims_b["grammar"] = 11  # 0.8 vs 0.55 → 0.25 > 0.15 → flagged disagreement
+    return dims, dims_b
+
+
+class TestEscalatorSeatUnfundedDefers:
+    def _funded_then_starved(self) -> MagicMock:
+        """Budget manager that funds both base seats but refuses cycle 2."""
+        lease = MagicMock()
+        lease.charge_event = MagicMock(return_value=SimpleNamespace(overspend=0.0))
+        lease.release_unused = MagicMock(return_value=0.0)
+        mgr = MagicMock()
+        mgr.reserve = MagicMock(side_effect=[lease, lease, None])
+        mgr.run_id = "run-x"
+        return mgr
+
+    def test_cycle2_reservation_refused_defers(self, caplog):
+        """Disagreeing base pair + refused escalator seat → deferred, no verdict."""
+        reset_quorum_incomplete("run-x")
+        dims, dims_b = _disagreeing_dims()
+        acall, calls = _make_acall(
+            [
+                {"score": 0.8, "dims": dims},
+                {"score": 0.55, "dims": dims_b},
+            ]
+        )
+        with (
+            patch(
+                "imas_codex.standard_names.budget.model_provider_exposure",
+                return_value=0.01,  # funded cycles' per-attempt hook prices
+            ),
+            patch(
+                "imas_codex.standard_names.workers.model_provider_exposure",
+                side_effect=[0.1, 0.2, 0.2773],  # reservation exposures per seat
+            ),
+            caplog.at_level(
+                logging.WARNING, logger="imas_codex.standard_names.workers"
+            ),
+        ):
+            result = asyncio.run(
+                _run_rd_quorum_cycles(
+                    sn_id="poloidal_electric_field",
+                    review_axis="name",
+                    response_model=None,
+                    user_prompt="u",
+                    system_prompt="s",
+                    models=["m0", "m1", "m2"],
+                    disagreement_threshold=0.15,
+                    rubric_dims=tuple(_NAMES_DIMS),
+                    lease=None,
+                    phase="review_name",
+                    acall_llm_structured=acall,
+                    budget_manager=self._funded_then_starved(),
+                    run_id="run-x",
+                )
+            )
+
+        assert result is None  # deferred, NOT published at a mean score
+        assert quorum_incomplete_snapshot("run-x") == {"name": 1}
+        assert calls["n"] == 2  # both base seats ran; the escalator never did
+        assert "budget refused" in caplog.text
+        assert "deferring" in caplog.text
+        reset_quorum_incomplete("run-x")
+
+    def test_cycle2_funded_publishes_escalator_verdict(self):
+        """Disagreeing base pair + funded escalator → authoritative_escalation.
+
+        Proves the disagreement branch was narrowed, not disabled: with the
+        tie-breaker funded the escalator resolves the dispute exactly as before.
+        """
+        reset_quorum_incomplete("run-x")
+        dims, dims_b = _disagreeing_dims()
+        result, calls = _run(
+            models=["m0", "m1", "m2"],
+            responses=[
+                {"score": 0.8, "dims": dims},
+                {"score": 0.55, "dims": dims_b},
+                {"score": 0.9, "dims": dict(dims)},
+            ],
+        )
+        assert result is not None
+        assert result["resolution_method"] == "authoritative_escalation"
+        assert calls["n"] == 3  # escalator ran and broke the tie
+        assert quorum_incomplete_snapshot("run-x") == {}
+        reset_quorum_incomplete("run-x")
+
+    def test_two_model_profile_keeps_max_cycles_reached(self):
+        """2-model profile, no escalator ever configured → max_cycles_reached.
+
+        Fewer than three configured models is the legitimate no-tie-breaker
+        case; it must stay published under max_cycles_reached, distinguishable
+        from a budget refusal by the absence of an unfunded seat.
+        """
+        reset_quorum_incomplete("run-x")
+        dims, dims_b = _disagreeing_dims()
+        result, calls = _run(
+            models=["m0", "m1"],
+            responses=[
+                {"score": 0.8, "dims": dims},
+                {"score": 0.55, "dims": dims_b},
+            ],
+        )
+        assert result is not None
+        assert result["resolution_method"] == "max_cycles_reached"
+        assert calls["n"] == 2
+        assert quorum_incomplete_snapshot("run-x") == {}
+        reset_quorum_incomplete("run-x")
