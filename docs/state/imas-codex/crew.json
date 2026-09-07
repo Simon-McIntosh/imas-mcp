@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07T07:29:23",
+  "updated": "2026-09-07T07:35:21",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -97383,6 +97383,142 @@
           "role": "implement",
           "status": "compatible"
         }
+      },
+      {
+        "run_id": "r-20260907T043936706597-n-swcr-the-roster-tail-reaches-publishable",
+        "plan": "sn-west-catalog-release",
+        "section": "Hard entry gate",
+        "node": "n-swcr-the-roster-tail-reaches-publishable",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 779,
+                "cached_input_tokens": 172641,
+                "input_tokens": 173422,
+                "output_tokens": 514,
+                "reasoning_output_tokens": 258,
+                "total_tokens": 173936,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "CARRY THE SEVENTEEN NON-PUBLISHABLE WEST ROSTER NAMES THROUGH THE PIPELINE POOLS THAT EACH ONE STILL NEEDS.\n\nThese seventeen StandardName identities are the WEST release roster rows that are not yet both name_stage=accepted and docs_stage=accepted. Nine other roster rows are being reviewed by a concurrent run and are NOT yours: do not name them, do not widen the scope, and do not run an unscoped pool loop.\n\nYOUR SEVENTEEN, verbatim:\n  atomic_number\n  normalized_toroidal_flux_coordinate_at_measurement_position\n  energy_flux_maximum_at_divertor_target\n  spectral_rate_of_spectrometer_channel\n  toroidal_beta\n  toroidal_coordinate_of_aperture\n  inner_normalized_toroidal_flux_coordinate_hard_xray_emissivity_peak_half_width\n  neutron_rate\n  spectral_wave_opacity_line_integrated_at_ece_channel_emission_position\n  vertical_coordinate_of_ece_channel\n  vertical_outline_of_plasma_boundary\n  width_of_antenna_strap\n  hard_xray_rate\n  derivative_of_area_of_flux_surface_with_respect_to_normalized_poloidal_flux_coordinate\n  hot_neutral_temperature\n  wave_current_amplitude_of_antenna_strap\n  normalized_toroidal_beta\n\nTHE TOOL. `imas-codex sn run` takes `--name`, which scopes the normal worker pools to existing StandardName identities, preflights the set atomically, and never seeds DD sources. Pass all seventeen through repeated `--name` flags or quoted whitespace-separated groups. This is the whole mechanism: you are not editing names by hand and you are not writing Cypher.\n\nENVIRONMENT. Work in your worktree. The environment is the main checkout's shared virtualenv reached through the worktree .venv symlink; name the environment and the target and let your own wrapper form the invocation, and do not write the uv no-sync flag into any command because your sandbox already supplies it. Never pipe, tee, or redirect imas-codex output: the command auto-logs full DEBUG to ~/.local/share/imas-codex/logs and you read that file afterwards.\n\nSTEP ONE, THE BEFORE FIGURE. Record the starting state of all seventeen with this read, and paste its rows into your report:\n  MATCH (n:StandardName) WHERE n.id IN $ids RETURN n.id AS id, n.name_stage AS stage, coalesce(n.docs_stage,'-') AS docs, n.review_mean_score AS score ORDER BY n.id\n\nSTEP TWO, RE-ADMIT THE ONE EXHAUSTED ROW. hard_xray_rate is at name_stage=exhausted with mean score 0.72 over two reviews, so its attempt budget is spent and no pool will claim it. Re-admit it with `--reset-to drafted` scoped by `--name hard_xray_rate` before or during the main run. Do not reset any other row: the other sixteen are claimable as they stand.\n\nSTEP THREE, RUN THE POOLS. One `imas-codex sn run` invocation with all seventeen names, no `--only` filter so every pool that has claimable work runs, `-c 8` as the cost ceiling in USD and `-t 45` as the minute ceiling. Six rows need documentation generated then reviewed, two need only documentation review, six drafted names need name review, and three reviewed names need the accept decision. If the run exits before the pools are dry, launch it again with the same seventeen names; a second invocation is expected and is not a failure.\n\nWHAT THE PIPELINE DECIDES, NOT YOU. Two rows carry low scores: spectral_wave_opacity_line_integrated_at_ece_channel_emission_position at 0.433 over four reviews, and derivative_of_area_of_flux_surface_with_respect_to_normalized_poloidal_flux_coordinate at 0.625. vertical_coordinate_of_ece_channel has never been reviewed and has an accepted sibling named vertical_coordinate_of_measurement_position. Send all three through the pools and report the verdict the reviewers return. Do not argue a name up or down, do not hand-pick a spelling, and do not fold or supersede any identity yourself.\n\nIF A NAME IS REFUSED AS EDIT-PROTECTED, report the identity and the refusal text and leave it alone. Do not pass `--override-edits`.\n\nSTEP FOUR, THE AFTER FIGURE. Re-run the step-one read and additionally report the roster-wide publishable count with this exact query, whose starting value is 199:\n  MATCH (n:StandardName) WHERE n.id IN $roster AND n.name_stage='accepted' AND n.docs_stage='accepted' RETURN count(*) AS publishable\nBuild $roster by loading the focus file at imas_codex/standard_names/manifests/west_production_dd_paths.yaml with load_focus_file from imas_codex.standard_names.sources_manifest and resolving it with fetch_manifest_source_release_rows from imas_codex.standard_names.graph_ops, taking the distinct non-null standard_name_id values. That resolution yields 225 roster names.\n\nMEASURE. Your manifest reports the seventeen-row before table, the seventeen-row after table, the publishable count before and after against the 225-name roster, the total LLM cost the run reported in USD, and one line per row that did not reach accepted name with accepted documentation stating which pool it is now waiting in and the reviewer score that held it. The after publishable count must be at or above 199 and you must state the exact figure.\n\nCOMMITS. This node changes graph state, not repository files. If you write no commit, say so explicitly in the manifest and state that the graph carries the change. Do not commit generated model files, do not stage anything under .gitignore, and never add any AI attribution or co-author trailer to any message you write.\n\nMANIFEST DISCIPLINE. Write your manifest with what you have BEFORE starting any wait longer than a couple of minutes, then update it. A manifest naming the work done and the run still draining is recoverable; a manifest deferred until the run returns is indistinguishable from a crash.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 1.0,
+          "goal": "The seventeen non-publishable WEST roster names are carried through the pipeline pools each one still needs",
+          "id": "n-swcr-the-roster-tail-reaches-publishable",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-roster-tail/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "Hard entry gate",
+          "spec_level": "exact",
+          "time_budget": "60m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/roster-tail-drain.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-tail",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-07T04:39:45Z",
+        "completed_at": "2026-09-07T05:31:36Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 3111,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 3111,
+        "stalled": false,
+        "time_budget": "60m",
+        "base_sha": "ad4d7d7bf9c29ebbeb68474dd0d4b46ecdbd76b4",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "imas-codex sn run --name '<sixteen roster rows>' --only review --skip-global-maintenance -c 8 -t 45",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/roster-tail-drain.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-roster-tail/manifest.md",
+        "scope_changed": true,
+        "session_id": "01a07a2a-475e-7683-9c1c-915dff10d23d",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 4790144,
+            "cached_input_tokens_cumulative": 4790144,
+            "input_tokens": 4858811,
+            "input_tokens_cumulative": 4858811,
+            "output_tokens": 19132,
+            "output_tokens_cumulative": 19132,
+            "reasoning_output_tokens": 4655,
+            "reasoning_output_tokens_cumulative": 4655
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 23787,
+          "peak_input_tokens": 9648955
+        },
+        "follow_on_paths": [
+          "201/222",
+          "210/222",
+          "202/225",
+          "210/225;"
+        ],
+        "dispute_count": 0,
+        "attempt": 4,
+        "attempt_kind": "resume",
+        "no_commit": "Operational pipeline node: the change is graph review, docs and lifecycle state, not repository files.",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-roster-tail-reaches-publishable",
+          "session_id": "01a07a2a-475e-7683-9c1c-915dff10d23d",
+          "session_source": "pointer",
+          "retained_at": "2026-09-07T05:31:36Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -97625,6 +97761,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1883
+    "_version": 1884
   }
 }
