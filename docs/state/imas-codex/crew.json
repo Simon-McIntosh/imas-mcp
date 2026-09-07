@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T01:27:43",
+  "updated": "2026-09-08T01:31:44",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -100213,6 +100213,155 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260907T185735030570-n-swcr-the-ledger-link-appears-once",
+        "plan": "sn-west-catalog-release",
+        "section": "release-run-residues",
+        "node": "n-swcr-the-ledger-link-appears-once",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1281,
+                "cached_input_tokens": 246626,
+                "input_tokens": 247909,
+                "output_tokens": 1727,
+                "reasoning_output_tokens": 306,
+                "total_tokens": 249636,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A body already linking the ledger comes back byte-identical and a body without it gains exactly one link and exactly one copy of the URL, proven by tests in tests/standard_names/test_review_body_ledger_link.py that fail by name when the guard is reverted. body_with_exclusion_ledger_link is at imas_codex/standard_names/catalog_release.py:240 and exclusion_ledger_blob_url at :200; lift the ledger-to-repository-relative-path resolution out of the latter into a shared helper so both callers compute one answer. Keep the current descriptive link text \u2014 a repository-relative path as link text is the shape the guideline forbids. Prior art to read as a starting point and not a specification: the uncommitted change and test in /home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260901/n-ledger-link-appears-once, whose version uses the relative path as link text, which the current wording deliberately improved on. Report added failures against a stated base for tests/standard_names.",
+          "estimated_hours": null,
+          "goal": "Make the exclusion-ledger link append idempotent so the address appears at most once in a release body",
+          "id": "n-swcr-the-ledger-link-appears-once",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T185735030570-n-swcr-the-ledger-link-appears-once/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "release-run-residues",
+          "spec_level": "guided",
+          "time_budget": "45m",
+          "write_paths": [
+            "imas_codex/standard_names/catalog_release.py",
+            "tests/standard_names/test_review_body_ledger_link.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "clive-ledger",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-07T18:57:42Z",
+        "completed_at": "2026-09-07T23:30:11.804Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 16226,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 16349,
+        "stalled": true,
+        "time_budget": "45m",
+        "base_sha": "69f24046b143dce1048f82f02fd25878b2849126",
+        "commits": [
+          "72b7760c60ac307f641e7e8490b7f15e532d2104"
+        ],
+        "changed_lines": {
+          "added": 123,
+          "removed": 9,
+          "files": 2
+        },
+        "tests_added": 2,
+        "gate": "passed",
+        "gate_check": {
+          "command": "UV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv PYTHONPATH=$PWD uv run --no-sync pytest -p no:cacheprovider tests/standard_names/test_review_body_ledger_link.py tests/standard_names/test_export_catalog_files.py tests/standard_names/test_review_body_authored.py -v",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T185735030570-n-swcr-the-ledger-link-appears-once/after_suite.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T185735030570-n-swcr-the-ledger-link-appears-once/manifest.md",
+        "scope_changed": false,
+        "session_id": "4a662de3-7b4c-4461-8adf-fb28374d3eaa",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 5266413,
+            "input_tokens_cumulative": 5266413,
+            "output_tokens": 33075,
+            "output_tokens_cumulative": 33075,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 16346.512,
+          "generated_tokens": 33075,
+          "generation_seconds": 16171.286,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 11.5,
+          "machine_seconds": 175.226,
+          "peak_input_tokens": 117338,
+          "tokens_per_second": 2.05,
+          "wall_tokens_per_second": 2.02
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swcr-the-ledger-link-appears-once",
+          "session_id": "4a662de3-7b4c-4461-8adf-fb28374d3eaa",
+          "session_source": "pointer",
+          "retained_at": "2026-09-07T23:30:11.804Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -100455,6 +100604,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1917
+    "_version": 1918
   }
 }
