@@ -542,8 +542,10 @@ desc-name-similarity-threshold = 0.55
 
 # Default staging directory for export/preview/publish (ephemeral).
 staging-dir = "~/.cache/imas-codex/staging"
-# Path to ISNC git checkout. Empty = auto-discover from sibling dirs.
-isnc-dir = ""
+# Path to ISNC git checkout. Empty auto-discovers from sibling dirs, which
+# cannot distinguish the catalog repository from the grammar repository
+# beside it, so the catalog target is named explicitly.
+isnc-dir = "~/Code/imas-standard-names-catalog"
 
 [tool.imas-codex.sn-review]
 # Shared review settings (apply to both axes).
