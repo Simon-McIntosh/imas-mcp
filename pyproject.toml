@@ -305,7 +305,8 @@ reasoning-effort = "high"
 [tool.imas-codex.sn-refine]
 # Refine rewrites rejected names and documentation, so it uses a strong model.
 # Switch-back to local: model="hosted_vllm/deepseek-v4-flash"
-# with api-base="http://98dci4-gpu-0003:18800/v1", api-key-env="AMBIX_API_KEY".
+# with api-base="http://98dci4-gpu-0003:18802/v1" (the router, never a serve
+# port), api-key-env="AMBIX_API_KEY".
 model = "openrouter/openai/gpt-5.5"
 # Reasoning effort for refine_name / refine_docs rewrites. "high" — NOT "max":
 # these route through OpenRouter, which accepts only low|medium|high. "max" is a
@@ -387,7 +388,13 @@ max-concurrency = 256
 # result artifacts.
 # Switch-back: model="openrouter/openai/gpt-5.5", reasoning-effort="high".
 model = "hosted_vllm/deepseek-v4-flash"
-api-base = "http://98dci4-gpu-0003:18800/v1"
+# The router, not a serve port. Serve ports are internal and rotate with
+# topology: the four-card variant declares 18800 and the two-card 18809, and
+# which is up is an operational decision. Pinning a serve port turns a routine
+# rotation into an outage for every pool this seat gates. Only the router is
+# stable across that, and it relays both dialects, so an OpenAI client needs
+# nothing further.
+api-base = "http://98dci4-gpu-0003:18802/v1"
 api-key-env = "AMBIX_API_KEY"
 endpoint-class = "local-free"
 batch-size = 25
@@ -578,7 +585,13 @@ models = [
   "openrouter/openai/gpt-5.5",
 ]
 disagreement-threshold = 0.20
-api-base = "http://98dci4-gpu-0003:18800/v1"
+# The router, not a serve port. Serve ports are internal and rotate with
+# topology: the four-card variant declares 18800 and the two-card 18809, and
+# which is up is an operational decision. Pinning a serve port turns a routine
+# rotation into an outage for every pool this seat gates. Only the router is
+# stable across that, and it relays both dialects, so an OpenAI client needs
+# nothing further.
+api-base = "http://98dci4-gpu-0003:18802/v1"
 api-key-env = "AMBIX_API_KEY"
 endpoint-class = "local-free"
 
