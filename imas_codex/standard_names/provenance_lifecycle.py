@@ -27,6 +27,7 @@ from imas_codex.standard_names.signed_manifest import (
 )
 
 _DD_DOCS_ROOT = "https://imas-data-dictionary.readthedocs.io/en"
+_RETIRED_BINDING_NAME_STAGES = frozenset({"superseded", "exhausted"})
 
 DELETION_OPERATIONS = frozenset(
     {
@@ -410,9 +411,13 @@ def retarget_standard_name_sources(
             UNWIND $source_ids AS source_id
             OPTIONAL MATCH (source:StandardNameSource {id: source_id})
             OPTIONAL MATCH (source)-[:PRODUCED_NAME]->(target:StandardName)
+            WITH source_id, source, collect(DISTINCT target) AS targets
             WITH source_id, source,
-                 [id IN collect(DISTINCT target.id) WHERE id IS NOT NULL]
-                   AS current_bindings
+                 [target IN targets | target.id] AS current_bindings,
+                 [target IN targets | {
+                    id: target.id,
+                    name_stage: target.name_stage
+                  }] AS binding_state
             OPTIONAL MATCH (event:StandardNameChange {id: $manifest_event_id})
             RETURN source_id,
                    source.id IS NOT NULL AS source_exists,
@@ -421,6 +426,7 @@ def retarget_standard_name_sources(
                    source.claimed_at IS NOT NULL OR source.claim_token IS NOT NULL
                      AS actively_claimed,
                    current_bindings,
+                   binding_state,
                    event.id IS NOT NULL AS manifest_recorded
             ORDER BY source_id
             """,
@@ -440,7 +446,18 @@ def retarget_standard_name_sources(
     conflicts: list[str] = []
     for row in preflight_rows:
         source_id = row["source_id"]
-        bindings = sorted(set(row.get("current_bindings") or []))
+        binding_state = row.get("binding_state")
+        bindings = (
+            sorted(
+                {
+                    entry["id"]
+                    for entry in binding_state
+                    if entry.get("name_stage") not in _RETIRED_BINDING_NAME_STAGES
+                }
+            )
+            if binding_state is not None
+            else sorted(set(row.get("current_bindings") or []))
+        )
         scalar = row.get("scalar_binding")
         if (
             row.get("source_exists")
@@ -740,7 +757,12 @@ def reset_standard_name_sources(
     for row in preflight:
         expected_row = expected_by_source[row["source_id"]]
         binding_state = list(row.get("binding_state") or [])
-        bindings = sorted(entry["id"] for entry in binding_state)
+        live_binding_state = [
+            entry
+            for entry in binding_state
+            if entry.get("name_stage") not in _RETIRED_BINDING_NAME_STAGES
+        ]
+        bindings = sorted(entry["id"] for entry in live_binding_state)
         if (
             row.get("source_exists")
             and row.get("status") == "extracted"
@@ -766,7 +788,7 @@ def reset_standard_name_sources(
                 f"claimed={bool(row.get('actively_claimed'))})"
             )
             continue
-        for target in binding_state:
+        for target in live_binding_state:
             if target.get("name_stage") == "accepted" and not include_accepted:
                 conflicts.append(
                     f"{row['source_id']} binds accepted name {target['id']!r}; "
