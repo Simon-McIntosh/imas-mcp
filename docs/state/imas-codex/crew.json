@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07T13:08:06",
+  "updated": "2026-09-07T13:09:01",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -99096,6 +99096,146 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260907T101926805842-n-swcr-the-release-route-has-a-skill",
+        "plan": "sn-west-catalog-release",
+        "section": "Release and fold-back contract",
+        "node": "n-swcr-the-release-route-has-a-skill",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1438,
+                "cached_input_tokens": 709934,
+                "input_tokens": 711374,
+                "output_tokens": 1294,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 712668,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "BUILD A THIN RELEASE-ROUTING SKILL THAT CARRIES GATES, NOT FACTS.\n\nWHERE IT GOES. A new skill at .claude/skills/sn-release/SKILL.md, matching the shape of the existing .claude/skills/sn-edit/SKILL.md: YAML front matter with name, a description written so a reader knows when to reach for it, and allowed-tools, then the body. Read sn-edit first and follow its voice and structure.\n\nTHE DESIGN CONSTRAINT, AND IT IS THE WHOLE POINT. This skill must contain NO fact that can drift. The authoritative runbook is the Release recipe in imas_codex/standard_names/AGENTS.md, which is roughly 740 lines and is correct. A skill that restates it becomes a second surface that rots, and that is precisely the failure being guarded against: a dispatch brief restated one infrastructure fact, contradicted the runbook, and the wrong copy won. So the skill routes and it gates; it does not teach. Keep it near 40 lines of body and treat every line you add beyond that as needing justification.\n\nSTATE THE PRECEDENCE RULE EXPLICITLY, as its own line: where this skill and the release recipe disagree, the recipe wins and the skill is at fault. A reader must never have to choose.\n\nTHE FOUR THINGS IT MUST CARRY:\n\nONE, WHICH WORKFLOW AND WHICH REPOSITORY. Three repositories are involved and confusing two of them caused a real incident. Establish from the tree, not from this brief, what each is and name them: the codex repository holding the graph and the frozen roster artifacts; the grammar and controlled-vocabulary repository; and the catalog repository holding the name definitions. State which receives a catalog batch and which must never receive one. Also distinguish the catalog release from the release of the codex package itself, which is a different workflow documented in imas_codex/cli/AGENTS.md.\n\nTWO, THE TARGET GATE. Before any write, `imas-codex sn release status` must print its resolved path and remotes, and the operator must read them. A resolution that names anything other than the catalog checkout is a stop. Say plainly that a wrong resolution is repaired in configuration and never steered in the moment by passing a path or exporting a variable, because steering it hides the defect that produced it. Verify the setting that governs this resolution against the tree and cite it by name and location.\n\nTHREE, THE SERIES CANARY. The repositories carry unrelated version lines, so a candidate computed against the wrong target lands in a visibly wrong series. Record that a candidate which does not continue the target's own series is a target error rather than a numbering surprise, and that it is a stop. Add that a version-bump flag is wrong while the state is mid-candidate, because the status output prints the permitted commands and those are authoritative.\n\nFOUR, THE PULL-REQUEST TARGET IS A CHOICE THAT MUST BE STATED. The release's own pull request goes to the upstream organisation; a review pull request on a personal fork is a separate operation. Record that these are different states and must be named distinctly whenever a release is discussed or authorised, because \"no pull request\" and \"no upstream pull request\" were misread as the same thing.\n\nTHE FAIL-CLOSED RULE, which the lead asked for: if `sn release status` cannot be shown, the skill does not proceed. An unresolvable target is unknown, and unknown is not permission. Write it as a refusal, not a caution.\n\nSCOPE: THE CATALOG RELEASE ONLY. Do not cover the grammar repository's own release in this skill. That flow publishes to a package index and gates on continuous-integration state, so folding it in would double the surface for two workflows that share almost nothing. Add one line naming where the grammar release is handled instead, after establishing from the tree where that is.\n\nVERIFY EVERY ANCHOR YOU CITE, and this is the requirement that matters most. Every command, flag, path, setting name and file reference in the skill must be opened and confirmed against the current tree before you write it. Report each anchor with what you found. A skill asserting a flag that does not exist is worse than no skill, and asserting from memory is how the incident this skill guards against actually happened. `imas-codex sn release --help` and `imas-codex sn release status` are reads and are permitted; run them and cite them. Do not run any release command that writes: a concurrent node is cutting the real candidate and a second release write would corrupt its evidence.\n\nSTYLE. No plan labels, no ticket or incident numbers, no dates as the reason for a rule, no author or role attribution. Where a measured figure makes a rule concrete, keep the figure and drop the chronology. Mechanism over narrative.\n\nTHE GATE. Report the exit status of `imas-codex sn release --help` and `imas-codex sn release status`; both must exit 0. Report the body line count of the skill you wrote. Run the repository's three naming-hygiene greps over the file you stage and report their results, reading any hit before deciding it belongs. Confirm the front matter parses as YAML.\n\nCOMMIT. One commit, conventional subject plus a BODY stating what changed and why, staging only .claude/skills/sn-release/SKILL.md by explicit path. Never `git add -A`. Never add any AI attribution or co-author trailer to any message you write, and verify that before you commit.\n\nENVIRONMENT. Work in your worktree. export UV_NO_SYNC=1 once in your shell before any uv invocation and do not write the flag on a command line. Name UV_PROJECT_ENVIRONMENT and the absolute target explicitly. Do not run uv sync anywhere. Never pipe, tee, or redirect imas-codex output.\n\nMEASURE. Your manifest reports every anchor you verified with what you found, the two gate exit statuses, the skill body line count, the naming-check results, confirmation that the front matter parses, the precedence line quoted verbatim, and the commit sha with its changed path.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.6,
+          "goal": "A thin catalog-release skill carries the routing and the gates and defers every fact to the release recipe",
+          "id": "n-swcr-the-release-route-has-a-skill",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-release-skill/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "Release and fold-back contract",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            ".claude/skills/sn-release"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-skill",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-07T10:19:41Z",
+        "completed_at": "2026-09-07T10:43:06Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1405,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1405,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "3a3e9c716710850fcbdb1ca6effdf594767c89bd",
+        "commits": [
+          "c31b183f0a5123bedb54b43078d984b880d5b449"
+        ],
+        "changed_lines": {
+          "added": 53,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "imas-codex sn release --help and sn release status, YAML front-matter parse, and the three naming-hygiene greps",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-release-skill/manifest.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-release-skill/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07b61-7e15-77a2-b951-d4105bdc5875",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 11115008,
+            "cached_input_tokens_cumulative": 11115008,
+            "input_tokens": 11296118,
+            "input_tokens_cumulative": 11296118,
+            "output_tokens": 31129,
+            "output_tokens_cumulative": 31129,
+            "reasoning_output_tokens": 12595,
+            "reasoning_output_tokens_cumulative": 12595
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": []
+        },
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 43724,
+          "peak_input_tokens": 22411126
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-release-route-has-a-skill",
+          "session_id": "01a07b61-7e15-77a2-b951-d4105bdc5875",
+          "session_source": "stream",
+          "retained_at": "2026-09-07T10:43:06Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -99338,6 +99478,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1899
+    "_version": 1900
   }
 }
