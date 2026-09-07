@@ -28,6 +28,7 @@ from typing import Any
 
 import yaml
 from imas_standard_names.models import CATALOG_EDGE_MODEL_VERSION
+from packaging.version import Version
 
 from imas_codex.standard_names.canonical import (
     canonicalise_entry,
@@ -2127,13 +2128,21 @@ def _write_manifest(
         require_provenance=require_provenance,
     )
     grammar_version = loaded_grammar_version()
+    dd_version_lineage = sorted(
+        {
+            str(source["version"])
+            for metadata in (names or {}).values()
+            for source in metadata.get("sources", ())
+        },
+        key=Version,
+    )
 
     manifest_data = {
         "catalog_name": "imas-standard-names-catalog",
         "cocos_convention": cocos_convention,
         "grammar_version": grammar_version,
         "isn_model_version": grammar_version,
-        "dd_version_lineage": ["4.0.0"],
+        "dd_version_lineage": dd_version_lineage,
         "generated_by": "imas-codex sn export",
         "generated_at": stamp,
         "min_score_applied": min_score_applied,
