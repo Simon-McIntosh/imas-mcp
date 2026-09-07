@@ -162,7 +162,9 @@ def _write_and_verify_review_preview_link(
 ) -> str:
     """Write the exact preview address and require GitHub to return it."""
     preview_url = _review_preview_url(repo, pr_number)
-    body_with_preview = f"{body.rstrip()}\n\nPreview: {preview_url}\n"
+    body_with_preview = (
+        f"{body.rstrip()}\n\nPreview: [rendered catalog preview]({preview_url})\n"
+    )
     github_client.update_pull_request_body(
         repo=repo,
         number=pr_number,
@@ -247,8 +249,10 @@ def body_with_exclusion_ledger_link(body: str, focus_file: str | Path) -> str:
         return body
     url = exclusion_ledger_blob_url(ledger)
     return (
-        f"{body.rstrip()}\n\nExcluded source paths, each with the data "
-        f"dictionary node category that excluded it: {url}\n"
+        f"{body.rstrip()}\n\nExcluded source paths, each with the data dictionary "
+        "node category that excluded it, are recorded in the "
+        "[ledger of excluded source paths and their withholding data dictionary "
+        f"node categories]({url}).\n"
     )
 
 

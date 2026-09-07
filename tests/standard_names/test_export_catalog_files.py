@@ -22,6 +22,7 @@ import pytest
 
 from imas_codex.standard_names.catalog_release import (
     ExclusionLedgerLinkError,
+    _write_and_verify_review_preview_link,
     body_with_exclusion_ledger_link,
     exclusion_ledger_path,
 )
@@ -178,7 +179,15 @@ class TestReviewBodyCarriesExclusionLedger:
         relative = "imas_codex/standard_names/manifests/batch_dd_paths.exclusions.json"
         sha = _git("log", "-1", "--format=%H", "--", relative, cwd=root).stdout.strip()
         expected = f"https://github.com/test-owner/imas-codex/blob/{sha}/{relative}"
-        assert expected in body
+        expected_link = (
+            "[ledger of excluded source paths and their withholding data "
+            f"dictionary node categories]({expected})"
+        )
+        assert (
+            "Excluded source paths, each with the data dictionary node category "
+            f"that excluded it, are recorded in the {expected_link}." in body
+        )
+        assert expected not in body.replace(expected_link, "", 1)
         assert body.startswith("Review candidate.")
         # Resolvable: the exact revision and path in the address hold the
         # ledger bytes, so the reviewer's link is not a 404.
@@ -208,3 +217,35 @@ class TestReviewBodyCarriesExclusionLedger:
         manifest.write_text("names: []\n", encoding="utf-8")
         assert exclusion_ledger_path(manifest) is None
         assert body_with_exclusion_ledger_link("Body.", manifest) == "Body."
+
+
+class TestReviewBodyCarriesPreviewLink:
+    def test_preview_address_is_named_and_not_bare(self) -> None:
+        class RecordingClient:
+            body = ""
+
+            def update_pull_request_body(
+                self, *, repo: str, number: int, body: str
+            ) -> None:
+                assert repo == "test-owner/imas-standard-names-catalog"
+                assert number == 7
+                self.body = body
+
+            def read_pull_request_body(self, *, repo: str, number: int) -> str:
+                assert repo == "test-owner/imas-standard-names-catalog"
+                assert number == 7
+                return self.body
+
+        client = RecordingClient()
+        preview_url = _write_and_verify_review_preview_link(
+            client,
+            repo="test-owner/imas-standard-names-catalog",
+            pr_number=7,
+            body="Review candidate.",
+        )
+
+        expected = "https://test-owner.github.io/imas-standard-names-catalog/pr-7/"
+        expected_link = f"[rendered catalog preview]({expected})"
+        assert preview_url == expected
+        assert f"Preview: {expected_link}" in client.body
+        assert expected not in client.body.replace(expected_link, "", 1)
