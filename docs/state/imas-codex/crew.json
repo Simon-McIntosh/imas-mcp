@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07T11:51:03",
+  "updated": "2026-09-07T12:35:42",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -258,6 +258,15 @@
         "created": "2026-09-04"
       },
       {
+        "id": "cx-guides",
+        "harness": "codex",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-07"
+      },
+      {
         "id": "cx-importguard",
         "harness": "codex",
         "role": "implement",
@@ -353,6 +362,15 @@
         "id": "cx-route",
         "harness": "codex",
         "role": "documentation",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-07"
+      },
+      {
+        "id": "cx-skill",
+        "harness": "codex",
+        "role": "implement",
         "session_id": null,
         "session_model": null,
         "sessions": {},
@@ -98660,6 +98678,143 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260907T095210930361-n-swcr-the-exclusion-ledger-reads-as-a-link",
+        "plan": "sn-west-catalog-release",
+        "section": "Release and fold-back contract",
+        "node": "n-swcr-the-exclusion-ledger-reads-as-a-link",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1829,
+                "cached_input_tokens": 655036,
+                "input_tokens": 656867,
+                "output_tokens": 896,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 657763,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "EMIT THE EXCLUSION LEDGER AS A MARKDOWN LINK INSTEAD OF A BARE URL.\n\nTHE DEFECT, LOCATED. `body_with_exclusion_ledger_link` in imas_codex/standard_names/catalog_release.py appends the ledger address by string concatenation:\n  f\"{body.rstrip()}\\n\\nExcluded source paths, each with the data dictionary node category that excluded it: {url}\\n\"\nThe value is a GitHub blob address carrying a forty-character revision plus a four-segment repository path. In the pull-request column that wraps across several lines and turns a one-line reference into a block of unreadable hash. The repository guidance is explicit that a body an agent or a command authors uses a markdown link naming its destination, and that a body assembled by concatenating URLs is a defect in the command rather than a formatting preference. The measured incident behind that rule was a review pull request whose exclusions link broke across the imas_codex, standard_names and manifests path segments and the filename, which is this exact function.\n\nTHIS WILL FIRE ON THE NEXT RELEASE. The WEST batch focus file has a committed ledger beside it at imas_codex/standard_names/manifests/west_production_dd_paths.exclusions.json, 17661 bytes, last committed in 01927f5c5. So `exclusion_ledger_path` returns it rather than None and the bare address reaches the body.\n\nTHE FIX. Emit a markdown link whose text names the destination, so the sentence still reads when the link is not clickable and no raw address appears in the body. The destination is the excluded source paths together with the data dictionary node category that withheld each one; word the link text so a reviewer knows what they are opening before they click. Keep the sentence's meaning: the ledger exists so the exclusion accounting is checkable rather than asserted.\n\nCHECK THE REST OF THE MODULE FOR THE SAME SHAPE. Any other place in imas_codex/standard_names/catalog_release.py that composes a pull-request body, an issue body, a comment or release notes and interpolates a bare address is the same defect and belongs in this node. Report every site you found and its disposition. A URL that is returned as a value for a caller to format, or logged for an operator, is NOT this defect: only text destined for a rendered body is. Say which category each site fell into.\n\nTESTS. tests/standard_names/test_export_catalog_files.py already covers this area; extend it rather than starting a new file unless the fit is wrong, and say which you chose and why. Assert that the composed body contains a markdown link to the ledger address and that it contains no bare occurrence of that address outside the link's parentheses. Prove the new assertion fails before your change and passes after, and report both results.\n\nTHE GATE. Run `pytest tests/standard_names` and report the failure count and failing identifiers before your change and after it. The count after must not exceed the count before; the baseline was 18 failures, all pre-existing. Do not run the whole repository suite. If the gate needs a compute node, run it on a debug SLURM partition with a time limit of 00:59:00 and say so.\n\nDO NOT CUT OR REHEARSE A RELEASE. This node changes how a body is composed and nothing else. Do not run `sn release` in any form, with or without a dry-run flag: another node owns the rehearsal and a concurrent release read would confuse its evidence.\n\nENVIRONMENT. Work in your worktree. export UV_NO_SYNC=1 once in your shell before any uv invocation, and do not write the flag on a command line: two workers today had a bare uv run start building a worktree package because the sandbox injection did not cover their invocation path, and one lost a test run evidence to it. Name UV_PROJECT_ENVIRONMENT and the absolute target explicitly. Do not run uv sync anywhere; that environment is shared with the main checkout and concurrent workers. Capture the pytest run to a file once and read it selectively rather than piping it.\n\nCOMMIT. One commit, conventional subject plus a BODY stating what changed and why, staging only the release module and your test file by explicit path. Never `git add -A`. Never add any AI attribution or co-author trailer to any message you write, and verify that before you commit. Run ruff check --fix and ruff format over exactly the paths you stage, never over the whole tree.\n\nMEASURE. Your manifest reports every body-composing site you found with its disposition, the new assertion failing before and passing after, the tests/standard_names failure count before and after with identifiers, the exact composed sentence your change produces for the WEST ledger, and the commit sha with its changed paths.\n\nMANIFEST DISCIPLINE. Write your manifest with what you have BEFORE starting any wait longer than a couple of minutes, then update it.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.\n\nA SECOND, WORSE INSTANCE MEASURED TODAY, and it tells you what to check for. A hand-written pull-request body linked the batch roster artifact at the standard-names review branch, where that path does not exist, because the artifact actually lives in the imas-codex repository. The link returned 404 while looking perfectly well-formed. So when you compose or test a link, the address must be one that resolves, not merely one that is syntactically a link: assert the repository and path a composed address points into, and where a test can cheaply check that the referenced path exists in the tree it names, do that too. A wrapped bare URL is unreadable; a well-formed link to nothing is worse.",
+          "estimated_hours": 0.5,
+          "goal": "Every address a release body composes renders as a markdown link naming a destination that resolves",
+          "id": "n-swcr-the-exclusion-ledger-reads-as-a-link",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-bodylink/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "Release and fold-back contract",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "imas_codex/standard_names/catalog_release.py",
+            "tests/standard_names/test_export_catalog_files.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-route",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-07T09:52:25Z",
+        "completed_at": "2026-09-07T10:31:27Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 2342,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 2342,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "44228c4e07b59d398e9a4cfdb96215deaeff3350",
+        "commits": [
+          "5bb7c2f924bfdf9aaac7c3348963b2ae0bd14085"
+        ],
+        "changed_lines": {
+          "added": 49,
+          "removed": 4,
+          "files": 2
+        },
+        "tests_added": 2,
+        "gate": "passed",
+        "gate_check": {
+          "command": "pytest tests/standard_names on all_debug",
+          "exit_status": 1,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-bodylink/manifest.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-bodylink/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07b48-897e-74f2-8bdc-65de3c57a526",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 12650496,
+            "cached_input_tokens_cumulative": 12650496,
+            "input_tokens": 12844239,
+            "input_tokens_cumulative": 12844239,
+            "output_tokens": 33274,
+            "output_tokens_cumulative": 33274,
+            "reasoning_output_tokens": 10958,
+            "reasoning_output_tokens_cumulative": 10958
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 44232,
+          "peak_input_tokens": 25494735
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-exclusion-ledger-reads-as-a-link",
+          "session_id": "01a07b48-897e-74f2-8bdc-65de3c57a526",
+          "session_source": "stream",
+          "retained_at": "2026-09-07T10:31:27Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names`",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
       }
     ],
     "holds": [
@@ -98902,6 +99057,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1894
+    "_version": 1897
   }
 }
