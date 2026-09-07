@@ -63,10 +63,12 @@ class _MigrationStatementGraph:
             return [row]
 
         retired_stages = set(params.get("retired_name_stages", ()))
+        expected_names = set(params.get("expected_binding_names", ()))
         before = self._counted_bindings(
             self.bindings,
             filtered="source_binding.name_stage" in cypher,
             retired_stages=retired_stages,
+            expected_names=expected_names,
         )
         if before != ["old_name"]:
             return []
@@ -77,6 +79,7 @@ class _MigrationStatementGraph:
             after,
             filtered="moved_binding.name_stage" in cypher,
             retired_stages=retired_stages,
+            expected_names=expected_names,
         )
         return [{"moved": 1}] if postflight == ["replacement_name"] else []
 
@@ -86,11 +89,16 @@ class _MigrationStatementGraph:
         *,
         filtered: bool,
         retired_stages: set[object],
+        expected_names: set[object],
     ) -> list[object]:
         return sorted(
             entry["id"]
             for entry in bindings
-            if not filtered or entry["name_stage"] not in retired_stages
+            if not filtered
+            or not (
+                entry["name_stage"] in retired_stages
+                and entry["id"] not in expected_names
+            )
         )
 
 
@@ -108,6 +116,12 @@ def _retarget_with_statement_graph(gc: _MigrationStatementGraph) -> int:
 
 def test_retarget_migrates_source_with_only_expected_live_binding() -> None:
     gc = _MigrationStatementGraph([_binding("old_name", "drafted")])
+
+    assert _retarget_with_statement_graph(gc) == 1
+
+
+def test_retarget_migrates_source_with_expected_retired_binding() -> None:
+    gc = _MigrationStatementGraph([_binding("old_name", "superseded")])
 
     assert _retarget_with_statement_graph(gc) == 1
 
@@ -301,6 +315,12 @@ def test_retarget_query_repairs_exact_source_mirrors_and_both_caches() -> None:
         "exhausted",
         "superseded",
     ]
+    assert gc.query.call_args_list[1].kwargs["expected_binding_names"] == [
+        "new",
+        "old",
+    ]
+    assert "NOT (source_binding.id IN $expected_binding_names)" in cypher
+    assert "NOT (moved_binding.id IN $expected_binding_names)" in cypher
     assert "DELETE prior" in cypher
     assert "MERGE (source)-[:PRODUCED_NAME]->(new)" in cypher
     assert "source.produced_sn_id = new.id" in cypher

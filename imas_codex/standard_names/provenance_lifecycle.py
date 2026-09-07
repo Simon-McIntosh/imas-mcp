@@ -71,6 +71,18 @@ def guard_comparison_bindings(
     )
 
 
+def _guard_comparison_binding_cypher(binding_alias: str) -> str:
+    """Return the Cypher form of the expected-binding comparison rule."""
+    if not binding_alias.isidentifier():
+        raise ValueError(f"invalid Cypher binding alias: {binding_alias!r}")
+    return f"""
+        NOT (
+          coalesce({binding_alias}.name_stage, '') IN $retired_name_stages
+          AND NOT ({binding_alias}.id IN $expected_binding_names)
+        )
+    """
+
+
 def deletion_change_cypher(name_alias: str) -> str:
     """Return a Cypher clause that records a name deletion in its transaction."""
     if not name_alias.isidentifier():
@@ -398,6 +410,7 @@ def retarget_standard_name_sources(
         json.dumps(manifest_payload, sort_keys=True, separators=(",", ":")).encode()
     ).hexdigest()
     manifest_event_id = f"sn-change:source-migration:{manifest_hash}"
+    comparison_expected_names = frozenset({old_name, new_name})
 
     if not _transactional:
         from imas_codex.graph.client import GraphClient
@@ -478,7 +491,7 @@ def retarget_standard_name_sources(
         bindings = (
             guard_comparison_bindings(
                 binding_state,
-                expected=frozenset({old_name, new_name}),
+                expected=comparison_expected_names,
             )
             if binding_state is not None
             else sorted(set(row.get("current_bindings") or []))
@@ -526,8 +539,7 @@ def retarget_standard_name_sources(
                 or "pairing guard did not admit the exact source cohort"
             )
             raise ValueError(f"source migration attachment rejected: {rejected}")
-    rows = gc.query(
-        """
+    migration_query = """
         // EXPLICIT_SOURCE_MIGRATION_APPLY
         MATCH (old:StandardName {id: $old_name}),
               (new:StandardName {id: $new_name})
@@ -539,8 +551,7 @@ def retarget_standard_name_sources(
           AND source.produced_sn_id = $old_name
           AND COUNT {
             (source)-[:PRODUCED_NAME]->(source_binding:StandardName)
-            WHERE NOT coalesce(source_binding.name_stage, '')
-              IN $retired_name_stages
+            WHERE __SOURCE_BINDING_GUARD__
           } = 1
           AND EXISTS { (source)-[:PRODUCED_NAME]->(old) }
         MATCH (source)-[prior:PRODUCED_NAME]->(old)
@@ -567,8 +578,7 @@ def retarget_standard_name_sources(
         WHERE moved.produced_sn_id = new.id
           AND COUNT {
             (moved)-[:PRODUCED_NAME]->(moved_binding:StandardName)
-            WHERE NOT coalesce(moved_binding.name_stage, '')
-              IN $retired_name_stages
+            WHERE __MOVED_BINDING_GUARD__
           } = 1
         WITH old, new, moved_source_ids,
              count(DISTINCT moved) AS postflight_count
@@ -611,7 +621,16 @@ def retarget_standard_name_sources(
             old.updated_at = datetime(),
             new.updated_at = datetime()
         RETURN size(moved) AS moved
-        """,
+        """
+    migration_query = migration_query.replace(
+        "__SOURCE_BINDING_GUARD__",
+        _guard_comparison_binding_cypher("source_binding").strip(),
+    ).replace(
+        "__MOVED_BINDING_GUARD__",
+        _guard_comparison_binding_cypher("moved_binding").strip(),
+    )
+    rows = gc.query(
+        migration_query,
         old_name=old_name,
         new_name=new_name,
         source_ids=admitted_source_ids,
@@ -620,6 +639,7 @@ def retarget_standard_name_sources(
         operation=operation,
         run_id=run_id,
         retired_name_stages=sorted(_RETIRED_NAME_STAGES),
+        expected_binding_names=sorted(comparison_expected_names),
     )
     moved = int(rows[0].get("moved", 0)) if rows else 0
     if moved != len(admitted_source_ids):
