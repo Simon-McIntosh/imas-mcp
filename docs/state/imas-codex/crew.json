@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07T05:38:38",
+  "updated": "2026-09-07T05:41:55",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -96093,6 +96093,139 @@
           "role": "implement",
           "status": "compatible"
         }
+      },
+      {
+        "run_id": "r-20260906T210814779787-n-sgr-the-emissivity-width-name-is-self-describing",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a78",
+        "node": "n-sgr-the-emissivity-width-name-is-self-describing",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 998,
+                "cached_input_tokens": 691266,
+                "input_tokens": 692266,
+                "output_tokens": 520,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 692786,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "ONE NAME IS NOT SELF-DESCRIBING AND DOES NOT PARSE. Propose a spelling that is both, then apply it.\n\nTHE NAME. inner_normalized_toroidal_flux_coordinate_hard_xray_emissivity_peak_half_width, at name_stage='drafted' with validation_status='quarantined', bound to the release manifest through dd:hard_x_rays/emissivity_profile_1d/half_width_internal.\n\nTWO FAULTS, and the lead has named the second. It fails strict parse today: the residue does not resolve to a registered physical base. And it is not self-descriptive - it concatenates a coordinate system, an instrument, a feature and a measurement into one string that a reader cannot decompose.\n\nWHAT THE QUANTITY IS, from the DD: the half width of the hard X-ray emissivity peak on the inner side, towards the magnetic axis, expressed in normalised toroidal flux. Its sibling leaf half_width_external is the outer side, towards the separatrix, and is currently unnamed. Unit is dimensionless.\n\nA FACT THAT NARROWS THE WORK: half_width IS a registered physical base, as are width, bandwidth and angular_width. So this needs a structural respelling and NOT a vocabulary addition. Confirm that yourself and report it; if you conclude a new token is required after all, stop and report why rather than adding one, because a vocabulary change here would gate a release tag that is otherwise ready.\n\nTHE HARD PART, and it is a naming judgement rather than a mechanical fix: the name currently carries TWO base-like concepts, a flux coordinate and a half width, when the quantity is a width whose VALUE happens to be expressed in a flux coordinate. The coordinate is the unit of measure, not the quantity. State which of the two belongs in the name and which in the description, with the reason that selects it. A name that states the measurement frame inside itself is the pattern that produced this string.\n\nPROPOSE AT LEAST THREE CANDIDATE SPELLINGS with the argument for and against each, then one recommendation. Every candidate must strict-parse and round-trip under the installed grammar; report the intermediate representation of each. Check each against the accepted catalog for a collision.\n\nAPPLY THE RECOMMENDATION through sn edit and nothing else. Never write Cypher. If sn edit refuses, report the exact message and stop.\n\nTHE DESCRIPTION IS REWRITTEN HERE, unlike elsewhere in this programme, because it must now carry the measurement frame that leaves the name. State the old and new description in full. The PHYSICS must not change: same side, same feature, same instrument, same frame.\n\nSAY WHAT HAPPENS TO THE QUARANTINE. The row's quarantine records no reason - the field is null - yet it is substantively correct today because the spelling does not parse. After your respelling, report whether the row still fails validation, and if it now passes, whether clearing the quarantine is something the pipeline does on its own or needs a separate action. Do not clear it by hand.\n\nREPORT THE SIBLING. half_width_external is the outer-side twin and currently has no name. Say what its spelling would be under your recommendation, so the pair stays consistent when it is composed later. Do not compose it.\n\nEVIDENCE REQUIRED: the strict parse failure quoted verbatim before the change; three candidates with representations and collision checks; the recommendation with its reasoning; the sn edit invocation and its output; the before and after descriptions; the validation status after; and the proposed sibling spelling.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.8,
+          "goal": "The hard X-ray emissivity half-width name parses strictly and states its quantity without its measurement frame",
+          "id": "n-sgr-the-emissivity-width-name-is-self-describing",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-row4-respell/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a78",
+          "spec_level": "exact",
+          "time_budget": "50m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/emissivity-width-respell.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-respell",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T21:08:37Z",
+        "completed_at": "2026-09-06T21:26:57Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1100,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1100,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "4b5f7a9494dfcd3e0175f523bd89d680e3985eee",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "not-run",
+        "gate_check": null,
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-row4-respell/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a0788d-3f6b-7f81-bd6b-282f4d6689c6",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 3135104,
+            "cached_input_tokens_cumulative": 3135104,
+            "input_tokens": 3157277,
+            "input_tokens_cumulative": 3157277,
+            "output_tokens": 8559,
+            "output_tokens_cumulative": 8559,
+            "reasoning_output_tokens": 2168,
+            "reasoning_output_tokens_cumulative": 2168
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 10727,
+          "peak_input_tokens": 6292381
+        },
+        "follow_on_paths": [
+          "dd:hard_x_rays/emissivity_profile_1d/half_width_internal"
+        ],
+        "dispute_count": 0,
+        "attempt": 2,
+        "attempt_kind": "resume",
+        "no_commit": "zero graph writes: both attempted routes refused and the node reported rather than forcing them",
+        "resume_waiver": {
+          "session_id": "01a0788d-3f6b-7f81-bd6b-282f4d6689c6",
+          "source": "pointer",
+          "reason": "the route depends on a guard change now dispatched separately; the node re-dispatches once retired bindings stop blocking a migration"
+        },
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-emissivity-width-name-is-self-describing",
+          "session_id": "01a0788d-3f6b-7f81-bd6b-282f4d6689c6",
+          "session_source": "pointer",
+          "retained_at": "2026-09-06T21:26:57Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -96335,6 +96468,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1865
+    "_version": 1866
   }
 }
