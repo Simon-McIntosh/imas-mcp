@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06T23:04:19",
+  "updated": "2026-09-06T23:28:47",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -171,9 +171,11 @@
         "id": "cx-betatangle",
         "harness": "codex",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "01a0788a-5374-7b40-8959-cb5623103fe4",
+        "session_model": "gpt-5.6-sol",
+        "sessions": {
+          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a0788a-5374-7b40-8959-cb5623103fe4"
+        },
         "created": "2026-09-06"
       },
       {
@@ -280,9 +282,11 @@
         "id": "cx-respell",
         "harness": "codex",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "01a0788d-3f6b-7f81-bd6b-282f4d6689c6",
+        "session_model": "gpt-5.6-sol",
+        "sessions": {
+          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a0788d-3f6b-7f81-bd6b-282f4d6689c6"
+        },
         "created": "2026-09-06"
       },
       {
@@ -95521,6 +95525,286 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260906T210306270013-n-sli-a-locus-rename-carries-its-documentation",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-a-locus-rename-carries-its-documentation",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1093,
+                "cached_input_tokens": 679812,
+                "input_tokens": 680907,
+                "output_tokens": 1153,
+                "reasoning_output_tokens": 321,
+                "total_tokens": 682060,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "A RENAME THAT ONLY MOVES THE LOCUS MUST CARRY ITS DOCUMENTATION. Widen one predicate by exactly that class, and prove it still refuses every other class.\n\nTHE DEFECT, already diagnosed. `sn edit --rename` writes through persist_refined_name, which inherits the predecessor's documentation onto the successor only when rename_preserves_meaning(old, new) is true. That function is plain intermediate-representation equality. A locus rename changes the locus token BY CONSTRUCTION, so the predicate is false for every one of them and each successor stages with documentation null, docs_stage pending and docs_chain_length zero. Measured on thirteen pending renames: all thirteen are pure locus substitutions whose representations differ in locus.token and nothing else, and all thirteen would lose their documentation. Locate rename_preserves_meaning in imas_codex/standard_names/graph_ops.py, read it and persist_refined_name's use of it, and report both line numbers before changing anything.\n\nTHE CHANGE THE LEAD HAS APPROVED: an intermediate-representation difference CONFINED TO locus.token, where the locus relation, the locus type, the locus qualifiers and the locus value are all unchanged across the pair, counts as meaning-preserving, so the documentation follows the successor. Nothing else about the predicate moves.\n\nTHIS WIDENS A GUARD, WHICH IS THE RISK. The guard exists to stop documentation being carried across a change of meaning, and documentation carried onto a name that means something else is worse than documentation regenerated. So the deliverable is not the widening alone: it is the widening PLUS the evidence that the predicate still refuses every other class. Prove, each with an explicit case, that it still returns false when the pair differs in the base, in the projection, in an operator, in a qualifier outside the locus, in the mechanism, and in the locus RELATION or TYPE even when the token also moves. A test that only demonstrates the new true case leaves the widening unmeasured.\n\nA REGRESSION TEST IS REQUIRED AND IT MUST FAIL BEFORE THE CHANGE. Drive the predicate with a real locus-substitution pair and assert it is meaning-preserving; run it against the unfixed code and report the verbatim failure. Then add the refusal cases above as the other half of the same test file. A test that passes before the change does not cover this.\n\nPROVE THE END-TO-END EFFECT, not only the predicate. Take one locus rename, apply it through the sanctioned route in a way that does not disturb the live catalog, and show the successor carries the predecessor's documentation byte-identical with a docs_stage that is not pending. If you cannot exercise the route without writing to the live graph, say so and prove the predicate plus the branch in persist_refined_name that consumes it, quoting the code path that carries the documentation. Do not rename any live catalog identity: thirteen renames are queued for a separate node and duplicating one here would collide with it.\n\nDO NOT weaken anything else in the write path. Do not touch the claim fence, the collision check, the cascade or the source-migration transaction. Do not add a flag that lets a caller declare meaning preserved; the point is that the predicate decides from the representations, not from a caller's assertion.\n\nSTATE THE BLAST RADIUS. Report every caller of rename_preserves_meaning and what each does differently once the predicate returns true for this class. If any caller uses it for something other than documentation inheritance, name that caller and say whether the widening is correct for it too - a predicate reused for a second purpose may need splitting rather than widening, and that is a finding rather than a licence to proceed.\n\nEVIDENCE REQUIRED: both sites with line numbers; the regression test failing before and passing after with verbatim output; the six refusal cases each shown returning false; the caller list with the per-caller judgement; and the focused test result for the modules you touched before and after against a stated base revision, reporting added failures rather than an absolute count.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.8,
+          "goal": "A rename whose representation differs only in the locus token carries its documentation to the successor",
+          "id": "n-sli-a-locus-rename-carries-its-documentation",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sli-docs-inherit/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "exact",
+          "time_budget": "50m",
+          "write_paths": [
+            "imas_codex/standard_names/graph_ops.py",
+            "tests/standard_names/test_rename_meaning_preservation.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-docsinherit",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T21:03:19Z",
+        "completed_at": "2026-09-06T21:24:21Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1262,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1262,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "a3348288c4d572a45a991df4e6f5fe8d6a16148f",
+        "commits": [
+          "f35100cf2f1fdf2e2cb4374647bb52d8facac692"
+        ],
+        "changed_lines": {
+          "added": 148,
+          "removed": 4,
+          "files": 2
+        },
+        "tests_added": 9,
+        "gate": "passed",
+        "gate_check": {
+          "command": "pytest tests/standard_names/test_rename_meaning_preservation.py plus the existing documentation contract",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sli-docs-inherit/after-focused.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sli-docs-inherit/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07888-6672-7b63-9f43-64bef408d227",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 20462848,
+            "cached_input_tokens_cumulative": 20462848,
+            "input_tokens": 20732014,
+            "input_tokens_cumulative": 20732014,
+            "output_tokens": 40506,
+            "output_tokens_cumulative": 40506,
+            "reasoning_output_tokens": 12793,
+            "reasoning_output_tokens_cumulative": 12793
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 53299,
+          "peak_input_tokens": 41194862
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-a-locus-rename-carries-its-documentation",
+          "session_id": "01a07888-6672-7b63-9f43-64bef408d227",
+          "session_source": "stream",
+          "retained_at": "2026-09-06T21:24:21Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260906T210738347787-n-swcr-the-coordinate-family-gains-its-vertical-member",
+        "plan": "sn-west-catalog-release",
+        "section": "Hard entry gate",
+        "node": "n-swcr-the-coordinate-family-gains-its-vertical-member",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 430,
+                "cached_input_tokens": 688081,
+                "input_tokens": 688513,
+                "output_tokens": 1125,
+                "reasoning_output_tokens": 190,
+                "total_tokens": 689638,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "ONE SOURCE IS NOW REACHABLE AND NEEDS ONE FREE COMPOSE RUN.\n\nTHE SOURCE. dd:ece/channel/position/z sits at status='extracted' with attempt_count=0 and no skip reason, having had its terminal attempt state cleared by an earlier node. It has no standard name. It is the vertical member of a coordinate family whose radial and toroidal siblings are accepted as radial_coordinate_of_measurement_position and toroidal_angle_of_measurement_position.\n\nWHAT CHANGED IN ITS FAVOUR. The composer now receives its family's accepted sibling names. load_accepted_sibling_standard_names in imas_codex/standard_names/enrichment.py resolves a DD path to an established accepted spelling exact-first, then falls back to the dominant accepted name across sources of the same parent-and-leaf shape, and attach_family_accepted_siblings hangs those on the item the worker composes. So the composer can now follow the family instead of inventing.\n\nTHE LIKELY CORRECT OUTCOME, which you must test rather than assume. An accepted identity vertical_coordinate_of_measurement_position already exists, bound to 25 DD paths across 15 diagnostic families - every instrument's channel z coordinate resolves to it. So the right result is most probably that this source BINDS TO THAT EXISTING NAME rather than minting a new identity. Report which happened. If the composer minted a new identity whose spelling duplicates or near-duplicates the existing one, that is a finding worth more than the name: report both spellings side by side and do not attempt to fold them, because a fold is not your node.\n\nTHE INSTRUMENT:\n  uv run imas-codex sn run --focus YOUR_FOCUS_FILE --only compose\nwith a focus manifest containing that one path. Never pass --flush. Note that --only compose also selects generate_docs and enrich_parents; their claim path had a duplicate-keyword crash that was repaired today, so if you see that error report it because the repair did not hold. Never pipe, tee or redirect the CLI output; it auto-logs and you read the log afterwards. A five minute cold start on GPFS is normal, so do not kill the run for early silence; check the log's mtime.\n\nRUN IT IN THE FOREGROUND AND WAIT FOR IT. Do not background the run and then wait across a turn - a print-mode process gets no turn after its last one, and this exact node was abandoned once already with its compose backgrounded. If you must wait, write your manifest first with what you have and the wait stated, then wait.\n\nDO NOT touch camera_x_rays/camera/camera_dimensions, which remains terminal by the lead's decision, and do not clear any other source's attempt state.\n\nEVIDENCE REQUIRED: the source's status, attempt count and produced name before and after; whether it bound to the existing identity or minted a new one; the composed or bound name quoted beside its two accepted siblings so the family reads as a set; the sibling context the composer actually received, read from the run log or the item, since the point of the node is whether the grounding reached the prompt; and the run's paid cost, which must be zero.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.7,
+          "goal": "The electron-cyclotron channel vertical position resolves to a standard name following its accepted coordinate siblings",
+          "id": "n-swcr-the-coordinate-family-gains-its-vertical-member",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-z-compose/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "Hard entry gate",
+          "spec_level": "exact",
+          "time_budget": "45m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/ece-z-compose.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-probe",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-06T21:07:51Z",
+        "completed_at": "2026-09-06T21:23:38.610Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 899,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 947,
+        "stalled": false,
+        "time_budget": "45m",
+        "base_sha": "a3348288c4d572a45a991df4e6f5fe8d6a16148f",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "uv run imas-codex sn run --focus one-source manifest --only compose",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-z-compose/manifest.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-z-compose/manifest.md",
+        "scope_changed": false,
+        "session_id": "de7acb29-7a85-41cb-b92d-5cc2b44f7d55",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 0,
+            "input_tokens_cumulative": 4652777,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 15532,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 937.973,
+          "generated_tokens": 15532,
+          "generation_seconds": 877.893,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 39.1,
+          "machine_seconds": 60.08,
+          "peak_input_tokens": 397010,
+          "tokens_per_second": 17.69,
+          "wall_tokens_per_second": 16.56
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "an operational compose run: its effects are graph rows written by the pipeline, with no repository file in scope",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-coordinate-family-gains-its-vertical-member",
+          "session_id": "de7acb29-7a85-41cb-b92d-5cc2b44f7d55",
+          "session_source": "pointer",
+          "retained_at": "2026-09-06T21:23:38.610Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -95763,6 +96047,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1858
+    "_version": 1862
   }
 }
