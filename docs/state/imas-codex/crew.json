@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07T08:41:16",
+  "updated": "2026-09-07T09:07:46",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -97802,6 +97802,260 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260907T054521443243-n-sgr-the-particle-count-takes-its-canonical-spelling",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a78",
+        "node": "n-sgr-the-particle-count-takes-its-canonical-spelling",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 4442,
+                "cached_input_tokens": 425244,
+                "input_tokens": 429688,
+                "output_tokens": 493,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 430181,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "FOLD THE PARTICLE COUNT ONTO ITS CANONICAL SPELLING AND GIVE ITS SOURCE BACK.\n\nTHE LEAD RULED THIS NAME. The quantity is the total accumulated particle count, and the grammar renders that as `accumulated_total_particle_count_due_to_gas_injection`: parsing `total_accumulated_particle_count_due_to_gas_injection` is refused and re-rendered to exactly that spelling, because the aggregation token leads joiner-free. The mechanism suffix is retained deliberately, because the description scopes the quantity to gas injection and a sibling `particle_count_accumulated_at_pellet_path_due_to_pellet_injection` names the other injection route; report if you judge otherwise rather than changing it.\n\nTHE STATE, MEASURED FOR YOU. `total_particle_count_accumulated_due_to_gas_injection` is at name_stage exhausted with docs_stage accepted, mean score 0.696 over 5 reviews, and no bound source. `accumulated_total_particle_count_due_to_gas_injection` already exists at name_stage superseded with docs_stage accepted, no sources, its only successor being the exhausted name and its predecessor being `accumulated_total_gas_count`. Both descriptions are byte-identical. The DD source `dd:summary/gas_injection_accumulated/total/value` is at status extracted with attempt_count 0, carries no PRODUCED_NAME edge and no FROM_DD_PATH edge, and consequently drops out of the release roster as an unmatched source.\n\nSTEP ONE, RE-READ THE STATE YOURSELF and report all of the above from the graph. If any of it disagrees with this brief, yours governs: say so and stop before writing.\n\nSTEP TWO, FOLD. `imas-codex sn supersede` is the sanctioned verb for the two repairs a rename cannot express, one of which is re-pointing a name onto a restored tombstoned id. A dry run at 07:50 local reported: old prior stage exhausted becomes superseded, and zero sources to carry. Run the dry run again to confirm, then apply:\n  imas-codex sn supersede total_particle_count_accumulated_due_to_gas_injection --into accumulated_total_particle_count_due_to_gas_injection\nReport the resulting name_stage and docs_stage of BOTH identities, and the REFINED_FROM lineage direction afterwards.\n\nSTEP THREE, ATTACH THE SOURCE. Only accepted, approved, drafted and reviewed stages may hold a binding; a superseded target refuses with a message naming that rule, which is why the fold comes first. Once the canonical identity is at a bindable stage, bind its source:\n  imas-codex sn attach summary/gas_injection_accumulated/total/value accumulated_total_particle_count_due_to_gas_injection --reason \"the total accumulated particle count delivered by gas injection across every species and location\"\nUse `--dry-run` first and report what it says. If the attach is refused, report the exact message and stop: do not detach anything, do not repoint another source, and do not edit a scalar by hand.\n\nSTEP FOUR, REPORT WHETHER THE ROW IS PUBLISHABLE and whether the roster recovered. Resolve the roster by loading imas_codex/standard_names/manifests/west_production_dd_paths.yaml with load_focus_file from imas_codex.standard_names.sources_manifest and resolving with fetch_manifest_source_release_rows from imas_codex.standard_names.graph_ops. Report the source count, distinct terminal name count and unmatched count before and after your writes; at 07:37 local they read 355, 222 and 23, and `summary/gas_injection_accumulated/total/value` was one of the 23. Report the roster publishable count before and after:\n  MATCH (n:StandardName) WHERE n.id IN $roster AND n.name_stage='accepted' AND n.docs_stage='accepted' RETURN count(*) AS publishable\nIt read 210 when this brief was written.\n\nSTEP FIVE, PREPARE THE OTHER SEVEN WITHOUT APPLYING THEM. Seven further accepted names have a canonical target that already exists at name_stage superseded, so they are the same class as this one and the same verb reaches them. They are the targets accumulated_radiated_energy_due_to_impurity_radiation, accumulated_coolant_absorbed_energy_of_plasma_facing_component, accumulated_oxygen_count_due_to_gas_injection, accumulated_neutral_count_at_wall, flux_surface_averaged_krypton_density_at_plasma_boundary, flux_surface_averaged_boron_density_at_plasma_boundary, and flux_surface_averaged_tungsten_density_at_plasma_boundary. Confirm the set against the graph; if it is not seven, yours governs.\n\nFor each, run `imas-codex sn supersede OLD --into TARGET --dry-run` and report the verdict, plus the live name, the target's stage and docs stage, whether the two descriptions are byte-identical, whether the two intermediate representations are equal using parse_canonical_name from imas_codex.standard_names.grammar_adapter, the bound source count on each side, and any refusal message verbatim. APPLY NONE OF THEM. This step exists so the lead can authorize the remaining seven in one decision with the evidence in front of them.\n\nENVIRONMENT. Work in your worktree. export UV_NO_SYNC=1 once in your shell before any uv invocation, and do not write the flag on a command line: two workers today had a bare uv run start building a worktree package because the sandbox injection did not cover their invocation path, and one lost a test run evidence to it. Name UV_PROJECT_ENVIRONMENT and the absolute target explicitly. Do not run uv sync anywhere; that environment is shared with the main checkout and concurrent workers. Never pipe, tee, or redirect imas-codex output; it auto-logs full DEBUG to ~/.local/share/imas-codex/logs and you read that file afterwards.\n\nA PEER IS RENAMING CONCURRENTLY over a disjoint set of thirteen names in this same graph. If you meet a claim conflict, that is coordination rather than a defect: report it and continue.\n\nMEASURE. Your manifest reports the re-read state, the fold dry run and applied result with both identities' stages before and after, the attach dry run and applied result, the bound source count on the canonical identity after, the three roster figures before and after, the publishable count before and after, and the seven dry-run verdicts with their evidence.\n\nCOMMITS. This node changes graph lifecycle and provenance state, not repository files. If you write no commit, say so explicitly and state that the graph carries the change. Never add any AI attribution or co-author trailer to any message you write.\n\nMANIFEST DISCIPLINE. Write your manifest with what you have BEFORE starting any wait longer than a couple of minutes, then update it.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.6,
+          "goal": "The total accumulated particle count is folded onto its canonical spelling and its source is bound back",
+          "id": "n-sgr-the-particle-count-takes-its-canonical-spelling",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-particle-fold/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a78",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/particle-count-fold.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-guard",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-07T05:45:28Z",
+        "completed_at": "2026-09-07T06:38:40Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 3192,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 3192,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "b28391f59378cda337cb05977169a6219fd87521",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "seven sn supersede --dry-run invocations plus representation and description comparison per pair",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/particle-count-fold.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-particle-fold/manifest.md",
+        "scope_changed": true,
+        "session_id": "01a07a66-71c5-7231-9f83-6ae197503c99",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 4152320,
+            "cached_input_tokens_cumulative": 4152320,
+            "input_tokens": 4215499,
+            "input_tokens_cumulative": 4215499,
+            "output_tokens": 15742,
+            "output_tokens_cumulative": 15742,
+            "reasoning_output_tokens": 3407,
+            "reasoning_output_tokens_cumulative": 3407
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 19149,
+          "peak_input_tokens": 8367819
+        },
+        "follow_on_paths": [
+          "imas_codex/standard_names/edit.py"
+        ],
+        "dispute_count": 0,
+        "attempt": 3,
+        "attempt_kind": "resume",
+        "no_commit": "Evidence node; the fold and attach were withdrawn mid-flight and no graph or repository state changed.",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-particle-count-takes-its-canonical-spelling",
+          "session_id": "01a07a66-71c5-7231-9f83-6ae197503c99",
+          "session_source": "pointer",
+          "retained_at": "2026-09-07T06:38:40Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260907T063211570013-n-sgr-the-expected-binding-counts-at-every-site",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a78",
+        "node": "n-sgr-the-expected-binding-counts-at-every-site",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 431,
+                "cached_input_tokens": 542166,
+                "input_tokens": 542599,
+                "output_tokens": 609,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 543208,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "CARRY THE EXPECTED-BINDING CARVE-OUT INTO THE MUTATION PRECONDITION AND THE POSTFLIGHT.\n\nTHE MEASURED FAILURE, AND IT IS A REGRESSION FROM AN INCOMPLETE INSTRUCTION RATHER THAN A NEW DEFECT. Six sanctioned source-backed renames are refused, once per row, with:\n  RuntimeError: source migration compare-and-set changed before mutation: expected 1, moved 0\nAll six targets remain absent and all six predecessors unchanged, so every attempt rolled back with no residue.\n\nTHE EXACT CAUSE. imas_codex/standard_names/provenance_lifecycle.py holds three places that reason about a source's PRODUCED_NAME bindings during a migration. The preflight uses guard_comparison_bindings, whose rule is: drop a binding only when its name is at a retired stage AND that name is NOT the one the caller expects. That carve-out exists because the rename transaction sets the predecessor to superseded BEFORE the comparison runs, so the expected old spelling is itself retired by the time it is compared, and a plain retired-stage exclusion would drop it.\n\nA repair merged as 32e204607 brought the mutation precondition and the postflight to a retired-stage exclusion WITHOUT that carve-out. They now count only bindings at a non-retired stage, which drops the expected predecessor for the same reason, and the count reaches zero where one was expected. The earlier repair's own test did not catch this because the retired binding in that test was a SIBLING of the expected one rather than the expected one itself, so the carve-out was never exercised.\n\nTHE RULE ALL THREE SITES MUST SHARE. A binding is excluded from a comparison only when its name is at a retired stage AND is not named in the caller's expected set. A live binding always counts. The expected current binding always counts, whatever its stage. For the source migration the expected set is the old spelling together with the new spelling, exactly as the preflight already passes.\n\nFIX BOTH SITES TO THAT RULE. Read guard_comparison_bindings and its preflight call site first and make the mutation precondition and the postflight agree with it rather than approximating it. If the cleanest expression is to pass the expected spellings into the Cypher as a parameter and exclude on stage-AND-not-in-expected, do that; if a shared helper can serve all three sites, prefer it, because three sites drifting apart is what produced both this failure and the one before it. Say which you chose.\n\nWHAT MUST NOT CHANGE. A source that ends with two LIVE bindings is still a genuine cardinality fault and must still be refused. A retired binding that is a sibling rather than the expected one must still be excluded. Both are already covered by tests from the previous repair and both must still pass.\n\nTESTS, in tests/standard_names. The decisive case is the one the previous repair missed, so write it first and make it unmistakable:\n  1. THE EXPECTED PREDECESSOR IS ITSELF AT A RETIRED STAGE at mutation time, as it always is inside a rename transaction, and the migration succeeds and reports the correct moved count. Prove this fails before your change with the exact expected-1-moved-0 message and passes after. Report both results.\n  2. A retired SIBLING binding, not named in the expected set, is still excluded and does not block the migration.\n  3. A source ending with two LIVE bindings is still refused.\n  4. A source carrying only its expected live binding still migrates.\nCases 2 through 4 exist to prove you did not trade one failure for another.\n\nTHE GATE. Run `pytest tests/standard_names` and report the failure count and failing identifiers before your change and after it. The count after must not exceed the count before. The baseline at commit 2f274f06a is 18 failures with 7186 passed, all pre-existing; five are TestCanonicalLocusCheck cases for newly registered loci and are not yours. Run it on a debug SLURM partition with a time limit of 00:59:00 and say so.\n\nTHEN PROVE ONE REAL RENAME THROUGH THE REPAIRED PATH. Six rows are waiting; take exactly ONE of them, chosen as the first the graph offers you from the strict-refusal set, and apply it with `sn edit --rename` and `--scope self`. Report the predecessor and successor name_stage, the successor documentation and docs_stage beside the predecessor's own values, and the bound DD path count before and after. Rename only that one: the node that measured all six holds their evidence contract and will resume for the remainder. If it is still refused, report the exact message and STOP, because a further attempt would only repeat it.\n\nENVIRONMENT. Work in your worktree. export UV_NO_SYNC=1 once in your shell before any uv invocation and do not write the flag on a command line: three workers today had a bare uv run start building a worktree package because the sandbox injection did not cover their invocation path, and one lost a test run's evidence to it. Name UV_PROJECT_ENVIRONMENT and the absolute target explicitly. Do not run uv sync anywhere; that environment is shared with the main checkout and concurrent workers.\n\nCOMMIT. One commit, conventional subject plus a BODY stating what changed and why, staging only the provenance module and your test file by explicit path. Never `git add -A`. Never add any AI attribution or co-author trailer to any message you write, and verify that before you commit. Run ruff check --fix and ruff format over exactly the paths you stage, never over the whole tree.\n\nMEASURE. Your manifest reports whether you unified the three sites or fixed two separately and why, the four test outcomes with case 1 failing before and passing after and its exact before-message, the suite failure count before and after with identifiers, the one applied rename with its five before-and-after values, and the commit sha with its changed paths.\n\nMANIFEST DISCIPLINE. Write your manifest with what you have BEFORE starting any wait longer than a couple of minutes, then update it.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.7,
+          "goal": "The mutation precondition and postflight admit the expected binding even when its name is retired",
+          "id": "n-sgr-the-expected-binding-counts-at-every-site",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-expected-carveout/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a78",
+          "spec_level": "exact",
+          "time_budget": "45m",
+          "write_paths": [
+            "imas_codex/standard_names/provenance_lifecycle.py",
+            "tests/standard_names/test_provenance_lifecycle.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-route",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-07T06:32:21Z",
+        "completed_at": "2026-09-07T07:03:05Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1844,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1844,
+        "stalled": false,
+        "time_budget": "45m",
+        "base_sha": "76149c59512cf8dcdecf8190486aed7843937398",
+        "commits": [
+          "0b79867ecc9b37a95bd1f6376cf7d8e11063fc95"
+        ],
+        "changed_lines": {
+          "added": 49,
+          "removed": 9,
+          "files": 2
+        },
+        "tests_added": 1,
+        "gate": "passed",
+        "gate_check": {
+          "command": "pytest tests/standard_names on all_debug",
+          "exit_status": 1,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-expected-carveout/after-standard-names.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-expected-carveout/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07a91-5bba-7ce3-b8de-bbad94cba51f",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": null,
+          "cost_usd": null,
+          "refusal": false,
+          "detail": ""
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-expected-binding-counts-at-every-site",
+          "session_id": "01a07a91-5bba-7ce3-b8de-bbad94cba51f",
+          "session_source": "stream",
+          "retained_at": "2026-09-07T07:03:05Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names`",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
       }
     ],
     "holds": [
@@ -98044,6 +98298,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1887
+    "_version": 1889
   }
 }
