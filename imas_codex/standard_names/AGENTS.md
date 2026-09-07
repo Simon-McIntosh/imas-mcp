@@ -326,7 +326,7 @@ uv run --no-sync imas-codex sn resolve --help
 ```
 
 If help and this recipe disagree, stop and update the recipe before operating. Keep `BATCH`, `ISNC`, `PR`,
-`PR_NUMBER`, `PR_REPO`, `RC`, `BODY`, `PREVIEW`, and `RESTORE` bound to one release identity.
+`PR_NUMBER`, `PR_REPO`, `RC`, `BODY`, `PREVIEW`, `RESTORE`, and `ARTIFACT` bound to one release identity.
 
 ### The segment sweep is a scheduled operation, not a rotation side effect
 
@@ -425,6 +425,61 @@ prose arrived only with a later release. Equations, fences and the blank lines i
 deliberately left untouched, so an over-long line is not by itself a defect — check the invariants the writer
 actually owns (no `\uXXXX` escapes, no backslash continuations, byte-identity with a re-dump) rather than a column
 count.
+
+### Cut-target identity and evidence are fail-closed
+
+**Keep the target out of a dispatch brief.** A release brief may name the batch, the command, and the evidence
+required. It must not name or restate the checkout, repository, remote, or path that receives the cut; target
+resolution belongs to this runbook and the release tool. When target identity matters, the brief requires the
+tool to print its resolution with `imas-codex sn release status`. **Gate:** the brief contains the batch, command,
+and evidence contract but no target value, and requires the status fields below immediately before the cut.
+**Stop:** a brief names a cut target or asks the command to follow a path or remote stated in the brief.
+
+**Make the release tool name its target before any write.** Run `imas-codex sn release status` immediately before
+the cut and read every identity field. **Gate:** it prints the catalog path
+`/home/ITER/mcintos/Code/imas-standard-names-catalog` under `Path`, plus `State`, `Latest tag`, `Batch RC`, and
+both `Remote` values;
+the remotes are `git@github.com:Simon-McIntosh/imas-standard-names-catalog.git` for `origin` and
+`git@github.com:iterorganization/imas-standard-names-catalog.git` for `upstream`. **Stop:** any other path,
+missing field, or remote mismatch. A wrong resolution is never corrected for the current cut with `--isnc` or an
+ad hoc `IMAS_CODEX_SN_ISNC` export: stop, fix the configuration that produced it, start from a clean shell, and
+repeat status so the defect remains visible until it is repaired.
+
+**Use the catalog version series as a target canary.** The catalog and grammar repositories have unrelated
+version lines. A catalog at `v0.4.0rc4` followed by a computed `v0.10.0rc1` is a target error, not a numbering
+surprise. **Gate:** the candidate continues the catalog's own `Latest tag` series. When `State: rc`, the
+`Available commands` printed by status are authoritative and continue that series without `--bump`. **Stop:** a
+candidate from another series, or any bump flag not offered for the printed state.
+
+**Prove both the positive and the negative from the owning repositories.** Read the candidate branch and tag
+from the catalog remote, read the same refs from the grammar remote, and read pull-request state from each
+repository's own listing, including both organisation repositories. **Gate:** the catalog remote alone has the
+expected `review/$RC` branch and annotated `$RC` tag; the grammar remote has neither; the catalog fork listing has
+only the separately authorised fork review pull request, if one was opened; and the organisation listings for
+`iterorganization/imas-standard-names-catalog` and `iterorganization/IMAS-Standard-Names` show no pull request for
+the cut. **Stop:** any candidate ref in the grammar repository, any unexpected pull request, or evidence inferred
+only from the absence of a message in local command output.
+
+**Commit the frozen roster before the worktree can be reclaimed.** The release writes the reproducible batch
+identity under `imas_codex/standard_names/manifests/reviews/`, beside tracked roster artifacts, rather than to a
+declared report path. Bind `ARTIFACT=imas_codex/standard_names/manifests/reviews/$RC.sn_names.yaml`, stage and
+commit that explicit path, then report its byte size and SHA-256. **Gate:** `stat --format='%s %n' "$ARTIFACT"`,
+`sha256sum "$ARTIFACT"`, and `git ls-files --error-unmatch "$ARTIFACT"` all succeed at the committed revision.
+**Stop:** a missing, empty, untracked, uncommitted, or hash-disagreeing artifact; never leave its preservation to
+worktree retention.
+
+**Name the two pull-request targets distinctly.** An `upstream release PR` is the pull request that `--final`
+directs into the organisation repository. A `fork review PR` is a distinct review operation against the fork,
+even when `sn release` opens it after cutting the fork RC. `No pull request` and `no upstream release PR` are
+different states. **Gate:** every authorization and report uses one of those complete names and checks that
+repository's own listing. **Stop:** the bare phrases `PR`, `no PR`, or `no upstream PR`, because they do not
+establish the state of the other target.
+
+**Resolve every address in a composed body.** A body uses descriptive Markdown links rather than bare addresses,
+and every destination is checked against the repository and path it names. **Gate:** each destination returns
+HTTP `200` from the named repository and branch, and the body read back from the pull request contains the same
+Markdown destination. **Stop:** a bare address, a non-`200` response, a well-formed link into the wrong repository
+or branch, or any destination not checked from the posted body.
 
 ### Numbered operator runbook
 
