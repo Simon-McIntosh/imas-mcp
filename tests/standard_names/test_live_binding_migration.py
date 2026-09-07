@@ -144,7 +144,7 @@ def test_source_reset_ignores_and_preserves_retired_bindings() -> None:
                 _binding("other_live_name", "reviewed"),
             ]
         ),
-        _migration_row([_binding("old_name", "superseded")]),
+        _migration_row([]),
         _migration_row(
             [
                 _binding("wrong_live_name", "drafted"),
