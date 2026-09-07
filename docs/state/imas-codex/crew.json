@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07T05:35:23",
+  "updated": "2026-09-07T05:38:38",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -95962,6 +95962,137 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260906T210510273832-n-swcr-the-beta-lineage-cycle-is-resolved",
+        "plan": "sn-west-catalog-release",
+        "section": "Hard entry gate",
+        "node": "n-swcr-the-beta-lineage-cycle-is-resolved",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1208,
+                "cached_input_tokens": 683236,
+                "input_tokens": 684446,
+                "output_tokens": 966,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 685412,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "ONE LINEAGE TANGLE BLOCKS ONE RELEASE ROW. Untangle it or report precisely why it cannot be untangled by a sanctioned route.\n\nTHE ROW. normalized_toroidal_beta is bound to the release manifest and carries edit_status='open' at name_stage='reviewed'. A disposition node examined the other eight gating rows and proposed a route for each; it refused to propose anything for this one and deferred, because two faults sit on it together:\n  a mutual REFINED_FROM two-cycle with normalized_toroidal_plasma_beta - each names the other as its predecessor, so no direction of the relation identifies a successor;\n  a stale status scalar reading 'superseded' on the manifest-bound spelling, which disagrees with its own name_stage of 'reviewed'.\nMeasure both against the live graph and report exactly what you find before proposing anything; if either has since changed, yours governs.\n\nCONTEXT THAT BEARS ON THE REPAIR. This family has been worked on: a fold consolidated toroidal beta spellings earlier, and a normalised spelling was folded with its bindings carried across. The two-cycle and the stale scalar are residues of that fold, not independent defects, so read the change ledger for both identities and reconstruct the order in which the edges were written. The ledger is the evidence for which direction the relation should have.\n\nTHE DELIVERABLE: the two-cycle resolved to a single direction that matches the fold's actual history, and the status scalar agreeing with name_stage - or a precise report of why no sanctioned verb can do it.\n\nTHE ONLY SANCTIONED ROUTES are the sn CLI verbs. sn edit governs names; sn remove-lineage removes a lineage edge under its own guards; sn remove-source-backing removes a source binding. Never write Cypher to add, remove or redirect an edge, and never set a scalar directly. If the repair needs a verb that does not exist, that is the finding: name the operation, quote the refusal you got from the nearest verb, and stop. A missing sanctioned route reported precisely is worth more than a hand-written edge, because the guards exist to stop exactly the class of damage a fold residue represents.\n\nDO NOT BREAK THE OTHER SPELLING. normalized_toroidal_plasma_beta is the other half of the cycle and may itself be bound or accepted. Report its full state before and after, and if resolving the cycle would orphan it or strand its bindings, stop and report that instead.\n\nTHE MEANING MUST NOT CHANGE. Descriptions and documentation on both identities stay byte-identical. Compare them before and after.\n\nREPORT WHAT THE ROW NEEDS NEXT. Once untangled, state which pipeline pools the row must traverse to reach a publishable state, given its name_stage, its docs_stage and whether its review quorum shortfall is still set. Do not run those pools; the lead is rescoring the whole bound set separately.\n\nTHE NAMED CHECK THIS NODE IS MEASURED BY: after your work, a single query over the two identities must return exactly one REFINED_FROM edge between them rather than two, and the manifest-bound spelling's status scalar must equal a value consistent with its name_stage. Report both as numbers - the edge count before and after, and the two scalar values - and run `uv run --no-sync pytest tests/standard_names -k \"lineage or supersede\" -p no:cacheprovider` before and after, reporting added failures against a stated base revision rather than an absolute count.\n\nEVIDENCE REQUIRED: both identities' full state before and after; the change-ledger reconstruction that establishes the intended direction; the exact verb and arguments for every write you make, with its output; the description comparison; and the bound DD paths of both identities before and after, which must not move.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.8,
+          "goal": "The toroidal beta lineage cycle resolves to one direction and its status scalar agrees with its stage",
+          "id": "n-swcr-the-beta-lineage-cycle-is-resolved",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-beta-tangle/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "Hard entry gate",
+          "spec_level": "exact",
+          "time_budget": "50m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/beta-lineage-untangle.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-betatangle",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-06T21:05:25Z",
+        "completed_at": "2026-09-06T21:26:57Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1292,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1292,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "a3348288c4d572a45a991df4e6f5fe8d6a16148f",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "not-run",
+        "gate_check": null,
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-beta-tangle/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a0788a-5374-7b40-8959-cb5623103fe4",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 7649152,
+            "cached_input_tokens_cumulative": 7649152,
+            "input_tokens": 7844130,
+            "input_tokens_cumulative": 7844130,
+            "output_tokens": 31574,
+            "output_tokens_cumulative": 31574,
+            "reasoning_output_tokens": 8684,
+            "reasoning_output_tokens_cumulative": 8684
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 40258,
+          "peak_input_tokens": 15493282
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 2,
+        "attempt_kind": "resume",
+        "no_commit": "zero graph writes: the node stopped on a missing sanctioned route rather than reaching for Cypher",
+        "resume_waiver": {
+          "session_id": "01a0788a-5374-7b40-8959-cb5623103fe4",
+          "source": "pointer",
+          "reason": "the missing route is a repository capability rather than a lost context; the lead is deciding the route and the node re-dispatches behind it"
+        },
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-beta-lineage-cycle-is-resolved",
+          "session_id": "01a0788a-5374-7b40-8959-cb5623103fe4",
+          "session_source": "pointer",
+          "retained_at": "2026-09-06T21:26:57Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
       }
     ],
     "holds": [
@@ -96204,6 +96335,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1864
+    "_version": 1865
   }
 }
