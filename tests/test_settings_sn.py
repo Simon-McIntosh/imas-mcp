@@ -7,6 +7,7 @@ for the example-injection and retry tunables.
 from __future__ import annotations
 
 import importlib
+from copy import deepcopy
 
 import pytest
 
@@ -58,16 +59,75 @@ def test_retry_k_expansion_default():
 
 def test_compose_seat_uses_ambix_local_route():
     """Production composition resolves only to the authenticated Ambix route."""
-    from imas_codex.settings import get_model_config
+    import imas_codex.settings as mod
 
-    assert get_model_config("sn-compose") == {
+    route_api_base = mod._get_section("model-routes")["ambix-local"]["api-base"]
+    assert mod.get_model_config("sn-compose") == {
         "model": "hosted_vllm/deepseek-v4-flash",
-        "api_base": "http://98dci4-gpu-0003:18800/v1",
+        "api_base": route_api_base,
         "api_key_env": "AMBIX_API_KEY",
     }
 
 
+def test_local_review_seat_uses_ambix_local_route():
+    import imas_codex.settings as mod
+
+    route_api_base = mod._get_section("model-routes")["ambix-local"]["api-base"]
+    resolved = mod.resolve_model_source(
+        "sn-review:names", candidate_model="hosted_vllm/deepseek-v4-flash"
+    )
+    assert resolved.api_base == route_api_base
+    assert resolved.api_key_env == "AMBIX_API_KEY"
+
+
+def test_changing_named_route_updates_every_referencing_seat(monkeypatch):
+    import imas_codex.settings as mod
+
+    configured = deepcopy(mod._load_pyproject_settings())
+    replacement = "http://router.example.test/v1"
+    configured["model-routes"]["ambix-local"]["api-base"] = replacement
+    monkeypatch.setattr(mod, "_get_section", lambda name: configured.get(name, {}))
+
+    compose = mod.get_model_config("sn-compose")
+    review = mod.resolve_model_source(
+        "sn-review:names", candidate_model="hosted_vllm/deepseek-v4-flash"
+    )
+    assert compose["api_base"] == replacement
+    assert review.api_base == replacement
+
+
+def test_unknown_model_route_fails_at_resolution(monkeypatch):
+    import imas_codex.settings as mod
+
+    configured = deepcopy(mod._load_pyproject_settings())
+    configured["sn-compose"]["model-route"] = "missing-route"
+    monkeypatch.setattr(mod, "_get_section", lambda name: configured.get(name, {}))
+
+    with pytest.raises(ValueError, match="Unknown model route 'missing-route'"):
+        mod.get_model_config("sn-compose")
+
+
+def test_remote_seat_needs_no_model_route():
+    import imas_codex.settings as mod
+
+    seat = mod._get_section("sn-refine")
+    assert "model-route" not in seat
+    assert mod.get_model_config("sn-refine") == {
+        "model": mod.get_model("sn-refine"),
+        "api_base": None,
+        "api_key_env": None,
+    }
+
+
 # ── Environment variable overrides ──────────────────────────────────────────
+
+
+def test_compose_api_base_env_override_takes_priority(monkeypatch):
+    import imas_codex.settings as mod
+
+    override = "http://temporary-router.example.test/v1"
+    monkeypatch.setenv("IMAS_CODEX_SN_COMPOSE_API_BASE", override)
+    assert mod.get_model_config("sn-compose")["api_base"] == override
 
 
 def test_example_target_scores_env(monkeypatch):

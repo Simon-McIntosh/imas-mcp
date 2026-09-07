@@ -10,6 +10,7 @@ Configuration is organized into subsections:
   [tool.imas-codex.vision]         — vision models for image/document tasks
   [tool.imas-codex.agent]          — agent models for planning/exploration tasks
   [tool.imas-codex.compaction]     — compaction models for summarization tasks
+  [tool.imas-codex.model-routes]   — named model endpoint addresses
   [tool.imas-codex.sn-review]       — shared disagreement threshold and max-cycles
   [tool.imas-codex.sn-review.names] — name-axis reviewer model chain (primary/secondary/escalator)
   [tool.imas-codex.sn-review.docs]  — docs-axis reviewer model chain (primary/secondary/escalator)
@@ -239,33 +240,56 @@ def get_model(section: str) -> str:
     return _get_section(section).get("model", _MODEL_DEFAULTS[section])
 
 
+def _resolve_model_route(config: dict[str, Any], owner: str) -> str | None:
+    """Resolve one optional named model route to its configured API base."""
+    route_name = config.get("model-route")
+    direct_api_base = config.get("api-base")
+    if route_name is None:
+        return direct_api_base or None
+    if direct_api_base:
+        raise ValueError(f"{owner} cannot define both 'model-route' and 'api-base'")
+    if not isinstance(route_name, str) or not route_name.strip():
+        raise ValueError(f"{owner} has an invalid model route name")
+    route = _get_section("model-routes").get(route_name)
+    if not isinstance(route, dict):
+        raise ValueError(f"Unknown model route {route_name!r} referenced by {owner}")
+    api_base = route.get("api-base")
+    if not isinstance(api_base, str) or not api_base.strip():
+        raise ValueError(
+            f"Model route {route_name!r} referenced by {owner} must define "
+            "a non-blank 'api-base'"
+        )
+    return api_base
+
+
 def get_model_config(section: str) -> dict[str, str | None]:
     """Get full model configuration including optional endpoint overrides.
 
     Returns a dict with keys ``model``, ``api_base``, and ``api_key_env``.
-    When ``api-base`` and/or ``api-key-env`` are set in the pyproject.toml
-    section, they override the default OpenRouter routing — enabling
-    local or self-hosted model endpoints.
+    When ``model-route`` or ``api-base`` is set in the pyproject.toml section,
+    it overrides the default OpenRouter routing — enabling local or self-hosted
+    model endpoints. Named routes resolve from ``[tool.imas-codex.model-routes]``.
 
     Example pyproject.toml::
 
         [tool.imas-codex.sn-compose]
         model = "hosted_vllm/deepseek-v4-flash"
-        api-base = "http://gpu-node:18800/v1"
+        model-route = "ambix-local"
         api-key-env = "AMBIX_API_KEY"
 
     Environment variable overrides (highest priority):
         - ``IMAS_CODEX_{SECTION}_API_BASE``  (e.g. ``IMAS_CODEX_SN_COMPOSE_API_BASE``)
-        - ``IMAS_CODEX_{SECTION}_API_KEY_ENV`` (rarely needed — set the key env directly)
     """
     model = get_model(section)
     cfg = _get_section(section)
 
-    # api-base: env override → pyproject → None
+    # api-base: env override → named/direct pyproject route → None
     env_key = f"IMAS_CODEX_{section.upper().replace('-', '_')}_API_BASE"
-    api_base = os.getenv(env_key) or cfg.get("api-base") or None
+    configured_api_base = _resolve_model_route(cfg, f"[tool.imas-codex.{section}]")
+    api_base = os.getenv(env_key) or configured_api_base
 
-    # api-key-env: env override → pyproject → None
+    # api-key-env names the credential environment variable; the LLM layer
+    # reads that secret later. This setting itself comes only from pyproject.
     api_key_env = cfg.get("api-key-env") or None
 
     return {"model": model, "api_base": api_base, "api_key_env": api_key_env}
@@ -293,12 +317,12 @@ def register_model_endpoints() -> None:
     (pools, benches, one-off tools) can resolve a local endpoint without
     knowing which section a model came from. Two passes:
 
-    1. Model sections (``MODEL_SECTIONS``): a section with ``api-base``
-       binds its singular ``model`` to that endpoint.
-    2. Any ``[tool.imas-codex.*]`` subsection carrying BOTH ``api-base`` and
-       a ``models`` list (e.g. review quorums): only the locally-served
-       entries (``hosted_vllm/``, ``ollama/``) bind to the endpoint —
-       openrouter/-prefixed entries in the same list keep proxy routing.
+    1. Model sections (``MODEL_SECTIONS``): a section with ``model-route`` or
+       ``api-base`` binds its singular ``model`` to that endpoint.
+    2. Any ``[tool.imas-codex.*]`` subsection carrying a ``model-route`` or
+       ``api-base`` and a ``models`` list (e.g. review quorums): only the
+       locally-served entries (``hosted_vllm/``, ``ollama/``) bind to the
+       endpoint; openrouter/-prefixed entries keep proxy routing.
     """
     for section in MODEL_SECTIONS:
         try:
@@ -314,8 +338,12 @@ def register_model_endpoints() -> None:
             }
 
     def _walk(node: dict) -> None:
-        api_base = node.get("api-base")
         models = node.get("models")
+        api_base = (
+            _resolve_model_route(node, "configured model list")
+            if isinstance(models, list)
+            else None
+        )
         if api_base and isinstance(models, list):
             for model_id in models:
                 if isinstance(model_id, str) and model_id.startswith(
@@ -483,7 +511,7 @@ def resolve_model_source(
         endpoint_class = _get_section(name).get("endpoint-class")
     elif source_id == "sn-review:names" and model.startswith(_LOCAL_ENDPOINT_PREFIXES):
         config = _get_section("sn-review").get("names", {})
-        api_base = config.get("api-base")
+        api_base = _resolve_model_route(config, "[tool.imas-codex.sn-review.names]")
         api_key_env = config.get("api-key-env")
         endpoint_class = config.get("endpoint-class")
     if model.startswith(_LOCAL_ENDPOINT_PREFIXES):
