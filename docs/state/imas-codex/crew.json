@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07T09:30:10",
+  "updated": "2026-09-07T10:50:42",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -98378,6 +98378,144 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260907T072534193152-n-swcr-an-upstream-release-needs-a-public-grammar",
+        "plan": "sn-west-catalog-release",
+        "section": "Release and fold-back contract",
+        "node": "n-swcr-an-upstream-release-needs-a-public-grammar",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1541,
+                "cached_input_tokens": 593005,
+                "input_tokens": 594548,
+                "output_tokens": 939,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 595487,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "GATE AN UPSTREAM CATALOG RELEASE ON A PUBLICLY RELEASED GRAMMAR, AND STAMP THE CATALOG WITH THE GRAMMAR IT ACTUALLY USED.\n\nTHE REQUIREMENT, FROM THE LEAD. A catalog published upstream must be built against a public released standard-names grammar. It must not be a development version, must not be a release candidate, and must not be a version only this workstation can resolve. The lead also ruled that this must apply ONLY to upstream releases and must not handicap development work: a release candidate, a plain export, and a dry-run rehearsal must all remain usable exactly as they are today.\n\nTWO DEFECTS, BOTH MEASURED. Confirm each against the code before changing it and report whether you confirmed or refuted it.\n\nDEFECT ONE, THE STAMP IS WRONG. imas_codex/standard_names/export.py writes into the exported catalog:\n    \"grammar_version\": imas_standard_names.__version__,\n    \"isn_model_version\": imas_standard_names.__version__,\nThe standard-names package is installed editable, so that attribute carries the version baked when the editable install was built, not the grammar in the working tree. Measured on 2026-09-07 it read `0.8.1.dev32+g12b557363` from a checkout whose actual state was the v0.9.0 release. So a catalog cut today records a development grammar version that is both wrong and unreproducible. Make the stamp report the grammar the export actually used, derived from the standard-names checkout's own git identity rather than from installed distribution metadata. If both a checkout identity and a distribution version are available and they disagree, that disagreement is itself a fault worth surfacing rather than silently preferring one.\n\nDEFECT TWO, NOTHING GATES IT. The seven export gates are graph_tests, cross_field_consistency, score_thresholds, divergence_detection, exclusion_accounting, identity_token_collision and catalog_status; none concerns the grammar. `_get_isn_dep_version` in imas_codex/standard_names/catalog_release.py looks like a check and is not one: it regex-scrapes a declared dependency string out of pyproject.toml, explicitly admits a release-candidate suffix, returns None on any exception, and feeds only a status dictionary. It reports a declaration; it never gates, and it cannot observe what was actually resolved.\n\nWHERE THE GATE GOES. Put it in the release preflight in catalog_release.py beside the existing on-main, working-tree, synced-with-remote and CI-passed checks, and make it conditional on the release targeting the upstream remote. The release already resolves that: a final release reports `Remote: upstream` while a release candidate reports `Remote: origin`. Use that same resolved value as the discriminator so a candidate, an export and a rehearsal are untouched. Report the check in the preflight block in the same style as its neighbours, and let a dry run REPORT the verdict without blocking, exactly as the CI check already does.\n\nWHAT THE GATE MUST ASSERT, all four, failing closed and naming which one failed:\n  1. The standard-names checkout's HEAD is exactly at an annotated tag with no uncommitted modification, so the grammar has a single unambiguous identity.\n  2. That tag is a final release: a plain major.minor.patch with no release-candidate, alpha, beta, development or local-version suffix.\n  3. That tag is present on the upstream remote, so the grammar is public rather than local or fork-only.\n  4. The matching version is published on the package index as a final release rather than a prerelease.\nAssertion four needs the network. Fail closed when the index cannot be reached and say so in those words: an unreachable index is unknown, and unknown is not permission. Give it a bounded timeout so a slow index cannot hang a release.\n\nWRITE THE FOUR AS SEPARATE FINDINGS, not one boolean. An operator who is blocked needs to know whether the fix is committing a tag, cutting a release rather than a candidate, pushing a tag public, or waiting for a publish to finish. Those are four different actions and a single message conflating them wastes the operator's time.\n\nTESTS, in tests/standard_names. Cover the stamp and each gate branch:\n  1. The stamp records the checkout's released identity rather than the editable distribution's development string. Prove this fails before your change and passes after, and report both results.\n  2. Each of the four assertions fails the gate on its own, with a message naming that specific cause.\n  3. An unreachable index fails closed rather than passing.\n  4. A release targeting origin, a plain export, and a dry run are all unaffected by the gate. This is the lead's do-not-handicap-development requirement and it must be a test rather than a claim.\nDo not reach the real network or the real upstream remote in a test; use the project's existing fakes or fixtures for git and network access, and say which you used.\n\nTHE GATE COMMAND. Run `pytest tests/standard_names` and report the failure count and failing identifiers before your change and after it. The count after must not exceed the count before. The baseline at commit 32e204607 is 18 failures with 7186 passed, all pre-existing; five of those 18 are TestCanonicalLocusCheck cases for newly registered loci and are not yours to fix. This suite is heavy enough to want a compute node: run it on a debug SLURM partition with a time limit of 00:59:00 and say so.\n\nDO NOT CUT, TAG, PUBLISH OR REHEARSE A RELEASE. Do not run `sn release` in any form, with or without a dry-run flag. Another node owns the rehearsal and a concurrent release read would corrupt its evidence. Verify your work through tests only.\n\nENVIRONMENT. Work in your worktree. export UV_NO_SYNC=1 once in your shell before any uv invocation and do not write the flag on a command line: three workers today had a bare uv run start building a worktree package because the sandbox injection did not cover their invocation path, and one lost a test run's evidence to it. Name UV_PROJECT_ENVIRONMENT and the absolute target explicitly. Do not run uv sync anywhere; that environment is shared with the main checkout and concurrent workers. Do not modify the standard-names checkout at /home/ITER/mcintos/Code/imas-standard-names in any way: read its git state, never write it.\n\nCOMMIT. One commit, conventional subject plus a BODY stating what changed and why, staging only the modules and test files you changed by explicit path. Never `git add -A`. Never add any AI attribution or co-author trailer to any message you write, and verify that before you commit. Run ruff check --fix and ruff format over exactly the paths you stage, never over the whole tree.\n\nMEASURE. Your manifest reports whether you confirmed or refuted each of the two defects, the exact stamp value before and after your change for the current checkout, each of the four assertions with the message it emits when it alone fails, the four test outcomes with test 1 failing before and passing after, proof that origin releases and dry runs are unaffected, the tests/standard_names failure count before and after with identifiers, and the commit sha with its changed paths.\n\nMANIFEST DISCIPLINE. Write your manifest with what you have BEFORE starting any wait longer than a couple of minutes, then update it.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.9,
+          "goal": "An upstream catalog release is gated on a publicly released grammar and the catalog records the grammar it actually used",
+          "id": "n-swcr-an-upstream-release-needs-a-public-grammar",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-grammar-gate/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "Release and fold-back contract",
+          "spec_level": "exact",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/catalog_release.py",
+            "imas_codex/standard_names/export.py",
+            "tests/standard_names/test_catalog_release.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-route",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-07T07:25:44Z",
+        "completed_at": "2026-09-07T08:16:39Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 3055,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 3055,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "20a0e52673d6b04f6bd3afdb6a1105dd995a168e",
+        "commits": [
+          "05a96bf75d6aab87c7ddfc1b159612f3cb4b1b09"
+        ],
+        "changed_lines": {
+          "added": 548,
+          "removed": 4,
+          "files": 3
+        },
+        "tests_added": 8,
+        "gate": "passed",
+        "gate_check": {
+          "command": "pytest tests/standard_names on all_debug",
+          "exit_status": 1,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-grammar-gate/after-standard-names.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-grammar-gate/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07ac2-3bc8-7a13-b797-32264f2aebd2",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 27488000,
+            "cached_input_tokens_cumulative": 27488000,
+            "input_tokens": 27769924,
+            "input_tokens_cumulative": 27769924,
+            "output_tokens": 51825,
+            "output_tokens_cumulative": 51825,
+            "reasoning_output_tokens": 21147,
+            "reasoning_output_tokens_cumulative": 21147
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 72972,
+          "peak_input_tokens": 55257924
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-an-upstream-release-needs-a-public-grammar",
+          "session_id": "01a07ac2-3bc8-7a13-b797-32264f2aebd2",
+          "session_source": "stream",
+          "retained_at": "2026-09-07T08:16:39Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names`",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
       }
     ],
     "holds": [
@@ -98620,6 +98758,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1891
+    "_version": 1892
   }
 }
