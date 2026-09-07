@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07T23:35:43",
+  "updated": "2026-09-08T01:27:43",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -99928,6 +99928,291 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260907T190127890008-n-sgr-how-many-accepted-names-are-bare-bases",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a79",
+        "node": "n-sgr-how-many-accepted-names-are-bare-bases",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2267,
+                "cached_input_tokens": 254915,
+                "input_tokens": 257184,
+                "output_tokens": 1622,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 258806,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A report at the write path giving the live count of accepted StandardName identities whose name is a single bare base token, listed by name with their name_stage and origin, and stating for each whether it passed review_name's semantic_similarity_check or reached accepted by some other route. review_name in imas_codex/standard_names/workers.py runs a cosine check between the name as text and its description embedding with critical threshold 0.55, and below threshold skips the LLM chain and persists a synthetic 0.30 with a quorum shortfall; beta measured 0.488, 0.503, 0.475 and 0.508 across four candidate descriptions while every accepted multi-word member of its family sits far above (plasma_beta 0.779, normalized_toroidal_plasma_beta 0.849, poloidal_beta 0.770, toroidal_beta 0.808). The question this decides: if many bare bases are already accepted the gate is being bypassed somewhere and that route is the answer rather than a new rule; if there are none, beta would be the first and an exemption is a new admission path. Name the existing deterministic-parent skip at workers.py:8197-8206 and state whether a bare base carrying HAS_PARENT children would qualify under it today. Report only \u2014 change no source file.",
+          "estimated_hours": null,
+          "goal": "Count the accepted live identities that are bare single-token bases and report whether the name review gate is already bypassed for them",
+          "id": "n-sgr-how-many-accepted-names-are-bare-bases",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T190127890008-n-sgr-how-many-accepted-names-are-bare-bases/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "35m",
+          "write_paths": [
+            "docs/evidence/sn-grammar-refinement/bare-base-census.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "clive-tail",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-07T19:01:48Z",
+        "completed_at": "2026-09-07T23:22:53.464Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 15498,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 15665,
+        "stalled": true,
+        "time_budget": "35m",
+        "base_sha": "69f24046b143dce1048f82f02fd25878b2849126",
+        "commits": [
+          "a4ab25b0bd2ff0ce521a56f7586e776549e03950"
+        ],
+        "changed_lines": {
+          "added": 135,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "coordinator re-ran the census and the name-axis review history against the live graph, and read every cited source line at base 69f24046b",
+          "exit_status": 0,
+          "log_path": "docs/evidence/sn-grammar-refinement/bare-base-census-verification.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T190127890008-n-sgr-how-many-accepted-names-are-bare-bases/manifest.md",
+        "scope_changed": false,
+        "session_id": "7425ba0b-d38f-41bb-b552-efded5528f33",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 4799830,
+            "input_tokens_cumulative": 4799830,
+            "output_tokens": 30441,
+            "output_tokens_cumulative": 30441,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 15661.622,
+          "generated_tokens": 30441,
+          "generation_seconds": 14945.383,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 15.3,
+          "machine_seconds": 716.239,
+          "peak_input_tokens": 155247,
+          "tokens_per_second": 2.04,
+          "wall_tokens_per_second": 1.94
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sgr-how-many-accepted-names-are-bare-bases",
+          "session_id": "7425ba0b-d38f-41bb-b552-efded5528f33",
+          "session_source": "pointer",
+          "retained_at": "2026-09-07T23:22:53.464Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260907T190026285253-n-swcr-which-release-residues-survive-at-head",
+        "plan": "sn-west-catalog-release",
+        "section": "release-run-residues",
+        "node": "n-swcr-which-release-residues-survive-at-head",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1733,
+                "cached_input_tokens": 253182,
+                "input_tokens": 254917,
+                "output_tokens": 1377,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 256294,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A report at the write path verdicting each residue open or already-closed with the file and line that settles it: (a) does a dry run of sn release still mint a roster or advance the RC counter \u2014 run_review_release now returns at the dry_run branch before _freeze_review_artifact, so state whether the RC counter can still move and whether a test pins the inertness; (b) do any gh CLI shell-outs remain in the release path, given read_pull_request_body and the pull-request create path now appear to go through the REST github_client; (c) is the older reclassify_domain still defined anywhere, which grep suggests was deleted; (d) does the post-copy divergence scan still walk the catalog checkout's virtual environment, and which subtrees it should name instead; (e) does the deterministic fallback pull-request body still omit REVIEWING.md, given commit 4a8796a4a; (f) does run_review_release still publish staging content without propagating an unsuccessful ExportReport. For any residue that survives, name the exact change and the counterfactual that would prove it. Report only \u2014 change no source file.",
+          "estimated_hours": null,
+          "goal": "Verdict each recorded release-path residue against the code at HEAD and name the ones that survive",
+          "id": "n-swcr-which-release-residues-survive-at-head",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T190026285253-n-swcr-which-release-residues-survive-at-head/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "release-run-residues",
+          "spec_level": "guided",
+          "time_budget": "40m",
+          "write_paths": [
+            "docs/evidence/sn-west-catalog-release/residue-currency.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "clive-residue",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-07T19:00:37Z",
+        "completed_at": "2026-09-07T23:23:07.249Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 15523,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 15750,
+        "stalled": true,
+        "time_budget": "40m",
+        "base_sha": "69f24046b143dce1048f82f02fd25878b2849126",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "failed",
+        "gate_check": null,
+        "suite_delta": null,
+        "failure_classification": "infrastructure-failure",
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T190026285253-n-swcr-which-release-residues-survive-at-head/manifest.md",
+        "scope_changed": false,
+        "session_id": "39ec9ca1-51ae-4c3d-a8a8-e39faabf2900",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 5224422,
+            "input_tokens_cumulative": 5224422,
+            "output_tokens": 21761,
+            "output_tokens_cumulative": 21761,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 15746.475,
+          "generated_tokens": 21761,
+          "generation_seconds": 15210.348,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 15.8,
+          "machine_seconds": 536.127,
+          "peak_input_tokens": 160913,
+          "tokens_per_second": 1.43,
+          "wall_tokens_per_second": 1.38
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swcr-which-release-residues-survive-at-head",
+          "session_id": "39ec9ca1-51ae-4c3d-a8a8-e39faabf2900",
+          "session_source": "pointer",
+          "retained_at": "2026-09-07T23:23:07.249Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -100170,6 +100455,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1915
+    "_version": 1917
   }
 }
