@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07T18:41:02",
+  "updated": "2026-09-07T23:35:43",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -43,36 +43,44 @@
         "id": "clive-binding",
         "harness": "clive",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "e9e5744f-ed47-4470-8f7e-f7abbc2f6860",
+        "session_model": "deepseek-v4-flash",
+        "sessions": {
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "e9e5744f-ed47-4470-8f7e-f7abbc2f6860"
+        },
         "created": "2026-09-07"
       },
       {
         "id": "clive-census",
         "harness": "clive",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "ef833336-cd1e-4ca1-83f6-1fbf8ea7d99f",
+        "session_model": "deepseek-v4-flash",
+        "sessions": {
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "ef833336-cd1e-4ca1-83f6-1fbf8ea7d99f"
+        },
         "created": "2026-09-05"
       },
       {
         "id": "clive-drain",
         "harness": "clive",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "d2279ead-28da-443e-b57d-3d3682040928",
+        "session_model": "deepseek-v4-flash",
+        "sessions": {
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "d2279ead-28da-443e-b57d-3d3682040928"
+        },
         "created": "2026-09-05"
       },
       {
         "id": "clive-gate",
         "harness": "clive",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "aadb3c4d-38dd-434c-a6ad-2ea8998034d7",
+        "session_model": "deepseek-v4-flash",
+        "sessions": {
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "aadb3c4d-38dd-434c-a6ad-2ea8998034d7"
+        },
         "created": "2026-09-05"
       },
       {
@@ -90,18 +98,22 @@
         "id": "clive-ledger",
         "harness": "clive",
         "role": "test",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "4a662de3-7b4c-4461-8adf-fb28374d3eaa",
+        "session_model": "deepseek-v4-flash",
+        "sessions": {
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "4a662de3-7b4c-4461-8adf-fb28374d3eaa"
+        },
         "created": "2026-09-05"
       },
       {
         "id": "clive-postcopy",
         "harness": "clive",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "c0b416e7-c239-4629-8a50-6d0d7115bdd3",
+        "session_model": "deepseek-v4-flash",
+        "sessions": {
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "c0b416e7-c239-4629-8a50-6d0d7115bdd3"
+        },
         "created": "2026-09-05"
       },
       {
@@ -123,7 +135,8 @@
         "session_model": "deepseek-v4-flash",
         "sessions": {
           "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\"}": "7f324b5f-f4ab-4aa6-91d8-f98894db6824",
-          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":492288}": "b7ec48d4-bdba-4d44-b383-aa780d2b457c"
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":492288}": "b7ec48d4-bdba-4d44-b383-aa780d2b457c",
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "39ec9ca1-51ae-4c3d-a8a8-e39faabf2900"
         },
         "created": "2026-09-05"
       },
@@ -131,18 +144,22 @@
         "id": "clive-scout",
         "harness": "clive",
         "role": "investigate",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "f7201eeb-d94f-4763-86e0-b95e264f2ed3",
+        "session_model": "deepseek-v4-flash",
+        "sessions": {
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "f7201eeb-d94f-4763-86e0-b95e264f2ed3"
+        },
         "created": "2026-09-05"
       },
       {
         "id": "clive-sectionaudit",
         "harness": "clive",
         "role": "test",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "3fd8898d-17fc-421a-a914-fac27829a7c5",
+        "session_model": "deepseek-v4-flash",
+        "sessions": {
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "3fd8898d-17fc-421a-a914-fac27829a7c5"
+        },
         "created": "2026-09-05"
       },
       {
@@ -152,7 +169,8 @@
         "session_id": "8575c313-dfa9-457d-a215-99d927934a2d",
         "session_model": "deepseek-v4-flash",
         "sessions": {
-          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"xhigh\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "8575c313-dfa9-457d-a215-99d927934a2d"
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"xhigh\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "8575c313-dfa9-457d-a215-99d927934a2d",
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "7425ba0b-d38f-41bb-b552-efded5528f33"
         },
         "created": "2026-09-05"
       },
@@ -171,9 +189,11 @@
         "id": "clive-vocab",
         "harness": "clive",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "9ffab023-6ad1-4472-885f-8c28a521b547",
+        "session_model": "deepseek-v4-flash",
+        "sessions": {
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "9ffab023-6ad1-4472-885f-8c28a521b547"
+        },
         "created": "2026-09-05"
       },
       {
@@ -99771,6 +99791,143 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260907T185648284759-n-srr-every-export-exit-is-enumerated",
+        "plan": "sn-release-readiness",
+        "section": "\u00a73",
+        "node": "n-srr-every-export-exit-is-enumerated",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2983,
+                "cached_input_tokens": 241148,
+                "input_tokens": 244133,
+                "output_tokens": 1606,
+                "reasoning_output_tokens": 432,
+                "total_tokens": 245739,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A report at the write path listing every exit from the export population with its file and line, whether a counter exists for it today, and the arithmetic candidate_count minus published_count minus the sum of accounted exclusions evaluated against the candidate published 2026-09-07 (candidate_count 214, published_count 196, both declared exclusion counters reading 0). Name the mechanism for each of the eighteen withheld names, and report the null link_status correlation (nine of the eighteen against two of the published 196). Also state whether the published name scored 0.568 against declared min_score_applied 0.65 means the filter is not applied where the header says or the header reports a threshold not in force. Report only \u2014 change no source file.",
+          "estimated_hours": null,
+          "goal": "Enumerate every path by which a name can leave the export and report whether each one has a counter",
+          "id": "n-srr-every-export-exit-is-enumerated",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T185648284759-n-srr-every-export-exit-is-enumerated/manifest.md",
+          "plan": "sn-release-readiness",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a73",
+          "spec_level": "guided",
+          "time_budget": "30m",
+          "write_paths": [
+            "docs/evidence/sn-release-readiness/export-exit-map.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "clive-probe",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-07T18:56:54Z",
+        "completed_at": "2026-09-07T21:33:26.108Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 9174,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 9392,
+        "stalled": true,
+        "time_budget": "30m",
+        "base_sha": "69f24046b143dce1048f82f02fd25878b2849126",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "failed",
+        "gate_check": null,
+        "suite_delta": null,
+        "failure_classification": "infrastructure-failure",
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T185648284759-n-srr-every-export-exit-is-enumerated/manifest.md",
+        "scope_changed": false,
+        "session_id": "de7acb29-7a85-41cb-b92d-5cc2b44f7d55",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 4419519,
+            "input_tokens_cumulative": 9072296,
+            "output_tokens": 1305,
+            "output_tokens_cumulative": 16837,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 9387.527,
+          "generated_tokens": 16837,
+          "generation_seconds": 9322.757,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 42.1,
+          "machine_seconds": 64.77,
+          "peak_input_tokens": 427551,
+          "tokens_per_second": 1.81,
+          "wall_tokens_per_second": 1.79
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-srr-every-export-exit-is-enumerated",
+          "session_id": "de7acb29-7a85-41cb-b92d-5cc2b44f7d55",
+          "session_source": "pointer",
+          "retained_at": "2026-09-07T21:33:26.108Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -100013,6 +100170,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1903
+    "_version": 1915
   }
 }
