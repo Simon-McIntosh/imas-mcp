@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from imas_codex.standard_names import provenance_lifecycle
 from imas_codex.standard_names.promote import mark_catalog_name_approved, run_approval
 from imas_codex.standard_names.provenance_lifecycle import (
     bind_sources_exclusively,
@@ -38,6 +39,63 @@ def _migration_row(
         "current_bindings": [binding] if binding else [],
         "manifest_recorded": recorded,
     }
+
+
+def test_guard_comparison_bindings_drops_unexpected_retired_sibling() -> None:
+    binding_state = [{"id": "retired_sibling", "name_stage": "superseded"}]
+
+    assert (
+        provenance_lifecycle.guard_comparison_bindings(
+            binding_state,
+            expected=frozenset({"expected_name"}),
+        )
+        == []
+    )
+
+
+def test_retarget_admits_expected_superseded_binding() -> None:
+    row = _migration_row("dd:one")
+    row["binding_state"] = [{"id": "old", "name_stage": "superseded"}]
+    gc = MagicMock()
+    gc.query.side_effect = [[row], [{"moved": 1}]]
+
+    moved = retarget_standard_name_sources(
+        gc,
+        "old",
+        "new",
+        source_ids=["dd:one"],
+        expected_current_bindings={"dd:one": "old"},
+        record_change=False,
+        enforce_consistency=False,
+    )
+
+    assert moved == 1
+    assert provenance_lifecycle.guard_comparison_bindings(
+        row["binding_state"],
+        expected=frozenset({"old", "new"}),
+    ) == ["old"]
+
+
+def test_guard_comparison_bindings_keeps_live_bindings() -> None:
+    binding_state = [
+        {"id": "expected_name", "name_stage": "accepted"},
+        {"id": "other_name", "name_stage": "reviewed"},
+    ]
+
+    assert provenance_lifecycle.guard_comparison_bindings(
+        binding_state,
+        expected=frozenset({"expected_name"}),
+    ) == ["expected_name", "other_name"]
+
+
+def test_guard_comparison_bindings_drops_null_identity() -> None:
+    assert (
+        provenance_lifecycle.guard_comparison_bindings(
+            [{"id": None, "name_stage": "accepted"}],
+            expected=frozenset(),
+        )
+        == []
+    )
 
 
 def test_retarget_rejects_a_partially_admitted_explicit_cohort() -> None:
@@ -411,6 +469,51 @@ def test_source_reset_same_completed_manifest_is_idempotent() -> None:
         _reset_preflight(
             status="extracted",
             bindings=[],
+            scalar=None,
+            event_exists=True,
+            event_reason=event_reason,
+        )
+    ]
+
+    result = reset_standard_name_sources(
+        gc,
+        _reset_manifest(),
+        manifest_id="repair-one",
+        reason="wrong physical owner",
+    )
+
+    assert result["already_applied"] is True
+    assert result["applied"] == 0
+    assert gc.query.call_count == 1
+
+
+def test_source_reset_completed_manifest_ignores_retired_binding() -> None:
+    assert (
+        provenance_lifecycle.guard_comparison_bindings(
+            [{"id": "retired_sibling", "name_stage": "exhausted"}],
+            expected=frozenset(),
+        )
+        == []
+    )
+
+    preview_gc = MagicMock()
+    preview_gc.query.return_value = [_reset_preflight()]
+    preview = reset_standard_name_sources(
+        preview_gc,
+        _reset_manifest(),
+        manifest_id="repair-one",
+        reason="wrong physical owner",
+        dry_run=True,
+    )
+    event_reason = (
+        f"wrong physical owner [source-reset-manifest {preview['manifest_hash']}]"
+    )
+    gc = MagicMock()
+    gc.query.return_value = [
+        _reset_preflight(
+            status="extracted",
+            stage="exhausted",
+            bindings=["retired_sibling"],
             scalar=None,
             event_exists=True,
             event_reason=event_reason,

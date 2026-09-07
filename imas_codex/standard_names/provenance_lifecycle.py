@@ -27,8 +27,6 @@ from imas_codex.standard_names.signed_manifest import (
 )
 
 _DD_DOCS_ROOT = "https://imas-data-dictionary.readthedocs.io/en"
-_RETIRED_BINDING_NAME_STAGES = frozenset({"superseded", "exhausted"})
-
 DELETION_OPERATIONS = frozenset(
     {
         "clear_selected_name",
@@ -41,6 +39,36 @@ DELETION_OPERATIONS = frozenset(
         "reconcile_structural_closure",
     }
 )
+
+# A retired binding (superseded or exhausted) records a prior generation of the
+# source. It is the surviving name's generation route and must neither block a
+# migration nor be detached, so compare-and-set preflights count only the
+# bindings that could be the source's current realisation.
+_RETIRED_NAME_STAGES = frozenset({"superseded", "exhausted"})
+
+
+def guard_comparison_bindings(
+    binding_state: Sequence[Mapping[str, Any]],
+    *,
+    expected: frozenset[str],
+) -> list[str]:
+    """Bindings a preflight compares, ignoring retired siblings of ``expected``.
+
+    A binding is dropped only when its name is at a retired stage AND is not
+    named in ``expected``. Live bindings and the expected current binding
+    always count, so a retired sibling never blocks a rename while a migration
+    whose expected current binding is itself a superseded name (the
+    retarget-to-successor routes) still admits its source.
+    """
+    return sorted(
+        entry["id"]
+        for entry in binding_state
+        if entry.get("id") is not None
+        and not (
+            entry.get("name_stage") in _RETIRED_NAME_STAGES
+            and entry["id"] not in expected
+        )
+    )
 
 
 def deletion_change_cypher(name_alias: str) -> str:
@@ -448,12 +476,9 @@ def retarget_standard_name_sources(
         source_id = row["source_id"]
         binding_state = row.get("binding_state")
         bindings = (
-            sorted(
-                {
-                    entry["id"]
-                    for entry in binding_state
-                    if entry.get("name_stage") not in _RETIRED_BINDING_NAME_STAGES
-                }
+            guard_comparison_bindings(
+                binding_state,
+                expected=frozenset({old_name, new_name}),
             )
             if binding_state is not None
             else sorted(set(row.get("current_bindings") or []))
@@ -757,12 +782,13 @@ def reset_standard_name_sources(
     for row in preflight:
         expected_row = expected_by_source[row["source_id"]]
         binding_state = list(row.get("binding_state") or [])
+        bindings = guard_comparison_bindings(
+            binding_state,
+            expected=frozenset(expected_row["expected_bindings"]),
+        )
         live_binding_state = [
-            entry
-            for entry in binding_state
-            if entry.get("name_stage") not in _RETIRED_BINDING_NAME_STAGES
+            entry for entry in binding_state if entry.get("id") in bindings
         ]
-        bindings = sorted(entry["id"] for entry in live_binding_state)
         if (
             row.get("source_exists")
             and row.get("status") == "extracted"
