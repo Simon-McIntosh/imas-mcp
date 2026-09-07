@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07T05:41:55",
+  "updated": "2026-09-07T05:59:55",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -188,6 +188,15 @@
         "created": "2026-09-06"
       },
       {
+        "id": "cx-binding",
+        "harness": "codex",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-07"
+      },
+      {
         "id": "cx-catalogpin",
         "harness": "codex",
         "role": "implement",
@@ -250,6 +259,15 @@
         "created": "2026-09-04"
       },
       {
+        "id": "cx-migration",
+        "harness": "codex",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-07"
+      },
+      {
         "id": "cx-pinbump",
         "harness": "codex",
         "role": "implement",
@@ -286,6 +304,15 @@
         "role": "implement",
         "session_id": "01a02a5c-3067-7de0-90c5-7796b7ea5328",
         "created": "2026-08-22"
+      },
+      {
+        "id": "cx-renames",
+        "harness": "codex",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-07"
       },
       {
         "id": "cx-respell",
@@ -96226,6 +96253,421 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260907T034202051947-n-sli-a-retired-binding-does-not-block-a-migration",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-a-retired-binding-does-not-block-a-migration",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1117,
+                "cached_input_tokens": 750777,
+                "input_tokens": 751896,
+                "output_tokens": 964,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 752860,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "A SOURCE MAY CARRY RETIRED BINDINGS ALONGSIDE ITS LIVE ONE. Make the migration guards count live bindings instead of all bindings. No new verb, and no binding is deleted.\n\nTHE LEAD'S RULING, which is the design: a source keeps its retired PRODUCED_NAME edges. They ARE the generation route - the record of how the surviving name was arrived at - and deleting them loses provenance that has been lost once before. So the repair is to relax what the guards EXPECT, never to detach.\n\nTHIS IS ALREADY THE DOMINANT SHAPE, measured on the live graph. 101 sources carry more than one PRODUCED_NAME edge. Of those, 97 have exactly ONE live binding with the rest at name_stage superseded or exhausted: 95 with two bindings and one retired, 2 with three bindings and two retired. Only 2 sources have genuinely ambiguous multiple LIVE bindings, and 2 have no live binding at all. Re-derive those figures yourself and report them; the 2 genuinely ambiguous ones are the class the guard should still refuse and you must not make them pass.\n\nTHE TWO SITES, both in imas_codex/standard_names/provenance_lifecycle.py:\n  Line 449 in the rename migration preflight tests `bindings == [old_name]`, a set-equality against the source's ENTIRE binding list. A retired sibling makes it false and the caller raises \"source migration compare-and-set failed\".\n  Line 759 in the second preflight tests `bindings != expected_row[\"expected_bindings\"]`, the same assumption in a different shape.\nConfirm both line numbers and report them; if they have moved, yours govern.\n\nTHE MISSING INPUT. The preflight query around line 412 collects only `target.id` into current_bindings, so no stage is available to filter on. A sibling check near line 770 already reads name_stage off binding_state, so the stage is obtainable - extend the collection to carry it, or reuse binding_state, whichever fits the existing shape with less new machinery.\n\nTHE DELIVERABLE: both guards compare the source's LIVE bindings - those whose name is not at name_stage superseded or exhausted - against the expectation, and retired bindings are ignored for the comparison while remaining in the graph untouched.\n\nWHAT MUST STILL REFUSE, and this is the half that makes the change safe rather than permissive. Prove each with an explicit case:\n  two live bindings on one source still conflicts, because that is genuine ambiguity about which name the path realises;\n  zero live bindings still conflicts, because there is nothing to migrate;\n  a live binding to the WRONG name still conflicts, retired siblings notwithstanding;\n  a stale source status still conflicts;\n  an actively claimed source still conflicts;\n  the scalar mirror pointing at anything other than the expected name still conflicts.\nA change that only demonstrates the new pass leaves the relaxation unmeasured.\n\nTHE SCALAR MIRROR IS NOT RELAXED. The source's produced_sn_id scalar must still equal the expected name exactly. A retired binding never owns the scalar, so nothing about this change should touch that test; confirm it does not.\n\nA REGRESSION TEST IS REQUIRED AND MUST FAIL BEFORE THE CHANGE. Drive the preflight with a source carrying one live binding and one retired binding and assert it is accepted as pending rather than raising. Report the verbatim failure against the unfixed code. Then add the refusal cases above.\n\nPROVE IT ON THE REAL BLOCKED CASE. dd:hard_x_rays/emissivity_profile_1d/half_width_internal carries three bindings: one drafted, one superseded, one exhausted. Show the preflight classifies it as pending after your change and raised before. Do not perform the rename - a separate node owns that identity.\n\nDO NOT delete, detach or rewrite any PRODUCED_NAME edge. Do not add a CLI verb. Do not relax the claim fence, the collision predicate or the source-status test.\n\nEVIDENCE REQUIRED: the multi-bound census reproduced with its four shapes; both sites with current line numbers; the regression failing before and passing after with verbatim output; each of the six refusal cases shown conflicting; the real blocked source classified before and after; and the focused test result for the modules you touched before and after against a stated base revision, reporting added failures rather than an absolute count.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you. Do not write the uv --no-sync flag into any command: name the environment and the target and let your own wrapper form the invocation.",
+          "estimated_hours": 0.8,
+          "goal": "The migration preflights compare a source live bindings so retired ones neither block a rename nor are deleted",
+          "id": "n-sli-a-retired-binding-does-not-block-a-migration",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sli-live-binding/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "exact",
+          "time_budget": "50m",
+          "write_paths": [
+            "imas_codex/standard_names/provenance_lifecycle.py",
+            "tests/standard_names/test_live_binding_migration.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-binding",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-07T03:42:16Z",
+        "completed_at": "2026-09-07T03:53:00.426Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 636,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 644,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "ebd9df43f49f759ced21645ca5c8eb10f240e7de",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "not-run",
+        "gate_check": null,
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sli-live-binding/manifest.md",
+        "scope_changed": false,
+        "session_id": "21bdb4f6-874c-43b2-8a0f-ca62bb6804ec",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 2652743,
+            "input_tokens_cumulative": 2652743,
+            "output_tokens": 40467,
+            "output_tokens_cumulative": 40467,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 640.647,
+          "generated_tokens": 40467,
+          "generation_seconds": 582.383,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 12.4,
+          "machine_seconds": 58.264,
+          "peak_input_tokens": 126357,
+          "tokens_per_second": 69.49,
+          "wall_tokens_per_second": 63.17
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "the process was killed by a planned GPU endpoint switch before any graph write; zero renames landed, verified against the graph",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sli-a-retired-binding-does-not-block-a-migration",
+          "session_id": "21bdb4f6-874c-43b2-8a0f-ca62bb6804ec",
+          "session_source": "stream",
+          "retained_at": "2026-09-07T03:53:00.426Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260907T034300310482-n-sgr-the-locus-renames-are-applied-2",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a78",
+        "node": "n-sgr-the-locus-renames-are-applied-2",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1243,
+                "cached_input_tokens": 757230,
+                "input_tokens": 758475,
+                "output_tokens": 461,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 758936,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "THIRTEEN LOCUS RENAMES, EACH PROVEN A PURE LOCUS SUBSTITUTION. Every destination token already exists in the registry and composes through this repository's editable grammar; you register nothing and you invent nothing.\n\nTHE BLOCKER THAT STOPPED THIS NODE EARLIER IS FIXED. rename_preserves_meaning was plain representation equality, so a locus rename was never meaning-preserving and every successor would have staged with documentation null. It now treats a difference confined to the locus token as meaning-preserving when the locus relation, type, qualifiers and value are unchanged, so the documentation follows. VERIFY THIS ON YOUR FIRST RENAME: if the successor lands with documentation null or docs_stage pending, stop after that one and report it rather than continuing through twelve more.\n\nA PEER IS RENAMING CONCURRENTLY. Another node is re-rendering twenty-three names to canonical operator order in this same graph, on a disjoint set. A claim conflict or an already-renamed target is coordination, not a defect: report and move on.\n\nTHE ONLY SANCTIONED ROUTE IS sn edit. Never write Cypher to rename a name, never touch a row through the graph client, never edit a yaml. If sn edit refuses a rename, that refusal is the finding: report the exact message, leave that name alone, and continue with the others.\n\nGROUP ONE, three names the lead has ruled on: the locus is always the absolute form. Each of these three carries the locus token minimum_safety_factor, which is NOT registered, so each fails strict validation today with \"locus token 'minimum_safety_factor' (relation 'at') is not a registered 'position' segment token\". The registry carries minimum_absolute_safety_factor, and each name's own description already says the magnitude is minimised, so the rename makes the name agree with its description.\n  normalized_toroidal_flux_coordinate_at_minimum_safety_factor -> normalized_toroidal_flux_coordinate_at_minimum_absolute_safety_factor\n  poloidal_magnetic_flux_at_minimum_safety_factor -> poloidal_magnetic_flux_at_minimum_absolute_safety_factor\n  normalized_poloidal_flux_coordinate_at_minimum_safety_factor -> normalized_poloidal_flux_coordinate_at_minimum_absolute_safety_factor\n\nGROUP TWO, ten names whose destination was established from their own DD bindings and descriptions, using three tokens registered today plus one that already existed:\n  normalized_poloidal_flux_coordinate_at_measurement_position -> normalized_poloidal_flux_coordinate_at_reflectometer_cutoff_position\n  normalized_toroidal_flux_coordinate_of_measurement_position -> normalized_toroidal_flux_coordinate_of_reflectometer_cutoff_position\n  poloidal_ion_velocity_at_measurement_position -> poloidal_ion_velocity_at_charge_exchange_channel\n  toroidal_total_plasma_volumetric_angular_momentum_at_measurement_position -> toroidal_total_plasma_volumetric_angular_momentum_at_charge_exchange_channel\n  toroidal_offset_at_measurement_position -> toroidal_offset_at_thomson_scattering_channel_position\n  vertical_displacement_of_measurement_position -> vertical_displacement_of_thomson_scattering_channel_position\n  electrostatic_potential_at_measurement_position -> electrostatic_potential_at_langmuir_probe_position\n  poloidal_suprathermal_electron_angle_perturbed_at_measurement_position -> poloidal_suprathermal_electron_angle_perturbed_at_ece_channel_emission_position\n  toroidal_suprathermal_electron_angle_perturbed_at_measurement_position -> toroidal_suprathermal_electron_angle_perturbed_at_ece_channel_emission_position\n  poloidal_magnetic_flux_perturbed_at_measurement_position_due_to_wave_particle_interaction -> poloidal_magnetic_flux_perturbed_at_ece_channel_emission_position_due_to_wave_particle_interaction\n\nDO NOT TOUCH the three coordinate names that keep the generic locus by explicit ruling - radial_coordinate_of_measurement_position, toroidal_angle_of_measurement_position and vertical_coordinate_of_measurement_position - nor the three shared flux and angle names whose split is a separate decision, nor toroidal_impurity_ion_velocity_at_measurement_position, whose only binding is a general-grid array and which is a mis-binding rather than a rename. Seven names keep measurement_position after your node; report that count as a check.\n\nPER RENAME, BEFORE WRITING: confirm the destination identity does not already exist at any stage. If it does, that is a fold and not a rename, and it is NOT your node: report the existing row with its stage and skip that one.\n\nPER RENAME, PROVE THE SUBSTITUTION: render the intermediate representation of the current and the proposed spelling and assert they differ in the locus token and in nothing else - relation, type, projection, qualifiers, base, operators and mechanism all identical. A pair differing in any other field means the spelling is wrong; report it and skip rather than writing it.\n\nTHE MEANING MUST NOT CHANGE. Description and documentation stay byte-identical across every rename. Compare them before and after for each name and report any that moved; if the route wants to alter either, stop.\n\nTHE BINDINGS MUST SURVIVE. Report each name's bound DD path count before and after; the counts and the path sets must be unchanged.\n\nREPORT THE CASCADE VERDICT PER RENAME. A defect was repaired today so that a cascade which defers its descendants now says so: every non-applied path reports dry_run True, and only a performed cascade reports False. For each rename state which you got, and for any deferral name the descendants left behind and why the root blocked them. A rename reporting performed whose descendants did not move is now a contradiction and must be reported as one.\n\nFOUR OF GROUP TWO ARE AT name_stage drafted and six at accepted; group one is all accepted. Report the stage of each before and after, since a rename must not silently advance or retreat a stage.\n\nEVIDENCE REQUIRED: per name, the collision check, the two intermediate representations, the description comparison, the bound-path counts, the cascade verdict and the stage before and after. Then the strict-validation count over the accepted cohort at /run/user/39486/claude-39486/-home-ITER-mcintos-Code-imas-codex/11b50f59-c77b-4356-8bb3-6dafc6d0a4c0/scratchpad/accepted_names.txt, which stands at 26 strict failures of 2348 today: after group one it must fall by exactly 3, and report the number you measure.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.9,
+          "goal": "Thirteen names carry their specific destination locus with descriptions documentation and bindings unchanged",
+          "id": "n-sgr-the-locus-renames-are-applied-2",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-locus-renames-2/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a78",
+          "spec_level": "exact",
+          "time_budget": "55m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/locus-renames-applied-2.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-sectionaudit",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-07T03:43:15Z",
+        "completed_at": "2026-09-07T03:53:01.033Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 578,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 586,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "80cc748ddc734fb0f550764552b1cd13694015a9",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "not-run",
+        "gate_check": null,
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-locus-renames-2/manifest.md",
+        "scope_changed": false,
+        "session_id": "2fb662dc-3ddb-4d84-be68-f4dff88ae74d",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 3586974,
+            "input_tokens_cumulative": 3586974,
+            "output_tokens": 23857,
+            "output_tokens_cumulative": 23857,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 581.558,
+          "generated_tokens": 23857,
+          "generation_seconds": 494.155,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 12.5,
+          "machine_seconds": 87.403,
+          "peak_input_tokens": 127493,
+          "tokens_per_second": 48.28,
+          "wall_tokens_per_second": 41.02
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "the process was killed by a planned GPU endpoint switch before any graph write; zero renames landed, verified against the graph",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-locus-renames-are-applied-2",
+          "session_id": "2fb662dc-3ddb-4d84-be68-f4dff88ae74d",
+          "session_source": "stream",
+          "retained_at": "2026-09-07T03:53:01.033Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260907T034638237965-n-sgr-the-cohort-renders-canonically",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a78",
+        "node": "n-sgr-the-cohort-renders-canonically",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 547,
+                "cached_input_tokens": 760758,
+                "input_tokens": 761307,
+                "output_tokens": 142,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 761449,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "RE-RENDER EVERY ACCEPTED NAME THE GRAMMAR NOW SPELLS DIFFERENTLY. Twenty-three of them, each a canonical re-rendering rather than a change of meaning.\n\nWHY NOW. Three grammar changes landed on the standard-names main branch today, all carrying rulings from the lead: a domain reduction leads its name and wraps the projection; the aggregation tokens accumulated and root_mean_square lead joiner-free; and five destination loci were registered. The accepted cohort therefore contains names whose current spelling is no longer what the grammar composes. A release cut carrying them would publish spellings the grammar itself rejects.\n\nMEASURE THE SET YOURSELF. A file of 2348 accepted names is at /run/user/39486/claude-39486/-home-ITER-mcintos-Code-imas-codex/11b50f59-c77b-4356-8bb3-6dafc6d0a4c0/scratchpad/accepted_names.txt. Parse each and compose its intermediate representation; report the count that is stable, the count that migrates and the count that errors. The last measurement gave 2325 stable, 23 migrating, 0 errors. Yours governs. Print all migrating pairs before renaming anything.\n\nTHE EXPECTED SHAPE OF ALL OF THEM: a reduction or aggregation operator sitting mid-name moves to the front. Thirteen carry flux_surface_averaged, two volume_averaged, one line_averaged, one root_mean_square, one an accumulation, and one is a derivative whose operand and axis were inverted. If your set contains a pair that is NOT of that shape, report it and do not rename it - an unexpected migration is evidence the grammar moved further than intended.\n\nTHE ONLY SANCTIONED ROUTE IS sn edit --rename. Never write Cypher. If sn edit refuses a rename, report the exact message, leave that name, and continue with the others; a partial set fully evidenced is the right outcome.\n\nTHE DOCUMENTATION NOW FOLLOWS, which it did not this morning. rename_preserves_meaning was repaired today: an intermediate-representation difference confined to the locus token is meaning-preserving, and exact representation equality always was. A canonical re-rendering leaves the representation IDENTICAL, so meaning is preserved and the documentation, docs stage, docs chain and docs provenance all follow the successor. Verify that for the first rename you perform before doing the rest: if the successor lands with documentation null or docs_stage pending, STOP after that one and report it, because the repair does not cover this class and twenty-two more would lose their documentation.\n\nPER RENAME, PROVE THE REPRESENTATIONS ARE EQUAL, not merely similar. These are re-renderings, so the old and new intermediate representations must be EXACTLY equal - unlike a locus substitution, no field should differ at all. Report that equality per pair. A pair whose representations differ is not a re-rendering and must not be renamed under this node.\n\nCHECK FOR A COLLISION per rename before writing. If the destination spelling already exists at any stage, that is a fold rather than a rename: report the existing row with its stage and skip it.\n\nTHE MEANING MUST NOT CHANGE. Description and documentation stay byte-identical. Compare both before and after per rename and report any that moved.\n\nBINDINGS MUST SURVIVE. Report each name's bound DD path count before and after; counts and path sets unchanged.\n\nREPORT THE CASCADE VERDICT PER RENAME. A repair landed today so a cascade that defers its descendants reports dry_run True and only a performed cascade reports False. State which you got per rename, and for any deferral name the descendants and the reason the root blocked them.\n\nA PEER IS RENAMING CONCURRENTLY. Another node is applying thirteen locus renames to a disjoint set of names in this same graph. If you meet a claim conflict or find one of your targets already renamed, that is coordination and not a defect: report it and move on rather than retrying.\n\nEVIDENCE REQUIRED: the three cohort counts before and after, where migrating must reach zero or the number of names you deliberately skipped; the full pair list; per rename the representation equality, collision check, description and documentation comparison, bound-path counts and cascade verdict; and the first rename's documentation outcome called out separately.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you. Do not write the uv --no-sync flag into any command: name the environment and the target and let your own wrapper form the invocation.",
+          "estimated_hours": 0.9,
+          "goal": "Every accepted name the grammar now spells differently is re-rendered to its canonical spelling",
+          "id": "n-sgr-the-cohort-renders-canonically",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-migration/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a78",
+          "spec_level": "exact",
+          "time_budget": "55m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/canonical-migration.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-graphtarget",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-07T03:46:48Z",
+        "completed_at": "2026-09-07T03:53:00.975Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 328,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 372,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "80cc748ddc734fb0f550764552b1cd13694015a9",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "not-run",
+        "gate_check": null,
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-migration/manifest.md",
+        "scope_changed": false,
+        "session_id": "9f20462c-d13e-4ccc-a9fa-dafcccbb8bee",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 0,
+            "input_tokens_cumulative": 3328559,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 6922,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 367.104,
+          "generated_tokens": 6922,
+          "generation_seconds": 312.401,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 36.7,
+          "machine_seconds": 54.703,
+          "peak_input_tokens": 372800,
+          "tokens_per_second": 22.16,
+          "wall_tokens_per_second": 18.86
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "the process was killed by a planned GPU endpoint switch before any graph write; zero renames landed, verified against the graph",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-cohort-renders-canonically",
+          "session_id": "9f20462c-d13e-4ccc-a9fa-dafcccbb8bee",
+          "session_source": "pointer",
+          "retained_at": "2026-09-07T03:53:00.975Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -96468,6 +96910,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1866
+    "_version": 1872
   }
 }
