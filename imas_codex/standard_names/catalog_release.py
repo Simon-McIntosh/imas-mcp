@@ -10,6 +10,7 @@ State machine:
 
 from __future__ import annotations
 
+import json
 import logging
 import re
 import shlex
@@ -37,6 +38,8 @@ _SEMVER_RE = re.compile(
 
 _RC_REMOTE = "origin"
 _FINAL_REMOTE = "upstream"
+_PACKAGE_INDEX_TIMEOUT_SECONDS = 5.0
+_PACKAGE_INDEX_URL = "https://pypi.org/pypi/imas-standard-names/json"
 
 
 class ReviewPreviewLinkInvariantError(RuntimeError):
@@ -270,6 +273,7 @@ class ReleaseReport:
     pr_url: str | None = None
     pushed: bool = False
     dry_run: bool = False
+    preflight_findings: list[dict[str, Any]] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
@@ -286,8 +290,37 @@ class ReleaseReport:
             "pr_url": self.pr_url,
             "pushed": self.pushed,
             "dry_run": self.dry_run,
+            "preflight_findings": self.preflight_findings,
             "errors": self.errors,
         }
+
+
+@dataclass(frozen=True)
+class PublicGrammarEvidence:
+    """Facts needed to decide whether a grammar is publicly released."""
+
+    checkout: Path | None
+    tag: str | None
+    checkout_clean: bool
+    tag_annotated: bool
+    tag_final_release: bool
+    upstream_tag_present: bool
+    package_index_release_present: bool
+    checkout_error: str | None = None
+    upstream_error: str | None = None
+    package_index_error: str | None = None
+
+
+@dataclass(frozen=True)
+class PublicGrammarFinding:
+    """One independently actionable public-grammar release assertion."""
+
+    check: str
+    passed: bool
+    message: str
+
+    def to_dict(self) -> dict[str, Any]:
+        return {"check": self.check, "passed": self.passed, "message": self.message}
 
 
 # =============================================================================
@@ -803,6 +836,204 @@ def _check_synced(isnc_path: Path, remote: str, *, strict: bool = True) -> list[
     return warnings
 
 
+def _read_package_index_versions(
+    *, timeout: float = _PACKAGE_INDEX_TIMEOUT_SECONDS
+) -> frozenset[str]:
+    """Return published standard-names versions using one bounded index read."""
+    from urllib.request import urlopen
+
+    with urlopen(_PACKAGE_INDEX_URL, timeout=timeout) as response:  # noqa: S310
+        payload = json.load(response)
+    releases = payload.get("releases") if isinstance(payload, dict) else None
+    if not isinstance(releases, dict):
+        raise ValueError("package index response has no releases mapping")
+    return frozenset(
+        version
+        for version, files in releases.items()
+        if isinstance(files, list) and files
+    )
+
+
+def _evaluate_public_grammar_evidence(
+    evidence: PublicGrammarEvidence,
+) -> list[PublicGrammarFinding]:
+    """Turn public-grammar evidence into four separate operator findings."""
+    checkout_location = str(evidence.checkout) if evidence.checkout else "(unknown)"
+    if evidence.checkout_error:
+        checkout_message = (
+            "Grammar checkout identity failed: " + evidence.checkout_error
+        )
+        checkout_passed = False
+    elif not evidence.checkout_clean:
+        checkout_message = (
+            f"Grammar checkout identity failed: {checkout_location} has "
+            "uncommitted modifications"
+        )
+        checkout_passed = False
+    elif evidence.tag is None:
+        checkout_message = (
+            f"Grammar checkout identity failed: HEAD at {checkout_location} is not "
+            "exactly at one tag"
+        )
+        checkout_passed = False
+    elif not evidence.tag_annotated:
+        checkout_message = (
+            f"Grammar checkout identity failed: exact tag {evidence.tag} is not "
+            "annotated"
+        )
+        checkout_passed = False
+    else:
+        checkout_message = (
+            f"Grammar checkout identity passed: clean HEAD is exactly at annotated "
+            f"tag {evidence.tag}"
+        )
+        checkout_passed = True
+
+    final_passed = evidence.tag_final_release
+    final_message = (
+        f"Grammar final-release tag passed: {evidence.tag} is a plain "
+        "major.minor.patch release"
+        if final_passed
+        else "Grammar final-release tag failed: "
+        f"{evidence.tag or '(no exact tag)'} is not a plain major.minor.patch release"
+    )
+
+    if evidence.upstream_error:
+        upstream_message = "Grammar upstream tag failed: " + evidence.upstream_error
+        upstream_passed = False
+    elif evidence.upstream_tag_present:
+        upstream_message = (
+            f"Grammar upstream tag passed: {evidence.tag} is present on upstream"
+        )
+        upstream_passed = True
+    else:
+        upstream_message = (
+            f"Grammar upstream tag failed: {evidence.tag or '(no exact tag)'} is not "
+            "present on the upstream remote"
+        )
+        upstream_passed = False
+
+    version = evidence.tag.removeprefix("v") if evidence.tag else None
+    if evidence.package_index_error:
+        index_message = (
+            "Grammar package index failed: the package index is unreachable; "
+            "release status is unknown, and unknown is not permission "
+            f"({evidence.package_index_error})"
+        )
+        index_passed = False
+    elif version and evidence.package_index_release_present:
+        index_message = (
+            f"Grammar package index passed: {version} is published as a final release"
+        )
+        index_passed = True
+    else:
+        index_message = (
+            "Grammar package index failed: "
+            f"{version or '(no exact version)'} is not published as a final release"
+        )
+        index_passed = False
+
+    return [
+        PublicGrammarFinding("checkout_identity", checkout_passed, checkout_message),
+        PublicGrammarFinding("final_release_tag", final_passed, final_message),
+        PublicGrammarFinding("upstream_tag", upstream_passed, upstream_message),
+        PublicGrammarFinding("package_index_release", index_passed, index_message),
+    ]
+
+
+def check_public_grammar_release() -> list[PublicGrammarFinding]:
+    """Fail-closed evidence for the grammar loaded by the export process."""
+    from imas_codex.standard_names.export import loaded_grammar_checkout
+
+    checkout = loaded_grammar_checkout()
+    tag: str | None = None
+    checkout_clean = False
+    tag_annotated = False
+    tag_final_release = False
+    upstream_tag_present = False
+    package_index_release_present = False
+    checkout_error: str | None = None
+    upstream_error: str | None = None
+    package_index_error: str | None = None
+
+    if checkout is None:
+        checkout_error = "the loaded standard-names package is not in a Git checkout"
+    else:
+        try:
+            status = _run_git("status", "--porcelain", cwd=checkout)
+            if status.returncode != 0:
+                checkout_error = "could not read the standard-names working tree"
+            else:
+                checkout_clean = not bool(status.stdout.strip())
+
+            tags = _run_git("tag", "--points-at", "HEAD", cwd=checkout)
+            exact_tags = (
+                [line for line in tags.stdout.splitlines() if line]
+                if tags.returncode == 0
+                else []
+            )
+            if len(exact_tags) == 1:
+                tag = exact_tags[0]
+                tag_final_release = bool(re.fullmatch(r"v?\d+\.\d+\.\d+", tag))
+                tag_type = _run_git("cat-file", "-t", tag, cwd=checkout)
+                tag_annotated = (
+                    tag_type.returncode == 0 and tag_type.stdout.strip() == "tag"
+                )
+            elif len(exact_tags) > 1:
+                checkout_error = "HEAD has multiple exact tags: " + ", ".join(
+                    sorted(exact_tags)
+                )
+        except (OSError, subprocess.SubprocessError) as exc:
+            checkout_error = f"could not inspect the standard-names checkout: {exc}"
+
+    if checkout is not None and tag is not None:
+        try:
+            local_tag = _run_git("rev-parse", f"refs/tags/{tag}", cwd=checkout)
+            upstream = _run_git(
+                "ls-remote", "--tags", "upstream", f"refs/tags/{tag}", cwd=checkout
+            )
+            if upstream.returncode == 0 and local_tag.returncode == 0:
+                local_tag_object = local_tag.stdout.strip()
+                upstream_tag_present = any(
+                    line.split(maxsplit=1)
+                    == [
+                        local_tag_object,
+                        f"refs/tags/{tag}",
+                    ]
+                    for line in upstream.stdout.splitlines()
+                )
+            else:
+                upstream_error = "the upstream remote could not be queried: " + (
+                    upstream.stderr.strip() or "git ls-remote failed"
+                )
+        except (OSError, subprocess.SubprocessError) as exc:
+            upstream_error = f"the upstream remote could not be queried: {exc}"
+
+    try:
+        package_index_versions = _read_package_index_versions()
+        version = tag.removeprefix("v") if tag else None
+        package_index_release_present = bool(
+            version and tag_final_release and version in package_index_versions
+        )
+    except Exception as exc:
+        package_index_error = str(exc) or type(exc).__name__
+
+    return _evaluate_public_grammar_evidence(
+        PublicGrammarEvidence(
+            checkout=checkout,
+            tag=tag,
+            checkout_clean=checkout_clean,
+            tag_annotated=tag_annotated,
+            tag_final_release=tag_final_release,
+            upstream_tag_present=upstream_tag_present,
+            package_index_release_present=package_index_release_present,
+            checkout_error=checkout_error,
+            upstream_error=upstream_error,
+            package_index_error=package_index_error,
+        )
+    )
+
+
 # =============================================================================
 # Release status display
 # =============================================================================
@@ -925,6 +1156,7 @@ def run_release(
     ReleaseReport with version, tag, commit SHA, and any errors.
     """
     report = ReleaseReport(dry_run=dry_run)
+    simulated_release_transport = pr_creator is not None
 
     # ── Resolve paths ──────────────────────────────────────
     if staging_dir is None:
@@ -967,6 +1199,21 @@ def run_release(
     except ValueError as exc:
         report.errors.append(str(exc))
         return report
+
+    if version_remote == _FINAL_REMOTE and not simulated_release_transport:
+        public_grammar_findings = check_public_grammar_release()
+        report.preflight_findings = [
+            finding.to_dict() for finding in public_grammar_findings
+        ]
+        for finding in public_grammar_findings:
+            log = logger.info if finding.passed else logger.warning
+            log("%s %s", "PASS" if finding.passed else "FAIL", finding.message)
+        failed_findings = [
+            finding.message for finding in public_grammar_findings if not finding.passed
+        ]
+        if failed_findings and not dry_run:
+            report.errors.extend(failed_findings)
+            return report
 
     # ── Compute version ────────────────────────────────────
     # Fetch tags from remote before computing version
