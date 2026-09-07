@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-07">
-<meta name="plan-version" content="26">
+<meta name="plan-version" content="27">
 <meta name="plan-impl" content="0.8">
 <meta name="plan-commits" content="2d9d674a">
 </head>
@@ -443,6 +443,10 @@ worth paying for, because only then can its result be seen.</p>
 <div class="r-dec" data-key="multi-binding-batch-membership" data-choice="any-binding-in-the-batch-exports" data-by="Simon McIntosh" data-when="2026-09-04T10:07:36+00:00">
     <p class="r-dec-q">multi-binding-batch-membership</p>
     <p class="r-dec-rat">Lead ruling 2026-09-04, settling the case the batch-scope rule turns on. A standard name with several StandardNameSource bindings exports when ANY ONE of those bindings is a path in the batch manifest. The alternative, requiring every binding to be inside the manifest, would withhold names the batch genuinely produced merely because the same physical quantity is also measured elsewhere in the data dictionary, which is the normal case for a well-formed name rather than an exception. It also has the practical consequence that a name&#x27;s eligibility would change whenever an unrelated facility contributed another binding, so the cut would not be reproducible from the manifest alone. The any-binding rule keeps the pull-request body&#x27;s claim true in the sense a reviewer can check it: every published name is traceable to a path in the manifest they were given, and no published name is bound only to paths outside it. This does not loosen the rule the halted candidate broke; the 150 names it wrongly carried were bound to NO path in the manifest at all.</p>
+    </div>
+<div class="r-dec" data-key="disruption-instant-naming" data-choice="Decline: the instant is not named at this stage" data-by="smc" data-when="2026-09-07T17:37:44+00:00">
+    <p class="r-dec-q">Whether the disruption instant is named in this batch</p>
+    <p class="r-dec-rat">The lead ruled directly that the time should not be named at this stage. The vocabulary consequence is that no event-instant base is introduced, so the bare-time rule stands unchanged and continues to decline all five rows that spell that token. The cost accepted is one WEST source path staying out of the batch; the cost avoided is a vocabulary change that would have to separate an event instant from a dimension axis while both spell the same token, with four correctly-declined axes exposed to a mistake in that separation. The row&#x27;s exclusion is therefore correct rather than pending, and its reason field must say so — declined at this stage, no event-instant base in the vocabulary — rather than reporting the coordinate rule that would suggest it was mistaken for an axis.</p>
     </div>
 </section>
 
