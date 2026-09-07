@@ -197,6 +197,19 @@ def exclusion_ledger_path(focus_file: str | Path) -> Path | None:
     return ledger if ledger.is_file() else None
 
 
+def _ledger_relative_path(ledger: str | Path) -> tuple[Path, str]:
+    """Resolve a ledger to its git root and its root-relative posix path."""
+    ledger = Path(ledger).resolve()
+    toplevel = _run_git("rev-parse", "--show-toplevel", cwd=ledger.parent)
+    if toplevel.returncode != 0:
+        raise ExclusionLedgerLinkError(
+            f"{ledger} is not inside a git checkout, so its committed revision "
+            "cannot be resolved"
+        )
+    root = Path(toplevel.stdout.strip())
+    return root, ledger.relative_to(root).as_posix()
+
+
 def exclusion_ledger_blob_url(ledger: str | Path) -> str:
     """Return a blob address for the ledger's own committed revision.
 
@@ -206,15 +219,7 @@ def exclusion_ledger_blob_url(ledger: str | Path) -> str:
     exists only in the working tree has no address a reviewer could open, so
     it raises instead of publishing a link that 404s.
     """
-    ledger = Path(ledger).resolve()
-    toplevel = _run_git("rev-parse", "--show-toplevel", cwd=ledger.parent)
-    if toplevel.returncode != 0:
-        raise ExclusionLedgerLinkError(
-            f"{ledger} is not inside a git checkout, so its committed revision "
-            "cannot be resolved"
-        )
-    root = Path(toplevel.stdout.strip())
-    relative = ledger.relative_to(root).as_posix()
+    root, relative = _ledger_relative_path(ledger)
     revision = _run_git("log", "-1", "--format=%H", "--", relative, cwd=root)
     sha = revision.stdout.strip()
     if revision.returncode != 0 or not sha:
@@ -243,9 +248,15 @@ def body_with_exclusion_ledger_link(body: str, focus_file: str | Path) -> str:
     The ledger records every source path the DD node category withheld from
     the batch together with the category that withheld it; the body carries
     its address so the exclusion accounting is checkable rather than asserted.
+    A body that already names the ledger, by its repository-relative path —
+    authored inline, or composed by an earlier pass — is returned unchanged
+    rather than gaining a second, redundant address.
     """
     ledger = exclusion_ledger_path(focus_file)
     if ledger is None:
+        return body
+    _root, relative = _ledger_relative_path(ledger)
+    if relative in body:
         return body
     url = exclusion_ledger_blob_url(ledger)
     return (
