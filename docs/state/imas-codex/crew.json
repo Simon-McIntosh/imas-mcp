@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07T08:24:26",
+  "updated": "2026-09-07T08:41:16",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -97658,6 +97658,150 @@
           "role": "implement",
           "status": "compatible"
         }
+      },
+      {
+        "run_id": "r-20260907T053744045891-n-swcr-the-stale-quarantines-release-their-rows",
+        "plan": "sn-west-catalog-release",
+        "section": "Hard entry gate",
+        "node": "n-swcr-the-stale-quarantines-release-their-rows",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 700,
+                "cached_input_tokens": 394665,
+                "input_tokens": 395367,
+                "output_tokens": 496,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 395863,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "CLEAR THE STALE VALIDATION QUARANTINES AND THEN DRAIN EVERY WEST ROSTER ROW THEY WERE HOLDING BACK.\n\nWHY THIS NODE EXISTS. Two roster rows were refused by the review pool because they carry a validation quarantine, and those quarantines were measured stale: re-running imas_codex.standard_names.audits.run_audits over each node current fields returns no critical issue, because the grammar has since registered vocabulary the audits now carve out. Across the live catalog 35 non-retired names carry a quarantine and 23 of them are stale by that test. Clearing them is free, because the audits are deterministic, and it unlocks review work rather than merely tidying records.\n\nSTEP ONE, MEASURE. Report the live quarantine population and confirm the stale subset yourself:\n  MATCH (n:StandardName) WHERE n.validation_status='quarantined' AND n.name_stage IN ['accepted','drafted','reviewed','pending'] RETURN n.id AS id, n.name_stage AS name_stage, n.validation_status AS vs ORDER BY n.id\nThen for each row call run_audits on that node own current fields and report which return no critical issue. The last measurement gave 35 live and 23 stale; yours governs. Two of the stale rows are on the release roster and are the reason for this node: inner_normalized_toroidal_flux_coordinate_hard_xray_emissivity_peak_half_width and vertical_outline_of_plasma_boundary.\n\nSTEP TWO, SWEEP. `imas-codex sn run --revalidate` clears validated_at on pending and quarantined nodes in scope so validate_worker re-checks against the current grammar. `--revalidate` is mutually exclusive with `--name`, so do not scope it that way.\n\nTHE LOCAL COMPOSE ENDPOINT IS DOWN and must stay excluded. Host 98dci4-gpu-0003 answers ping but port 18800 refuses, and an unfiltered `sn run` exits 1 before claiming any pool with `Error: The configured local Standard Names compose endpoint is required for generation but is unavailable (down)`. Only [tool.imas-codex.sn-compose], which serves generate_name, uses that endpoint; sn-docs, sn-refine and both review chains are OpenRouter. `--only review` selects review_name, refine_name, generate_docs, review_docs, refine_docs and enrich_parents and structurally excludes generate_name.\n\nSo attempt `imas-codex sn run --only review --revalidate` first. If the two flags are refused together, report the exact message, then probe what values `--only` accepts and find the narrowest selection that still performs the revalidation sweep. If no combination performs the sweep without also selecting generate_name, STOP and report that: do not run the unfiltered form, because it will refuse on the down endpoint and spend nothing anyway. Report the live quarantine count before and after the sweep.\n\nSTEP THREE, DRAIN WHAT THE SWEEP UNLOCKED. Resolve the roster by loading imas_codex/standard_names/manifests/west_production_dd_paths.yaml with load_focus_file from imas_codex.standard_names.sources_manifest, resolving with fetch_manifest_source_release_rows from imas_codex.standard_names.graph_ops and taking the distinct non-null standard_name_id values; report the source count, the distinct name count and the unmatched count. Then select the rows still short:\n  MATCH (n:StandardName) WHERE n.id IN $roster AND NOT (n.name_stage='accepted' AND n.docs_stage='accepted') RETURN n.id AS id, n.name_stage AS stage, coalesce(n.docs_stage,'-') AS docs, n.review_mean_score AS score, n.review_name_count AS reviews ORDER BY n.name_stage, n.id\nReport that table, then run `imas-codex sn run --only review --skip-global-maintenance -c 8 -t 45` scoped by repeated `--name` flags over exactly those identities.\n\nSTEP FOUR, RESCORE WHAT THE POOLS WILL NOT CLAIM. Any roster row left at name_stage reviewed or exhausted after step three is stranded rather than rejected: the pools do not re-claim it. `imas-codex sn rescore NAME` gives one such name a fresh review quorum, is eligible only for reviewed and exhausted names, moves the same identity to drafted while preserving lineage and spent refine attempts, and runs exactly review_name. Run it once per stranded row, in descending score order, and never twice on the same name. A score near the accept threshold has been measured on this catalog to swing by roughly 0.08 between runs, so a fresh quorum is a real measurement; a row far below threshold is unlikely to clear and reporting it as held is the correct outcome.\n\nWHAT YOU MUST NOT DO. Do not repair a status scalar that disagrees with its own name_stage, and do not revive a superseded successor: `normalized_toroidal_beta` carries name_stage=reviewed with status=superseded and its only successor is itself superseded, and that lineage is governed separately. Do not hand-accept a row, do not edit a spelling, and do not write Cypher that mutates state. Do not pass `--override-edits`.\n\nENVIRONMENT. Work in your worktree. export UV_NO_SYNC=1 once in your shell before any uv invocation, and do not write the flag on a command line. Two workers today had a bare uv run start building a worktree package because the sandbox injection did not cover their invocation path; the environment variable is what actually held, and one of them lost a test run evidence to it. Name UV_PROJECT_ENVIRONMENT and the absolute target explicitly and let your own wrapper form the invocation. Do not run uv sync anywhere: that environment is shared with the main checkout and concurrent workers. Never pipe, tee, or redirect imas-codex output; it auto-logs full DEBUG to ~/.local/share/imas-codex/logs and you read that file afterwards.\n\nMEASURE. Your manifest reports the live quarantine count before and after the sweep with the stale subset you confirmed, the three roster figures, the short-row table before and after, every rescore outcome as stage and score before and after with its review counts, the total paid cost in USD, and the roster publishable count from this query before and after, whose value was 210 of 225 when this brief was written:\n  MATCH (n:StandardName) WHERE n.id IN $roster AND n.name_stage='accepted' AND n.docs_stage='accepted' RETURN count(*) AS publishable\nState the exact after figure and name every row still short with the pool it waits in and the score or refusal that held it.\n\nCOMMITS. This node changes graph validation, review and docs state, not repository files. If you write no commit, say so explicitly and state that the graph carries the change. Never add any AI attribution or co-author trailer to any message you write.\n\nMANIFEST DISCIPLINE. Write your manifest with what you have BEFORE starting any wait longer than a couple of minutes, then update it.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.9,
+          "goal": "The stale validation quarantines are cleared and every WEST roster row they held back is drained",
+          "id": "n-swcr-the-stale-quarantines-release-their-rows",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-quarantine-drain/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "Hard entry gate",
+          "spec_level": "exact",
+          "time_budget": "55m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/quarantine-drain.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-tail",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-07T05:37:50Z",
+        "completed_at": "2026-09-07T06:30:52Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 3182,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 3182,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "b28391f59378cda337cb05977169a6219fd87521",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "failed",
+        "gate_check": {
+          "command": "imas-codex sn run --only review --revalidate, then four rescores",
+          "exit_status": 1,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-quarantine-drain/manifest.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": "negative-result",
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-quarantine-drain/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07a2a-475e-7683-9c1c-915dff10d23d",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 12542720,
+            "cached_input_tokens_cumulative": 17332864,
+            "input_tokens": 12717231,
+            "input_tokens_cumulative": 17576042,
+            "output_tokens": 15965,
+            "output_tokens_cumulative": 35097,
+            "reasoning_output_tokens": 3452,
+            "reasoning_output_tokens_cumulative": 8107
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 43204,
+          "peak_input_tokens": 34908906
+        },
+        "follow_on_paths": [
+          "detector/worker",
+          "23/35",
+          "grammar/semantic",
+          "status/name_stage",
+          "reconciliation/rescore",
+          "distinct/23",
+          "214/31"
+        ],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "Operational node; graph review state changed, no repository files.",
+        "resume_waiver": {
+          "session_id": "01a07a2a-475e-7683-9c1c-915dff10d23d",
+          "source": "pointer",
+          "reason": "The node reached a terminal negative result with a complete receipt: the sweep it was authorized to run cleared 0 of 23 and the remaining work needs a governed validator repair outside its scope, so a resumed session has nothing left to do."
+        },
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-stale-quarantines-release-their-rows",
+          "session_id": "01a07a2a-475e-7683-9c1c-915dff10d23d",
+          "session_source": "pointer",
+          "retained_at": "2026-09-07T06:30:52Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -97900,6 +98044,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1886
+    "_version": 1887
   }
 }
