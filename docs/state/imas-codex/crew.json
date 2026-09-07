@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07T09:25:12",
+  "updated": "2026-09-07T09:30:10",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -98245,6 +98245,139 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260907T042526586609-n-sgr-the-cohort-renders-canonically-3",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a78",
+        "node": "n-sgr-the-cohort-renders-canonically-3",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 417,
+                "cached_input_tokens": 832316,
+                "input_tokens": 832735,
+                "output_tokens": 690,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 833425,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "RE-RENDER EVERY ACCEPTED NAME THE GRAMMAR NOW SPELLS DIFFERENTLY. Twenty-three of them, each a canonical re-rendering rather than a change of meaning.\n\nWHY NOW. Three grammar changes landed on the standard-names main branch today, all carrying rulings from the lead: a domain reduction leads its name and wraps the projection; the aggregation tokens accumulated and root_mean_square lead joiner-free; and five destination loci were registered. The accepted cohort therefore contains names whose current spelling is no longer what the grammar composes. A release cut carrying them would publish spellings the grammar itself rejects.\n\nMEASURE THE SET YOURSELF. A file of 2348 accepted names is at /run/user/39486/claude-39486/-home-ITER-mcintos-Code-imas-codex/11b50f59-c77b-4356-8bb3-6dafc6d0a4c0/scratchpad/accepted_names.txt. Parse each and compose its intermediate representation; report the count that is stable, the count that migrates and the count that errors. The last measurement gave 2325 stable, 23 migrating, 0 errors. Yours governs. Print all migrating pairs before renaming anything.\n\nTHE EXPECTED SHAPE OF ALL OF THEM: a reduction or aggregation operator sitting mid-name moves to the front. Thirteen carry flux_surface_averaged, two volume_averaged, one line_averaged, one root_mean_square, one an accumulation, and one is a derivative whose operand and axis were inverted. If your set contains a pair that is NOT of that shape, report it and do not rename it - an unexpected migration is evidence the grammar moved further than intended.\n\nEIGHT OF THE TWENTY-THREE ARE NOT RENAMES, MEASURED BEFORE YOU START. Their canonical target ALREADY EXISTS at name_stage superseded, because the catalog previously carried that spelling and retired it in favour of the current one; a grammar ruling has since reversed that decision. The eight targets are accumulated_radiated_energy_due_to_impurity_radiation, accumulated_coolant_absorbed_energy_of_plasma_facing_component, accumulated_oxygen_count_due_to_gas_injection, accumulated_neutral_count_at_wall, flux_surface_averaged_krypton_density_at_plasma_boundary, flux_surface_averaged_boron_density_at_plasma_boundary, flux_surface_averaged_tungsten_density_at_plasma_boundary, and volume_averaged_linear_thermal_electron_decay_time_due_to_disruption. Seven of the eight carry docs at accepted on the retired identity.\n\nRENAME THE FIFTEEN WHOSE TARGET SPELLING DOES NOT ALREADY EXIST. For the eight, do NOT rename and do NOT attempt a revival: report each one with the retired identity's stage, its docs stage, its lineage direction relative to the live spelling, and what a revival would require. Reviving a superseded identity in favour of its own successor is a lineage reversal, it is the shape that produced a two-cycle elsewhere in this catalog this week, and it is the lead's decision rather than yours. Confirm the eight against the graph yourself; if the count is not eight, yours governs.\n\nTHE ONLY SANCTIONED ROUTE IS sn edit --rename. Never write Cypher. If sn edit refuses a rename, report the exact message, leave that name, and continue with the others; a partial set fully evidenced is the right outcome.\n\nTHE DOCUMENTATION NOW FOLLOWS, which it did not this morning. rename_preserves_meaning was repaired today: an intermediate-representation difference confined to the locus token is meaning-preserving, and exact representation equality always was. A canonical re-rendering leaves the representation IDENTICAL, so meaning is preserved and the documentation, docs stage, docs chain and docs provenance all follow the successor. Verify that for the first rename you perform before doing the rest: if the successor lands with documentation null or docs_stage pending, STOP after that one and report it, because the repair does not cover this class and twenty-two more would lose their documentation.\n\nPER RENAME, PROVE THE REPRESENTATIONS ARE EQUAL, not merely similar. These are re-renderings, so the old and new intermediate representations must be EXACTLY equal - unlike a locus substitution, no field should differ at all. Report that equality per pair. A pair whose representations differ is not a re-rendering and must not be renamed under this node.\n\nCHECK FOR A COLLISION per rename before writing. If the destination spelling already exists at any stage, that is a fold rather than a rename: report the existing row with its stage and skip it.\n\nTHE MEANING MUST NOT CHANGE. Description and documentation stay byte-identical. Compare both before and after per rename and report any that moved.\n\nBINDINGS MUST SURVIVE. Report each name's bound DD path count before and after; counts and path sets unchanged.\n\nREPORT THE CASCADE VERDICT PER RENAME. A repair landed today so a cascade that defers its descendants reports dry_run True and only a performed cascade reports False. State which you got per rename, and for any deferral name the descendants and the reason the root blocked them.\n\nA PEER IS RENAMING CONCURRENTLY. Another node is applying thirteen locus renames to a disjoint set of names in this same graph. If you meet a claim conflict or find one of your targets already renamed, that is coordination and not a defect: report it and move on rather than retrying.\n\nEVIDENCE REQUIRED: the three cohort counts before and after, where migrating must reach zero or the number of names you deliberately skipped; the full pair list; per rename the representation equality, collision check, description and documentation comparison, bound-path counts and cascade verdict; and the first rename's documentation outcome called out separately.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you. Do not write the uv --no-sync flag into any command: name the environment and the target and let your own wrapper form the invocation.",
+          "estimated_hours": 0.8,
+          "goal": "The fifteen renameable accepted names are re-rendered canonically and the eight colliding targets are reported",
+          "id": "n-sgr-the-cohort-renders-canonically-3",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-migration-3/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a78",
+          "spec_level": "exact",
+          "time_budget": "50m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/canonical-migration-3.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-migration",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-07T04:25:38Z",
+        "completed_at": "2026-09-07T07:21:38Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": null,
+        "worker_seconds_source": "stalled",
+        "wall_seconds": 10560,
+        "stalled": true,
+        "time_budget": "50m",
+        "base_sha": "ad4d7d7bf9c29ebbeb68474dd0d4b46ecdbd76b4",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "accepted-cohort parse/compose/strict-reparse census plus per-row live preflight and postflight verification",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/canonical-migration-3.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-migration-3/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07a1d-599d-7a41-8d63-298b1b9d646e",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 5332352,
+            "cached_input_tokens_cumulative": 5332352,
+            "input_tokens": 5474959,
+            "input_tokens_cumulative": 5474959,
+            "output_tokens": 27783,
+            "output_tokens_cumulative": 27783,
+            "reasoning_output_tokens": 4990,
+            "reasoning_output_tokens_cumulative": 4990
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 32773,
+          "peak_input_tokens": 10807311
+        },
+        "follow_on_paths": [
+          "fold/revival"
+        ],
+        "dispute_count": 0,
+        "attempt": 4,
+        "attempt_kind": "resume",
+        "no_commit": "Operational migration node; the change is graph identity and lineage state, not repository files.",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-cohort-renders-canonically-3",
+          "session_id": "01a07a1d-599d-7a41-8d63-298b1b9d646e",
+          "session_source": "pointer",
+          "retained_at": "2026-09-07T07:21:38Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -98487,6 +98620,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1890
+    "_version": 1891
   }
 }
