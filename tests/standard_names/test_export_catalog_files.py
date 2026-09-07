@@ -19,6 +19,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+import yaml
 
 from imas_codex.standard_names.catalog_release import (
     ExclusionLedgerLinkError,
@@ -28,6 +29,7 @@ from imas_codex.standard_names.catalog_release import (
 )
 from imas_codex.standard_names.export import (
     _write_domain_yaml,
+    _write_manifest,
     assemble_review_catalog,
 )
 
@@ -46,6 +48,109 @@ def _entry(name: str) -> dict[str, object]:
 
 def _emitted_files(root: Path) -> list[Path]:
     return sorted((root / "standard_names").glob("*.yml"))
+
+
+def _catalog_manifest(
+    root: Path, sources_by_name: dict[str, list[dict[str, str]] | None]
+) -> dict[str, object]:
+    names = {
+        name: {
+            "kind": "scalar",
+            "status": "draft",
+            "physics_domain": "core_plasma_physics",
+            "links": [],
+            **({"sources": sources} if sources is not None else {}),
+        }
+        for name, sources in sources_by_name.items()
+    }
+    _write_manifest(
+        root,
+        cocos_convention=17,
+        candidate_count=len(names),
+        published_count=len(names),
+        excluded_below_score_count=0,
+        excluded_unreviewed_count=0,
+        min_score_applied=0.0,
+        min_description_score_applied=None,
+        include_unreviewed=True,
+        names=names,
+    )
+    manifest = yaml.safe_load((root / "catalog.yml").read_text(encoding="utf-8"))
+    assert isinstance(manifest, dict)
+    return manifest
+
+
+def _dd_source(ref: str, version: str) -> dict[str, str]:
+    return {"kind": "imas-dd", "ref": ref, "version": version}
+
+
+class TestCatalogManifestDataDictionaryLineage:
+    def test_distinct_source_versions_are_reported_in_numeric_order(
+        self, tmp_path: Path
+    ) -> None:
+        manifest = _catalog_manifest(
+            tmp_path,
+            {
+                "electron_temperature": [
+                    _dd_source(
+                        "core_profiles/profiles_1d/electrons/temperature", "4.1.1"
+                    ),
+                    _dd_source("core_profiles/global_quantities/ip", "4.1.0"),
+                ],
+                "ion_temperature": [
+                    _dd_source("core_profiles/profiles_1d/t_i_average", "4.1.1")
+                ],
+            },
+        )
+
+        assert manifest["dd_version_lineage"] == ["4.1.0", "4.1.1"]
+
+    def test_single_source_version_is_not_replaced_by_a_catalog_default(
+        self, tmp_path: Path
+    ) -> None:
+        manifest = _catalog_manifest(
+            tmp_path,
+            {
+                "electron_temperature": [
+                    _dd_source(
+                        "core_profiles/profiles_1d/electrons/temperature", "4.2.0"
+                    )
+                ]
+            },
+        )
+
+        assert manifest["dd_version_lineage"] == ["4.2.0"]
+
+    @pytest.mark.parametrize(
+        "sources_by_name",
+        [{}, {"radial_coordinate": None}],
+        ids=["empty-export", "unsourced-entry"],
+    )
+    def test_export_without_sourced_entries_has_empty_lineage(
+        self,
+        tmp_path: Path,
+        sources_by_name: dict[str, list[dict[str, str]] | None],
+    ) -> None:
+        manifest = _catalog_manifest(tmp_path, sources_by_name)
+
+        assert manifest["dd_version_lineage"] == []
+
+    def test_version_order_uses_parsed_numeric_components(self, tmp_path: Path) -> None:
+        versions = ["4.1.10", "4.1.0rc65", "4.1.2", "4.1.0rc9"]
+        manifest = _catalog_manifest(
+            tmp_path,
+            {
+                f"temperature_{index}": [_dd_source(f"source/{index}", version)]
+                for index, version in enumerate(versions)
+            },
+        )
+
+        assert manifest["dd_version_lineage"] == [
+            "4.1.0rc9",
+            "4.1.0rc65",
+            "4.1.2",
+            "4.1.10",
+        ]
 
 
 class TestEmittedFilesCarryEntriesOnly:
