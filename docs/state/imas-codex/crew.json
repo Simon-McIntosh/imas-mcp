@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07T13:09:01",
+  "updated": "2026-09-07T18:41:02",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -99236,6 +99236,541 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260907T103614152120-n-swcr-the-lineage-is-derived-from-its-sources",
+        "plan": "sn-west-catalog-release",
+        "section": "Release and fold-back contract",
+        "node": "n-swcr-the-lineage-is-derived-from-its-sources",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1075,
+                "cached_input_tokens": 728481,
+                "input_tokens": 729558,
+                "output_tokens": 837,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 730395,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "DERIVE THE CATALOG'S DATA-DICTIONARY LINEAGE FROM THE SOURCES IT ACTUALLY EMITTED.\n\nTHE MEASURED DEFECT. In imas_codex/standard_names/export.py the exported catalog manifest sets\n    \"dd_version_lineage\": [\"4.0.0\"],\nas a hardcoded literal. Measured against the staged export of a 196-name batch on 2026-09-07, the per-source bindings in that same catalog carried version 4.1.0 on 1043 bindings and 4.1.1 on 37 bindings, and 4.0.0 on none. So the header asserts a lineage that appears nowhere in the data it describes.\n\nTHE DESIGN THE FIX MUST HONOUR, stated by the lead. A standard-name catalog is never for a single data-dictionary version. Provenance is tracked per name as each name is sourced: every source binding carries its own version sub-key, which the module's own comment already documents, and names added later will carry sources from later dictionaries. A name can be confirmed to still apply to a later version, but the binding is what records where it came from. A single catalog-wide version is therefore the wrong shape for this field regardless of which value it holds; the field is a lineage precisely because it is plural.\n\nTHE FIX. Compute the value from the distinct per-source versions actually present in the emitted entries, ordered so the result is stable across runs, so this batch reports 4.1.0 and 4.1.1 and a later batch reports whatever its sources carry. Read how the per-binding version is populated before you change anything and derive from that same value, so the header and the bindings cannot disagree. Report the exact expression you used.\n\nTHE EMPTY AND UNPINNED CASES ARE YOURS TO ESTABLISH FROM THE CODE. Establish from the code what happens when an entry has no source, or a source with no pinned version: the module already refuses a facility signal source that has no pinned version, so read that path and follow the convention it sets rather than inventing a new one. Say in your report what the field becomes for an export that emits no sourced entry at all, and why that choice is right rather than merely convenient.\n\nDO NOT SORT VERSIONS AS STRINGS. A lexical sort orders 4.1.10 before 4.1.2 and rc9 after rc65, which has produced a wrong answer in this repository before. If the ordering matters, order by parsed numeric components; if a stable arbitrary order is sufficient, say so explicitly rather than leaving it implicit.\n\nTESTS, in the file that already covers catalog export files; say which you chose and why.\n  1. An export whose sources carry two distinct versions reports both, in the order your implementation guarantees. Prove this fails before your change against the hardcoded literal and passes after, and report both results.\n  2. An export whose sources all carry one version reports exactly that one, and it is not the old literal.\n  3. The empty or unsourced case behaves as you decided, asserted rather than described.\n  4. A version list that would be mis-ordered by a lexical sort comes back in numeric order, so the ordering cannot regress into a string comparison.\n\nTHE GATE. Run `pytest tests/standard_names` and report the failure count and failing identifiers before your change and after it. The count after must not exceed the count before. The baseline at commit fd017e7af is 18 failures with 7196 passed, all pre-existing; five are TestCanonicalLocusCheck cases for newly registered loci and are not yours. Run it on a debug SLURM partition with a time limit of 00:59:00 and say so.\n\nDO NOT RUN ANY RELEASE COMMAND THAT WRITES, and do not run one with a dry-run flag either. A concurrent node is cutting a real candidate and any release read or write from here would corrupt its evidence. Verify through tests only.\n\nENVIRONMENT. Work in your worktree. export UV_NO_SYNC=1 once in your shell before any uv invocation and do not write the flag on a command line. Name UV_PROJECT_ENVIRONMENT and the absolute target explicitly. Do not run uv sync anywhere; that environment is shared with the main checkout and concurrent workers. Capture the pytest run to a file once and read it selectively rather than piping it.\n\nCOMMIT. One commit, conventional subject plus a BODY stating what changed and why, staging only the export module and your test file by explicit path. Never `git add -A`. Never add any AI attribution or co-author trailer to any message you write, and verify that before you commit. Run ruff check --fix and ruff format over exactly the paths you stage, never over the whole tree.\n\nMEASURE. Your manifest reports the derivation expression you used, the value it produces for the current graph, what you decided for the unsourced and unpinned cases with the code path that set the precedent, the four test outcomes with test 1 failing before and passing after, the suite failure count before and after with identifiers, and the commit sha with its changed paths.\n\nMANIFEST DISCIPLINE. Write your manifest with what you have BEFORE starting any wait longer than a couple of minutes, then update it.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.6,
+          "goal": "The catalog reports the data-dictionary lineage its own source bindings carry",
+          "id": "n-swcr-the-lineage-is-derived-from-its-sources",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-lineage/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "Release and fold-back contract",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "imas_codex/standard_names/export.py",
+            "tests/standard_names/test_export_catalog_files.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-route",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-07T10:36:26Z",
+        "completed_at": "2026-09-07T11:11:57Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 2131,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 2131,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "2229cb41322908389401d976fd3d694c7d450d5a",
+        "commits": [
+          "287cfdfdafb4f882a0257df0044bcea0bfd4b206"
+        ],
+        "changed_lines": {
+          "added": 115,
+          "removed": 1,
+          "files": 2
+        },
+        "tests_added": 5,
+        "gate": "passed",
+        "gate_check": {
+          "command": "pytest tests/standard_names on all_debug",
+          "exit_status": 1,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-lineage/manifest.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-lineage/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07b70-d566-79e0-827b-fb516097c322",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 21024128,
+            "cached_input_tokens_cumulative": 21024128,
+            "input_tokens": 21470970,
+            "input_tokens_cumulative": 21470970,
+            "output_tokens": 31798,
+            "output_tokens_cumulative": 31798,
+            "reasoning_output_tokens": 9625,
+            "reasoning_output_tokens_cumulative": 9625
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": []
+        },
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 41423,
+          "peak_input_tokens": 42495098
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-lineage-is-derived-from-its-sources",
+          "session_id": "01a07b70-d566-79e0-827b-fb516097c322",
+          "session_source": "stream",
+          "retained_at": "2026-09-07T11:11:57Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names`",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
+      },
+      {
+        "run_id": "r-20260907T152028912024-n-swcr-the-local-route-has-one-home",
+        "plan": "sn-west-catalog-release",
+        "section": "Release and fold-back contract",
+        "node": "n-swcr-the-local-route-has-one-home",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 3464,
+                "cached_input_tokens": 799136,
+                "input_tokens": 802602,
+                "output_tokens": 1247,
+                "reasoning_output_tokens": 375,
+                "total_tokens": 803849,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "GIVE THE LOCAL MODEL ENDPOINT ONE HOME IN PYPROJECT AND HAVE EVERY SEAT REFERENCE IT.\n\nFIRST, REPAIR THE TEST THAT IS RED ON MAIN. `tests/test_settings_sn.py::test_compose_seat_uses_ambix_local_route` asserts the compose seat resolves to `http://98dci4-gpu-0003:18800/v1`. The seats moved to the router at `http://98dci4-gpu-0003:18802/v1` in commit 708ef5a8c and the test was not updated, so it fails on main right now. Fix it as part of this node and report it failing before and passing after. Do not simply substitute the new literal if your consolidation gives the test something more durable to assert; say which you chose and why.\n\nWHY THIS NODE EXISTS. The same endpoint address is written in three places in pyproject.toml and asserted as a fourth in that test, so one edit desynchronises the others: that is exactly what just happened. The lead wants a single global setting rather than ad hoc addresses repeated per seat.\n\nWHAT IS THERE NOW, MEASURED. In pyproject.toml: `[tool.imas-codex.sn-compose]` carries `api-base = \"http://98dci4-gpu-0003:18802/v1\"`; `[tool.imas-codex.sn-review.names]` carries the same value; and a comment under `[tool.imas-codex.sn-refine]` names the same address as a switch-back target. Both live seats also carry `api-key-env = \"AMBIX_API_KEY\"` and an `endpoint-class`. Confirm all of this against the tree before changing it and report what you find, including any occurrence this brief has missed.\n\nTHE SHAPE TO BUILD. One canonical declaration of the local route, named once, which each seat references by name instead of repeating a URL. TOML has no interpolation, so the indirection has to resolve in the settings layer: read `imas_codex/settings.py` and specifically `get_model_config`, which is what assembles a seat into `model`, `api_base` and `api_key_env`, and decide where the reference resolves. Report the design you chose and why it belongs at that layer rather than another.\n\nCONSTRAINTS ON THE DESIGN:\n  - A seat must be able to name the local route without knowing its address, so moving the route is a one-line change.\n  - A seat that uses a remote provider must be unaffected and must not need the new key.\n  - An unknown route name must fail loudly at resolution rather than silently yielding no api_base, because a missing api_base is how a seat quietly falls back to a default provider.\n  - Keep `AMBIX_API_KEY` resolution working as it does today; do not fold credential handling into this change.\n  - The existing environment-variable overrides in the settings module keep working. Establish from the code which overrides touch these values and say so.\n\nDO NOT INVENT A SECOND CONFIGURATION SYSTEM. If the settings module already has a pattern for a shared value referenced by several consumers, follow it rather than adding a new mechanism, and name the pattern you followed.\n\nCARRY THE REASON INTO THE FILE. The comment on the canonical declaration must say that this is the router and that serve ports are internal and rotate with topology: the four-card variant declares 18800 and the two-card 18809, and which is up is an operational decision, so pinning a serve port turns a routine rotation into an outage for every pool the seat gates. That is not decoration; a table naming a serve port as the client address is what produced the outage.\n\nTESTS, in the file that already covers these settings.\n  1. The compose seat resolves to the router address through the shared declaration. This replaces or subsumes the currently failing assertion; prove red before and green after.\n  2. The local review seat resolves to the same address through the same declaration, so the two cannot drift apart.\n  3. Changing the canonical declaration changes every seat that references it, asserted by overriding the declaration in the test rather than by editing the file.\n  4. A seat naming an unknown route fails loudly, with the failure asserted rather than described.\n  5. A remote seat is unaffected and needs no route key.\n\nTHE GATE. Run `pytest tests/test_settings_sn.py` and report every result, then `pytest tests/standard_names` and report the failure count and failing identifiers before your change and after it. The count after must not exceed the count before, except that the currently failing compose-seat assertion must go from failing to passing. The standard-names baseline at commit 708ef5a8c is 18 failures with roughly 7201 passed, all pre-existing; five are TestCanonicalLocusCheck cases for newly registered loci and are not yours. Run the heavier suite on a debug SLURM partition with a time limit of 00:59:00 and say so.\n\nDO NOT PROBE OR CALL THE ENDPOINT, and do not run any pipeline command. This node changes configuration shape and its tests, nothing else. The route is being restored to four cards by another operator and a probe here proves nothing about the design.\n\nENVIRONMENT. Work in your worktree. export UV_NO_SYNC=1 once in your shell before any uv invocation and do not write the flag on a command line. Name UV_PROJECT_ENVIRONMENT and the absolute target explicitly. Do not run uv sync anywhere; that environment is shared with the main checkout.\n\nCOMMIT. One commit, conventional subject plus a BODY stating what changed and why, staging only the files you changed by explicit path. Never `git add -A`. Never add any AI attribution or co-author trailer to any message you write, and verify that before you commit. Run ruff check --fix and ruff format over exactly the paths you stage, never over the whole tree.\n\nMEASURE. Your manifest reports every occurrence of the address you found before the change and where each went, the design you chose with the layer it resolves at and the existing pattern you followed, the five test outcomes with test 1 red before and green after, both suite results before and after with identifiers, and the commit sha with its changed paths.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.7,
+          "goal": "The local model route is declared once in pyproject and every seat references it by name",
+          "id": "n-swcr-the-local-route-has-one-home",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-route-config/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "Release and fold-back contract",
+          "spec_level": "exact",
+          "time_budget": "45m",
+          "write_paths": [
+            "pyproject.toml",
+            "imas_codex/settings.py",
+            "tests/test_settings_sn.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-guides",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-07T15:20:36Z",
+        "completed_at": "2026-09-07T15:54:35Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 2039,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 2039,
+        "stalled": false,
+        "time_budget": "45m",
+        "base_sha": "708ef5a8c21c81d6e87defe0f5dd533d96f8a9ae",
+        "commits": [
+          "5559363f3b6d3bc79b6cd5563f865bc2471c60d3"
+        ],
+        "changed_lines": {
+          "added": 117,
+          "removed": 35,
+          "files": 3
+        },
+        "tests_added": 6,
+        "gate": "passed",
+        "gate_check": {
+          "command": "pytest tests/test_settings_sn.py",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-route-config/manifest.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-route-config/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07c74-fd69-7390-a209-dd6ae187c623",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 10089728,
+            "cached_input_tokens_cumulative": 10089728,
+            "input_tokens": 10290435,
+            "input_tokens_cumulative": 10290435,
+            "output_tokens": 33656,
+            "output_tokens_cumulative": 33656,
+            "reasoning_output_tokens": 12585,
+            "reasoning_output_tokens_cumulative": 12585
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "completed_unpromoted",
+              "detail": "the worker manifest reports completion and the run is still a pointer; promoting it moves the delivered record into the repository ledger",
+              "elapsed_seconds": 2131,
+              "external_wait": null,
+              "liveness_proven": true,
+              "log_age_seconds": 14914,
+              "log_fresh": false,
+              "manifest_commits": [
+                "287cfdfdafb4f882a0257df0044bcea0bfd4b206\"]; changed_paths: [\"imas_codex/standard_names/export.py",
+                "tests/standard_names/test_export_catalog_files.py"
+              ],
+              "manifest_derived": false,
+              "manifest_digest": "57ffd8cd661a760a628790b995d2b5b83dced3fb3f858c417c5b3b77c4985bfb",
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-lineage/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "complete",
+              "manifest_status": "complete",
+              "marker": null,
+              "needs_help_complete": null,
+              "next_action": "reckon crew complete --run r-20260907T103614152120-n-swcr-the-lineage-is-derived-from-its-sources --gate <verdict> --commit 287cfdfdafb4f882a0257df0044bcea0bfd4b206\"]; changed_paths: [\"imas_codex/standard_names/export.py --commit tests/standard_names/test_export_catalog_files.py",
+              "node": "n-swcr-the-lineage-is-derived-from-its-sources",
+              "phase": "starting",
+              "plan": "sn-west-catalog-release",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260907T103614152120-n-swcr-the-lineage-is-derived-from-its-sources",
+              "session": "ship-s10-20260905",
+              "terminal_age_seconds": 14967,
+              "terminal_at": "2026-09-07T11:11:04Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-lineage-is-derived-from-its-sources"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3600,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: none; recoverable pre-work checkpoint. Status remains blocked until the graph work reaches a terminal result because the manifest schema has no in-progress value.",
+              "elapsed_seconds": 141,
+              "external_wait": null,
+              "liveness_proven": true,
+              "log_age_seconds": 380,
+              "log_fresh": true,
+              "manifest_commits": [
+                "none; changed_paths: [\"/home/ITER/mcintos/.config/reckon/crew/reports/west-blocked-rows.md\"",
+                "\"/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-unblock/manifest.md\"]"
+              ],
+              "manifest_derived": false,
+              "manifest_digest": "4f0907e5afe0df5353b1447e0578c4d16c050ccec3493ae46be20d2ca3a2872a",
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-unblock/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-unblock/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-swcr-the-blocked-rows-are-tabulated-and-driven",
+              "phase": "stopped",
+              "plan": "sn-west-catalog-release",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260907T151145385846-n-swcr-the-blocked-rows-are-tabulated-and-driven",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260907T151145385846-n-swcr-the-blocked-rows-are-tabulated-and-driven",
+                "session_id": "01a07a2a-475e-7683-9c1c-915dff10d23d",
+                "source": "pointer"
+              },
+              "terminal_age_seconds": 446,
+              "terminal_at": "2026-09-07T15:13:06Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-blocked-rows-are-tabulated-and-driven"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 46241,
+          "peak_input_tokens": 20380163
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-local-route-has-one-home",
+          "session_id": "01a07c74-fd69-7390-a209-dd6ae187c623",
+          "session_source": "stream",
+          "retained_at": "2026-09-07T15:54:35Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/test_settings_sn.py`",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
+      },
+      {
+        "run_id": "r-20260907T151145385846-n-swcr-the-blocked-rows-are-tabulated-and-driven",
+        "plan": "sn-west-catalog-release",
+        "section": "Hard entry gate",
+        "node": "n-swcr-the-blocked-rows-are-tabulated-and-driven",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 731,
+                "cached_input_tokens": 772496,
+                "input_tokens": 773229,
+                "output_tokens": 638,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 773867,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "TABULATE EVERY BLOCKED WEST SOURCE AND NAME WITH ITS REASON AND A CANDIDATE FIX, THEN SPEND UP TO 150 USD FIXING THE ONES THE PIPELINE CAN REACH.\n\nWHY THIS NODE EXISTS. The WEST batch shipped 196 identities from 355 source paths. The frozen roster records 31 sources with no name, and 18 of those 31 carry an EMPTY non_nameable_reason string, so the artifact asserts an exclusion without stating a cause. That is not acceptable evidence for a review batch. Separately the export withheld 18 of 214 candidates. The lead has authorised up to 150 USD of pipeline spend to fix what is fixable and wants the rest tabulated with reasons and candidate fixes. Wall-clock time is the expensive resource here, not the money: prefer spending the budget over deferring work.\n\nPART ONE, BUILD THE TABLE FROM THE GRAPH, NOT FROM THE ARTIFACT. The artifact is the thing under suspicion. Resolve the roster by loading imas_codex/standard_names/manifests/west_production_dd_paths.yaml with load_focus_file from imas_codex.standard_names.sources_manifest and resolving it with fetch_manifest_source_release_rows from imas_codex.standard_names.graph_ops. Then for EVERY source path that does not resolve to a publishable name, and EVERY roster name that is not both name_stage=accepted and docs_stage=accepted, report one row carrying:\n  the source path; the StandardNameSource status and attempt_count; whether a PRODUCED_NAME edge and a FROM_DD_PATH edge exist; the bound name if any with its name_stage, docs_stage, validation_status and review_mean_score; the reason it is blocked, stated as a mechanism rather than a status word; and the candidate fix naming the exact verb or pool that would move it.\nGroup the rows by blocking mechanism and give a count per group. Name every group; do not leave a residual bucket.\n\nTHE REASON FIELD IS THE POINT. \"extracted\" is a status, not a reason. A reason says what must happen for the row to become nameable: a name has never been composed for it; its name exhausted its review attempts at a stated score; its name is quarantined by a named validator check; the source path names no physical quantity and why; the source lost its binding and the binding is recoverable or not. Where the artifact recorded an empty reason, say what the reason should have been. Report how many of the 18 empty reasons you were able to determine and list any you could not, with what you would need to determine them.\n\nPART TWO, THE GENERATION ROUTE IS DOWN AND THERE IS A DOCUMENTED WAY AROUND IT. The local compose endpoint at the address configured under [tool.imas-codex.sn-compose] is refusing connections, so generate_name cannot claim anything and every source parked at status=extracted is stuck. That configuration block carries a documented switch-back on the line beginning \"Switch-back:\" naming a remote model and reasoning effort. Read that line and use exactly what it names.\n\nMake the switch as a deliberate, reversible, reported change: edit only the model and reasoning-effort values in that block, run the work, then restore the original values and confirm the restore in your report by quoting the block before and after. State the cost the remote seat incurred separately from the rest, because a remote compose seat is the expensive part of this node. If the local endpoint answers when you probe it, do not switch at all: use it and say so.\n\nPART THREE, SPEND THE BUDGET. Drive the fixable rows through the pipeline with a hard ceiling of 150 USD total across every invocation, passing the cost ceiling to each run and reporting the spend after each. Work in this order, because it puts cheap certain wins before expensive uncertain ones:\n  1. Names already carrying a name but stranded at name_stage reviewed or exhausted: one `imas-codex sn rescore NAME` each, never twice on the same name.\n  2. Names accepted or drafted but missing documentation: the docs pools, which are remote and unaffected by the endpoint.\n  3. Sources with no name at all: generate through the switched compose seat, then review, then docs.\nScope every run to explicit identities or sources; never run an unscoped pool loop. If a run exits before its pools are dry, launch it again with the same scope. Report the pool-by-pool processed counts and the cost for each invocation.\n\nSTOP CONDITIONS. Stop and report if total spend reaches 150 USD; if a run refuses on a lifecycle or claim predicate rather than on cost; or if a name would need a hand-written spelling to proceed. Do not hand-accept a row, do not edit a name or description by hand, do not write Cypher that mutates state, and do not repair a status scalar that disagrees with its own name_stage.\n\nWHAT YOU MUST NOT TOUCH. Two identities are governed elsewhere and are not yours: normalized_toroidal_beta, whose status scalar disagrees with its name_stage and whose only successor is also superseded; and any of the eight names whose canonical spelling exists at name_stage superseded, which are a separately authorised fold. Report them in the table as governed elsewhere.\n\nPART FOUR, THE ARTIFACT DEFECT. Report whether the empty non_nameable_reason is a defect in how the artifact is written or an absence in the graph it reads from, and cite the code path that populates that field. Do not fix it in this node; a separate node will, and your finding is what scopes it. Also report that pr_number, pr_url and merge_commit are null in the frozen artifact and say from the code whether anything is designed to fill them after a pull request is opened.\n\nMEASURE. Your manifest reports the full table with a count per blocking group, how many of the 18 empty reasons you determined, the compose seat before and after with confirmation it was restored, the per-invocation spend and the total against the 150 USD ceiling, the roster publishable count before and after from\n  MATCH (n:StandardName) WHERE n.id IN $roster AND n.name_stage='accepted' AND n.docs_stage='accepted' RETURN count(*) AS publishable\nwhose value was 196 exported of 214 candidates when this brief was written, and one line per row that is still blocked with what it now waits on.\n\nENVIRONMENT. Work in your worktree. export UV_NO_SYNC=1 once in your shell before any uv invocation and do not write the flag on a command line. Name UV_PROJECT_ENVIRONMENT and the absolute target explicitly. Do not run uv sync anywhere. Never pipe, tee, or redirect imas-codex output; it auto-logs full DEBUG to ~/.local/share/imas-codex/logs and you read that file afterwards.\n\nDO NOT CUT, TAG OR RELEASE ANYTHING. A candidate is already published for review; this node changes graph state and nothing else. If you change pyproject.toml for the compose seat, restore it and do not commit the switched value.\n\nWRITE YOUR MANIFEST BEFORE THE FIRST PAID RUN AND UPDATE IT AFTER EACH, so spend already incurred is recorded even if your process ends.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 1.0,
+          "goal": "Every blocked WEST row is tabulated with its mechanism and candidate fix and the fixable ones are driven through the pipeline within the authorised ceiling",
+          "id": "n-swcr-the-blocked-rows-are-tabulated-and-driven",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-unblock/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "Hard entry gate",
+          "spec_level": "exact",
+          "time_budget": "60m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/west-blocked-rows.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-tail",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-07T15:11:51Z",
+        "completed_at": "2026-09-07T15:14:12Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 141,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 141,
+        "stalled": false,
+        "time_budget": "60m",
+        "base_sha": "6bd9010f465a3d162717e15cdf71b469281c1217",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "not-run",
+        "gate_check": null,
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-unblock/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07a2a-475e-7683-9c1c-915dff10d23d",
+        "budget": {
+          "cost_usd": null,
+          "detail": "no events yet",
+          "headroom": "unknown",
+          "rate_limit_period_minutes": null,
+          "rate_limit_type": null,
+          "refusal": false,
+          "resets_at": null,
+          "surpassed_threshold": null,
+          "threshold_status": null,
+          "tokens": null,
+          "utilisation_pct": null
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2400,
+              "classification": "completed_unpromoted",
+              "detail": "the worker manifest reports completion and the run is still a pointer; promoting it moves the delivered record into the repository ledger",
+              "elapsed_seconds": 2131,
+              "external_wait": null,
+              "liveness_proven": true,
+              "log_age_seconds": 14390,
+              "log_fresh": false,
+              "manifest_commits": [
+                "287cfdfdafb4f882a0257df0044bcea0bfd4b206\"]; changed_paths: [\"imas_codex/standard_names/export.py",
+                "tests/standard_names/test_export_catalog_files.py"
+              ],
+              "manifest_derived": false,
+              "manifest_digest": "57ffd8cd661a760a628790b995d2b5b83dced3fb3f858c417c5b3b77c4985bfb",
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-lineage/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "complete",
+              "manifest_status": "complete",
+              "marker": null,
+              "needs_help_complete": null,
+              "next_action": "reckon crew complete --run r-20260907T103614152120-n-swcr-the-lineage-is-derived-from-its-sources --gate <verdict> --commit 287cfdfdafb4f882a0257df0044bcea0bfd4b206\"]; changed_paths: [\"imas_codex/standard_names/export.py --commit tests/standard_names/test_export_catalog_files.py",
+              "node": "n-swcr-the-lineage-is-derived-from-its-sources",
+              "phase": "starting",
+              "plan": "sn-west-catalog-release",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260907T103614152120-n-swcr-the-lineage-is-derived-from-its-sources",
+              "session": "ship-s10-20260905",
+              "terminal_age_seconds": 14443,
+              "terminal_at": "2026-09-07T11:11:04Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-lineage-is-derived-from-its-sources"
+            }
+          ]
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "Stopped before any pipeline invocation; no graph or repository state changed.",
+        "resume_waiver": {
+          "session_id": "01a07a2a-475e-7683-9c1c-915dff10d23d",
+          "source": "pointer",
+          "reason": "The lead halted this work so the local generation endpoint could be restored. Its brief was built around a documented remote compose switch-back that is no longer the right route now the endpoint is healthy, so a resumed session would execute a plan that has been superseded; the work is respecified as a followup instead."
+        },
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-blocked-rows-are-tabulated-and-driven",
+          "session_id": "01a07a2a-475e-7683-9c1c-915dff10d23d",
+          "session_source": "pointer",
+          "retained_at": "2026-09-07T15:14:12Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -99478,6 +100013,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1900
+    "_version": 1903
   }
 }
