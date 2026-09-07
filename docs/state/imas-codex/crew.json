@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07T09:07:46",
+  "updated": "2026-09-07T09:25:12",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -98056,6 +98056,195 @@
           "role": "implement",
           "status": "compatible"
         }
+      },
+      {
+        "run_id": "r-20260907T064224790276-n-swcr-the-rehearsal-reports-its-gates",
+        "plan": "sn-west-catalog-release",
+        "section": "Release and fold-back contract",
+        "node": "n-swcr-the-rehearsal-reports-its-gates",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 794,
+                "cached_input_tokens": 553848,
+                "input_tokens": 554644,
+                "output_tokens": 1196,
+                "reasoning_output_tokens": 514,
+                "total_tokens": 555840,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "REHEARSE THE WEST BATCH RELEASE AND PROVE THE REHEARSAL WROTE NOTHING.\n\nDO NOT CUT THE RELEASE. Do not drop the dry-run flag, do not push a branch, do not create a tag, and do not open a pull request. A separate node cuts it once the lead has read your gate report. This node exists to find out what the gates say while that is still free.\n\nSTEP ONE, RESOLVE THE ROSTER YOURSELF. Load imas_codex/standard_names/manifests/west_production_dd_paths.yaml with load_focus_file from imas_codex.standard_names.sources_manifest, resolve it with fetch_manifest_source_release_rows from imas_codex.standard_names.graph_ops, and take the distinct non-null standard_name_id values. Report the source count, the distinct terminal name count and the unmatched count. At 08:45 local these read 355 sources, 214 distinct names and 31 unmatched, and earlier in the session the same query read 225/20 then 222/23; the roster moves as names change lifecycle stage, so yours governs and the drift is expected rather than alarming.\n\nSTEP TWO, EXPLAIN THE UNMATCHED RATHER THAN LISTING THEM. Report each unmatched source path with the reason it does not resolve, in one of two buckets. Most are paths that name no physical quantity, such as a time axis, a constraint weight, an iteration count or an instrument dimension. The rest resolve to a name whose lifecycle stage makes it unreachable, and for each of those report the name and its stage. This distinction is the difference between a source the batch was never going to carry and a source the batch is losing, and the lead needs it stated plainly.\n\nSTEP THREE, CONFIRM NO ROSTER ROW IS QUARANTINED. A concurrent node swept stale validation quarantines. Verify the outcome for the roster:\n  MATCH (n:StandardName) WHERE n.id IN $roster AND n.validation_status <> 'valid' RETURN n.id AS id, n.validation_status AS vs, n.validation_issues AS issues ORDER BY n.id\nReport the rows this returns. If any roster row is still quarantined, report it with its issues and continue to the rehearsal anyway: the export gates are what decide, and finding out what they say is the point of this node.\n\nSTEP FOUR, THE REHEARSAL. Run:\n  imas-codex sn release --batch imas_codex/standard_names/manifests/west_production_dd_paths.yaml --bump minor --dry-run -m \"WEST review batch\"\nReport the roster size the command itself reports, and compare it against your step-one figure; a disagreement is a finding worth stating.\n\nSTEP FIVE, PROVE IT WROTE NOTHING. A rehearsal was repaired on 2026-09-06 so the export and the approved-baseline check run first and the run returns before freezing any artifact. Verify that rather than trusting it: read the release-candidate counter and count the files in the reviews directory immediately before the rehearsal, immediately after, and once more after a SECOND rehearsal, and report all three readings of each. The counter must be identical across all three and the file count must be identical across all three. Report git status --porcelain on the standard-names checkout before and after; it must be byte-identical.\n\nREPORT EVERY GATE BY NAME. The rehearsal runs export quality gates and an approved-baseline check. Report each gate with passed, failed or skipped, and quote any failure message verbatim. A failing gate is the outcome this node exists to surface: report it and stop rather than working around it, disabling it, or narrowing the roster to make it pass.\n\nENVIRONMENT. Work in your worktree. export UV_NO_SYNC=1 once in your shell before any uv invocation, and do not write the flag on a command line. Two workers today had a bare uv run start building a worktree package because the sandbox injection did not cover their invocation path; the environment variable is what actually held, and one of them lost a test run evidence to it. Name UV_PROJECT_ENVIRONMENT and the absolute target explicitly and let your own wrapper form the invocation. Do not run uv sync anywhere: that environment is shared with the main checkout and concurrent workers. Never pipe, tee, or redirect imas-codex output; it auto-logs full DEBUG to ~/.local/share/imas-codex/logs and you read that file afterwards.\n\nTHE STANDARD-NAMES CHECKOUT at /home/ITER/mcintos/Code/imas-standard-names must be on its main branch with no uncommitted change for the release code to read its state. Report its branch, its HEAD, and whether git status names any uncommitted path, and change none of them. Its main branch was released as v0.9.0 during this session, so a version-related gate message should be read against that rather than against the older pin recorded in imas-codex.\n\nMEASURE. Your manifest reports the three roster figures, the bucketed unmatched explanation, the quarantined-roster-row query result, the roster size the release command reports, every gate verdict by name, the three matched readings of the candidate counter and the reviews directory file count, the standard-names checkout state before and after, and the roster publishable count from this query, whose value was 210 when this brief was written:\n  MATCH (n:StandardName) WHERE n.id IN $roster AND n.name_stage='accepted' AND n.docs_stage='accepted' RETURN count(*) AS publishable\n\nCOMMITS. This node writes no repository file and must leave both checkouts unchanged. Say so explicitly in the manifest. Never add any AI attribution or co-author trailer to any message you write.\n\nMANIFEST DISCIPLINE. Write your manifest with what you have BEFORE starting any wait longer than a couple of minutes, then update it.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.6,
+          "goal": "The batch release rehearsal reports every gate verdict and proves it wrote nothing",
+          "id": "n-swcr-the-rehearsal-reports-its-gates",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-rehearsal/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "Release and fold-back contract",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/release-rehearsal.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-ninereview",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-07T06:42:33Z",
+        "completed_at": "2026-09-07T07:21:59Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 2366,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 2366,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "40c8b2a06882840cbf2e06e4ade0e390bd31c54b",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "imas-codex sn release --batch west_production_dd_paths.yaml --bump minor --dry-run, twice",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/reports/release-rehearsal.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-swcr-rehearsal/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07a9a-b309-7a11-bedb-2d5c6d435106",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 22035328,
+            "cached_input_tokens_cumulative": 22035328,
+            "input_tokens": 22416798,
+            "input_tokens_cumulative": 22416798,
+            "output_tokens": 41329,
+            "output_tokens_cumulative": 41329,
+            "reasoning_output_tokens": 14594,
+            "reasoning_output_tokens_cumulative": 14594
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3000,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: Six renameable accepted identities remain because the only sanctioned route on 32e204607 excludes the already-retired expected predecessor in its mutation precondition and refuses with RuntimeError: source migration compare-and-set changed before mutation: expected 1, moved 0. All six targets remain absent and predecessors unchanged.",
+              "elapsed_seconds": 684,
+              "external_wait": null,
+              "liveness_proven": true,
+              "log_age_seconds": 714,
+              "log_fresh": true,
+              "manifest_commits": [
+                "]; changed_paths: [\"/home/ITER/mcintos/.config/reckon/crew/reports/canonical-migration-3.md"
+              ],
+              "manifest_derived": false,
+              "manifest_digest": "9f75afc2e9c4d501fe0fc319c31fabb9bd9f87e7adcf7ef64cf425de821f603a",
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-migration-3/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-migration-3/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-sgr-the-cohort-renders-canonically-3",
+              "phase": "working",
+              "plan": "sn-grammar-refinement",
+              "process_alive": false,
+              "project": "imas-codex",
+              "run_id": "r-20260907T042526586609-n-sgr-the-cohort-renders-canonically-3",
+              "session": "ship-s10-20260905",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260907T042526586609-n-sgr-the-cohort-renders-canonically-3",
+                "session_id": "01a07a1d-599d-7a41-8d63-298b1b9d646e",
+                "source": "pointer"
+              },
+              "terminal_age_seconds": 764,
+              "terminal_at": "2026-09-07T06:29:44Z",
+              "wait_age_seconds": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-cohort-renders-canonically-3"
+            }
+          ]
+        },
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 55923,
+          "peak_input_tokens": 44452126
+        },
+        "follow_on_paths": [
+          "50/210/106",
+          "name/stage"
+        ],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "no_commit": "Rehearsal node; it proved the run writes nothing, so changing any file would have been a failure of its own measure.",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-swcr-the-rehearsal-reports-its-gates",
+          "session_id": "01a07a9a-b309-7a11-bedb-2d5c6d435106",
+          "session_source": "stream",
+          "retained_at": "2026-09-07T07:21:59Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -98298,6 +98487,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1889
+    "_version": 1890
   }
 }
