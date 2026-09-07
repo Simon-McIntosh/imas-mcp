@@ -6,7 +6,7 @@
 
 Use terminal for direct ops (`rg`, `fd`, `git`), MCP `repl()` for chained processing + graph queries, `uv run` for tests/CLI. Conventional commits. **Always commit and push after every file modification — no confirmation, no asking.** Never use `vscode_askQuestions` or other interactive VS Code dialogs — put questions inline in the chat response.
 
-**Git sync (fork-based):** All work on the fork's `main` branch. Merge on pull — never rebase, never use feature branches (the release CLI requires `main`). Pull before work and before push: `git pull origin main && git push origin main`. Push to `origin`, **never directly to `upstream`** — final releases go via the release CLI. Commit your own files before pulling a dirty worktree. See `~/.agents/AGENTS.md` for clone setup, banned commands, and stash ban. Release workflow detail in [`imas_codex/cli/AGENTS.md`](imas_codex/cli/AGENTS.md) (Release Workflow).
+**Git sync (fork-based):** All work on the fork's `main` branch. Merge on pull — never rebase, never use feature branches (the release CLI requires `main`). Pull before work and before push: `git pull origin main && git push origin main`. Push to `origin`, **never directly to `upstream`** — final releases go via the release CLI. Commit your own files before pulling a dirty worktree. See `~/.agents/AGENTS.md` for clone setup, banned commands, and stash ban. Release workflow detail in [`imas_codex/cli/AGENTS.md`](imas_codex/cli/AGENTS.md) (Release Workflow) for the package itself, and in [`imas_codex/standard_names/AGENTS.md`](imas_codex/standard_names/AGENTS.md) (Release recipe) for every standard-name catalog release.
 
 ## Scoped References
 
@@ -22,7 +22,8 @@ keeps only what a worker editing any file needs, plus these pointers.
 - **Exploration** (persistence, data classification) — [`imas_codex/discovery/AGENTS.md`](imas_codex/discovery/AGENTS.md)
 - **Graph Operations** (zero-row rule, Cypher, Neo4j mgmt, lock files, vector/semantic search) **+ how to dispatch graph work, and checkpointing** — [`imas_codex/graph/AGENTS.md`](imas_codex/graph/AGENTS.md)
 - **Services** — Neo4j connection in [`imas_codex/graph/AGENTS.md`](imas_codex/graph/AGENTS.md); **Embedding server** in [`imas_codex/embeddings/AGENTS.md`](imas_codex/embeddings/AGENTS.md)
-- **Release Workflow** — [`imas_codex/cli/AGENTS.md`](imas_codex/cli/AGENTS.md)
+- **Standard Name releases — every catalog cut, tag, and review PR** — [`imas_codex/standard_names/AGENTS.md`](imas_codex/standard_names/AGENTS.md) (Release recipe). This is the authoritative runbook for releasing names to the catalog; read it before any release activity that touches standard names.
+- **Software Release Workflow** (the `imas-codex` package itself, not the catalog) — [`imas_codex/cli/AGENTS.md`](imas_codex/cli/AGENTS.md)
 - **Standard Names** (pipeline, family harmonization, lifecycle, naming) — [`imas_codex/core/AGENTS.md`](imas_codex/core/AGENTS.md)
 - **Remote Tools** — [`imas_codex/config/AGENTS.md`](imas_codex/config/AGENTS.md) (rg/fd/eza/tokei/uv, remote Python)
 - **CLI Logs** — [`imas_codex/cli/AGENTS.md`](imas_codex/cli/AGENTS.md)
