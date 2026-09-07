@@ -14,25 +14,33 @@ from __future__ import annotations
 
 import json
 import subprocess
+from dataclasses import replace
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 import yaml
 
 from imas_codex.standard_names.catalog_release import (
     GitHubRestError,
+    PublicGrammarEvidence,
+    PublicGrammarFinding,
     ReviewPreviewLinkInvariantError,
     _closed_pr_heads,
+    _evaluate_public_grammar_evidence,
     _format_tag,
     _get_semver_tags,
     _GitHubClient,
     _parse_build,
     _parse_version,
     batch_build_metadata,
+    check_public_grammar_release,
     compute_next_version,
     detect_state,
+    run_release,
     sanitize_build_metadata,
 )
+from imas_codex.standard_names.export import _write_manifest
 
 
 def _git(*args, cwd):
@@ -53,6 +61,215 @@ def tagged_repo(tmp_path):
     _git("add", "README.md", cwd=work)
     _git("commit", "-qm", "init", cwd=work)
     return work
+
+
+def test_manifest_stamps_the_loaded_grammar_checkout_identity(
+    tagged_repo, tmp_path, monkeypatch, caplog
+):
+    """The catalog names the checked-out grammar, not stale editable metadata."""
+    import imas_standard_names
+
+    package = tagged_repo / "imas_standard_names"
+    package.mkdir()
+    module = package / "__init__.py"
+    module.write_text("\n", encoding="utf-8")
+    _git("add", "imas_standard_names/__init__.py", cwd=tagged_repo)
+    _git("commit", "-qm", "add grammar package", cwd=tagged_repo)
+    _git("tag", "-a", "v0.9.0", "-m", "release", cwd=tagged_repo)
+    monkeypatch.setattr(imas_standard_names, "__file__", str(module))
+    monkeypatch.setattr(
+        imas_standard_names,
+        "__version__",
+        "0.8.1.dev32+g12b557363",
+    )
+
+    _write_manifest(
+        tmp_path,
+        cocos_convention=17,
+        candidate_count=0,
+        published_count=0,
+        excluded_below_score_count=0,
+        excluded_unreviewed_count=0,
+        min_score_applied=0.65,
+        min_description_score_applied=None,
+        include_unreviewed=False,
+    )
+
+    manifest = yaml.safe_load((tmp_path / "catalog.yml").read_text())
+    assert manifest["grammar_version"] == "0.9.0"
+    assert manifest["isn_model_version"] == "0.9.0"
+    assert "disagrees with installed distribution version" in caplog.text
+
+
+def _passing_public_grammar_evidence() -> PublicGrammarEvidence:
+    return PublicGrammarEvidence(
+        checkout=Path("/grammar"),
+        tag="v0.9.0",
+        checkout_clean=True,
+        tag_annotated=True,
+        tag_final_release=True,
+        upstream_tag_present=True,
+        package_index_release_present=True,
+    )
+
+
+@pytest.mark.parametrize(
+    ("evidence", "failed_check", "message_fragment"),
+    [
+        (
+            replace(_passing_public_grammar_evidence(), checkout_clean=False),
+            "checkout_identity",
+            "uncommitted modifications",
+        ),
+        (
+            replace(
+                _passing_public_grammar_evidence(),
+                tag="v0.9.0rc1",
+                tag_final_release=False,
+            ),
+            "final_release_tag",
+            "not a plain major.minor.patch release",
+        ),
+        (
+            replace(_passing_public_grammar_evidence(), upstream_tag_present=False),
+            "upstream_tag",
+            "not present on the upstream remote",
+        ),
+        (
+            replace(
+                _passing_public_grammar_evidence(),
+                package_index_release_present=False,
+            ),
+            "package_index_release",
+            "not published as a final release",
+        ),
+    ],
+)
+def test_each_public_grammar_assertion_reports_its_own_failure(
+    evidence, failed_check, message_fragment, tagged_repo, monkeypatch
+):
+    findings = _evaluate_public_grammar_evidence(evidence)
+    failed = [finding for finding in findings if not finding.passed]
+
+    assert len(failed) == 1
+    assert failed[0].check == failed_check
+    assert message_fragment in failed[0].message
+
+    _isolate_release_preflight(monkeypatch)
+    monkeypatch.setattr(
+        "imas_codex.standard_names.catalog_release.check_public_grammar_release",
+        lambda: findings,
+    )
+    report = run_release(
+        tagged_repo,
+        "upstream release",
+        bump="minor",
+        final=True,
+        remote="upstream",
+    )
+    assert report.errors == [failed[0].message]
+
+
+def test_unreachable_package_index_fails_closed(tagged_repo, tmp_path, monkeypatch):
+    _git("tag", "-a", "v0.9.0", "-m", "release", cwd=tagged_repo)
+    upstream = tmp_path / "upstream.git"
+    _git("init", "--bare", str(upstream), cwd=tmp_path)
+    _git("remote", "add", "upstream", str(upstream), cwd=tagged_repo)
+    _git("push", "upstream", "refs/tags/v0.9.0", cwd=tagged_repo)
+    monkeypatch.setattr(
+        "imas_codex.standard_names.export.loaded_grammar_checkout",
+        lambda: tagged_repo,
+    )
+
+    def unreachable_index(*, timeout=5.0):
+        raise OSError("timed out")
+
+    monkeypatch.setattr(
+        "imas_codex.standard_names.catalog_release._read_package_index_versions",
+        unreachable_index,
+    )
+
+    findings = check_public_grammar_release()
+
+    assert [finding.passed for finding in findings[:3]] == [True, True, True]
+    assert findings[3].passed is False
+    assert "package index is unreachable" in findings[3].message
+    assert "unknown is not permission" in findings[3].message
+
+
+def _isolate_release_preflight(monkeypatch):
+    monkeypatch.setattr(
+        "imas_codex.standard_names.catalog_release._check_on_main", lambda _path: None
+    )
+    monkeypatch.setattr(
+        "imas_codex.standard_names.catalog_release._check_clean_tree",
+        lambda _path, **_kwargs: [],
+    )
+    monkeypatch.setattr(
+        "imas_codex.standard_names.catalog_release._check_synced",
+        lambda _path, _remote, **_kwargs: [],
+    )
+    monkeypatch.setattr(
+        "imas_codex.standard_names.catalog_release.compute_next_version",
+        lambda *_args, **_kwargs: ("v1.0.0", "1.0.0"),
+    )
+    monkeypatch.setattr(
+        "imas_codex.standard_names.catalog_release._tag_exists",
+        lambda *_args, **_kwargs: True,
+    )
+
+
+def test_release_targeting_origin_does_not_run_the_public_grammar_gate(
+    tagged_repo, monkeypatch
+):
+    _isolate_release_preflight(monkeypatch)
+
+    def unexpected_gate():
+        raise AssertionError("origin release reached the upstream-only grammar gate")
+
+    monkeypatch.setattr(
+        "imas_codex.standard_names.catalog_release.check_public_grammar_release",
+        unexpected_gate,
+    )
+
+    report = run_release(
+        tagged_repo,
+        "candidate",
+        bump="minor",
+        remote="origin",
+    )
+
+    assert report.preflight_findings == []
+    assert report.errors == ["Tag v1.0.0 already exists"]
+
+
+def test_upstream_dry_run_reports_failed_grammar_findings_without_blocking(
+    tagged_repo, monkeypatch
+):
+    _isolate_release_preflight(monkeypatch)
+    findings = [
+        PublicGrammarFinding(
+            check="checkout_identity",
+            passed=False,
+            message="Grammar checkout identity failed: synthetic refusal",
+        )
+    ]
+    monkeypatch.setattr(
+        "imas_codex.standard_names.catalog_release.check_public_grammar_release",
+        lambda: findings,
+    )
+
+    report = run_release(
+        tagged_repo,
+        "upstream rehearsal",
+        bump="minor",
+        final=True,
+        remote="upstream",
+        dry_run=True,
+    )
+
+    assert report.preflight_findings == [findings[0].to_dict()]
+    assert report.errors == ["Tag v1.0.0 already exists"]
 
 
 # ---------------------------------------------------------------------------

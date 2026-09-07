@@ -91,6 +91,87 @@ DEFAULT_BOUND_ADJACENT_HALF_WIDTH = 0.05625
 # emit it.
 _UNVERSIONED_TIMESTAMP = "1970-01-01T00:00:00+00:00"
 
+
+def loaded_grammar_checkout() -> Path | None:
+    """Return the Git checkout supplying the loaded grammar package, if any."""
+    import imas_standard_names
+
+    module_file = getattr(imas_standard_names, "__file__", None)
+    if module_file is None:
+        return None
+    module_path = Path(module_file).resolve()
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(module_path.parent), "rev-parse", "--show-toplevel"],
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    root = Path(result.stdout.strip()).resolve()
+    return root if module_path.is_relative_to(root) else None
+
+
+def loaded_grammar_version() -> str:
+    """Return the Git identity of the grammar code used by this process.
+
+    Editable installs can retain distribution metadata from an earlier build.
+    When the imported package comes from a Git checkout, that checkout is the
+    executable source and therefore owns the catalog stamp. A disagreement is
+    reported so stale editable metadata remains visible to the operator.
+    """
+    import imas_standard_names
+
+    distribution_version: str | None
+    try:
+        distribution_version = importlib.metadata.version("imas-standard-names")
+    except importlib.metadata.PackageNotFoundError:
+        distribution_version = getattr(imas_standard_names, "__version__", None)
+
+    checkout = loaded_grammar_checkout()
+    if checkout is not None:
+        try:
+            result = subprocess.run(
+                [
+                    "git",
+                    "-C",
+                    str(checkout),
+                    "describe",
+                    "--tags",
+                    "--always",
+                    "--dirty",
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+                timeout=10,
+            )
+        except (OSError, subprocess.SubprocessError) as exc:
+            raise RuntimeError(
+                f"could not resolve the loaded grammar checkout identity at {checkout}"
+            ) from exc
+        checkout_identity = result.stdout.strip()
+        if not checkout_identity:
+            raise RuntimeError(
+                f"loaded grammar checkout at {checkout} returned an empty identity"
+            )
+        checkout_version = checkout_identity.removeprefix("v")
+        if distribution_version and distribution_version != checkout_version:
+            logger.warning(
+                "Loaded grammar checkout identity %s disagrees with installed "
+                "distribution version %s; stamping the checkout actually in use",
+                checkout_version,
+                distribution_version,
+            )
+        return checkout_version
+
+    if distribution_version:
+        return distribution_version
+    raise RuntimeError("could not resolve the loaded standard-names grammar identity")
+
+
 # Gate names
 GATE_A = "graph_tests"
 GATE_B = "cross_field_consistency"
@@ -2041,18 +2122,17 @@ def _write_manifest(
     parse-failure and validation-failure buckets) is emitted in the sibling
     ``.export_report.json`` rather than here — see ``ExportReport.to_dict``.
     """
-    import imas_standard_names
-
     stamp = _manifest_iso_timestamp(
         source_commit_sha,
         require_provenance=require_provenance,
     )
+    grammar_version = loaded_grammar_version()
 
     manifest_data = {
         "catalog_name": "imas-standard-names-catalog",
         "cocos_convention": cocos_convention,
-        "grammar_version": imas_standard_names.__version__,
-        "isn_model_version": imas_standard_names.__version__,
+        "grammar_version": grammar_version,
+        "isn_model_version": grammar_version,
         "dd_version_lineage": ["4.0.0"],
         "generated_by": "imas-codex sn export",
         "generated_at": stamp,
