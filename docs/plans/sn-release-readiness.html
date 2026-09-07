@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-07">
-<meta name="plan-version" content="102">
+<meta name="plan-version" content="103">
 <meta name="plan-commits" content="7638824a,8a345b5b,8401c55d,eac130a9,2fbbc6e6,595a03ee,dd80ad6f,b46487f6,52f9fe2c,15f47960,f7185baa">
 <meta name="plan-artifacts" content="docs/evidence/sn-release-readiness/embedding-gap.md,docs/evidence/sn-release-readiness/suite-four-disposition.md,docs/evidence/sn-release-readiness/import-order-timeout.md,docs/evidence/sn-release-readiness/strain-ordinal-edit.md,docs/evidence/sn-release-readiness/unsourced-ancestry.md">
 <meta name="plan-impl" content="0.94">
@@ -675,6 +675,10 @@
       <button class="r-opt" data-value="admit-catalog-provenance">Widen the gate to accept catalog provenance as a resolution basis</button>
       </p>
     <p class="r-dec-rat">Locked by the lead 2026-08-23: catalog_edit is the residue of early development work, THERE ARE CURRENTLY NO HUMAN-ACCEPTED NAMES, and these names and docs will need to be rescored to pick up the appropriate metadata. Verified across the whole graph at 4,666 names rather than inferred: catalog_approved_at 0, catalog_pr_number 0, catalog_merge_commit_sha 0, exported_at 0. So catalog_edit origin carries NO external human authority and never did. This confirms and generalises what section 2a already recorded as a carve-out that is currently empty - a name already approved in full by an external community would not need our review, but no such name exists, so the exemption removes nothing. Widening the gate to admit catalog provenance was therefore not a policy trade-off between two authorities; it would have admitted a provenance string as a substitute for a review that never happened, which is the absence-as-permission defect this plan has now named five times. Scope of the resulting work, measured: of the 107, NINETY-NINE already carry a name score from the completed names drain and ZERO carry a docs score, so their name axis is substantially done and only the docs axis needs the rescore; the remaining 8 need both. This is the drain rather than the bar, so it belongs to this plan under the section 9 split, and it is a bounded 107-row targeted rescore rather than the deferred 1,469-row docs campaign.</p>
+    </div>
+<div class="r-dec" data-key="exclusion-accounting-shortfall" data-choice="Refuse the cut" data-by="smc" data-when="2026-09-07T18:10:30+00:00">
+    <p class="r-dec-q">What happens when a cut&#x27;s published count plus its accounted exclusions does not equal its candidate count</p>
+    <p class="r-dec-rat">The arithmetic is the only check that does not require having thought of the exit. A counter has to be written per mechanism, so an exit nobody instrumented is invisible to every counter and visible to the sum — which is exactly what happened: the domain filter and the quarantine verdict both drop names and neither is counted, and the eighteen were found by diffing the published files against the header&#x27;s own candidate list rather than by any check in the release. Rejected: warning and proceeding while recording the shortfall, which is the cheaper option and is also a precise description of the failure it would have to prevent, since today&#x27;s header already carried every number required and the release completed anyway. The accepted cost is that an accounting bug can block a cut whose names are all fine, so the refusal must name the shortfall and say which mechanism it could not attribute, making it a diagnosis rather than a wall. The withheld eighteen are named in section 9b of the cohort-treatment plan and are the fixture this must be verified against.</p>
     </div>
 </section>
 

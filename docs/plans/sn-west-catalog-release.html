@@ -28,7 +28,7 @@
 <meta name="plan-capability-verification" content="strict">
 <meta name="plan-capability-risk" content="critical">
 <meta name="plan-impl" content="0.94">
-<meta name="plan-version" content="196">
+<meta name="plan-version" content="197">
 <meta name="plan-commits" content="337f93d8,cc6bf548,e56b3c23,c8329ed5,c22671b0,d36d8b6c,75a5d2ca,9e4773f7,9da911db,95421a4e,329b6cda,7b6a558a,18939154,35317df">
 <meta name="plan-artifacts" content="https://github.com/Simon-McIntosh/imas-standard-names-catalog/pull/7,https://Simon-McIntosh.github.io/imas-standard-names-catalog/pr-7/,imas_codex/standard_names/manifests/reviews/v0.3.0rc3+west-task-2e.sn_names.yaml,crew/reports/west-review-pr-recut.md">
 </head>
@@ -118,6 +118,10 @@
 <div class="r-dec" data-key="hard-xray-solid-angle" data-choice="raise-upstream-vocabulary-gap" data-by="Simon McIntosh" data-when="2026-09-03T19:08:32+00:00">
     <p class="r-dec-q">hard-xray-solid-angle</p>
     <p class="r-dec-rat">Lead ruling 2026-09-03, on the measured finding that no token in the ISN 0.8.8 closed vocabulary means per unit solid angle: raise the gap upstream rather than accept a spelling that drops the steradian. hard_xray_source_rate_per_solid_angle and every variant raise UnknownBaseTokenError against 211 tokens, and hard_xray_volumetric_source_rate parses only by discarding the per-solid-angle character, leaving the unit string as the sole place it survives. So the vocabulary gains the qualifier, exactly as mass_flow_rate was handled, and every future per-solid-angle quantity is fixed with it. The accepted cost is that the chain runs fork PR, upstream PR, a v0.8.9 tag the lead publishes to PyPI, then a pin bump at both sites, so hard_xray_rate is withheld from this recut and enters the next candidate. The other three names are unaffected: their targets parse today.</p>
+    </div>
+<div class="r-dec" data-key="west-batch-release-legs" data-choice="Fork review, then exercise the upstream leg on a request that is unwound, then the real upstream request" data-by="smc" data-when="2026-09-07T18:10:22+00:00">
+    <p class="r-dec-q">Where the WEST batch lands, and whether the upstream leg is rehearsed first</p>
+    <p class="r-dec-rat">Three facts decided the sequence rather than a preference. The upstream leg has never run live — its mechanism shipped 2026-07-22 with every test mocked — so its first real execution is an unmeasured step. The organisation catalog holds no names at all, so the WEST batch would be its first content, which makes that step an event rather than a routine second leg. And the merge that concludes it is irreversible. Combining all three in one attempt means the first live exercise of an untested leg is also the thing that cannot be undone. The rehearsal separates them at the cost of one throwaway request cycle, using the pattern already proven on fork requests 4 and 5: open it, verify continuous integration, the deployed preview and the tag contract, then close it and delete the branch. Rejected: going straight to upstream after the re-cut, which buys one cycle and accepts that the leg&#x27;s first run and the irreversible landing are the same act. Rejected: deferring upstream entirely, which leaves the organisation catalog empty and postpones a leg that has to be exercised eventually anyway.</p>
     </div>
 </section>
 <section data-reckon="followups" id="followups" class="r-followups">
