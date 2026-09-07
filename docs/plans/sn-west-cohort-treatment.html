@@ -23,9 +23,9 @@
   <title>WEST Cohort Treatment and Batch Scoping | imas-codex</title>
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
-<meta name="plan-modified" content="2026-09-06">
-<meta name="plan-version" content="25">
-<meta name="plan-impl" content="0.75">
+<meta name="plan-modified" content="2026-09-07">
+<meta name="plan-version" content="26">
+<meta name="plan-impl" content="0.8">
 <meta name="plan-commits" content="2d9d674a">
 </head>
 <body>
@@ -231,6 +231,189 @@ mid-pipeline, and no identity is holding a claim nobody owns. The supersede patt
 is genuinely unstable — 1945 null scalars against 513 true dead ends means a reader cannot use the
 scalar to follow lineage at all, and must traverse edges every time.</p>
 
+
+<h2 id="s9">§9 — The tail, measured against the published candidate</h2>
+
+<p>The candidate on the catalog fork publishes <strong>196 names from 355 WEST
+source paths</strong>. The tail is therefore two distinct sets, and the earlier
+sections measured only the first of them. Both were counted against the frozen
+roster and the cut catalog on 2026-09-07, so every figure below is checkable
+rather than estimated.</p>
+
+<h3 id="s9a">§9a — Tail A: 31 source paths that reached no name</h3>
+
+<p>Of 355 <code>manifest_sources</code> rows, 324 carry a name and 31 do not. The
+roster states a cause for only 13 of the 31; <strong>18 carry an empty
+<code>non_nameable_reason</code></strong>, which is the artifact defect the batch
+was challenged on. Grouping them by mechanism shows that the empty field is
+hiding two very different situations — work not yet done, and work correctly
+declined.</p>
+
+<table>
+  <thead>
+    <tr><th>Rows</th><th>Recorded state</th><th>Mechanism</th><th>Candidate fix</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>15</td><td><code>extracted</code>, no reason</td>
+      <td>Never composed. These sat waiting on <code>generate_name</code> while
+      the compose seats pointed at a rotated vLLM serve port, so the pool never
+      claimed them.</td>
+      <td><strong>Recoverable.</strong> A compose pass scoped to these paths;
+      the router is reachable and the seats now name it.</td>
+    </tr>
+    <tr>
+      <td>1</td><td><code>compose_model_skipped</code></td>
+      <td><code>camera_x_rays/detector_humidity</code> was declined by the skip
+      rule although it carries a unit and a physical definition.</td>
+      <td><strong>Recoverable.</strong> The over-reach §4 already identified;
+      correct the rule, then compose.</td>
+    </tr>
+    <tr>
+      <td>1</td><td><code>compose_model_skipped: physical_base:signal_to_noise_ratio</code></td>
+      <td><code>spectrometer_visible/channel/isotope_ratios/signal_to_noise</code>
+      was declined because the base is absent from the closed vocabulary. A
+      signal-to-noise ratio is a legitimate dimensionless base.</td>
+      <td><strong>Recoverable.</strong> Admit the base in the grammar
+      repository, then compose. Owned by the grammar plan.</td>
+    </tr>
+    <tr>
+      <td>1</td><td><code>non_nameable_coordinate:time</code></td>
+      <td><code>summary/disruption/time/value</code> is the <em>instant at which
+      the disruption occurred</em> — a physical scalar — and the bare
+      <code>time</code> token rule swallowed it alongside the genuine axes.</td>
+      <td><strong>Decision needed.</strong> Whether the vocabulary admits an
+      event-instant base is a grammar question, not a pipeline one.</td>
+    </tr>
+    <tr>
+      <td>3</td><td><code>compose_model_skipped</code></td>
+      <td>Three <code>&hellip;/time</code> rows are genuine axes but report the
+      compose skip rather than the coordinate rule that actually applies.</td>
+      <td>Reason-string repair. Route them through the coordinate classifier so
+      they read like the four rows below.</td>
+    </tr>
+    <tr>
+      <td>4</td><td><code>non_nameable_coordinate:time</code> / <code>temporal_coordinate</code></td>
+      <td>Time axes. Correctly declined, correctly explained.</td>
+      <td>None.</td>
+    </tr>
+    <tr>
+      <td>4</td><td><code>compose_model_skipped</code> and <code>not_physical_quantity</code></td>
+      <td>Four equilibrium fit-constraint weights, and the same concept is
+      classified two different ways: two report
+      <code>not_physical_quantity</code> and two report a compose skip.</td>
+      <td>Classification repair. One concept, one verdict; then fill the reason
+      that both currently leave empty.</td>
+    </tr>
+    <tr>
+      <td>2</td><td><code>compose_model_skipped</code></td>
+      <td><code>equilibrium/time_slice/contour_tree/node/z</code> and
+      <code>convergence/iterations_n</code> are solver structure and a solver
+      diagnostic.</td>
+      <td>Classification repair, as above.</td>
+    </tr>
+    <tr>
+      <td>1</td><td><code>failed</code>, no reason</td>
+      <td><code>camera_x_rays/camera/camera_dimensions</code>. A terminal
+      failure with nothing recorded about it is the weakest row in the whole
+      artifact.</td>
+      <td>Triage. The row must end with either a name or a stated cause.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Eighteen of the 31 have a real path to a name</strong> — fifteen by a
+compose pass alone, one by correcting a skip rule, one by admitting a
+vocabulary base, one by a grammar decision. The remaining thirteen are correct
+exclusions that are badly explained, which costs a reviewer's trust rather than
+a name.</p>
+
+<h3 id="s9b">§9b — Tail B: 18 candidate names the export dropped</h3>
+
+<p>The catalog header declares <code>candidate_count: 214</code> and
+<code>published_count: 196</code>, and then declares
+<code>excluded_below_score_count: 0</code> and
+<code>excluded_unreviewed_count: 0</code>. <strong>Eighteen names left the batch
+and the artifact accounts for none of them.</strong> The export's
+<code>exclusion_accounting</code> gate passed on that header, so the gate does
+not cover the paths these names actually took.</p>
+
+<p>Naming them takes a diff between the header's <code>review_batch</code> and
+the catalog files, and their graph state then gives the mechanism. Not one of
+the eighteen was dropped for a low score: the withheld scores run 0.779 to
+1.000, while the <em>published</em> set contains a name at 0.568, below the
+declared <code>min_score_applied: 0.65</code>. The score filter is not what
+separated these sets.</p>
+
+<table>
+  <thead>
+    <tr><th>Names</th><th>Mechanism</th><th>Detail</th><th>Candidate fix</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>5</td><td><code>validation_status: quarantined</code></td>
+      <td>Accepted stage, units and source bindings intact, scores 0.844 to
+      0.906. Withheld purely by a stored verdict that carries no observation
+      time — and the two instruments that answer &ldquo;is this still
+      quarantined&rdquo; disagree with each other.</td>
+      <td>Reconcile the audit and validation instruments first; a revalidation
+      sweep run through the wrong one cleared none of 23 rows when it was tried.</td>
+    </tr>
+    <tr>
+      <td>2</td><td>null <code>physics_domain</code></td>
+      <td><code>total_electron_count</code> (0.947) and
+      <code>vertical_coordinate_of_ece_channel</code> (0.966) are accepted and
+      valid, but a null domain falls outside <code>domains_included</code> and
+      is dropped with no counter incremented.</td>
+      <td>Assign the domain. Two strong names lost to an empty field.</td>
+    </tr>
+    <tr>
+      <td>1</td><td><code>status: superseded</code></td>
+      <td>A tombstoned identity entered the candidate set at all.</td>
+      <td>Candidate selection must exclude retired identities before the cut.</td>
+    </tr>
+    <tr>
+      <td>2</td><td><code>reviewed</code>, not yet accepted</td>
+      <td><code>hot_neutral_temperature</code> has documentation;
+      <code>normalized_toroidal_beta</code> does not.</td>
+      <td>A docs and review rotation on two names. Genuine pipeline work.</td>
+    </tr>
+    <tr>
+      <td>2</td><td><code>drafted</code>, documentation null</td>
+      <td><code>inner_normalized_toroidal_flux_coordinate_hard_xray_emissivity_peak_half_width</code>
+      and <code>vertical_outline_of_plasma_boundary</code>.</td>
+      <td>Full docs, review and acceptance. Genuine pipeline work.</td>
+    </tr>
+    <tr>
+      <td>6</td><td>accepted and valid, cause not yet isolated</td>
+      <td>Nine of the eighteen carry a null <code>link_status</code> against two
+      of the published 196, which is the strongest remaining signal.</td>
+      <td>Triage. The export must state why it drops a name it was handed.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="s9c">§9c — What the tail is worth, and what it costs</h3>
+
+<p>Draining both tails takes the batch from 196 towards roughly <strong>210 to
+228 names</strong>: up to twelve of Tail B recovered without any physics
+judgement, four more through a docs rotation, and eighteen new names from Tail A
+of which fifteen need only a compose pass.</p>
+
+<p><strong>The controlling finding is that most of this is not
+generation-limited.</strong> Twelve of the eighteen withheld names are already
+accepted, already scored above threshold, already carrying units and source
+bindings — they are held back by a stale quarantine verdict, an empty domain
+field, and an export that drops names without saying so. That work is
+measurement and repair, and it is nearly free. The authorised pipeline budget is
+for the fifteen extracted sources and the four docs rotations, which is the only
+part of the tail that needs a model at all.</p>
+
+<p>Sequence matters here. The quarantine instrument must be reconciled before
+any revalidation sweep, or the sweep reports success and clears nothing. The
+export must account for its own exclusions before a re-cut, or the next
+candidate loses names as silently as this one did. Only then is the compose pass
+worth paying for, because only then can its result be seen.</p>
 <section data-reckon="decisions" id="decisions" class="r-decisions">
 <h2><span class="sec">§</span> Decisions</h2>
 <div class="r-dec" data-key="batch-scope-authority" data-choice="manifest-paths-plus-their-parents" data-by="Simon McIntosh" data-when="2026-09-04T05:30:28+00:00">
@@ -265,9 +448,15 @@ scalar to follow lineage at all, and must traverse edges every time.</p>
 
 <section data-reckon="followups" id="followups" class="r-followups">
 <h2><span class="sec">§</span> Followups</h2>
-<article class="r-fu" data-id="f-swct-001" data-status="open" data-written-by="reckon-ship" data-written-at="2026-09-04" data-recommends-skill="/reckon-ship sn-west-cohort-treatment" data-resolved-at="" data-resolved-by="">
+<article class="r-fu" data-id="f-swct-001" data-status="resolved" data-written-by="reckon-ship" data-written-at="2026-09-04" data-recommends-skill="/reckon-ship sn-west-cohort-treatment" data-resolved-at="2026-09-07T16:52:18+00:00" data-resolved-by="reckon-ship">
     <h4 class="r-fu-title">Fix batch scoping, then treat the 37 untreated WEST paths</h4>
     <div class="r-fu-body"><p>Start with the scoping defect in §1, because every later candidate inherits it: 150 of 411 published names are bound to no path in the batch manifest. Then Group A (§2), which is the cheapest real progress available — twelve WEST sources and 216 graph-wide share one error, <code>compose claim-attempt cap reached</code>, and need a counter reset rather than any physics judgement. Group B (§3) is six more sources that were extracted and never composed. Group C (§4) needs the skip rule audited, since it excluded detector humidity, which has a unit and a physical definition. Group D (§5) is correctly excluded and needs no action. Group E (§6) is twelve named identities, three of them one docs rotation from ready. The lifecycle gate in §7 should land before any recut, so a candidate cannot be cut carrying names with a null status.</p></div>
+    <pre class="r-fu-prompt">/reckon-ship sn-west-cohort-treatment</pre>
+    <p class="r-fu-outcome"><p>Superseded by the measured census in section 9. The scoping half of this followup is complete — all 214 candidates bind to a batch-manifest path and nothing outside <code>review_batch</code> reached the catalog — and its Group A through E grouping was taken against a halted candidate whose figures have since moved. Group A's attempt-cap cohort no longer appears in the unnamed set at all; Group B is now 15 rows parked at <code>extracted</code> behind a configuration defect rather than a cap; Group C's over-reach is confirmed on <code>detector_humidity</code> and joined by a vocabulary gap and a misclassified disruption instant; Group D is confirmed correct at 4 rows; Group E is now 4 named identities rather than 12. The lifecycle gate this followup asked for in section 7 remains wanted, and is carried into the successor.</p></p>
+    </article>
+<article class="r-fu" data-id="f-swct-002" data-status="open" data-written-by="reckon-ship" data-written-at="2026-09-07" data-recommends-skill="/reckon-ship sn-west-cohort-treatment" data-resolved-at="" data-resolved-by="">
+    <h4 class="r-fu-title">Drain the WEST tail: account for the withheld names first, then compose the parked sources</h4>
+    <div class="r-fu-body"><p>Section 9 tabulates both tails with mechanism and candidate fix. Work them in that order, because the order is what makes the result visible.</p><p><strong>First, reconcile the quarantine instruments.</strong> Two instruments answer whether a name is still quarantined and they disagree; a revalidation sweep run through the wrong one reported success and cleared none of 23 rows. Five withheld names are accepted, valid and scored 0.844 to 0.906, held back only by a stored verdict that carries no observation time. Until the instruments agree, no quarantine census can be trusted and no sweep result can be believed.</p><p><strong>Second, make the export account for every exit.</strong> Eighteen names left the batch with both declared exclusion counters reading zero and the <code>exclusion_accounting</code> gate passing. A null <code>physics_domain</code> and a quarantine verdict are two confirmed silent exits; the remaining six accepted-and-valid drops are unexplained, with a null <code>link_status</code> on nine of the eighteen against two of the published 196 as the strongest signal. Every name handed to the export must leave it either published or counted with a stated cause. This lands before any re-cut, and it subsumes the release gate section 7 asked for.</p><p><strong>Third, recover what the accounting exposes.</strong> Assign the two null domains, exclude the one tombstoned identity from candidate selection, and revalidate the five quarantined names through the instrument that turns out to be right.</p><p><strong>Fourth, spend the pipeline budget.</strong> A compose pass scoped to the 15 source paths parked at <code>extracted</code>, and a docs rotation on the four names sitting at <code>reviewed</code> and <code>drafted</code>. This is the only part of the tail where a model is the limit, and the router is reachable now. Report actual spend against the ceiling and say why any remainder was not used.</p><p><strong>Fifth, repair the roster's reason field.</strong> Eighteen of the 31 unnamed rows record no cause; four fit-constraint weights carry two different verdicts for one concept; three time axes report a compose skip instead of the coordinate rule; and one <code>failed</code> row records nothing at all. A row must end with a name or a stated cause.</p><p><strong>Two items are decisions, not work.</strong> Whether the vocabulary admits an event-instant base — which is what <code>summary/disruption/time/value</code> needs — and whether <code>signal_to_noise_ratio</code> is admitted as a dimensionless base, both belong to the grammar repository and should be raised there rather than settled in a pipeline run.</p><p>Every node here is a worker node in an isolated worktree, including the census and the pipeline runs. Keep the cut target out of every brief: a release brief must not name or restate the checkout, repository, remote or path that receives a cut.</p></div>
     <pre class="r-fu-prompt">/reckon-ship sn-west-cohort-treatment</pre>
     </article>
 </section>
@@ -341,6 +530,12 @@ scalar to follow lineage at all, and must traverse edges every time.</p>
 </div>
 <div class="r-comment" data-section="_top" data-id="c-20260904T210125759947" data-who="" data-when="">
     <div class="r-comment-body"><p><strong>Status corrected from draft at zero: substantial work has landed and the plan was misreporting it.</strong> This mattered beyond bookkeeping — <code>sn-west-catalog-release</code> derives a dependency block from this plan, so a stale draft status was reporting the release as blocked on work that was largely done.</p><p>Landed. <strong>§1 batch scoping</strong> is resolved by ruling rather than by code: the widening was traced to the immediate-family closure at <code>minting.py:100-120</code>, whose parent, sibling and child arms admit any live relative without a manifest check, accounting exactly for the surplus of 150 externally-bound names plus 42 derived parents plus one source-less name over 218 manifest-bound identities. The lead then ruled that the family stays, because a reviewer must see the full set and the batch is a weak scoping device, so the narrowing node was retired unlanded and the PR body claim was the only defect. <strong>§2 Group A</strong> is released and drained: 210 capped sources given an audited retry event each, 93 composed and 79 attached, 30 left holding live claims, 6 failed and 2 parked as typed vocabulary gaps, with no row retaining an attempt-cap error, for 16.68 dollars of an authorised 150. The probe that preceded it established that the cap was only the parked state and never the cause, which is why a blind fan-out over the other counters would have been wasted. <strong>§4 Group C</strong> is audited: the predicate that skipped detector humidity is the compose model's own free-form refusal at <code>workers.py:6376-6385</code>, blast radius 22 of 1412, and the same audit exonerated <code>local_coordinate_frame</code>, which fires only on an exact unit-vector segment and could not have touched the boundary paths this coordinator twice blamed.</p><p>Remaining. The 29 released sources still at extracted are geometry and fit ordinates and <strong>none of them is in the WEST manifest</strong>, so they do not advance the candidate. The WEST tail itself stands at 19 of 355 paths without a name: nine correctly excluded time axes and solver weights, three blocked on vocabulary that needs an upstream release, and five actionable of which two name their own blocker. Group E and the remaining docs rotations are untouched.</p></div>
+</div>
+<div class="r-comment" data-section="_top" data-id="c-swct-tail-measured" data-who="" data-when="">
+    <div class="r-comment-body"><p><strong>The tail is now measured against a published candidate rather than against a halted one, and it is two sets, not one.</strong> Section 9 carries the full tabulation. Tail A is 31 source paths of 355 that reached no name, of which 18 have a real path to one. Tail B is 18 candidate names of 214 that the export dropped, of which 12 are already accepted, already scored above threshold, and already carrying units and source bindings.</p><p>The figures in sections 2 through 6 were taken while the candidate was halted and no longer describe the batch: the 37-untreated-paths count is now 31 unnamed sources, and the batch-scoping defect that opened this plan is closed — all 214 candidates bind to a path in the batch manifest and nothing outside <code>review_batch</code> was published. Those sections keep their diagnostic value as mechanism descriptions; section 9 is the current census.</p><p><strong>Most of the tail is not generation-limited.</strong> That is the finding that changes how the remaining work should be paid for: the withheld names are held back by a stale quarantine verdict, an empty domain field and an export that drops names without incrementing any counter, none of which needs a model. The authorised pipeline budget is for the 15 parked sources and the 4 docs rotations — the only part of the tail where a model is the limit.</p></div>
+</div>
+<div class="r-comment" data-section="_top" data-id="c-swct-exclusion-accounting-hole" data-who="" data-when="">
+    <div class="r-comment-body"><p><strong>The export gate named <code>exclusion_accounting</code> passed on a header whose own arithmetic does not close.</strong> The cut declares <code>candidate_count: 214</code> and <code>published_count: 196</code>, then declares <code>excluded_below_score_count: 0</code> and <code>excluded_unreviewed_count: 0</code>. Eighteen names left the batch through neither counter.</p><p>Two of the paths they actually took are now identified. A null <code>physics_domain</code> puts a name outside <code>domains_included</code> and drops it; <code>validation_status: quarantined</code> drops it as well. Neither is counted, so the artifact cannot report either. Recovering the names is worth doing once; making the gate cover every exit is what stops the next candidate losing names as quietly as this one did, and it should land before any re-cut.</p><p>A third reading in the same header is worth carrying forward: the published set contains a name scored 0.568 against a declared <code>min_score_applied: 0.65</code>, while every withheld name scores 0.779 or above. Whatever separated the two sets, it was not the score filter the header claims to have applied.</p></div>
 </div>
 </section>
 </main>
