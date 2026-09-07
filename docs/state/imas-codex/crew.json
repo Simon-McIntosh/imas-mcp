@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07T07:35:21",
+  "updated": "2026-09-07T08:24:26",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -241,9 +241,11 @@
         "id": "cx-guard",
         "harness": "codex",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "01a07a66-71c5-7231-9f83-6ae197503c99",
+        "session_model": "gpt-5.6-sol",
+        "sessions": {
+          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a07a66-71c5-7231-9f83-6ae197503c99"
+        },
         "created": "2026-09-07"
       },
       {
@@ -97519,6 +97521,143 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260907T054934475416-n-sgr-the-postflight-counts-live-bindings",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a78",
+        "node": "n-sgr-the-postflight-counts-live-bindings",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 3365,
+                "cached_input_tokens": 443725,
+                "input_tokens": 447092,
+                "output_tokens": 743,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 447835,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "11b50f59-c77b-4356-8bb3-6dafc6d0a4c0",
+            "session_id": "ship-s10-20260905"
+          },
+          "done_when": "COUNT ONLY LIVE BINDINGS IN THE SOURCE-MIGRATION POSTFLIGHT, AS THE PREFLIGHT ALREADY DOES.\n\nTHE MEASURED DEFECT. Six sanctioned source-backed renames are refused, once per row, with:\n  RuntimeError: source migration compare-and-set changed before mutation: expected 1, moved 0\nEach target is still absent and each predecessor unchanged, so every attempt rolled back with no residue. Seven sibling renames in the same cohort succeeded, which is the tell: the rows that fail are the ones whose source carries a retired binding as well as its live one.\n\nTHE MECHANISM, DIAGNOSED AND HANDED TO YOU. A repair merged earlier today added guard_comparison_bindings in imas_codex/standard_names/provenance_lifecycle.py, so the migration PREFLIGHT now counts only the bindings that could be the source's current realisation, treating a retired binding as generation provenance rather than a current one. The mutation statement's own postflight was not brought to those semantics. Inside retarget_standard_name_sources the postflight matches each expected source onto the new name and then requires:\n  AND COUNT { (moved)-[:PRODUCED_NAME]->(:StandardName) } = 1\nThat counts EVERY binding, retired ones included. A source that legitimately retains a superseded or exhausted binding therefore holds two after a successful migration, the count returns 2, the postflight count falls below the expected cardinality, the whole statement yields no row, and the caller reports moved 0 while nothing is wrong with the migration it just performed. Confirm this reading against the code before changing it and say in your report whether you confirmed or refuted it.\n\nTHE FIX. Make that clause count only bindings whose name is NOT at a retired stage, so it means exactly one LIVE realisation rather than exactly one binding of any kind. The retired stages are the same two the module already names in _RETIRED_NAME_STAGES: superseded and exhausted. Express the stage set in the Cypher from that constant rather than retyping the literals, so the two sides cannot drift apart again; if passing it as a parameter is cleaner than interpolating, do that.\n\nRead guard_comparison_bindings first and mirror its rule deliberately: a retired binding is dropped from a comparison, a live binding always counts. The postflight and the preflight must agree on what a binding means, and this node exists because they did not.\n\nCHECK THE WHOLE STATEMENT FOR THE SAME MISTAKE, not only the line quoted above. Any other place in that Cypher that counts or collects PRODUCED_NAME edges without excluding retired names is the same defect and belongs in this node. Report every site you found and what you did about each. If a site is correct as written because it deliberately wants all bindings, say why rather than changing it.\n\nTESTS YOU MUST ADD, in tests/standard_names:\n  1. A migration whose source carries ONLY the expected live binding still succeeds. This is the seven that already worked and must not regress.\n  2. A migration whose source carries the expected live binding AND a retired binding succeeds and reports the correct moved count. This is the case the six refusals hit and the reason for this node; prove it fails before your change and passes after, and report both results.\n  3. A source that ends with two LIVE bindings is still refused, because that is a genuine cardinality fault rather than retained provenance.\nReport the outcome of all three.\n\nTHE GATE. Run `pytest tests/standard_names` and report the failure count and failing identifiers before your change and after it. The count after must not exceed the count before. The baseline was 18 failures at commit fff935dcf, all pre-existing. Do not run the whole repository suite: this is Cypher and provenance logic in the standard-names package, so tests/standard_names is the gate that reaches it and tests/graph alone does not. If the gate needs a compute node, run it on a debug SLURM partition with a time limit of 00:59:00 and say so.\n\nDO NOT APPLY ANY RENAME. The node that measured the six holds their evidence contract and will resume once your fix is merged. Applying them here would duplicate that record. You may run a single migration through the repaired path only if a test cannot reach it, and if you do, say exactly which row and why.\n\nENVIRONMENT. Work in your worktree. export UV_NO_SYNC=1 once in your shell before any uv invocation, and do not write the flag on a command line: two workers today had a bare uv run start building a worktree package because the sandbox injection did not cover their invocation path, and one lost a test run evidence to it. Name UV_PROJECT_ENVIRONMENT and the absolute target explicitly. Do not run uv sync anywhere; that environment is shared with the main checkout and concurrent workers. Capture the pytest run to a file once and read it selectively rather than piping it.\n\nCOMMIT. One commit, conventional subject plus a BODY stating what changed and why, staging only the provenance module and your test file by explicit path. Never `git add -A`. Never add any AI attribution or co-author trailer to any message you write, and verify that before you commit. Run ruff check --fix and ruff format over exactly the paths you stage, never over the whole tree.\n\nMEASURE. Your manifest reports whether you confirmed or refuted the handed diagnosis, every PRODUCED_NAME counting site you found with its disposition, the three test outcomes with test 2 failing before and passing after, the tests/standard_names failure count before and after with identifiers, and the commit sha with its changed paths.\n\nMANIFEST DISCIPLINE. Write your manifest with what you have BEFORE starting any wait longer than a couple of minutes, then update it.\n\nOPERATIONAL RECEIPT IN YOUR MANIFEST: wall clock from first tool call to manifest write, tool calls, turns used, any request retried or refused and why, and one sentence on what you had to discover versus what this brief handed you.",
+          "estimated_hours": 0.6,
+          "goal": "The source-migration postflight counts only live bindings so a retained retired binding no longer reports a zero move",
+          "id": "n-sgr-the-postflight-counts-live-bindings",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-postflight/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a78",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "imas_codex/standard_names/provenance_lifecycle.py",
+            "tests/standard_names"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-route",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-07T05:49:59Z",
+        "completed_at": "2026-09-07T06:18:13Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1694,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1694,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "b28391f59378cda337cb05977169a6219fd87521",
+        "commits": [
+          "bc795e570531beffb314ba64e24be905b1cfda71"
+        ],
+        "changed_lines": {
+          "added": 113,
+          "removed": 3,
+          "files": 2
+        },
+        "tests_added": 3,
+        "gate": "passed",
+        "gate_check": {
+          "command": "pytest tests/standard_names on all_debug",
+          "exit_status": 1,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-postflight/after-standard-names.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/n-sgr-postflight/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07a6a-94bd-7d70-9710-fabd86bd6be1",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 12613376,
+            "cached_input_tokens_cumulative": 12613376,
+            "input_tokens": 12803395,
+            "input_tokens_cumulative": 12803395,
+            "output_tokens": 33686,
+            "output_tokens_cumulative": 33686,
+            "reasoning_output_tokens": 11310,
+            "reasoning_output_tokens_cumulative": 11310
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 44996,
+          "peak_input_tokens": 25416771
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260905/n-sgr-the-postflight-counts-live-bindings",
+          "session_id": "01a07a6a-94bd-7d70-9710-fabd86bd6be1",
+          "session_source": "stream",
+          "retained_at": "2026-09-07T06:18:13Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names`",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        }
       }
     ],
     "holds": [
@@ -97761,6 +97900,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1884
+    "_version": 1886
   }
 }
