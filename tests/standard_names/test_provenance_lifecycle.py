@@ -41,6 +41,102 @@ def _migration_row(
     }
 
 
+def _binding(name: str, stage: str) -> dict[str, object]:
+    return {"id": name, "name_stage": stage}
+
+
+class _MigrationStatementGraph:
+    """Exercise the migration statement's binding-cardinality predicates."""
+
+    def __init__(self, bindings: list[dict[str, object]]) -> None:
+        self.bindings = bindings
+        self.queries: list[tuple[str, dict[str, object]]] = []
+
+    def query(self, cypher: str, **params: object) -> list[dict[str, object]]:
+        self.queries.append((cypher, params))
+        if "EXPLICIT_SOURCE_MIGRATION_APPLY" not in cypher:
+            row = _migration_row(
+                "dd:example/path", binding="old_name", scalar="old_name"
+            )
+            row["current_bindings"] = [entry["id"] for entry in self.bindings]
+            row["binding_state"] = self.bindings
+            return [row]
+
+        retired_stages = set(params.get("retired_name_stages", ()))
+        before = self._counted_bindings(
+            self.bindings,
+            filtered="source_binding.name_stage" in cypher,
+            retired_stages=retired_stages,
+        )
+        if before != ["old_name"]:
+            return []
+
+        after = [entry for entry in self.bindings if entry["id"] != "old_name"]
+        after.append(_binding("replacement_name", "drafted"))
+        postflight = self._counted_bindings(
+            after,
+            filtered="moved_binding.name_stage" in cypher,
+            retired_stages=retired_stages,
+        )
+        return [{"moved": 1}] if postflight == ["replacement_name"] else []
+
+    @staticmethod
+    def _counted_bindings(
+        bindings: list[dict[str, object]],
+        *,
+        filtered: bool,
+        retired_stages: set[object],
+    ) -> list[object]:
+        return sorted(
+            entry["id"]
+            for entry in bindings
+            if not filtered or entry["name_stage"] not in retired_stages
+        )
+
+
+def _retarget_with_statement_graph(gc: _MigrationStatementGraph) -> int:
+    return retarget_standard_name_sources(
+        gc,
+        "old_name",
+        "replacement_name",
+        source_ids=["dd:example/path"],
+        expected_current_bindings={"dd:example/path": "old_name"},
+        record_change=False,
+        enforce_consistency=False,
+    )
+
+
+def test_retarget_migrates_source_with_only_expected_live_binding() -> None:
+    gc = _MigrationStatementGraph([_binding("old_name", "drafted")])
+
+    assert _retarget_with_statement_graph(gc) == 1
+
+
+def test_retarget_migrates_source_with_expected_live_and_retired_binding() -> None:
+    gc = _MigrationStatementGraph(
+        [
+            _binding("old_name", "drafted"),
+            _binding("retired_name", "superseded"),
+        ]
+    )
+
+    assert _retarget_with_statement_graph(gc) == 1
+
+
+def test_retarget_refuses_source_with_two_live_bindings() -> None:
+    gc = _MigrationStatementGraph(
+        [
+            _binding("old_name", "drafted"),
+            _binding("other_live_name", "reviewed"),
+        ]
+    )
+
+    with pytest.raises(RuntimeError, match="source migration compare-and-set failed"):
+        _retarget_with_statement_graph(gc)
+
+    assert len(gc.queries) == 1
+
+
 def test_guard_comparison_bindings_drops_unexpected_retired_sibling() -> None:
     binding_state = [{"id": "retired_sibling", "name_stage": "superseded"}]
 
@@ -199,7 +295,12 @@ def test_retarget_query_repairs_exact_source_mirrors_and_both_caches() -> None:
 
     assert moved == 1
     cypher = gc.query.call_args_list[1].args[0]
-    assert "COUNT { (source)-[:PRODUCED_NAME]->(:StandardName) } = 1" in cypher
+    assert "source_binding.name_stage" in cypher
+    assert "moved_binding.name_stage" in cypher
+    assert gc.query.call_args_list[1].kwargs["retired_name_stages"] == [
+        "exhausted",
+        "superseded",
+    ]
     assert "DELETE prior" in cypher
     assert "MERGE (source)-[:PRODUCED_NAME]->(new)" in cypher
     assert "source.produced_sn_id = new.id" in cypher

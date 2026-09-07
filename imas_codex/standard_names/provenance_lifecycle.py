@@ -537,7 +537,11 @@ def retarget_standard_name_sources(
           AND source.claimed_at IS NULL
           AND source.claim_token IS NULL
           AND source.produced_sn_id = $old_name
-          AND COUNT { (source)-[:PRODUCED_NAME]->(:StandardName) } = 1
+          AND COUNT {
+            (source)-[:PRODUCED_NAME]->(source_binding:StandardName)
+            WHERE NOT coalesce(source_binding.name_stage, '')
+              IN $retired_name_stages
+          } = 1
           AND EXISTS { (source)-[:PRODUCED_NAME]->(old) }
         MATCH (source)-[prior:PRODUCED_NAME]->(old)
         DELETE prior
@@ -561,7 +565,11 @@ def retarget_standard_name_sources(
         MATCH (moved:StandardNameSource {id: expected_source_id})
               -[:PRODUCED_NAME]->(new)
         WHERE moved.produced_sn_id = new.id
-          AND COUNT { (moved)-[:PRODUCED_NAME]->(:StandardName) } = 1
+          AND COUNT {
+            (moved)-[:PRODUCED_NAME]->(moved_binding:StandardName)
+            WHERE NOT coalesce(moved_binding.name_stage, '')
+              IN $retired_name_stages
+          } = 1
         WITH old, new, moved_source_ids,
              count(DISTINCT moved) AS postflight_count
         WHERE postflight_count = size($source_ids)
@@ -611,6 +619,7 @@ def retarget_standard_name_sources(
         manifest_hash=manifest_hash,
         operation=operation,
         run_id=run_id,
+        retired_name_stages=sorted(_RETIRED_NAME_STAGES),
     )
     moved = int(rows[0].get("moved", 0)) if rows else 0
     if moved != len(admitted_source_ids):
