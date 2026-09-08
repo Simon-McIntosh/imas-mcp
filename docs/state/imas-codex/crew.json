@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T02:49:36",
+  "updated": "2026-09-08T03:01:12",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -100799,6 +100799,155 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260907T185856858785-n-sli-the-suite-base-is-reproducible",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a76",
+        "node": "n-sli-the-suite-base-is-reproducible",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2614,
+                "cached_input_tokens": 247907,
+                "input_tokens": 250523,
+                "output_tokens": 1771,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 252294,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "Three consecutive runs of tests/standard_names at one revision return an identical failure-id set, all three logs recorded in docs/evidence/sn-lifecycle-integrity/suite-base-determinism.md with the ids listed. Three prior measurements at one revision disagreed (5 at 5a9702f40, 19 at the same revision, 27 at 4be834fa7) with the extra failures concentrating in tests/standard_names/test_export_exclusion_ledger.py, test_export_bound_adjacent.py, test_export_release_holds.py, test_export_resolution_method.py, test_catalog_layout_hierarchy.py and test_seed_live_graph.py. Name the shared live state, ordering dependency or filesystem coupling each of those six carries and remove it, so the base is a property of the revision rather than of the run. Change only test files \u2014 no source edits. If a file's nondeterminism is caused by production code rather than the test, say so precisely and leave that file's cause stated rather than working around it.",
+          "estimated_hours": null,
+          "goal": "Make the base of the six coupled standard-names test files reproducible across runs at one revision",
+          "id": "n-sli-the-suite-base-is-reproducible",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T185856858785-n-sli-the-suite-base-is-reproducible/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a76",
+          "spec_level": "guided",
+          "time_budget": "60m",
+          "write_paths": [
+            "tests/standard_names/test_export_exclusion_ledger.py",
+            "tests/standard_names/test_export_bound_adjacent.py",
+            "tests/standard_names/test_export_release_holds.py",
+            "tests/standard_names/test_export_resolution_method.py",
+            "tests/standard_names/test_catalog_layout_hierarchy.py",
+            "tests/standard_names/test_seed_live_graph.py",
+            "docs/evidence/sn-lifecycle-integrity/suite-base-determinism.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "clive-gate",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-07T18:59:22Z",
+        "completed_at": "2026-09-08T00:58:40.190Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 21488,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 21558,
+        "stalled": true,
+        "time_budget": "60m",
+        "base_sha": "69f24046b143dce1048f82f02fd25878b2849126",
+        "commits": [
+          "70e1effd0241a8de2187ee7774b667def1295ff0"
+        ],
+        "changed_lines": {
+          "added": 4,
+          "removed": 3,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "failed",
+        "gate_check": null,
+        "suite_delta": null,
+        "failure_classification": "infrastructure-failure",
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T185856858785-n-sli-the-suite-base-is-reproducible/manifest.md",
+        "scope_changed": true,
+        "session_id": "aadb3c4d-38dd-434c-a6ad-2ea8998034d7",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 4135844,
+            "input_tokens_cumulative": 4135844,
+            "output_tokens": 40416,
+            "output_tokens_cumulative": 40416,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 21554.622,
+          "generated_tokens": 40416,
+          "generation_seconds": 19870.176,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 13.7,
+          "machine_seconds": 1684.446,
+          "peak_input_tokens": 139507,
+          "tokens_per_second": 2.03,
+          "wall_tokens_per_second": 1.88
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sli-the-suite-base-is-reproducible",
+          "session_id": "aadb3c4d-38dd-434c-a6ad-2ea8998034d7",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T00:58:40.190Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -101041,6 +101190,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1921
+    "_version": 1922
   }
 }
