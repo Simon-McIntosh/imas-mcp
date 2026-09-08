@@ -131,4 +131,14 @@ batch. No defect was investigated or recorded for that link.
 
 ## Verification
 
-The full Standard Names test gate is recorded below once complete.
+The full Standard Names suite ran once on `all_debug` at the committed
+evidence head, without an added quiet flag. It exited 0 with no `FAILED`
+identifiers. Pytest's own totals line was:
+
+```text
+== 7267 passed, 11 skipped, 323 deselected, 34 warnings in 297.53s (0:04:57) ===
+```
+
+The repository delta from the oriented base contains only this evidence
+document, so the tested source and test tree is identical to the base tree.
+Against the stated green baseline, added failures are zero.
