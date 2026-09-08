@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-08">
-<meta name="plan-version" content="11">
+<meta name="plan-version" content="13">
 <meta name="plan-commits" content="ec9ffff58e52af06b454987705ee4f88bfa14358,33361a5354b03e1f3a56f0cb626157cb1139dca0,2e0c1b534ac98f490780f7d9b2de7e5d8a24eb7f,f11e43096b10f2a5f55466e3f82e03b1ff080688,b22d348610f58b624ef9b8448b9c721279600e54,057a04786654db8ce7a5b79b77d3b53d110fa9f6">
 <meta name="plan-artifacts" content="docs/evidence/sn-lifecycle-integrity/delete-path-protections.md,docs/evidence/sn-lifecycle-integrity/unshielded-identity-deletions.md,docs/evidence/sn-lifecycle-integrity/mirrored-state-review.md">
 <meta name="plan-impl" content="0.35">
@@ -375,6 +375,24 @@
     explicable subset excluded the one name that mattered most, and nothing reported the
     exclusion.</p>
 
+    <p><strong>The window bound is the whole minute, and a tighter one silently drops the two
+    names that matter most.</strong> Use <code>changed_at &gt;= 11:57:00Z AND changed_at &lt;=
+    11:58:00Z</code>, or the whole day &mdash; that pass is the only
+    <code>remove_derived_parent</code> activity on 2026-09-08, so both give 93. A bound of
+    11:57:28Z to <em>11:57:36Z</em> gives <strong>88</strong>: five deletions land in the
+    sub-second tail of that last second, and two of the five are
+    <code>etendue_of_spectrometer_channel</code>, the release blocker, and
+    <code>density_at_pedestal_top</code>, the parent of the nineteen-member family the restore
+    must rebuild children-first. The others are <code>charge_at_pedestal_top</code>,
+    <code>ion_density_at_pedestal_top</code> and <code>flux_due_to_pumping</code>. Count
+    <code>DISTINCT c.to_name</code>: there are 104 change rows against 93 names.</p>
+
+    <p>The general form is worth more than the fix. <strong>A timestamp quoted to whole seconds is
+    a lossy description of a window</strong>, and pasting it into a query as a bound drops
+    whatever fell in the fraction. A cohort defined by a time range carries the range, never prose
+    that reads like one &mdash; and the resulting cohort was short in exactly the two places it
+    cost most while looking entirely plausible.</p>
+
     <p>The classification of which identities warrant restoration is in flight as a separate
     investigation; its first pass returned a uniform verdict for all 78 rows without executing the
     archive read, and was rejected and resumed with that correction. Do not accept a classification
@@ -491,6 +509,53 @@
     <code>parents.py:400,425</code>, <code>graph_ops.py:1116,3531,3581,4616</code>,
     <code>attachment_audit.py:2446</code>, <code>desc_name_sim.py:5</code>,
     <code>workers.py:10535</code>. Assume nothing about what they do with it.</p>
+
+    <h3 id="s7a">&sect;7a &mdash; Lead ruling: the sweep is a retirement, not a reclassification</h3>
+
+    <p><strong>Lead ruling 2026-09-08.</strong> Asked whether the proper sweep meant writing a
+    truthful value onto every one of the 412 rows or resolving the field at its root, the lead
+    chose retirement. The end state is therefore structural rather than corrective: <strong>the
+    334 stop being mislabelled because the label ceases to exist</strong>, and being derived
+    becomes a fact read off an edge that is already present and already truer than the scalar.</p>
+
+    <p>This executes <code>origin-axis-disposition</code> = <code>retire-origin-entirely</code>,
+    the lead ruling of 2026-09-04 locked on <code>sn-lifecycle-integrity</code>, whose evidence is
+    stronger than this section's own measurement: exactly <strong>one writer</strong> of
+    <code>StandardName.origin</code> exists in the codebase, <code>graph_ops.py:4002</code>, and it
+    writes <code>derived</code>; <strong>nothing writes <code>catalog_edit</code> or
+    <code>pipeline</code> at all</strong>, so 3,384 markers are residue from a path that no longer
+    exists; and the surviving <code>derived</code> duplicates the <code>StandardNameSource</code>
+    source-type binding while <strong>disagreeing with it 341 times</strong> &mdash; 18 marked
+    without a derived source, 323 carrying one and unmarked.</p>
+
+    <p>Four stages, in order, and the order is the safety property:</p>
+
+    <ol>
+      <li><strong>Audit</strong> &mdash; the reader inventory and the disagreement set. In
+      flight.</li>
+      <li><strong>Repoint</strong> every reader at the source binding.</li>
+      <li><strong>Resolve the protection gate</strong> under its own locked decision,
+      <code>protection-trigger</code> = <code>approved-states-only</code>.</li>
+      <li><strong>Drop the field.</strong></li>
+    </ol>
+
+    <p>No regeneration is implied and no LLM spend is incurred:
+    <code>filter_protected</code> only strips fields from writes the pipeline is already making,
+    and pool eligibility keys on <code>name_stage</code> and <code>docs_stage</code>, never on
+    <code>origin</code>.</p>
+
+    <p><strong>What this does to the restored-origin decision, and why it is not reopened.</strong>
+    <code>restored-origin-value</code> writes <code>origin='pipeline'</code> onto restored names
+    &mdash; into the field stage 4 removes. That is residue, not a contradiction, and it is
+    deliberately left alone: the &sect;3 guard is what keeps a restored identity safe, not its
+    origin value, so the write carries no load and costs nothing, and stage 4 removes it with
+    everything else. The binding constraint is narrower and it is absolute: <strong>nothing in the
+    restore may be made to depend on the value.</strong></p>
+
+    <p><strong>The risk that dictates the sequence.</strong> A reader missed at stage 2 does not
+    fail &mdash; it decides differently, silently. That is why the audit comes first, and why its
+    reader table must record, per site, <em>what the branch does</em> with the value rather than
+    only that it reads it. Nine sites are known to read it and not one has been audited.</p>
 
     <h2 id="s8">&sect;8 &mdash; Two instruments on this surface answer with silence</h2>
 
