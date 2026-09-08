@@ -2022,6 +2022,70 @@ def _fold_revival_stage(target_properties: dict[str, Any]) -> str:
     return _FOLD_REVIVAL_STAGE_CAP.get(stage, stage)
 
 
+#: ``StandardNameChange`` operations that move an identity's own spelling —
+#: a rename or supersede. These are the events that create ``REFINED_FROM``
+#: lineage, and therefore the only events that can later reverse an edge by
+#: renaming the identity back to the spelling it left. Every other ledger
+#: operation cited in the fold tables (source moves, attachment repairs,
+#: reconciles, ratification) touches ``from_name``/``to_name`` without
+#: changing lineage, and must not be read as a rename.
+_FOLD_LINEAGE_OPERATIONS = frozenset(
+    {
+        "human_edit",
+        "regenerate",
+        "refine",
+        "backfill_refine",
+        "fold",
+        "fold_identity",
+        "supersede_legacy_spelling",
+        "supersede_into_ancestor",
+        "source_migration_manifest",
+    }
+)
+
+
+def _fold_successor_is_current(transaction: Any, old: str, successor_name: str) -> bool:
+    """Whether ``successor_name`` currently claims ``old``'s meaning.
+
+    The folder guard refuses a fold whose source has any other successor
+    lineage, and ``REFINED_FROM`` records every claim a rename ever made —
+    including the ones a later rename revoked. A succession that was reversed
+    leaves its edge behind as history but no longer carries the meaning, so
+    the edge alone refuses a legitimate fold forever.
+
+    The ledger breaks the tie: the current successor is the name the most
+    recent rename or supersede event brought the meaning to, provided that
+    event has not itself been reverted. Of the lineage events touching this
+    pair of spellings, the latest decides — an event from ``old`` onto
+    ``successor_name`` makes the successor current, an event back onto
+    ``old`` means the rename was reverted and the claim is dead. An edge with
+    no ledger event at all (one that predates the change ledger) keeps the
+    edge-existence reading, the conservative direction: a fold the ledger
+    cannot vouch for is refused exactly as before.
+    """
+    # The change rows either name owns are recovered by re-snapshotting the
+    # pair: the fold's own snapshot only carries rows the source or the fold
+    # target hold, and the create event of a reversed rename lives on the
+    # third-party successor instead.
+    successor_snapshot = _fold_snapshot(transaction, successor_name, old)
+    if successor_snapshot is None:
+        return True
+    names = frozenset({old, successor_name})
+    events = []
+    for change in successor_snapshot.get("changes") or []:
+        properties = change.get("properties") or {}
+        if properties.get("operation") not in _FOLD_LINEAGE_OPERATIONS:
+            continue
+        if frozenset({properties.get("from_name"), properties.get("to_name")}) != names:
+            continue
+        events.append(properties)
+    if not events:
+        return True
+    events.sort(key=lambda properties: str(properties.get("changed_at") or ""))
+    latest = events[-1]
+    return latest.get("from_name") == old and latest.get("to_name") == successor_name
+
+
 def _fold_guard_reason(
     transaction: Any, snapshot: dict[str, Any], old: str, into: str
 ) -> str | None:
@@ -2063,8 +2127,12 @@ def _fold_guard_reason(
     ]
     if len(direct) > 1:
         return f"name {old!r} has duplicate target successor lineage"
-    if any(relationship not in direct for relationship in successors):
-        return f"name {old!r} has another successor lineage; fold is ambiguous"
+    for relationship in successors:
+        if relationship in direct:
+            continue
+        successor_name = relationship.get("start_id")
+        if _fold_successor_is_current(transaction, old, successor_name):
+            return f"name {old!r} has another successor lineage; fold is ambiguous"
 
     for label, properties in (("old", old_properties), ("target", target_properties)):
         if (
