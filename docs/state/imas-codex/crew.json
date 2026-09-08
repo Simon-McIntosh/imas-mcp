@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T21:37:23",
+  "updated": "2026-09-08T21:46:47",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -4543,9 +4543,11 @@
         "id": "s10b-fifteen",
         "harness": "codex",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "01a08278-1282-70b1-b09d-f2130300268a",
+        "session_model": "gpt-5.6-sol",
+        "sessions": {
+          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a08278-1282-70b1-b09d-f2130300268a"
+        },
         "created": "2026-09-08"
       },
       {
@@ -4561,9 +4563,11 @@
         "id": "s10b-origin-audit",
         "harness": "codex",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "01a08277-5bcc-7fa3-871e-0bb1a7c4576b",
+        "session_model": "gpt-5.6-sol",
+        "sessions": {
+          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a08277-5bcc-7fa3-871e-0bb1a7c4576b"
+        },
         "created": "2026-09-08"
       },
       {
@@ -4633,9 +4637,11 @@
         "id": "session-2a6f0db8b3e75a382796",
         "harness": "codex",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "01a08275-a4ac-73d1-aeec-cf3e2af536cb",
+        "session_model": "gpt-5.6-sol",
+        "sessions": {
+          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a08275-a4ac-73d1-aeec-cf3e2af536cb"
+        },
         "created": "2026-09-08"
       },
       {
@@ -110449,6 +110455,482 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T191855446233-n-pidp-restore-reuse-map",
+        "plan": "paid-identity-deletion-protection",
+        "section": "\u00a74",
+        "node": "n-pidp-restore-reuse-map",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2225,
+                "cached_input_tokens": 220473,
+                "input_tokens": 222700,
+                "output_tokens": 2502,
+                "reasoning_output_tokens": 719,
+                "total_tokens": 225202,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/paid-identity-deletion-protection/restore-reuse-map.md names with file:line the existing entry point for resetting a StandardNameSource to extracted, for composing and attaching a name from a source, for deriving a structural parent from its children, for writing origin on a StandardName, and for loading a store archive into an isolated database, with a stated reuse-or-cannot verdict per row and the reason where it cannot",
+          "estimated_hours": null,
+          "goal": "Produce the reuse map naming the existing entry point each of the four restore routes must use",
+          "id": "n-pidp-restore-reuse-map",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T191855446233-n-pidp-restore-reuse-map/manifest.md",
+          "plan": "paid-identity-deletion-protection",
+          "requested_backend": null,
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a74",
+          "spec_level": "guided",
+          "time_budget": "35m",
+          "write_paths": [
+            "docs/evidence/paid-identity-deletion-protection/restore-reuse-map.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "session-2a6f0db8b3e75a382796",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T19:19:02Z",
+        "completed_at": "2026-09-08T19:40:48Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1306,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1306,
+        "stalled": false,
+        "time_budget": "35m",
+        "base_sha": "271536947e417ddb36a3091c1559fc606f62c475",
+        "commits": [
+          "7a89fca35428cd1e2cd4fb9524bb991ff632209f"
+        ],
+        "changed_lines": {
+          "added": 72,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "coordinator content gate: 5 of 5 required primitive entry-point classes present, 4 restore-route rows, verdict values varying (3 REUSE / 3 CANNOT REUSE), path naming check clean",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T191855446233-n-pidp-restore-reuse-map/coordinator-content-gate.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T191855446233-n-pidp-restore-reuse-map/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a08275-a4ac-73d1-aeec-cf3e2af536cb",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 19444480,
+            "cached_input_tokens_cumulative": 19444480,
+            "input_tokens": 19733663,
+            "input_tokens_cumulative": 19733663,
+            "output_tokens": 32913,
+            "output_tokens_cumulative": 32913,
+            "reasoning_output_tokens": 10493,
+            "reasoning_output_tokens_cumulative": 10493
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T19:40:48Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 52.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T19:40:48Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 19444480,
+          "cumulative_input_tokens": 39178143,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 43406
+        },
+        "follow_on_paths": [
+          "archive/live"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-restore-reuse-map",
+          "session_id": "01a08275-a4ac-73d1-aeec-cf3e2af536cb",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T19:40:48Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T192134671323-n-pidp-undispositioned-fifteen",
+        "plan": "paid-identity-deletion-protection",
+        "section": "\u00a76",
+        "node": "n-pidp-undispositioned-fifteen",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 471,
+                "cached_input_tokens": 235464,
+                "input_tokens": 235937,
+                "output_tokens": 1341,
+                "reasoning_output_tokens": 1073,
+                "total_tokens": 237278,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/paid-identity-deletion-protection/undispositioned-deletions.md names every identity the 11:57Z pass removed that carries no verdict in unshielded-identity-deletions.md, each with its archive source and child topology, its apportioned LLMCost spend to six decimal places, and a RESTORE or CORRECTLY REMOVED verdict; the verdict column's values vary; and the report reconciles its row count plus the census's 78 to the 93 the pass removed",
+          "estimated_hours": null,
+          "goal": "Disposition the fifteen deleted identities the existing census left without a verdict",
+          "id": "n-pidp-undispositioned-fifteen",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T192134671323-n-pidp-undispositioned-fifteen/manifest.md",
+          "plan": "paid-identity-deletion-protection",
+          "requested_backend": "codex",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a76",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "docs/evidence/paid-identity-deletion-protection/undispositioned-deletions.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-fifteen",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T19:21:41Z",
+        "completed_at": "2026-09-08T19:41:10Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1169,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1169,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "271536947e417ddb36a3091c1559fc606f62c475",
+        "commits": [
+          "992f0a09a3beb0bc1c12f75df0e5581a6d542055"
+        ],
+        "changed_lines": {
+          "added": 97,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "inline evidence-consistency gate: rows=15, verdicts vary, without_verdict=0, reconciliation 78+15=93",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T192134671323-n-pidp-undispositioned-fifteen/document-gate.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T192134671323-n-pidp-undispositioned-fifteen/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a08278-1282-70b1-b09d-f2130300268a",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 11817856,
+            "cached_input_tokens_cumulative": 11817856,
+            "input_tokens": 12043963,
+            "input_tokens_cumulative": 12043963,
+            "output_tokens": 28231,
+            "output_tokens_cumulative": 28231,
+            "reasoning_output_tokens": 8371,
+            "reasoning_output_tokens_cumulative": 8371
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T19:41:10Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 52.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T19:41:10Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 11817856,
+          "cumulative_input_tokens": 23861819,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 36602
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-undispositioned-fifteen",
+          "session_id": "01a08278-1282-70b1-b09d-f2130300268a",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T19:41:10Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T192048755875-n-pidp-origin-label-audit",
+        "plan": "paid-identity-deletion-protection",
+        "section": "\u00a77",
+        "node": "n-pidp-origin-label-audit",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1652,
+                "cached_input_tokens": 232310,
+                "input_tokens": 233964,
+                "output_tokens": 262,
+                "reasoning_output_tokens": 100,
+                "total_tokens": 234226,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/paid-identity-deletion-protection/origin-label-audit.md carries one row per live origin='derived' StandardName, re-measured live against the 412 recorded on 2026-09-08, each row naming its PRODUCED_NAME producers and a verdict whose values vary across the population; a second table names every code path branching on origin='derived' for a decision other than deletion with file:line and what that branch does; a third table isolates the rows that also appear in the 208-name WEST review cut",
+          "estimated_hours": null,
+          "goal": "Record a per-name verdict on whether origin='derived' is truthful for every live standard name carrying it, with the producer evidence behind each verdict",
+          "id": "n-pidp-origin-label-audit",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T192048755875-n-pidp-origin-label-audit/manifest.md",
+          "plan": "paid-identity-deletion-protection",
+          "requested_backend": "codex",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a77",
+          "spec_level": "guided",
+          "time_budget": "45m",
+          "write_paths": [
+            "docs/evidence/paid-identity-deletion-protection/origin-label-audit.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-origin-audit",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T19:20:55Z",
+        "completed_at": "2026-09-08T19:43:23Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1348,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1348,
+        "stalled": false,
+        "time_budget": "45m",
+        "base_sha": "271536947e417ddb36a3091c1559fc606f62c475",
+        "commits": [
+          "a7dc412751a84950bc06badb6d0cbf2b5db86457"
+        ],
+        "changed_lines": {
+          "added": 527,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "inline section-and-verdict assertions: 412 per-name rows, 412 distinct ids, verdict values vary, 34 branch rows, 4 WEST rows",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "manifest-recorded PASS; no separate log retained"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T192048755875-n-pidp-origin-label-audit/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a08277-5bcc-7fa3-871e-0bb1a7c4576b",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 11373440,
+            "cached_input_tokens_cumulative": 11373440,
+            "input_tokens": 11641958,
+            "input_tokens_cumulative": 11641958,
+            "output_tokens": 34416,
+            "output_tokens_cumulative": 34416,
+            "reasoning_output_tokens": 12258,
+            "reasoning_output_tokens_cumulative": 12258
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T19:43:23Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 52.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T19:43:23Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 11373440,
+          "cumulative_input_tokens": 23015398,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 46674
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-origin-label-audit",
+          "session_id": "01a08277-5bcc-7fa3-871e-0bb1a7c4576b",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T19:43:23Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -110705,6 +111187,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2015
+    "_version": 2021
   }
 }
