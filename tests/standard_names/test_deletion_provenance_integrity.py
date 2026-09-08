@@ -22,11 +22,21 @@ def _queries(gc: MagicMock) -> list[str]:
 
 
 def test_derived_parent_delete_records_change_atomically() -> None:
-    """The parent and its deletion event are written in one graph statement."""
+    """A structural placeholder deletion writes a complete recovery receipt."""
     from imas_codex.standard_names.graph_ops import _delete_derived_parent_nodes
 
     gc = MagicMock()
-    gc.query.return_value = [{"deleted": 1}]
+
+    def query(cypher: str, **_kwargs):
+        if "MATCH (cost:LLMCost)" in cypher:
+            return [{"linked": 0}]
+        if "OPTIONAL MATCH (cost:LLMCost)-[:FOR_STANDARD_NAME]->(sn)" in cypher:
+            return []
+        if "DETACH DELETE sn" in cypher:
+            return [{"deleted": 1}]
+        raise AssertionError(f"unexpected query: {cypher}")
+
+    gc.query.side_effect = query
 
     assert _delete_derived_parent_nodes(gc, ["parent_name"]) == 1
 
@@ -39,6 +49,13 @@ def test_derived_parent_delete_records_change_atomically() -> None:
     assert "operation: $deletion_operation" in delete_query
     assert "derived_sources" in delete_query
     assert "mirror_sources" in delete_query
+    assert "WHERE sn.needs_composition = true" in delete_query
+    assert "CREATE (snapshot:StandardNameDeletionSnapshot)" in delete_query
+    assert "SET snapshot = properties(sn)" in delete_query
+    assert "CREATE (edge_snapshot:StandardNameDeletedEdge)" in delete_query
+    assert "relationship_type: type(edge)" in delete_query
+    assert "neighbor_labels: labels(neighbor)" in delete_query
+    assert "relationship_properties: properties(edge)" in delete_query
     assert gc.query.call_args.kwargs["deletion_operation"] == "remove_derived_parent"
 
 
@@ -51,7 +68,17 @@ def test_skeleton_delete_records_change_atomically() -> None:
     main.query.return_value = []
     sweep = MagicMock()
     sweep.__enter__.return_value = sweep
-    sweep.query.return_value = [{"swept": 1}]
+
+    def sweep_query(cypher: str, **_kwargs):
+        if "MATCH (cost:LLMCost)" in cypher:
+            return [{"linked": 0}]
+        if "OPTIONAL MATCH (cost:LLMCost)-[:FOR_STANDARD_NAME]->(sn)" in cypher:
+            return []
+        if "DETACH DELETE sn" in cypher:
+            return [{"swept": 1}]
+        raise AssertionError(f"unexpected query: {cypher}")
+
+    sweep.query.side_effect = sweep_query
 
     with patch(
         "imas_codex.standard_names.graph_ops.GraphClient",
@@ -75,6 +102,8 @@ def test_skeleton_delete_records_change_atomically() -> None:
     query = sweep.query.call_args.args[0]
     assert "CREATE (change:StandardNameChange" in query
     assert "DETACH DELETE sn" in query
+    assert "CREATE (snapshot:StandardNameDeletionSnapshot)" in query
+    assert "CREATE (edge_snapshot:StandardNameDeletedEdge)" in query
     assert sweep.query.call_args.kwargs["deletion_operation"] == (
         "remove_skeleton_placeholder"
     )
