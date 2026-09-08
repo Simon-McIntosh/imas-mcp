@@ -1676,6 +1676,11 @@ def run_review_release(
         )
         return report
     if pr_title is not None and pr_body is not None:
+        # Deferred import: release_notes imports _github_slug and _run_git from
+        # this module at module level, so importing from release_notes here at
+        # module scope would create a circular dependency. Function-local import
+        # breaks the cycle by deferring resolution until after catalog_release
+        # has finished initializing.
         from imas_codex.standard_names.release_notes import validate_pr_text
 
         try:
@@ -1747,6 +1752,11 @@ def run_review_release(
     # DD-gap lifecycle evidence is a read-only release caveat, never an export
     # gate. The canonical reader owns graph queries and exact batch-name
     # filtering; this orchestrator only normalizes its projection for reports.
+    # Deferred import: release_notes imports _github_slug and _run_git from
+    # this module at module level, so importing from release_notes here at
+    # module scope would create a circular dependency. Function-local import
+    # breaks the cycle by deferring resolution until after catalog_release
+    # has finished initializing.
     from imas_codex.standard_names.release_notes import (
         summarize_dd_gap_facts,
         unavailable_dd_gap_summary,
@@ -1985,6 +1995,11 @@ def run_review_release(
     # per-domain catalog diff) when enabled; deterministic static body
     # otherwise. notes_builder is injectable for tests; the LLM path never
     # raises (it falls back to the static form internally).
+    # Deferred import: release_notes imports _github_slug and _run_git from
+    # this module at module level, so importing from release_notes here at
+    # module scope would create a circular dependency. Function-local import
+    # breaks the cycle by deferring resolution until after catalog_release
+    # has finished initializing.
     from imas_codex.standard_names.release_notes import (
         build_pr_notes,
         collect_catalog_changes,
