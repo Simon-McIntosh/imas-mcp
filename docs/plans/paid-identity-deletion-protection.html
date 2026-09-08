@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-08">
-<meta name="plan-version" content="8">
+<meta name="plan-version" content="9">
 <meta name="plan-commits" content="ec9ffff58e52af06b454987705ee4f88bfa14358,33361a5354b03e1f3a56f0cb626157cb1139dca0,2e0c1b534ac98f490780f7d9b2de7e5d8a24eb7f,f11e43096b10f2a5f55466e3f82e03b1ff080688,b22d348610f58b624ef9b8448b9c721279600e54,057a04786654db8ce7a5b79b77d3b53d110fa9f6">
 <meta name="plan-artifacts" content="docs/evidence/sn-lifecycle-integrity/delete-path-protections.md,docs/evidence/sn-lifecycle-integrity/unshielded-identity-deletions.md,docs/evidence/sn-lifecycle-integrity/mirrored-state-review.md">
 <meta name="plan-impl" content="0.35">
@@ -333,6 +333,113 @@
     footgun it means is the import path. Today proved there are two, and that plan knows about one of
     them. <strong>It must not run before §3 lands</strong>, which is why this plan declares
     <code>plan-blocks</code> against it.</p>
+
+    <h2 id="s6">&sect;6 &mdash; Fifteen of the ninety-three carry no disposition at all</h2>
+
+    <p>The census at
+    <code>docs/evidence/sn-lifecycle-integrity/unshielded-identity-deletions.md</code>
+    dispositions <strong>78</strong> identities &mdash; 67 RESTORE, 11 CORRECTLY REMOVED, 0
+    UNDETERMINED. The pass removed <strong>93</strong>. The arithmetic is the finding:
+    <strong>15 identities have no verdict of any kind</strong>, because the census was scoped to
+    the subset the origin repair had reclassified rather than to the set the reaper actually
+    took. Nobody has looked at them.</p>
+
+    <p>A recovery that closes at 67 of 78 while the incident removed 93 is not complete; it is
+    silent about the remainder, and silent in the direction that looks finished. The 15 are
+    dispositioned by the same two instruments the census already proved: the archive read for
+    source and child topology, and the recorded-spend boundary locked in &sect;2. Neither
+    instrument needs inventing, so this is a bounded application of a settled method.</p>
+
+    <p><strong>Live state, verified 2026-09-08T19:00Z.</strong> Of the 93, <strong>zero</strong>
+    are present in the graph; of the 67-name RESTORE set, <strong>zero</strong> are present. No
+    pipeline run, archive load, or graph write toward recovery has happened, and
+    <strong>$0.00 of the authorised $100</strong> is spent. Everything that exists is the
+    reasoning around the recovery, which is why the state reads further along than it is.</p>
+
+    <h2 id="s7">&sect;7 &mdash; The mislabelled population is the whole sweep, and the release cohort sits inside it</h2>
+
+    <p><strong>Lead direction, 2026-09-08: sweep the whole population properly.</strong> The
+    release-critical subset is not to be repaired on its own and the rest deferred &mdash; the
+    subset is reported <em>out of</em> the sweep, not instead of it.</p>
+
+    <p>Measured live: <strong>412</strong> standard names are alive at
+    <code>origin='derived'</code>, <strong>397</strong> sit at <code>name_stage</code> accepted or
+    approved, and <strong>334</strong> carry <code>docs_stage='accepted'</code> with non-empty
+    documentation. <strong>$116.91</strong> of paid work across <strong>2,339</strong>
+    <code>LLMCost</code> rows sits under a label whose own schema definition calls it disposable
+    scaffolding.</p>
+
+    <p>The published cut is contaminated by the same defect. Of the 207 names from the 208-name
+    WEST review cut that are currently in the graph:</p>
+
+    <figure>
+      <svg viewBox="0 0 620 84" width="100%" role="img"
+           aria-label="Origin distribution of the 207 in-graph WEST cut names: 161 pipeline, 42 null, 4 derived.">
+        <g font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#1a1a1c">
+          <rect x="4" y="18" width="466" height="26" fill="#ffffff" stroke="#8a8a8f"/>
+          <rect x="470" y="18" width="122" height="26" fill="#f0f0f2" stroke="#8a8a8f"/>
+          <rect x="592" y="18" width="12" height="26" fill="#1a1a1c" stroke="#1a1a1c"/>
+          <text x="12" y="36">161 <tspan font-family="ui-monospace, monospace">pipeline</tspan></text>
+          <text x="478" y="36">42 null</text>
+          <text x="470" y="62" font-size="11">4 <tspan font-family="ui-monospace, monospace">derived</tspan> &rarr;</text>
+        </g>
+      </svg>
+      <figcaption>The four <code>derived</code> rows are the black sliver; every one of them
+      carries a real producer.</figcaption>
+    </figure>
+
+    <p>The four labelled <code>derived</code> are <code>atomic_mass</code>,
+    <code>gas_flow</code>, <code>plasma_pressure</code> and
+    <code>wave_phase_of_ion_cyclotron_heating_antenna</code>. Each is
+    <code>name_stage=accepted</code> and <code>docs_stage=accepted</code>, each carries between
+    869 and 2,048 characters of documentation, and <strong>each has a real
+    <code>PRODUCED_NAME</code> producer</strong> &mdash; which makes &ldquo;structural parent
+    scaffolding, sourced from child names&rdquo; demonstrably false for all four. Before the
+    &sect;3 guard landed this afternoon, all four were reapable. <code>plasma_pressure</code> is
+    not a name that should be able to vanish from a published catalog.</p>
+
+    <p>The 42 nulls are the same gap wearing absence instead of contradiction: <strong>41 of the
+    42 carry producers</strong>, so they have an authorship class and simply record none. A
+    settled graph means every one of the 46 carries a provenance that is true rather than absent
+    or contradicted, and the sweep must report that subset explicitly so the release gate can be
+    read off it.</p>
+
+    <p><strong>Per-name, never bulk.</strong> A bulk rewrite of this exact field, on 2,096 rows,
+    is what caused &sect;1. The &sect;3 guard makes a repeat survivable; it does not make one
+    safe. Every reclassification carries the producer evidence that justifies it.</p>
+
+    <p>Behind the sweep is the question the lead raised, and it may retire the label entirely.
+    <code>derived</code>'s delete-permission role is gone. If what remains is only &ldquo;this
+    name has no direct DD source&rdquo;, that is derivable from the absence of a
+    <code>PRODUCED_NAME</code> edge to a <code>dd</code>-type source &mdash; another mirrored
+    scalar, belonging in <code>scalar-edge-authority</code> rather than being maintained by hand.
+    Nine call sites read the value today and none has been audited:
+    <code>parents.py:400,425</code>, <code>graph_ops.py:1116,3531,3581,4616</code>,
+    <code>attachment_audit.py:2446</code>, <code>desc_name_sim.py:5</code>,
+    <code>workers.py:10535</code>. Assume nothing about what they do with it.</p>
+
+    <h2 id="s8">&sect;8 &mdash; Two instruments on this surface answer with silence</h2>
+
+    <p>Both were sprung today at real cost, and both fail by returning a plausible answer rather
+    than an error.</p>
+
+    <ul>
+      <li><strong><code>StandardNameSource</code> has no <code>source_status</code> property
+      &mdash; it is <code>status</code>.</strong> Querying the wrong name returns null on all
+      9,900 rows, which reads exactly like a wiped field rather than a wrong question. The real
+      distribution is bound 5,441 (composed 3,053, attached 2,249, stale 93, extracted 44,
+      failed 2) and unbound 4,459 (stale 1,652, skipped 1,413, extracted 1,283, failed 101,
+      not_physical_quantity 10).</li>
+      <li><strong>The 1,652 unbound <code>stale</code> rows are not backlog.</strong> A source
+      rebinds when its name is superseded, so that residue is the mechanism working. Counting it
+      overstates the source problem by about a third.</li>
+    </ul>
+
+    <p>The third is already recorded against &sect;3 and is repeated here because it is the one
+    most likely to be re-sprung: <code>filter_protected</code> and
+    <code>_fetch_catalog_edit_names</code> (<code>protection.py:203</code>) both match
+    <code>name_stage = 'approved'</code>, and zero rows hold that value, so each returns the
+    empty set for every input it is given.</p>
 
     <section data-reckon="decisions" id="decisions" class="r-decisions">
 <h2><span class="sec">§</span> Decisions</h2>
