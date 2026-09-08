@@ -34,4 +34,6 @@ Synthesize the **shared** physical meaning of these children into a single
 1–2 sentence description of `{{ item.name }}`. Capture what the children have
 in common; do not describe any one child's specific component, axis, surface,
 or region. Ground strictly on the children above — do not invent physics they
-do not attest. American spelling, no LaTeX, no markdown links, ≤ 500 characters.
+do not attest. A child shown without a description contributes its name only.
+American spelling, no LaTeX, no markdown links, no units in the prose,
+≤ 500 characters.

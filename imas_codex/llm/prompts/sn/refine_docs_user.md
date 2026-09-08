@@ -19,7 +19,7 @@ addresses the reviewer's concerns.
 - **Unit:** {{ unit or "—" }}
 - **Kind:** {{ kind or "scalar" }}
 - **Physics domain:** {{ physics_domain or "—" }}
-{% if description %}
+{% if description and "description pending LLM enrichment" not in description %}
 - **One-line description:** {{ description }}
 {% endif %}
 
@@ -30,6 +30,15 @@ addresses the reviewer's concerns.
 {% endfor %}
 {% else %}
 _(no linked DD paths)_
+{% endif %}
+
+{% if locus_context and locus_context.defining_quantity %}
+### Locus of this quantity
+
+This entry's locus is **`{{ locus_context.token }}`**; its position is itself
+defined by the standard quantity **`{{ locus_context.defining_quantity }}`**.
+Cross-link it inline as `[label](name:{{ locus_context.defining_quantity }})`
+at the first natural mention of the locus.{% if locus_context.description %} Locus gloss (for accurate prose — do NOT quote verbatim): {{ locus_context.description }}{% endif %}
 {% endif %}
 
 {% if derived_children %}
@@ -135,7 +144,9 @@ as pre-approved.
 ## Your task
 
 Produce updated documentation for `{{ sn_name }}` that materially addresses
-the **lowest-scoring dimensions** identified in the revision history above.
+the **lowest-scoring dimensions** identified in the revision history above,
+for the **same quantity** `{{ sn_name }}` already denotes. Change what the
+objection reaches and carry the rest through unchanged.
 
 Rules:
 - `description`: 1–3 sentences, ≤ 500 chars, no LaTeX, **American English**
