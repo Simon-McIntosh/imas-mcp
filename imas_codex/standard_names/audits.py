@@ -66,6 +66,27 @@ def _isn_locus_tokens() -> frozenset[str]:
 
 
 @lru_cache(maxsize=1)
+def _isn_locus_allowed_relations() -> dict[str, tuple[str, ...]]:
+    """Return each registered locus's grammar-owned relation choices.
+
+    The registry order is meaningful: its first relation is the canonical
+    spelling, while later entries are valid alternatives for other semantics.
+    """
+    try:
+        from imas_standard_names import get_grammar_context
+
+        registry = get_grammar_context()["grammar"]["vocabularies"]["locus_registry"]
+        return {
+            str(token): tuple(details.get("allowed_relations", ()))
+            for token, details in registry.items()
+            if isinstance(details, Mapping)
+        }
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.debug("Could not load ISN locus relation choices: %s", exc)
+    return {}
+
+
+@lru_cache(maxsize=1)
 def _isn_locus_advisory_aliases() -> dict[str, str]:
     """Return unregistered locus aliases published by ISN's public grammar.
 
@@ -335,6 +356,22 @@ def _temporal_change_operators() -> frozenset[str]:
 
 
 @lru_cache(maxsize=1)
+def _dimension_preserving_operator_tokens() -> frozenset[str]:
+    """Return grammar operators that do not declare a dimensional effect."""
+    from imas_standard_names import get_grammar_context
+
+    operators = get_grammar_context()["grammar"]["vocabularies"]["operators"]
+    return frozenset(
+        str(token)
+        for token, definition in operators.items()
+        if isinstance(definition, Mapping)
+        and definition.get("kind") == "unary_prefix"
+        and not definition.get("indexed")
+        and not definition.get("semantic_effects")
+    )
+
+
+@lru_cache(maxsize=1)
 def _isn_operator_advisory_aliases() -> dict[str, str]:
     """Return retired operator spellings mapped to their registered token.
 
@@ -421,6 +458,8 @@ def _ir_physical_quantity_signature(ir: Any) -> tuple[Any, ...] | None:
         op = str(getattr(operator, "op", "") or "")
         if not kind or not op:
             return None
+        if kind == "unary_prefix" and op in _dimension_preserving_operator_tokens():
+            continue
         args = list(getattr(operator, "args", ()) or ())
         argument_signatures: list[tuple[Any, ...]] = []
         for argument in args:
@@ -667,6 +706,13 @@ def _structured_unit_consistency_issues(name: str, unit: str) -> list[str] | Non
             "audit:name_unit_consistency_check: binary operator operands "
             f"in name '{name}' imply incompatible dimensionalities"
         ]
+    if not unit:
+        if _dimension_sets_equivalent(dimensions, {"dimensionless"}):
+            return [
+                "audit:name_unit_consistency_check: operator expression "
+                f"in name '{name}' is dimensionless but unit is absent"
+            ]
+        return None
     candidate_dimensions = _unit_dimensions({unit})
     if candidate_dimensions is None:
         return None
@@ -1404,8 +1450,9 @@ def name_unit_consistency_check(
     """
     issues: list[str] = []
     name = (candidate.get("id") or candidate.get("standard_name") or "").lower()
-    unit = (candidate.get("unit") or "").strip()
-    if not name or not unit:
+    raw_unit = candidate.get("unit")
+    unit = raw_unit.strip() if isinstance(raw_unit, str) else ""
+    if not name:
         return issues
     if unit in ("1", "dimensionless", "-", "none"):
         dimensionless = True
@@ -1431,6 +1478,8 @@ def name_unit_consistency_check(
     structured_issues = _structured_unit_consistency_issues(name, unit)
     if structured_issues is not None:
         return structured_issues
+    if not unit:
+        return issues
 
     name_tokens = set(re.findall(r"[a-z]+", name))
 
@@ -3205,10 +3254,14 @@ def canonical_locus_check(candidate: dict[str, Any]) -> list[str]:
             canonical = aliases.get(alias)
         relation = str(getattr(ir.locus.relation, "value", ir.locus.relation))
         locus_type = str(getattr(ir.locus.type, "value", ir.locus.type))
+        allowed_relations = _isn_locus_allowed_relations().get(locus_token)
         if (
             relation == "of"
             and locus_type == "position"
             and _has_field_evaluation_structure(name)
+            and allowed_relations is not None
+            and allowed_relations
+            and relation != allowed_relations[0]
         ):
             corrected = name.replace(f"_of_{locus_token}", f"_at_{locus_token}")
             if corrected == name:
