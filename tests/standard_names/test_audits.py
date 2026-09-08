@@ -1265,7 +1265,7 @@ class TestOperatorUnitConsistency:
     def test_equal_dimension_ratios_accept_dimensionless_unit(
         self, name: str, unit: str
     ):
-        """A proven quotient result wins over flat operand-token heuristics."""
+        """Declared dimensionless spellings pass a proven quotient result."""
         from unittest.mock import patch
 
         from imas_codex.standard_names import audits
@@ -1275,6 +1275,17 @@ class TestOperatorUnitConsistency:
             assert audits._ir_unit_dimensions(ir) == ({"dimensionless"}, True)
             assert audits._structured_unit_consistency_issues(name, unit) == []
             assert audits.name_unit_consistency_check({"id": name, "unit": unit}) == []
+
+    def test_equal_dimension_ratio_rejects_absent_unit(self):
+        """An absent unit is unresolved, unlike the explicit ``none`` spelling."""
+        from imas_codex.standard_names import audits
+
+        name = (
+            "ratio_of_ion_average_temperature_to_"
+            "volume_averaged_ion_average_temperature"
+        )
+        issues = audits.name_unit_consistency_check({"id": name, "unit": None})
+        assert issues and "unit is absent" in issues[0]
 
     @pytest.mark.parametrize("unit", ["J.K^-1", "K.J^-1"])
     def test_equal_dimension_ratios_reject_cross_family_quotients(self, unit: str):
