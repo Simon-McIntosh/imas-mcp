@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T10:30:55",
+  "updated": "2026-09-08T10:38:49",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -105217,6 +105217,159 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T070443060610-n-sgr-the-noncanonical-successors-reach-their-canonical-form",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a76",
+        "node": "n-sgr-the-noncanonical-successors-reach-their-canonical-form",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 414,
+                "cached_input_tokens": 304440,
+                "input_tokens": 304856,
+                "output_tokens": 1650,
+                "reasoning_output_tokens": 99,
+                "total_tokens": 306506,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "The 48 strict-non-canonical drafted-and-open successors have been moved to their canonical spellings along the routes already enumerated, with a per-identity receipt, and the graph state afterwards matches what was planned. THE PLAN IS ALREADY MADE \u2014 read docs/evidence/sn-grammar-refinement/noncanonical-successor-routes.md and execute it; do not re-derive the census. It records 35 folds, 12 staged renames, 1 blocked fold, and 1 identity that cannot be parsed far enough to supply any target, held separate from the 48. Every route passed a dry run at census time: supersede_into for folds, apply_edit plus the source and unit and attachment preflights for renames, and retarget_standard_name_sources reported 0 co-bound refusals across the 12. The two families are a modifier-ordering problem across a species list, for example argon_density_flux_surface_averaged_at_plasma_boundary becoming flux_surface_averaged_argon_density_at_plasma_boundary, and carbon_count_accumulated_due_to_gas_injection becoming accumulated_carbon_count_due_to_gas_injection. RE-CHECK BEFORE MUTATING, because the tree has moved since the census: the fold guard changed at commit 7ee06421b and now reads the current successor from the ordering of StandardNameChange rows rather than from edge existence. The census itself flagged that its ONE blocked fold must be rechecked if the fold guard changed its answer, so recheck that row specifically and report whether it is now foldable. Re-run each route's dry run before executing it, and never force a route whose dry run no longer passes. HOW TO EXECUTE: in route order, folds then renames, ONE IDENTITY AT A TIME, capturing for each the identity before, the route taken, the canonical target, and the state read back from the graph afterwards. STOP on the first unexpected refusal or any result that does not match the planned route; report what you completed and do not continue past it \u2014 a partial migration with a complete receipt is recoverable and is the outcome I want if anything surprises you. Do not force any guard, do not delete any REFINED_FROM edge, and do not repair a refusal by editing the guard. The unparseable identity, and the blocked fold if it is still blocked, are follow-on conditions rather than work for this node. Live graph work runs on the LOGIN NODE because the graph tunnel is login-node-local, and carries that burden: bound each query, ten seconds per query ceiling, no heavy local compute alongside, declare the exception in the manifest. Gate: tests/standard_names, added failures against a base you measure yourself \u2014 the tree base is 118 failures at 3d7faa0d6 of which 100 come from tests/standard_names/test_release_import_locality.py, being fixed concurrently, so measure rather than assume. Do NOT pass -q to pytest: addopts already supplies one and a second deletes the totals line. DURABILITY: write your manifest before any long output and append each identity's receipt as you complete it, because a half-finished migration whose receipt was deferred is the one outcome I cannot recover from.",
+          "estimated_hours": null,
+          "goal": "Execute the enumerated successor routes so every non-canonical drafted successor reaches its canonical spelling",
+          "id": "n-sgr-the-noncanonical-successors-reach-their-canonical-form",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T070443060610-n-sgr-the-noncanonical-successors-reach-their-canonical-form/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requested_backend": "codex",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a76",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "docs/evidence/sn-grammar-refinement/successor-migration-receipts.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "cx-fitclass",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T07:05:12Z",
+        "completed_at": "2026-09-08T07:40:08Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 2096,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 2096,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "1b7e68e1b01c2447982cf4a4f1a36200cbfc4e2c",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "failed",
+        "gate_check": null,
+        "suite_delta": null,
+        "failure_classification": "correct-refusal",
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T070443060610-n-sgr-the-noncanonical-successors-reach-their-canonical-form/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07f49-37c0-7d01-80b9-141b43433c6c",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 14029184,
+            "cached_input_tokens_cumulative": 17494784,
+            "input_tokens": 14091473,
+            "input_tokens_cumulative": 17667797,
+            "output_tokens": 12195,
+            "output_tokens_cumulative": 32792,
+            "reasoning_output_tokens": 3261,
+            "reasoning_output_tokens_cumulative": 10590
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T07:40:08Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 17.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T07:40:08Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 17494784,
+          "cumulative_input_tokens": 35162581,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 43382
+        },
+        "follow_on_paths": [
+          "imas_codex/standard_names/edit.py"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": "stopped before committing any receipt, and left no mutation in the graph",
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sgr-the-noncanonical-successors-reach-their-canonical-form",
+          "session_id": "01a07f49-37c0-7d01-80b9-141b43433c6c",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T07:40:08Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": {
+          "session_id": "01a07f49-37c0-7d01-80b9-141b43433c6c",
+          "source": "pointer",
+          "reason": "the session's remaining context is superseded rather than useful: it stopped because supersede_into's postflight disagreed with its own dry run, that defect is now root-caused and merged at commit a3ad987cc, and the correct continuation is a fresh run whose dry runs are re-verified against the fixed tree rather than a resume carrying verdicts taken before the fix"
+        },
+        "watch_override": null
       }
     ],
     "holds": [
@@ -105459,6 +105612,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1967
+    "_version": 1968
   }
 }
