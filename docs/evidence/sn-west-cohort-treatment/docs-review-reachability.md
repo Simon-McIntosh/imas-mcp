@@ -82,10 +82,14 @@ is the stored `reviewer_score_name`; source paths are the WEST batch bindings.
 
 ## Accounting and execution boundary
 
-The retained WEST export census remains exact: `214 - 196 = 18`, with zero
-residue. Its largest reason is `never_reviewed=9`; after this correction that
-reason means exactly `no docs-axis review is reachable`, rather than a generic
-documentation-stage failure.
+The retained WEST export snapshot was exact at `214 - 196 = 18`, with zero
+residue. A fresh export after this investigation is also exact, but the live
+graph has advanced: `214 - 199 = 15`, with zero residue. Its ledger is four
+`invalid_validation_status`, two `name_not_accepted`, and nine
+`never_reviewed`; the two previous null-domain exclusions and one quarantined
+exclusion no longer appear. The stable largest bucket is `never_reviewed=9`,
+which now means exactly `no docs-axis review is reachable`, rather than a
+generic documentation-stage failure.
 
 The live read used the login-node exception because the Neo4j tunnel is local
 to that node. It was bounded to these nine indexed identities and did no graph
