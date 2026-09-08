@@ -24,6 +24,8 @@ _(no linked DD paths)_
 
 
 
+
+
 ---
 
 ## Docs revision history (oldest first; docs chain length so far: 0)
@@ -40,7 +42,9 @@ _(no prior revision history — this is the first docs refine attempt)_
 ## Your task
 
 Produce updated documentation for `electron_temperature_at_lcfs` that materially addresses
-the **lowest-scoring dimensions** identified in the revision history above.
+the **lowest-scoring dimensions** identified in the revision history above,
+for the **same quantity** `electron_temperature_at_lcfs` already denotes. Change what the
+objection reaches and carry the rest through unchanged.
 
 Rules:
 - `description`: 1–3 sentences, ≤ 500 chars, no LaTeX, **American English**

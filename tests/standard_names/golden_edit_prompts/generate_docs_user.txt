@@ -68,7 +68,7 @@ Return a JSON object with exactly these two fields:
 
 ```json
 {
-  "description": "1-3 sentences, ≤500 chars, no LaTeX, American spelling",
+  "description": "1 sentence preferred, 2 maximum, ≤250 chars, no LaTeX, American spelling",
   "documentation": "Strict normative markdown with defining $LaTeX$, scope, exclusions, and essential cross-references"
 }
 ```
