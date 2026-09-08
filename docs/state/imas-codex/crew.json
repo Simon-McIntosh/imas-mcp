@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T03:53:48",
+  "updated": "2026-09-08T04:59:14",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -101540,6 +101540,294 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260907T185632017360-n-sli-the-quarantine-instruments-answer-one-question",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-the-quarantine-instruments-answer-one-question",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2983,
+                "cached_input_tokens": 241148,
+                "input_tokens": 244133,
+                "output_tokens": 1606,
+                "reasoning_output_tokens": 432,
+                "total_tokens": 245739,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A report at the write path naming every code path that answers whether a StandardName is quarantined with its file and line, the exact question each answers, the verdict each returns for the five withheld WEST names (accepted, valid, scored 0.844 to 0.906), and the count of live names on which the two instruments disagree read from the live graph. The prior sweep reported 23 of 35 quarantines stale and cleared 0 of 23 through the audit route; state which instrument was right and why, with the query text for each. Report only \u2014 change no source file.",
+          "estimated_hours": null,
+          "goal": "Establish which question each quarantine instrument answers and record where the two diverge",
+          "id": "n-sli-the-quarantine-instruments-answer-one-question",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T185632017360-n-sli-the-quarantine-instruments-answer-one-question/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "guided",
+          "time_budget": "30m",
+          "write_paths": [
+            "docs/evidence/sn-lifecycle-integrity/quarantine-instruments.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "clive-census",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-07T18:56:38Z",
+        "completed_at": "2026-09-08T02:24:40.971Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 26712,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 26882,
+        "stalled": true,
+        "time_budget": "30m",
+        "base_sha": "69f24046b143dce1048f82f02fd25878b2849126",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "failed",
+        "gate_check": null,
+        "suite_delta": null,
+        "failure_classification": "infrastructure-failure",
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T185632017360-n-sli-the-quarantine-instruments-answer-one-question/manifest.md",
+        "scope_changed": false,
+        "session_id": "ef833336-cd1e-4ca1-83f6-1fbf8ea7d99f",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 6895370,
+            "input_tokens_cumulative": 6895370,
+            "output_tokens": 53292,
+            "output_tokens_cumulative": 53292,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 26879.095,
+          "generated_tokens": 53292,
+          "generation_seconds": 26742.044,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 16.2,
+          "machine_seconds": 137.051,
+          "peak_input_tokens": 164567,
+          "tokens_per_second": 1.99,
+          "wall_tokens_per_second": 1.98
+        },
+        "dispute_count": "unknown",
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sli-the-quarantine-instruments-answer-one-question",
+          "session_id": "ef833336-cd1e-4ca1-83f6-1fbf8ea7d99f",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T02:24:40.971Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260908T013436957659-n-crs-the-currency-tests-read-the-new-contract",
+        "plan": "catalog-review-surface",
+        "section": "s4b",
+        "node": "n-crs-the-currency-tests-read-the-new-contract",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 640,
+                "cached_input_tokens": 524794,
+                "input_tokens": 525436,
+                "output_tokens": 1137,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 526573,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "tests/graph/ returns to its stated baseline of exactly 5 failures when measured at a VIRTUAL MERGE of your commit with f39508320a56db9599efc04b32c05d64a0598569, and tests/core/test_backup_currency.py has zero added failures at that same head. Assert at the combined head, never at your own commit alone. That commit changes get_backup_currency to scan BACKUPS_DIR and EXPORTS_DIR and to report status as existence-plus-verified-contents, retiring stale, and it is deliberately NOT merged because main must not gain failures. Read it first with git -C /home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-crs-the-archive-and-its-instrument-name-one-store show f39508320. Two causes, both already isolated, so do not re-derive them. FIRST, neither test file patches EXPORTS_DIR with grep count 0 in both, so the real directory holding fourteen 2.4 GB archives leaks into every fixture; patch EXPORTS_DIR to a tmp_path in every test that patches BACKUPS_DIR. That alone should fix test_currency_does_not_treat_a_nonarchive_as_a_backup, whose intent that a 4748-byte trial dump is not a backup is still honoured because contents are verified. SECOND, test_currency_uses_stale_recovery_archive_beside_newer_trial_dump asserts status equals stale, the contract the plan instructed retiring; update it to the new contract and keep its trial-dump discrimination asserted, because that distinction is a locked plan requirement. The 5 baseline failure ids that must be all that remain are test_dd_unit_correction_reconcile.py::test_measurement_position_flux_is_corrected_in_graph, the two in test_gas_unit_correction.py, and the two test_rebuild_honours_resolution.py parametrisations. Change only the two named test files; do not touch neo4j_ops.py and do not weaken the new contract to make an old assertion pass. Run heavy gates on a SLURM debug partition, not the login node.",
+          "estimated_hours": null,
+          "goal": "Bring the two backup-currency test files onto the retired-stale contract and prove the paired state green",
+          "id": "n-crs-the-currency-tests-read-the-new-contract",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T013436957659-n-crs-the-currency-tests-read-the-new-contract/manifest.md",
+          "plan": "catalog-review-surface",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "s4b",
+          "spec_level": "exact",
+          "time_budget": "60m",
+          "write_paths": [
+            "tests/graph/test_backup_currency.py",
+            "tests/core/test_backup_currency.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-postcopy",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-08T01:34:44Z",
+        "completed_at": "2026-09-08T02:57:06.309Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 4423,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 4942,
+        "stalled": false,
+        "time_budget": "60m",
+        "base_sha": "58d5ef36ea01a3d1212fbc69342ffa910d354698",
+        "commits": [
+          "8862a65f37bd49011cbec319ccb95638acefd98e"
+        ],
+        "changed_lines": {
+          "added": 9,
+          "removed": 2,
+          "files": 2
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "UV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv UV_NO_SYNC=1 PYTHONPATH=$PWD uv run pytest -p no:cacheprovider tests/graph/ measured at a virtual merge with f39508320",
+          "exit_status": 1,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T013436957659-n-crs-the-currency-tests-read-the-new-contract/after_tests_graph.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T013436957659-n-crs-the-currency-tests-read-the-new-contract/manifest.md",
+        "scope_changed": false,
+        "session_id": "c0b416e7-c239-4629-8a50-6d0d7115bdd3",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 0,
+            "input_tokens_cumulative": 4370286,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 19691,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 4937.61,
+          "generated_tokens": 19691,
+          "generation_seconds": 4711.505,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 17.6,
+          "machine_seconds": 226.105,
+          "peak_input_tokens": 178996,
+          "tokens_per_second": 4.18,
+          "wall_tokens_per_second": 3.99
+        },
+        "follow_on_paths": [
+          "tests/graph",
+          "imas_codex/graph/AGENTS.md"
+        ],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-crs-the-currency-tests-read-the-new-contract",
+          "session_id": "c0b416e7-c239-4629-8a50-6d0d7115bdd3",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T02:57:06.309Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -101782,6 +102070,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1926
+    "_version": 1928
   }
 }
