@@ -1824,6 +1824,117 @@ def _derive_rename_unit(
     return authorities[0][1]
 
 
+#: Marked read of the exact ``PRODUCED_NAME`` cohort one name claims. The
+#: edge is the source of truth for what produced a standard name; the
+#: ``produced_sn_id`` scalar mirrors it and is never read as authority here,
+#: because a mirror that has drifted is exactly the state this read exists
+#: to expose.
+_RENAME_PRODUCER_QUERY = """
+// EDIT_FETCH_PRODUCING_SOURCE_IDS
+MATCH (source:StandardNameSource)-[:PRODUCED_NAME]->(sn:StandardName {id: $id})
+RETURN source.id AS source_id
+"""
+
+
+def _producing_source_ids(gc: GraphClient, sn_id: str) -> list[str]:
+    """The source ids currently bound to ``sn_id`` by ``PRODUCED_NAME``."""
+    rows = gc.query(_RENAME_PRODUCER_QUERY, id=sn_id)
+    return sorted({row["source_id"] for row in rows if row.get("source_id")})
+
+
+def _carry_rename_sources(
+    gc: GraphClient,
+    *,
+    old_name: str,
+    new_name: str,
+    expected_source_ids: list[str],
+    reason: str,
+    origin: str,
+    run_id: str,
+) -> str:
+    """Prove the successor of a rename holds the predecessor's producers.
+
+    A rename moves an identity, and the sources that produced the old
+    spelling produce the new one — the quantity did not change, only what it
+    is called. When that carriage does not happen the failure is silent in
+    the worst possible way: the export excludes an unsourced name at the
+    population boundary, so the data-dictionary paths it backs resolve to no
+    standard name while the batch accounting still closes at zero residue.
+    Nothing in the receipt says the quantity left the batch.
+
+    So the rename asserts the postcondition instead of assuming it. Any
+    predecessor binding the successor does not hold is carried with
+    :func:`retarget_standard_name_sources` — the one sanctioned mechanism,
+    which moves the edge, its scalar mirror, the upstream
+    ``HAS_STANDARD_NAME`` projection and both names' ``source_paths`` under a
+    compare-and-set. A binding is never written by hand: the edge is the
+    source of truth and the scalar is derived from it, which is how the
+    mirror rotted the last time the two were written independently.
+
+    A shortfall that survives the carry raises, because a rename that
+    reports success while a data-dictionary path produces no standard name is
+    worse than one that refuses: the refusal is repairable and the silent
+    success is only found by an export weeks later. Dual binding raises for
+    the same reason in the other direction — one source feeding two live
+    names is its own defect, so the predecessor must claim none of them.
+
+    Returns the receipt line describing what was carried.
+    """
+    if not expected_source_ids:
+        return f"no producing source bound to {old_name!r} — nothing to carry"
+
+    held = set(_producing_source_ids(gc, new_name))
+    stranded = [source_id for source_id in expected_source_ids if source_id not in held]
+    carried = 0
+    if stranded:
+        from imas_codex.standard_names.provenance_lifecycle import (
+            retarget_standard_name_sources,
+        )
+
+        still_on_predecessor = set(_producing_source_ids(gc, old_name))
+        movable = sorted(
+            source_id for source_id in stranded if source_id in still_on_predecessor
+        )
+        if movable:
+            carried = retarget_standard_name_sources(
+                gc,
+                old_name,
+                new_name,
+                operation="human_edit",
+                reason=reason,
+                origin=origin,
+                run_id=run_id,
+                record_change=False,
+                source_ids=movable,
+                expected_current_bindings=dict.fromkeys(movable, old_name),
+            )
+
+    held = set(_producing_source_ids(gc, new_name))
+    missing = [source_id for source_id in expected_source_ids if source_id not in held]
+    if missing:
+        raise RuntimeError(
+            f"rename left {len(missing)} of {len(expected_source_ids)} producing "
+            f"source(s) off {new_name!r}: {', '.join(missing)} — the "
+            "data-dictionary path(s) they back now produce no standard name"
+        )
+    retained = [
+        source_id
+        for source_id in _producing_source_ids(gc, old_name)
+        if source_id in set(expected_source_ids)
+    ]
+    if retained:
+        raise RuntimeError(
+            f"rename left {len(retained)} source(s) bound to both {old_name!r} "
+            f"and {new_name!r}: {', '.join(retained)}"
+        )
+    if carried:
+        return (
+            f"carried {len(expected_source_ids)} producing source(s) to "
+            f"{new_name!r} ({carried} by explicit migration)"
+        )
+    return f"verified {len(expected_source_ids)} producing source(s) on {new_name!r}"
+
+
 def _fold_target_paths(
     snapshot: dict[str, Any],
     old_sources: list[dict[str, Any]],
@@ -3087,7 +3198,16 @@ def _apply_rename(
 
     successor_unit = _derive_rename_unit(gc, refine_root_old, root_row.get("unit"))
 
+    # The producing cohort is read BEFORE the rename, while the bindings are
+    # still on the predecessor: it is the only moment the expectation can be
+    # established, because the rename itself is what empties that side.
+    producing_source_ids = _producing_source_ids(gc, refine_root_old)
+
     if dry_run:
+        actions.append(
+            f"[dry-run] would carry {len(producing_source_ids)} producing "
+            f"source(s) to {refine_root_new!r}"
+        )
         actions.append(
             f"[dry-run] would rename {refine_root_old!r} → {refine_root_new!r}"
             f" ({len(cascade_deferred)} descendant(s) would then await "
@@ -3155,6 +3275,18 @@ def _apply_rename(
     # persists a 0.0 review for quarantined names). No privileged path.
     successor_row = {**root_row, "unit": successor_unit}
     _stamp_successor_validation(gc, successor, successor_row)
+
+    actions.append(
+        _carry_rename_sources(
+            gc,
+            old_name=refine_root_old,
+            new_name=successor,
+            expected_source_ids=producing_source_ids,
+            reason=reason,
+            origin=origin,
+            run_id=run_id,
+        )
+    )
 
     actions.append(
         f"renamed {refine_root_old!r} → {successor!r}, entering name review "
