@@ -15,11 +15,14 @@ remote cannot be resolved. The derivation mirrors
 and raise rather than guess.
 """
 
+import ast
+import inspect
 import re
 import subprocess
 
 import pytest
 
+from imas_codex.standard_names import release_notes
 from imas_codex.standard_names.release_notes import (
     ReviewingGuideLinkError,
     reviewing_guide_url,
@@ -81,6 +84,16 @@ def _fallback_body() -> str:
         ],
     )
     return body
+
+
+def test_release_notes_does_not_define_a_second_git_helper_copy():
+    tree = ast.parse(inspect.getsource(release_notes))
+    definitions = {
+        node.name
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)
+    }
+    assert {"_run_git", "_github_slug"}.isdisjoint(definitions)
 
 
 def test_reviewing_guide_url_is_derived_from_the_catalog_origin_remote(

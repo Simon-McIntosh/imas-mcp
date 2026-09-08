@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import logging
 import re
-import subprocess
 from collections import Counter
 from collections.abc import Mapping
 from pathlib import Path
@@ -27,6 +26,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from imas_codex.graph.models import DDGapStatus
+from imas_codex.standard_names.catalog_release import _github_slug, _run_git
 
 logger = logging.getLogger(__name__)
 
@@ -385,33 +385,6 @@ class ReviewingGuideLinkError(RuntimeError):
     """Raised when the catalog reviewing-guide address cannot be derived."""
 
 
-def _run_git(*args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
-    """Run a git command in a checkout."""
-    return subprocess.run(
-        ["git", *args],
-        cwd=cwd,
-        capture_output=True,
-        text=True,
-        timeout=30,
-    )
-
-
-def _github_slug(root: Path) -> tuple[str, str] | None:
-    """Parse a github ``owner/repo`` pair from the root's origin remote.
-
-    Handles both SSH (``git@github.com:owner/repo.git``) and HTTPS forms.
-    Returns None when the remote is missing or not a github URL — the caller
-    decides whether that is an error.
-    """
-    result = _run_git("remote", "get-url", "origin", cwd=root)
-    if result.returncode != 0:
-        return None
-    m = re.search(
-        r"github\.com[:/]([\w.-]+)/([\w.-]+?)(?:\.git)?/?$", result.stdout.strip()
-    )
-    return (m[1], m[2]) if m else None
-
-
 def reviewing_guide_url(*, checkout: str | Path | None = None) -> str:
     """Derive the catalog reviewing-guide blob address from the catalog checkout.
 
@@ -441,7 +414,7 @@ def reviewing_guide_url(*, checkout: str | Path | None = None) -> str:
             "guide cannot be addressed"
         )
     root = Path(toplevel.stdout.strip())
-    slug = _github_slug(root)
+    slug = _github_slug(root, "origin")
     if slug is None:
         raise ReviewingGuideLinkError(
             f"{root} has no github 'origin' remote, so the catalog reviewing "
