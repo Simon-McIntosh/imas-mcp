@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-08">
-<meta name="plan-version" content="27">
+<meta name="plan-version" content="28">
 <meta name="plan-commits" content="f39508320a56db9599efc04b32c05d64a0598569,8862a65f37bd49011cbec319ccb95638acefd98e">
 <meta name="plan-artifacts" content="tests/graph/test_backup_currency_contents.py,tests/graph/test_backup_currency.py,tests/core/test_backup_currency.py">
 <meta name="plan-impl" content="0.88">
@@ -262,6 +262,9 @@
 </div>
 <div class="r-comment" data-section="s4b" data-id="c-run-r-20260908T092515122308-n-crs-an-accepted-edit-records-who-changed-it" data-who="codex-luna-b" data-when="2026-09-08T09:43:36Z">
     <div class="r-comment-body"><p>The four catalog provenance fields that a census over 4,666 rows found universally zero — catalog_approved_at, catalog_pr_number, catalog_merge_commit_sha and exported_at — now have a writer: the staging export timestamp persists on every published graph identity after the catalog commit succeeds, and a read-back regression covers the complete approval and publication provenance tuple rather than asserting the writer exists. Additions only, 325 lines across publish.py, a new test and the receipt. Merged onto a green tree and verified there by the coordinator, because it had measured against an older base.</p></div>
+</div>
+<div class="r-comment" data-section="s4b" data-id="c-run-r-20260908T092429674063-n-crs-the-approval-fold-back-is-exercised-and-unwound" data-who="codex-luna-a" data-when="2026-09-08T09:53:52Z">
+    <div class="r-comment-body"><p>The fold-back rehearsal did not run, and the reason is worth recording precisely because it is not a worker failure. An isolated rehearsal target would not start from the verified archive even after copying the stopped live system database, so the accepted edit, the pipeline-refused edit and their graph-state receipts were never exercised. The node reported that rather than improvising a rehearsal against the real graph, which was the right call: this plan&#x27;s whole point is that a rehearsal must cost no lasting state, and one run against live identities would have violated the deliverable it was meant to demonstrate. WHAT THE NEXT ATTEMPT NEEDS FROM ME, not from a worker: a decision on the substrate. Instance isolation is what the plan assumed once graph_pull gained an explicit target, but it has now failed to provision twice. The alternative worth weighing is that this graph records every change as a StandardNameChange row, so a fold-back could be exercised on purpose-made identities and its unwind proven from the ledger rather than by isolating the database — which is cheaper and uses a mechanism this sprint has already exercised heavily. That is a plan-level choice about what counts as isolation, and it belongs to the lead rather than to a redispatch.</p></div>
 </div>
 <div class="r-comment" data-section="_top" data-id="c-run-r-20260905T120738430664-n-crs-a-current-checkpoint-exists" data-who="graph-checkpoint" data-when="2026-09-05T12:21:41.515Z">
     <div class="r-comment-body"><p>a current verified full-graph checkpoint exists at 2,451,894,300 bytes written 12:15:36Z, four days after the previous one, and the database returned intact: same 4937 StandardName identities, same current DDVersion 4.1.1, 1,628,593 nodes, resubmitted as SLURM job 1262883 and serving. Caught that a bare graph export writes to EXPORTS_DIR while the currency instrument reads BACKUPS_DIR, so the archive would have landed where nothing looks for it, and added an explicit output path rather than satisfying the brief literally.</p></div>

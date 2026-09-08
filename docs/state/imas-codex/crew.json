@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T11:54:22",
+  "updated": "2026-09-08T12:16:18",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -107137,6 +107137,318 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T092429674063-n-crs-the-approval-fold-back-is-exercised-and-unwound",
+        "plan": "catalog-review-surface",
+        "section": "s4b",
+        "node": "n-crs-the-approval-fold-back-is-exercised-and-unwound",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2035,
+                "cached_input_tokens": 549843,
+                "input_tokens": 551880,
+                "output_tokens": 4009,
+                "reasoning_output_tokens": 1440,
+                "total_tokens": 555889,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "The approval fold-back has carried one accepted reviewer edit and one edit the pipeline must refuse, with the refusal visible to the reviewer rather than silent, and evidence that the exercise unwound leaving no lasting change to the graph or the catalog. THE SUBSTRATE IS SETTLED AND IT IS NOT THE WEST REQUEST: make a fresh purpose-built request on the FORK at ~/Code/imas-standard-names-catalog, whose origin is Simon-McIntosh and upstream is iterorganization, carrying those two edits; close it and delete its branch afterwards. Fork requests 4 and 5 were done and unwound exactly this way on 2026-09-01 and are your model. The open WEST request carries the real batch and real reviewers and must not be touched. WHAT IS ALREADY PROVEN, so do not redo it: the reviewer guide states the editable-versus-machine-owned distinction at commit e9d3044, and the guard job in .github/workflows/validate.yml at commit dd70ba6 is proven live in both directions \u2014 request 4 edited the machine-owned unit and its review-edit-guard check failed, request 5 carried only a description clarification and the same check passed. Deliverables one and two are done. WHAT YOU OWE: the fold-back itself. Carry an ACCEPTED edit back into the graph so the change is traceable to the reviewer and the request that made it, and carry a REFUSED edit \u2014 one that fails the naming grammar \u2014 so it is marked contested rather than absorbed, and so the refusal reaches the reviewer instead of disappearing. Report both by identity, with the graph state before and after each. THEN UNWIND IT and prove the unwind: show that the graph and the catalog carry no lasting trace of the exercise, by comparing the same bounded reads before and after. A rehearsal that costs real state is not a rehearsal, and the evidence that it did not is the deliverable, not a claim that it did not. Do not exercise this against the WEST batch identities; use identities you introduce for the purpose or ones already carrying no batch membership, and say which you chose and why. The graph tunnel is login-node-local so live work runs on the LOGIN NODE, bounded, ten seconds per query, exception declared in the manifest. Gate: tests/standard_names, added failures against a base you take at your own head \u2014 the suite is falling as other nodes land fixes, so measure rather than assume. Do not pass -q; quiet mode is removed from addopts so a run emits its own totals line. DURABILITY: write your manifest before any long output, and record the request number and branch as soon as they exist, because an unwound exercise whose request was never recorded cannot be audited.",
+          "estimated_hours": null,
+          "goal": "Exercise the approval fold-back on a throwaway request and prove it unwinds leaving no lasting change",
+          "id": "n-crs-the-approval-fold-back-is-exercised-and-unwound",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T092429674063-n-crs-the-approval-fold-back-is-exercised-and-unwound/manifest.md",
+          "plan": "catalog-review-surface",
+          "requested_backend": "codex-luna",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "s4b",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "docs/evidence/catalog-review-surface/fold-back-rehearsal.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "codex-luna-a",
+        "backend": "codex-luna",
+        "local": false,
+        "agent": {
+          "alias": "luna5.6",
+          "backend": "codex-luna",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-luna",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T09:24:43Z",
+        "completed_at": "2026-09-08T09:53:52Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1749,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1749,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "d2abaa5d7b66f37b2d96219b24ab9bf6d1f3b061",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "failed",
+        "gate_check": null,
+        "suite_delta": null,
+        "failure_classification": "infrastructure-failure",
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T092429674063-n-crs-the-approval-fold-back-is-exercised-and-unwound/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a08055-87ac-7a41-815f-6a4a9deb0cff",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 20688384,
+            "cached_input_tokens_cumulative": 20688384,
+            "input_tokens": 20977102,
+            "input_tokens_cumulative": 20977102,
+            "output_tokens": 42124,
+            "output_tokens_cumulative": 42124,
+            "reasoning_output_tokens": 14155,
+            "reasoning_output_tokens_cumulative": 14155
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T09:53:52Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 27.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T09:53:52Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 20688384,
+          "cumulative_input_tokens": 41665486,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 56279
+        },
+        "follow_on_paths": [
+          "tests/standard_names"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": "the rehearsal was never exercised, so there was nothing to commit",
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-crs-the-approval-fold-back-is-exercised-and-unwound",
+          "session_id": "01a08055-87ac-7a41-815f-6a4a9deb0cff",
+          "session_source": "stream",
+          "retained_at": "2026-09-08T09:53:52Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": {
+          "session_id": "01a08055-87ac-7a41-815f-6a4a9deb0cff",
+          "source": "stream",
+          "reason": "the blocker is a substrate-provisioning problem rather than anything in this session's reasoning: an isolated graph instance would not start from the verified archive even after copying the stopped live database. Resuming the same session would retry the same provisioning path; what is needed first is a decision about whether instance isolation is the right substrate at all"
+        },
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T095635820078-n-swct-the-sn-toolset-guidance-names-the-capability-not-the-flag",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a79",
+        "node": "n-swct-the-sn-toolset-guidance-names-the-capability-not-the-flag",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 546,
+                "cached_input_tokens": 601650,
+                "input_tokens": 602198,
+                "output_tokens": 1603,
+                "reasoning_output_tokens": 96,
+                "total_tokens": 603801,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "The standard-name agent guidance states, for each capability a worker plausibly needs, which command and option provides it and which situation calls for it, organised by problem rather than as a flag reference. THE MEASURED GAP, which is why this node exists: sn run alone exposes 61 options, and across every AGENTS.md in the repository there are only 27 references to any sn flag. Most of the toolset is therefore undiscoverable to a dispatched worker, and today that cost the sprint directly: a node worked around a stalled documentation cohort until the LEAD supplied --flush from outside the guidance. A capability only the lead knows about is not a capability the fleet has. WHAT TO PRODUCE: read the actual surface \u2014 sn --help, the help of each subcommand, sn run's full option list, and the code wherever an option's behaviour is not obvious from its help text \u2014 then write guidance keyed to the situations a worker meets. Cover at minimum how to drain a cohort that is mid-pipeline without starting new work; scope a run to one axis or one stage; scope to specific names or sources rather than the whole population; cap spend; re-run a stage without resetting hard-won state; and reset deliberately when that is the intent. For each, give the command form, one sentence on when it is right, and one on when it is wrong. FLAGS THAT HAVE ALREADY BITTEN THIS PROJECT, each to be covered with its trap stated: --flush gates NEW work rather than blocking recovery, so it is the right tool for draining a stalled cohort and the wrong reading is that it halts everything; -t is MINUTES rather than threads; --cost-limit is a soft cap whose overshoot defect is fixed; a mid-pipeline name is a normal state rather than a stranded one, so a run must not be stopped early merely because names are still moving; and generate concurrency has a measured knee near 4 on the two-H200 host rather than 32, where exceeding it produced 69 API timeouts in one run. DO NOT WRITE A FLAG DUMP: a reader wanting every option runs --help, and what --help cannot tell them is which option matches their situation and which reading of it is wrong. Do not restate what a help text already says clearly. PLACEMENT RULE, which settles where each block goes: this repository documents guidance at the narrowest scope owning the code, so a capability implemented under imas_codex/standard_names is documented in imas_codex/standard_names/AGENTS.md and one implemented under imas_codex/core is documented in imas_codex/core/AGENTS.md; the root file gets at most a one-line pointer and you are not editing it. Report which blocks went in which file and the code path that settled each. VERIFY every command form you write by running it with --help or --dry-run so no guidance names an option that does not exist, and state that you did. Add no plan labels, ticket references or author attributions. Gate: tests/standard_names, added failures against a base you take at your own head; the suite is GREEN at 7258 passed with zero failures, so any failure is unambiguous. Do not pass -q; quiet mode is removed from addopts so a run emits its own totals line, and quote it. DURABILITY: write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Give agents guidance that names which standard-name capability solves which situation",
+          "id": "n-swct-the-sn-toolset-guidance-names-the-capability-not-the-flag",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T095635820078-n-swct-the-sn-toolset-guidance-names-the-capability-not-the-flag/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "50m",
+          "write_paths": [
+            "imas_codex/standard_names/AGENTS.md",
+            "imas_codex/core/AGENTS.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "codex-terra-a",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T09:56:47Z",
+        "completed_at": "2026-09-08T10:15:01Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1094,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1094,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "c126a29bf67527decafbe179218f839b8350a616",
+        "commits": [
+          "96dd057986ad6a7a76119244979ae8cdc20a937f"
+        ],
+        "changed_lines": {
+          "added": 47,
+          "removed": 0,
+          "files": 2
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "srun --partition=all_debug uv run pytest -p no:cacheprovider tests/standard_names, baseline and after",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "baseline 7259 passed, 11 skipped, 323 deselected, 0 failures; after identical"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T095635820078-n-swct-the-sn-toolset-guidance-names-the-capability-not-the-flag/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a08072-e4e2-72d1-b0b1-f2935da3ac8d",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 12966912,
+            "cached_input_tokens_cumulative": 12966912,
+            "input_tokens": 13227485,
+            "input_tokens_cumulative": 13227485,
+            "output_tokens": 30974,
+            "output_tokens_cumulative": 30974,
+            "reasoning_output_tokens": 9691,
+            "reasoning_output_tokens_cumulative": 9691
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T10:15:01Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 29.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T10:15:01Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 12966912,
+          "cumulative_input_tokens": 26194397,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 40665
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swct-the-sn-toolset-guidance-names-the-capability-not-the-flag",
+          "session_id": "01a08072-e4e2-72d1-b0b1-f2935da3ac8d",
+          "session_source": "stream",
+          "retained_at": "2026-09-08T10:15:01Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -107393,6 +107705,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1980
+    "_version": 1982
   }
 }
