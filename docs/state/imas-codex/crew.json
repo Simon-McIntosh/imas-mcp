@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T11:36:26",
+  "updated": "2026-09-08T11:54:22",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -106639,6 +106639,504 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T091827400325-n-swct-the-nine-unreviewed-names-get-their-docs-review",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a79",
+        "node": "n-swct-the-nine-unreviewed-names-get-their-docs-review",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2183,
+                "cached_input_tokens": 537423,
+                "input_tokens": 539608,
+                "output_tokens": 1982,
+                "reasoning_output_tokens": 384,
+                "total_tokens": 541590,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "The nine WEST names in the export's never_reviewed bucket have each been through a docs-axis review, with the outcome reported per identity, and the actual spend reported beside the ceiling. BUDGET: the lead has authorised up to 150 US dollars and none is spent \u2014 an earlier pipeline node found compose runs on a zero-cost local route and no paid documentation rotation was then admissible. Documentation IS the paid stage, so this is what the authorisation is for. Pass a cost limit so the soft cap applies, report actual spend against the 150 ceiling, and state why any remainder went unspent. WHAT IS ALREADY ESTABLISHED, so do not re-derive it: read docs/evidence/sn-west-cohort-treatment/docs-review-reachability.md. A bounded live query over the exact nine ids returned nine rows each carrying docs_stage accepted, docs_review_count 0, an empty docs_reviews list, and null reviewer_score_docs, reviewer_verdict_docs, reviewed_docs_at and docs_review_quorum_shortfall. The scalar projection claims acceptance while the relationship carrying docs review evidence is absent: these names have genuinely never been reviewed and there is no stored resolution to surface. The lead's instruction is that they be reviewed rather than excluded from the batch. THE OBSTACLE TO EXPECT: a name whose docs_stage already reads accepted may not be eligible to be claimed for review work, which is the deadlock that left them unreviewed. If eligibility refuses them, correct the false scalar through the backing code path so it reflects the absent evidence, then let the pipeline claim them normally. Do NOT hand-set docs_stage to a value that merely unlocks the claim, and do not bypass the eligibility predicate: the scalar must end up agreeing with the evidence, whatever that takes. Say which path you used. THEN RUN THE REVIEW and report per identity: the id, its docs_stage before, the reviewer verdict and score, its docs_stage after, and for any name that does not advance, the reason. Use the repaired prompts \u2014 34 prompt files were audited and merged today across compose, review and refine, so pull main first, because a run on the old prompts spends the budget on output the repaired reviewer would mark down. Reviewer scores are now evidence-anchored bands rather than an unanchored scale, so a score near a threshold means what it says. Do not force a name past a validation refusal and do not lower a threshold to make one pass. OPERATIONAL FACTS: the request timeout is 600 seconds, the run's -t flag is minutes rather than threads, and a mid-pipeline name is a normal state rather than a stranded one, so do not halt a run because names are still moving. Graph reads run on the LOGIN NODE because the tunnel is login-node-local, bounded, declared in the manifest. Gate: tests/standard_names, added failures against a base you take at your own head \u2014 the suite is now at 18 failures and three nodes are actively reducing it, so measure rather than assume. Do not pass -q; quiet mode is removed from addopts so a run emits its own totals line. DURABILITY: write your manifest before any long output and append each identity as it completes, because a paid run whose receipt was deferred loses the record of what the money bought.",
+          "estimated_hours": null,
+          "goal": "Give the nine never-reviewed WEST names an actual docs-axis review so they can publish",
+          "id": "n-swct-the-nine-unreviewed-names-get-their-docs-review",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T091827400325-n-swct-the-nine-unreviewed-names-get-their-docs-review/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "docs/evidence/sn-west-cohort-treatment/nine-name-docs-review.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "codex-terra-b",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T09:18:39Z",
+        "completed_at": "2026-09-08T09:43:15Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1476,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1476,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "9c33d10750f07df2dc36c0c0749d75a940ee42d5",
+        "commits": [
+          "252c0fa96fe88f6c9bb7a92e33d0a313bac7f995"
+        ],
+        "changed_lines": {
+          "added": 72,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "bounded login-node live reads over the nine identities, the scoped docs pool, and the full tests/standard_names on all_debug",
+          "exit_status": 1,
+          "log_path": null,
+          "log_digest": "nine exact identities queried each under 10 seconds; scoped docs pool a086509a completed with 9 reviews in 299.614s at exact cost 1.004414 dollars of 150.00; full gate totals verbatim: 18 failed, 7239 passed, 11 skipped, 323 deselected in 306.08s, equal to the known base so 0 added for a docs-only commit"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T091827400325-n-swct-the-nine-unreviewed-names-get-their-docs-review/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07fd2-64f0-7812-9739-574de8f4cefa",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 0,
+            "cached_input_tokens_cumulative": 13522944,
+            "input_tokens": 0,
+            "input_tokens_cumulative": 13996170,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 32481,
+            "reasoning_output_tokens": 0,
+            "reasoning_output_tokens_cumulative": 7266
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T09:43:15Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 27.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T09:43:15Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 13522944,
+          "cumulative_input_tokens": 27519114,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 39747
+        },
+        "follow_on_paths": [
+          "compose/edit",
+          "derivation/docs-eligibility/error-sibling/parent-admission"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swct-the-nine-unreviewed-names-get-their-docs-review",
+          "session_id": "01a07fd2-64f0-7812-9739-574de8f4cefa",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T09:43:15Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T094313258694-n-swct-the-consumer-pins-the-released-grammar",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a79",
+        "node": "n-swct-the-consumer-pins-the-released-grammar",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 392,
+                "cached_input_tokens": 581492,
+                "input_tokens": 581886,
+                "output_tokens": 1650,
+                "reasoning_output_tokens": 332,
+                "total_tokens": 583536,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "Both declarations of the imas-standard-names dependency in pyproject.toml name the released version 0.9.1 instead of 0.9.0, and the change is verified by reading the file back rather than from the edit. THE EXACT SITES, so do not search: pyproject.toml line 18 and line 184 each read imas-standard-names==0.9.0. Both must move. A past note recorded this pin as 0.8.9 and was wrong, so trust the file rather than any prior description of it. WHY 0.9.1 IS THE RIGHT VALUE: the grammar repository cut a stable patch release today, tagged v0.9.1 and pushed to upstream at 09527b233c7783e1faa835f49d7cc03bb0166a3c, carrying three new physical_base tokens \u2014 event_instant, signal_to_noise_ratio and signal_to_noise_level \u2014 each confirmed present in the vocabulary at that tag. DO NOT TOUCH [tool.uv.sources] AT LINE 1046, which points imas-standard-names at the local editable checkout. That override is what makes local resolution work today, and the PyPI publish pipeline for 0.9.1 was only triggered minutes ago, so removing the override before the package is actually installable from PyPI would break resolution for this checkout, for CI and for every peer. Moving the consumer off the editable override is a separate, later step and it is explicitly not yours. State in your report that the override remains and why. WHAT THE PIN ACTUALLY BUYS, so you can judge whether the change is complete: local resolution is unaffected because the editable source wins, so this matters for a fresh clone and for CI, which would otherwise install a grammar without the three new tokens. VERIFY: grep the file after editing and quote both lines; confirm no third declaration exists that you missed; and run the naming checks over pyproject.toml before staging. Do not bump any other dependency, and do not touch uv.lock unless the pin change requires it, in which case say so and commit both files together as this repository's policy requires. Gate: tests/standard_names, added failures against a base you take at your own head. The suite is currently GREEN at 7258 passed, 11 skipped, 323 deselected with zero failures, measured at the merged head, so any failure your change introduces is unambiguous and unacceptable. Do not pass -q; quiet mode is removed from addopts so a run emits its own totals line, and quote it. DURABILITY: write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Move both consumer pins onto the released grammar version",
+          "id": "n-swct-the-consumer-pins-the-released-grammar",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T094313258694-n-swct-the-consumer-pins-the-released-grammar/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requested_backend": "clive",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "exact",
+          "time_budget": "30m",
+          "write_paths": [
+            "pyproject.toml"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "clive-gate",
+        "backend": "clive",
+        "local": false,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-08T09:43:24Z",
+        "completed_at": "2026-09-08T09:52:27.343Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 518,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 543,
+        "stalled": false,
+        "time_budget": "30m",
+        "base_sha": "5701b47e8975b941b98d48e751f1e2fc6d7e60cd",
+        "commits": [
+          "83454b01a543086a685b127ae3edc696b14a98f9"
+        ],
+        "changed_lines": {
+          "added": 2,
+          "removed": 2,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "srun --export=ALL,TMPDIR=/tmp --partition=all_debug uv run pytest -p no:cacheprovider tests/standard_names/",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "totals verbatim: 7258 passed, 11 skipped, 323 deselected, 34 warnings in 297.65s; grep FAILED = 0; EXIT=0"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T094313258694-n-swct-the-consumer-pins-the-released-grammar/manifest.md",
+        "scope_changed": false,
+        "session_id": "a1870210-c6f2-463e-948b-587570fbbf9d",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 0,
+            "input_tokens_cumulative": 2740967,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 10409,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lane_receipt": {
+          "quota_state": "unmeasured",
+          "observed_at": "2026-09-08T09:52:27.343Z",
+          "effective_context_window": "unmeasured",
+          "quota_windows": [],
+          "unmeasured": {
+            "effective_context_window": "missing_rollout",
+            "quota_windows": "unmetered"
+          }
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 0,
+          "cumulative_input_tokens": 2740967,
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 539.844,
+          "generated_tokens": 10409,
+          "generation_seconds": 223.352,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 18.7,
+          "machine_seconds": 316.492,
+          "peak_input_tokens": 189974,
+          "tokens_per_second": 46.6,
+          "wall_tokens_per_second": 19.28
+        },
+        "follow_on_paths": [
+          "tool.uv.sources",
+          "0.9.1"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swct-the-consumer-pins-the-released-grammar",
+          "session_id": "a1870210-c6f2-463e-948b-587570fbbf9d",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T09:52:27.343Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T092515122308-n-crs-an-accepted-edit-records-who-changed-it",
+        "plan": "catalog-review-surface",
+        "section": "s4b",
+        "node": "n-crs-an-accepted-edit-records-who-changed-it",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2035,
+                "cached_input_tokens": 549843,
+                "input_tokens": 551880,
+                "output_tokens": 4009,
+                "reasoning_output_tokens": 1440,
+                "total_tokens": 555889,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "For an accepted edit, the graph records who changed it and which request carried it, demonstrated by reading those fields back after a publish rather than by inspecting the code that should write them. THE MEASUREMENT THAT BOUNDS THIS, and you must not rediscover it: a controlled census over 4,666 StandardName rows found catalog_approved_at, catalog_pr_number, catalog_merge_commit_sha and exported_at ALL ZERO. No run has ever written any of the four. So the receipt cannot be assumed to fall out of an existing working path, and the first question is which code path is supposed to write them and whether it does. Answer that with the code path quoted. THEN MAKE IT WRITE THEM. The four fields are the provenance a published catalog entry needs: when it was approved, which request carried it, which merge commit landed it, and when it was exported. A published entry that cannot name the request that approved it is unauditable, and the WEST batch is about to publish, so this lands before that rather than after. VERIFY BY READING BACK, not by asserting the writer exists: exercise the path end to end on identities you introduce for the purpose or that carry no batch membership, then read the four fields from the graph and quote their values. State for each field whether it is now populated and by which step. If a field cannot be populated because the information genuinely does not exist at that point in the flow \u2014 a merge commit sha before the merge, for instance \u2014 say so plainly and name the step that CAN write it, rather than writing a placeholder. A placeholder in a provenance field is worse than a null, because a null is visibly absent while a placeholder reads as a record. Do not write these fields for the WEST batch identities as a side effect; this node proves the mechanism, and the real batch gets them when it publishes. The graph tunnel is login-node-local so live work runs on the LOGIN NODE, bounded, ten seconds per query, exception declared in the manifest. Gate: tests/standard_names, added failures against a base you take at your own head, since other nodes are actively reducing it. Do not pass -q; quiet mode is removed from addopts so a run emits its own totals line. DURABILITY: write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Make an accepted catalog edit record its author and the request that carried it",
+          "id": "n-crs-an-accepted-edit-records-who-changed-it",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T092515122308-n-crs-an-accepted-edit-records-who-changed-it/manifest.md",
+          "plan": "catalog-review-surface",
+          "requested_backend": "codex-luna",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "s4b",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/publish.py",
+            "tests/standard_names/test_catalog_traceability_fields.py",
+            "docs/evidence/catalog-review-surface/traceability-receipt.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "codex-luna-b",
+        "backend": "codex-luna",
+        "local": false,
+        "agent": {
+          "alias": "luna5.6",
+          "backend": "codex-luna",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-luna",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T09:25:29Z",
+        "completed_at": "2026-09-08T09:43:36Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1087,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1087,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "d2abaa5d7b66f37b2d96219b24ab9bf6d1f3b061",
+        "commits": [
+          "5e1c88ca625debd8259fc5271155879f0c4ca98a"
+        ],
+        "changed_lines": {
+          "added": 325,
+          "removed": 0,
+          "files": 3
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "focused traceability and approval gate, publish transport and sidecar gate, then the full tests/standard_names on all_debug",
+          "exit_status": 1,
+          "log_path": null,
+          "log_digest": "focused traceability and approval gate 29 passed; publish transport and sidecar gate 27 passed; full tests/standard_names 7249 passed, 10 failed, 11 skipped, 323 deselected at its own older base"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T092515122308-n-crs-an-accepted-edit-records-who-changed-it/manifest.md",
+        "scope_changed": true,
+        "session_id": "01a08056-3c6f-7682-b180-bc67014011aa",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 8520192,
+            "cached_input_tokens_cumulative": 8520192,
+            "input_tokens": 8722480,
+            "input_tokens_cumulative": 8722480,
+            "output_tokens": 32630,
+            "output_tokens_cumulative": 32630,
+            "reasoning_output_tokens": 12978,
+            "reasoning_output_tokens_cumulative": 12978
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T09:43:36Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 27.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T09:43:36Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 8520192,
+          "cumulative_input_tokens": 17242672,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 45608
+        },
+        "follow_on_paths": [
+          "tests/standard_names/test_compose_prompt_examples_round_trip.py",
+          "test_derivation.py",
+          "test_docs_review_eligibility.py",
+          "test_edit_prompt_injection.py",
+          "test_error_siblings.py",
+          "test_parent_admission.py"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-crs-an-accepted-edit-records-who-changed-it",
+          "session_id": "01a08056-3c6f-7682-b180-bc67014011aa",
+          "session_source": "stream",
+          "retained_at": "2026-09-08T09:43:36Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -106895,6 +107393,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1977
+    "_version": 1980
   }
 }
