@@ -44,10 +44,10 @@ a retry target.
 | `summary/fusion/neutron_rates/total/value` | extracted | composed | `total_neutron_rate` |
 | `summary/gas_injection_accumulated/total/value` | extracted | composed | `accumulated_total_gas_count` |
 
-The first persisted read found 13 composed sources, one terminal vocabulary
-gap, and one source still extracted with its own vocabulary-gap evidence. The
-active compose process is allowed to finish or reach its bounded timeout before
-the final cost and completion fields are recorded.
+The completed run left 13 composed sources and two vocabulary holds. The
+calorimetry power source is terminally marked `vocab_gap`; `darea_dpsi` remains
+`extracted` but carries its own physical-base gap evidence, so neither is
+silently indistinguishable from an untouched source.
 
 ## Documentation cohort
 
@@ -68,16 +68,16 @@ drafts remain validation-quarantined.
 
 ## Spend and verification
 
-The compose run uses the local `hosted_vllm` route, whose generate pool is
-accounted as zero-cost. Its final ledger total remains pending while the scoped
-process holds an active request; no paid documentation rotation was admitted.
-The authorised ceiling is $150.00. Any remainder is unspent because two compose
-rows require grammar vocabulary and the four documentation rows are either
-terminal, already complete, or validation-blocked; spending through those
-guards would not produce a valid catalog identity.
+The compose run used the local `hosted_vllm` route, whose generate pool is
+accounted as zero-cost: actual spend was **$0.00 of the $150.00 ceiling**. No
+paid documentation rotation was admitted. The full $150.00 remains unspent
+because two compose rows require grammar vocabulary and the four documentation
+rows are either terminal, already complete, or validation-blocked; spending
+through those guards would not produce a valid catalog identity.
 
 The baseline `tests/standard_names` run at `ea277fdbbaceea4580f22ac56dba28e70b58fdbc`
 completed with 20 failures, 7,227 passes, 11 skips, and 323 deselections. Its
 log is retained with the worker manifest. The completed-suite count differs
 from the expected 18-failure base and is retained as observed rather than
-normalised.
+normalised. The post-receipt run completed with the identical 20 failure ids,
+7,227 passes, 11 skips, and 323 deselections: zero failures were added.
