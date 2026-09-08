@@ -297,9 +297,15 @@ class TestReconcileErrorSiblings:
 
         assert result["stale_marked"] == 1
 
-        # Verify the SET query was called with the orphan ID
+        # Verify the quarantine and its maintenance stamp are one write.
         set_call = mock_gc.query.call_args_list[2]
-        assert "SET sn.validation_status = 'quarantined'" in set_call[0][0]
+        set_query = set_call[0][0]
+        assert "SET sn.updated_at = datetime()" in set_query
+        assert "sn.validation_status = 'quarantined'" in set_query
+        assert (
+            "sn.quarantine_reason = 'orphaned error sibling (parent name deleted)'"
+            in set_query
+        )
         assert set_call[1]["ids"] == ["upper_uncertainty_of_plasma_current"]
 
     def test_reconcile_no_orphans(self):

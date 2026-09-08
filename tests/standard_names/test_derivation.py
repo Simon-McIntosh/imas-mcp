@@ -64,17 +64,18 @@ def test_time_derivative_of_temperature():
 # ---------------------------------------------------------------------------
 
 
-def test_time_averaged_of_maximum_of_temperature():
-    """time_averaged_of_maximum_of_temperature → HAS_PARENT to maximum_of_temperature.
+def test_time_averaged_maximum_of_temperature():
+    """time_averaged_maximum_of_temperature → HAS_PARENT to maximum_of_temperature.
 
     The ISN operator token is ``time_averaged`` (not ``time_average`` — the
-    latter never matched any operator, ISN or regex-fallback).
+    latter never matched any operator). Stacked bare-prefix operators share the
+    separator before the base rather than each rendering its own ``_of_``.
     """
-    edges = derive_edges("time_averaged_of_maximum_of_temperature")
+    edges = derive_edges("time_averaged_maximum_of_temperature")
     assert len(edges) == 1
     e = edges[0]
     assert e.edge_type == "HAS_PARENT"
-    assert e.from_name == "time_averaged_of_maximum_of_temperature"
+    assert e.from_name == "time_averaged_maximum_of_temperature"
     assert e.to_name == "maximum_of_temperature"
     assert e.props["operator"] == "time_averaged"
     assert e.props["operator_kind"] == "unary_prefix"

@@ -501,7 +501,7 @@ class TestFilterAdmissibleParentsShadowVeto:
             if "UNWIND $names AS nm" in cypher:
                 return [
                     {
-                        "name": "line_integrated_impurity_ion_velocity",
+                        "name": "impurity_ion_velocity",
                         "axes": [],
                         "child_ids": [],
                         "lone_child_id": None,
@@ -516,14 +516,14 @@ class TestFilterAdmissibleParentsShadowVeto:
             if "UNWIND $pairs AS pr" in cypher:
                 assert params["pairs"] == [
                     {
-                        "target": "line_integrated_impurity_ion_velocity",
-                        "child": "toroidal_line_integrated_impurity_ion_velocity",
+                        "target": "impurity_ion_velocity",
+                        "child": "toroidal_impurity_ion_velocity",
                     }
                 ]
                 return [
                     {
-                        "target": "line_integrated_impurity_ion_velocity",
-                        "child": "toroidal_line_integrated_impurity_ion_velocity",
+                        "target": "impurity_ion_velocity",
+                        "child": "toroidal_impurity_ion_velocity",
                         "child_stage": "drafted",
                         "child_origin": "pipeline",
                         "child_sources": [
@@ -538,8 +538,8 @@ class TestFilterAdmissibleParentsShadowVeto:
         gc.query.side_effect = query
         co_batch = [
             {
-                "from_name": "toroidal_line_integrated_impurity_ion_velocity",
-                "to_name": "line_integrated_impurity_ion_velocity",
+                "from_name": "toroidal_impurity_ion_velocity",
+                "to_name": "impurity_ion_velocity",
                 "operator_kind": "projection",
                 "axis": "toroidal",
             }
