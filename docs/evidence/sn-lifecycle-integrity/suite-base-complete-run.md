@@ -10,11 +10,20 @@ continues through modules sorting after `p`, including `test_release_verify`,
 `test_sn_approve`, `test_supersession_source_migration`, and
 `test_unit_overrides`.
 
-The earlier logs were not cut by a byte ceiling or by a pytest temporary-file
-failure. Their missing final counts line was caused by effective double-quiet
-output: `pyproject.toml` already supplies `-q`, and each recorded command added
-another `-q`, producing `-qq`. The completed run omitted the command-line `-q`
-and pytest emitted its own final counts line.
+Nothing was truncated. The three 18-failure executions and both 118-failure
+executions all reached `[100%]`. Their missing final counts line was caused by
+effective double-quiet output: `pyproject.toml` already supplies `-q`, and each
+recorded command added another `-q`, producing `-qq`. The completed run omitted
+the command-line `-q` and pytest emitted its own final counts line.
+
+The 100 added failures have a separate, exact cause. Commit
+`51f9f9131c1a0620dacd37bbaee46f3d5411fb0e` added
+`test_release_import_locality.py`; its second test deletes every loaded
+`imas_codex.standard_names.*` module twice and reimports the package without
+restoring the original module objects. Tests already collected after it retain
+functions from the original modules, while their string-based patches resolve
+against the replacement modules. Excluding this one contaminating module turns
+exactly those 100 failures back into passes.
 
 ## Completed run
 
@@ -48,25 +57,15 @@ suite has failures. The following `srun: error ... Exited with exit code 1`
 line is Slurm reporting pytest's non-zero exit; it is not evidence that the
 stream was interrupted.
 
-## Why the earlier records looked incomplete
+## Why the counts line was absent
 
 All four supplied logs reach pytest's terminal reporting sequence: warnings,
-the slowest-duration table, and `short test summary info`. None contains a
-`tmp_path`, basetemp, tempfile, or post-start permission error. Their first two
-lines are the only temporary-directory diagnostics:
+the slowest-duration table, and `short test summary info`. More decisively, all
+four reach `[100%]`, as does the new completed run. There is no collection
+error, per-test timeout, faulthandler termination, xdist worker crash, session
+abort, or output truncation.
 
-```text
-slurmstepd: error: Unable to create TMPDIR [/run/user/39486]: Permission denied
-slurmstepd: error: Setting TMPDIR to /tmp
-```
-
-The second line is significant: Slurm explicitly falls back to `/tmp`. The new
-discriminator unexpectedly retained those same two lines even with
-`--export=ALL,TMPDIR=/tmp`, then ran all 7,570 selected outcomes to completion
-and printed pytest's counts line. Therefore the startup warning did not terminate
-pytest and did not truncate its terminal summary.
-
-The actual counts-line mechanism is pytest verbosity:
+The counts-line mechanism is pytest verbosity:
 
 - `pyproject.toml` supplies one `-q` in `[tool.pytest.ini_options].addopts`.
 - The four earlier suite commands supplied another command-line `-q`.
@@ -75,18 +74,26 @@ The actual counts-line mechanism is pytest verbosity:
 - The completed run retained only the configured `-q`; the final counts line
   appeared without any other output-capture change.
 
+The operator isolated this configuration effect on
+`test_release_verify.py`: neutralized `addopts`, configured `-q`, and configured
+`-q --durations=10` each emitted final statistics, while configured
+`-q --durations=10` plus a command-line `-q` exited 0 without a statistics
+line. The repository's documented `pytest tests/standard_names/ -q` form
+therefore suppresses the very completion evidence it is intended to collect.
+
 The byte evidence independently rules out a hard capture cap. The earlier
 118-failure log is 359,400 bytes and has no counts line. The completed log is
 smaller at 358,973 bytes, yet contains the same 118 failure IDs plus the counts
 line. The two 118-ID sequences compare equal. A 50 KB cap also cannot explain a
 359,400-byte artifact.
 
-The three 18-failure logs came from different revisions and cannot be treated as
-the baseline for this revision. Their 18 IDs are a strict subset of the current
-118, but their stopping at `test_parent_admission` was the end of the failure
-set they printed under `-qq`, not a demonstrated byte cut. The absence of a
-counts line made that distinction invisible and allowed a completed quiet run
-to be misclassified as an incomplete one.
+The `TMPDIR` diagnostic was a real but independent environment defect. The
+login shell exported an unwritable `/run/user/39486` path; Slurm reported the
+failure and fell back to `/tmp`, after which `.bashrc` re-exported the bad path
+inside the compute-node shell. The operator fixed the source configuration by
+exporting `/tmp` in the SLURM branch and verified on `all_debug` that the result
+is `/tmp` and writable. That defect neither explains the missing counts line
+nor the 100-failure delta.
 
 | Evidence log | Bytes | `FAILED` ids | Pytest counts line | Observation |
 |---|---:|---:|---|---|
@@ -95,6 +102,49 @@ to be misclassified as an incomplete one.
 | `scratch/after_suite.log` | 50,191 | 18 | absent | effective `-qq`; reaches short summary |
 | `/home/ITER/mcintos/after_suite_20260908.log` | 359,400 | 118 | absent | effective `-qq`; all 118 IDs present |
 | `complete-standard-names.log` | 358,973 | 118 | present | configured single `-q`; completed base |
+
+## Why 18 failures became 118
+
+The alphabetical boundary is real, but it is a test-order side effect rather
+than an execution boundary. The three 18-failure logs predate commit
+`51f9f9131c1a0620dacd37bbaee46f3d5411fb0e`. The 118-failure log and this
+completed base include its new `test_release_import_locality.py`, which sorts
+immediately before `test_release_verify.py`.
+
+`test_both_import_orders_load` removes all keys containing
+`imas_codex.standard_names` from `sys.modules`, imports the package, removes
+them again, and imports it a second time. Pytest had already collected later
+test modules, so their function objects still close over the original module
+globals. Patches expressed as import strings subsequently resolve through the
+replacement entries in `sys.modules`. For example,
+`test_release_verify._patch_gc` patches the replacement
+`imas_codex.standard_names.graph_ops.GraphClient`, while the collected release
+function executes against the original `graph_ops` globals. The intended mock
+does not intercept construction, and the default-tier live-graph guard refuses
+the resulting `GraphClient` call. This exact refusal appears in all 26
+`test_release_verify.py` failures.
+
+Three discriminators establish the complete effect:
+
+| Selection | Result | Meaning |
+|---|---:|---|
+| `test_release_verify.py` alone | 30 passed | the file is green in an uncontaminated interpreter |
+| `test_release_import_locality.py` then `test_release_verify.py` | 26 failed, 6 passed | the preceding module reproduces all 26 release-verification failures |
+| full suite excluding `test_release_import_locality.py` | 18 failed, 7,217 passed, 11 skipped, 322 deselected | all 100 extra failures disappear |
+
+The complete run selects 7,570 outcomes: 118 failed, 7,119 passed, 11 skipped,
+and 322 deselected. Excluding the two passing import-locality tests selects
+7,568: 18 failed, 7,217 passed, 11 skipped, and 322 deselected. After accounting
+for those two excluded tests, exactly 100 shared outcomes change from failure
+to pass. Thus the known 18 are the underlying failure set for the shared
+selection, and the other 100 are suite-order contamination introduced by the
+new test module. No test execution stops at `p`.
+
+The discriminator logs are durable at:
+
+- `/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T060914409633-n-sli-the-suite-base-is-a-complete-run/release-verify-isolated.log`
+- `/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T060914409633-n-sli-the-suite-base-is-a-complete-run/import-locality-contamination.log`
+- `/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T060914409633-n-sli-the-suite-base-is-a-complete-run/without-import-locality.log`
 
 ## Failure census
 
@@ -239,7 +289,8 @@ tests/standard_names/test_writer_resilience.py::test_heartbeat_fires_info_when_p
 
 ## Scope boundary
 
-This report establishes the baseline and the output-format mechanism. It does
-not attribute or repair the 118 test failures. Those failures span production
-and test files outside this node's exclusive write path and require separately
-scoped ownership.
+This report establishes the completed 118-failure baseline, the output-format
+mechanism, and the single-test cause of the 100-failure delta. Repairing
+`test_release_import_locality.py` is outside this node's exclusive write path.
+The remaining 18 failures also span production and test files outside this
+scope and require separately scoped ownership.
