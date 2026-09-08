@@ -28,7 +28,7 @@
 <meta name="plan-capability-verification" content="strict">
 <meta name="plan-capability-risk" content="critical">
 <meta name="plan-impl" content="0.95">
-<meta name="plan-version" content="209">
+<meta name="plan-version" content="210">
 <meta name="plan-commits" content="72b7760c60ac307f641e7e8490b7f15e532d2104">
 <meta name="plan-artifacts" content="docs/evidence/sn-west-catalog-release/residue-currency.md,tests/standard_names/test_review_body_ledger_link.py">
 </head>
@@ -65,6 +65,71 @@
 </section>
 
 <section>
+  <h2 id="cut-predates-its-problems">The standing cut predates both of the morning's problems, so the release is a re-cut</h2>
+
+  <p>Established 2026-09-08 and it moves this plan's remaining work: the current candidate is
+  <strong>stale by construction</strong>, not merely short by one name. Its cut time sits
+  <em>before</em> the two events that changed the cohort.</p>
+
+  <figure>
+    <svg viewBox="0 0 700 132" width="100%" role="img"
+         aria-label="Timeline: the cut at 10:48Z precedes the rename validation at 11:38Z and the structural deletion at 11:57Z, both of which change the cohort.">
+      <g font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#1a1a1c">
+        <line x1="40" y1="62" x2="660" y2="62" stroke="#8a8a8f"/>
+        <circle cx="70" cy="62" r="5" fill="#1a1a1c"/>
+        <circle cx="360" cy="62" r="5" fill="#ffffff" stroke="#1a1a1c" stroke-width="1.5"/>
+        <circle cx="600" cy="62" r="5" fill="#ffffff" stroke="#1a1a1c" stroke-width="1.5"/>
+        <text x="70" y="44" text-anchor="middle" font-weight="600">10:48Z</text>
+        <text x="70" y="86" text-anchor="middle" font-size="11">the cut</text>
+        <text x="360" y="44" text-anchor="middle" font-weight="600">11:38Z</text>
+        <text x="360" y="86" text-anchor="middle" font-size="11">rename validated</text>
+        <text x="360" y="102" text-anchor="middle" font-size="11">successor spelling appears</text>
+        <text x="600" y="44" text-anchor="middle" font-weight="600">11:57Z</text>
+        <text x="600" y="86" text-anchor="middle" font-size="11">93 names removed</text>
+        <text x="600" y="102" text-anchor="middle" font-size="11">one of them is in the cut</text>
+      </g>
+    </svg>
+    <figcaption>Everything the candidate asserts was true at 10:48Z. Both facts that make it
+    wrong arrived after.</figcaption>
+  </figure>
+
+  <p>Three consequences, and the third is the one that changes the shape of the work:</p>
+
+  <ul>
+    <li><code>etendue_of_spectrometer_channel</code> is <strong>present in the candidate YAML and
+    absent from the graph</strong> &mdash; taken by the 11:57Z structural pass. It is recoverable:
+    its direct <code>soft_x_rays/channel/etendue</code> source survives, so it is reset,
+    recomposed, and its ratified spectral child reattached. That work is owned by
+    <code>paid-identity-deletion-protection</code> &sect;4.</li>
+    <li><code>power_due_to_ion_cyclotron_heating</code> is present and is now
+    <strong>superseded</strong>: zero producers, zero source paths, no <code>HAS_STANDARD_NAME</code>
+    from any <code>IMASNode</code>, yet still carrying 1,679 characters of accepted documentation
+    and still a parent. It is the predecessor of the 11:38Z rename. <strong>It needs no origin
+    decision</strong> &mdash; it is dropped from the cohort, and its live successor
+    <code>net_power_due_to_ion_cyclotron_heating</code>, which carries those same 1,679 characters
+    by the asserted-equivalence document carry, is added in its place. A provenance repair here
+    would be answering the wrong question about a name that should not be in the batch.</li>
+    <li><strong>The release is therefore a re-cut, not a repair of the standing one.</strong> The
+    next candidate must carry the restored identity, drop the superseded spelling and admit its
+    successor. Reviewing the standing candidate would publish a graph that no longer exists.</li>
+  </ul>
+
+  <p><strong>Nothing is open on the fork.</strong> Pull request 18 &mdash; the candidate opened at
+  10:48Z &mdash; was closed at the lead's instruction pending this work; 11 through 16 are closed
+  and 17 was merged as an approval-fold-back rehearsal rather than a review. The branch and tag
+  were preserved deliberately, so the candidate stays inspectable. <strong>Closing a review is a
+  manual act on the fork, not a release-CLI subcommand</strong> &mdash; do not go looking for one.
+  Two further mechanics that have each cost a node: the release CLI <strong>refuses a detached
+  HEAD</strong>, and every worktree is detached, so cutting a release is structurally
+  undispatchable and remains coordinator work from the main checkout; and the
+  never-push-to-<code>upstream</code> rule is <em>this</em> repository's, not the catalog's, whose
+  own runbook makes pushing to <code>upstream/main</code> step one. Read the target repository's
+  own guidance before any release act.</p>
+
+  <p>The &sect;7 provenance rows in <code>paid-identity-deletion-protection</code> &mdash; the four
+  contradicted and the forty-one silent origins inside the cohort &mdash; are independent of the
+  re-cut and may land on either side of it.</p>
+
   <h2 id="release-run-residues">Three residues the second candidate cut left behind</h2>
   <p>Cutting <code>v0.4.0rc4+west-task-2e</code> and opening pull request 15 succeeded, and the
   same run reported three defects in the release path it had just exercised. All three are this
@@ -703,7 +768,7 @@ rows: 20   foldable-remaining: 0   unreconciled-runs: 0</pre><p><strong>Live poi
     <div class="r-comment-body"><p>The WEST batch is out for review: fork request 18 on branch review/v0.4.0rc6+west-task-2e, carrying 208 entries across 17 domain files plus the catalog sidecar and .export_report.json at catalog commit 4ba2c0eb, under annotated tag v0.4.0rc6+west-task-2e. The accounting closes: 226 candidates minus 208 published equals the 18 accounted exclusions with residue zero, and all eight export gates pass. It refused the catalog_status gate first rather than reaching for --skip-gate, which was correct — five names composed earlier today carried a null catalog status because the composing worktree predated the mint repair — and it repaired them through reconcile_catalog_status, whose contract makes approval the sole writer of active, so the 77 identities it touched moved to draft or superseded and none to active. The frozen roster is backfilled with the request number, 227 names at sha256 18e7beb7. The request body carries markdown links, no bare URL, no attribution, and no plan label, sprint or ticket.</p></div>
 </div>
 <div class="r-comment" data-section="release-contract" data-id="c-run-r-20260908T122125746616-n-swcr-the-batch-is-recut-with-the-reviewed-name" data-who="codex-terra-b" data-when="2026-09-08T13:38:10Z">
-    <div class="r-comment-body"><p>The source bindings are recovered and the physics question is answered. Both DD paths attached to net_power_due_to_ion_cyclotron_heating through sn attach, the composition-equivalent writer, after retarget correctly refused a compare-and-set against sources that were unbound rather than bound to the predecessor — my naming of retarget was the wrong tool for that state. On the judgement I asked for: coupled is not a second quantity. The summary path&#x27;s power coupled to the plasma from a specific launcher is the net forward-minus-reflected power accepted across the launcher and plasma load boundary, and the name&#x27;s own documentation draws that same boundary by excluding power absorbed by plasma particles, so both sources are launcher-resolved realizations of one net boundary power and neither realizes the system total. The mechanical dimensionality, locus and vector-family guard accepted both pairings, and the predecessor now holds zero producers so no co-binding was introduced. WHAT REMAINS: the identity is a candidate again but withheld as the batch&#x27;s sole never_reviewed row, because docs_stage is pending and no docs-axis review is reachable for the new spelling — the same mechanism as the nine names repaired this morning. The measured count is 206 against request 18&#x27;s 208, with no additions and exactly two removals: the superseded spelling, expected, and etendue_of_spectrometer_channel, which is unexplained and deliberately left rather than inferred. It staged no branch, tag, commit or request, honouring the closure boundary exactly.</p></div>
+    <div class="r-comment-body"><p>The source bindings are recovered and the physics question is answered. Both DD paths attached to net_power_due_to_ion_cyclotron_heating through sn attach, the composition-equivalent writer, after retarget correctly refused a compare-and-set against sources that were unbound rather than bound to the predecessor — my naming of retarget was the wrong tool for that state. On the judgement I asked for: coupled is not a second quantity. The summary path's power coupled to the plasma from a specific launcher is the net forward-minus-reflected power accepted across the launcher and plasma load boundary, and the name's own documentation draws that same boundary by excluding power absorbed by plasma particles, so both sources are launcher-resolved realizations of one net boundary power and neither realizes the system total. The mechanical dimensionality, locus and vector-family guard accepted both pairings, and the predecessor now holds zero producers so no co-binding was introduced. WHAT REMAINS: the identity is a candidate again but withheld as the batch's sole never_reviewed row, because docs_stage is pending and no docs-axis review is reachable for the new spelling — the same mechanism as the nine names repaired this morning. The measured count is 206 against request 18's 208, with no additions and exactly two removals: the superseded spelling, expected, and etendue_of_spectrometer_channel, which is unexplained and deliberately left rather than inferred. It staged no branch, tag, commit or request, honouring the closure boundary exactly.</p></div>
 </div>
 <div class="r-comment" data-section="release-run-residues" data-id="c-20260904T2200-solid-angle-shipped" data-who="reckon-ship" data-when="2026-09-04T22:00:00+00:00">
     <div class="r-comment-body">THE PER-SOLID-ANGLE BLOCKER IS SPENT, AND IT WAS THE ONE HOLDING THE RECUT. The open followup on the four emission-rate names says the direction to try is source_rate with the solid-angle structure expressed through the grammar, and that if the grammar cannot express it then this is an ISN vocabulary gap of exactly the shape mass_flow_rate was. The gap was raised, and it CLOSED: per_solid_angle is declared as an operator in the installed 0.8.9 grammar at imas_standard_names/grammar/vocabularies/operators.yml:315, with per_steradian carried as an advisory alias onto it, and its own comment states the intended arithmetic exactly — division by the solid angle the quantity is emitted into, adding sr^-1 to the unit, so a volumetric source rate m^-3.s^-1 becomes m^-3.s^-1.sr^-1. That is the unit those four names actually carry. Both halves the followup needed are therefore present under the current pin: source_rate is the established base for m^-3.s^-1 on 19 accepted names against 1 using bare rate, and per_solid_angle is the operator that restores the steradian the bare rate spelling drops. So the four names are now a rename through the sanctioned route rather than an upstream ask, and the locked decision hard-xray-solid-angle is satisfied rather than pending. THIS IS THE SECOND STALE BLOCKER FOUND TONIGHT and it has the same shape as the review-surface one: a followup recorded a dependency correctly, the dependency was then satisfied elsewhere, and nothing went back to the row that was waiting on it. Both were found by testing a stored claim against the thing it describes rather than by reading it again. Two constraints carry into the work. hard_xray_rate at 0.812 and spectral_rate at 0.694 are open, while spectral_bremsstrahlung_rate at 0.825 and rate_due_to_fusion at 0.825 have spent their rotation cap and need rescoring before an edit can land. And the route is imas-codex sn edit NAME --hint DIRECTION --reason WHY, never a rename to a guessed spelling and never a hand write, because the review quorum is what decides whether the new spelling is better and it has been consistent about these four.</div>

@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-08">
-<meta name="plan-version" content="10">
+<meta name="plan-version" content="11">
 <meta name="plan-commits" content="ec9ffff58e52af06b454987705ee4f88bfa14358,33361a5354b03e1f3a56f0cb626157cb1139dca0,2e0c1b534ac98f490780f7d9b2de7e5d8a24eb7f,f11e43096b10f2a5f55466e3f82e03b1ff080688,b22d348610f58b624ef9b8448b9c721279600e54,057a04786654db8ce7a5b79b77d3b53d110fa9f6">
 <meta name="plan-artifacts" content="docs/evidence/sn-lifecycle-integrity/delete-path-protections.md,docs/evidence/sn-lifecycle-integrity/unshielded-identity-deletions.md,docs/evidence/sn-lifecycle-integrity/mirrored-state-review.md">
 <meta name="plan-impl" content="0.35">
@@ -311,6 +311,69 @@
     <code>draft</code>. Restoration recovers the identity and the work that produced it; it does
     not re-confer publication, and the open fork review is closed rather than approved. A
     restore that arrives already approved has asserted an editorial decision nobody made.</p>
+
+    <h3 id="s4a">&sect;4a &mdash; The pipeline entry point, and the flag that would silently do nothing</h3>
+
+    <p>Read from <code>imas-codex sn run --help</code> on 2026-09-08 and <strong>not yet
+    measured</strong>; treat the semantics as documented rather than proven, and spend one free
+    <code>--dry-run</code> before the first paid pass.</p>
+
+    <p>Scope is <code>--focus &lt;dd/path&gt;</code>, repeatable, with the same paths accepted
+    positionally; <code>--focus &lt;file&gt;.yaml</code> takes a manifest of sources. For anything
+    release-bound use <code>--batch &lt;name&gt;</code> instead: it resolves
+    <code>standard_names/manifests/&lt;name&gt;.yaml</code> and behaves exactly like
+    <code>--focus</code> on that file, but the same token also drives <code>sn release
+    --batch</code>, so one batch identity carries through mop-up, release and approval. An ad-hoc
+    <code>--focus</code> does not.</p>
+
+    <p><strong>The default is gap-only, and that is precisely what a restore wants.</strong> A path
+    that already carries a live accepted name is left untouched; only paths lacking one are seeded
+    and processed. A deleted name has no live accepted name, so the default seeds exactly the
+    deleted set and leaves every healthy sibling alone. It follows that
+    <strong><code>--reseed</code> and <code>--force</code> must not be passed</strong>:
+    <code>--reseed</code> re-stages paths that <em>do</em> carry a live accepted name and resets
+    them to pending, and <code>--force</code> re-generates names for already-named sources. Either
+    would churn names that are fine, which is the opposite of a restore.</p>
+
+    <p><strong><code>--name</code> is the intuitive flag and it cannot do this job.</strong> It
+    scopes the worker pools to <em>existing</em> <code>StandardName</code> identities and
+    <em>never seeds DD sources</em>. The identities here are deleted, so there is nothing for it
+    to scope to: the command either fails preflight or no-ops, and both outcomes look exactly like
+    a working command that did nothing. Establish which, with a free <code>--dry-run</code>,
+    before any route depends on the seeding path.</p>
+
+    <p><code>-c/--cost-limit</code> takes the cap in USD, so the authorised ceiling is enforced by
+    the command rather than by discipline. <code>-t/--time</code> is <strong>minutes</strong>, not
+    threads. <code>--dry-run</code> previews extraction with no LLM calls and costs nothing.</p>
+
+    <h3 id="s6a">&sect;6a &mdash; Nine of the fifteen are already decided by the standing rule</h3>
+
+    <p>The 93 removed names are recorded per-name, with reclassification flag, census verdict and
+    apportioned spend, at
+    <code>docs/evidence/paid-identity-deletion-protection/removed-cohort.md</code>. Derivable
+    independently as <code>StandardNameChange</code> rows where
+    <code>operation='remove_derived_parent'</code> and <code>changed_at</code> falls between
+    11:57:00Z and 11:58:00Z &mdash; 93 distinct <code>to_name</code>, 78 of which also carry a
+    <code>reconcile_catalog_edit_origin</code> row.</p>
+
+    <p><strong>Nine of the fifteen carry recorded spend, so the locked boundary of &sect;2 already
+    makes them RESTORE</strong> and only the six zero-spend rows need a placeholder judgement. The
+    nine, with apportioned spend: <code>etendue_of_spectrometer_channel</code> $0.84,
+    <code>flux_at_wall_due_to_eddy_current</code> $0.45, <code>charge_at_pedestal_top</code> $0.34,
+    <code>flux_at_wall</code> $0.28, <code>ion_density_at_pedestal_top</code> $0.11,
+    <code>width_of_spectrometer_channel</code> $0.09,
+    <code>permeability_of_ferritic_element</code> $0.08, <code>ion_charge_state_power</code> $0.07,
+    <code>flux_at_wall_due_to_pumping</code> $0.01. The six at zero:
+    <code>angle_of_optical_element</code>, <code>diffusion_coefficient_due_to_diffusion</code>,
+    <code>factor_of_spectrometer_channel</code>, <code>flux_at_first_wall</code>,
+    <code>flux_due_to_pumping</code>, <code>plasma_heating_power</code>.</p>
+
+    <p><strong>Why <code>etendue_of_spectrometer_channel</code> fell through the gap is the
+    instructive part.</strong> It was already <code>origin=derived</code> before the repair, so it
+    had no reconciliation row, so the census brief &mdash; scoped to the reconciled subset &mdash;
+    excluded it. The WEST release reasoning meanwhile depended on it. A scope drawn around the
+    explicable subset excluded the one name that mattered most, and nothing reported the
+    exclusion.</p>
 
     <p>The classification of which identities warrant restoration is in flight as a separate
     investigation; its first pass returned a uniform verdict for all 78 rows without executing the
