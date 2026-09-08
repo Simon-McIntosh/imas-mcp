@@ -114,3 +114,41 @@ restore the successor's source bindings through their backing lifecycle path
 and complete its documentation axis, then repeat the preflight. Request 18
 remains open until a zero-residue export positively contains the renamed
 identity.
+
+## Source-retarget refusal
+
+The two source rows were then inspected directly before repair:
+
+| Source | DD version | status | `produced_sn_id` | `PRODUCED_NAME` targets |
+|---|---|---|---|---|
+| `dd:ic_antennas/antenna/power_launched` | `4.1.0` | `extracted` | null | none |
+| `dd:summary/heating_current_drive/ic/power/value` | `4.1.0` | `extracted` | null | none |
+
+`retarget_standard_name_sources` was read before use. Its compare-and-set
+contract requires every explicit source to have exactly the expected current
+`PRODUCED_NAME` target and matching scalar, or to carry the already-completed
+migration manifest. It maintains the edge, scalar mirror, upstream
+`HAS_STANDARD_NAME` projection, and both names' `source_paths` together.
+
+The guarded call named both sources, expected the superseded identity, and
+planned the accepted net identity as its target. It refused before mutation:
+
+```text
+source migration compare-and-set failed:
+dd:ic_antennas/antenna/power_launched(
+  exists=True, status='extracted', claimed=False, bindings=[], scalar=None
+),
+dd:summary/heating_current_drive/ic/power/value(
+  exists=True, status='extracted', claimed=False, bindings=[], scalar=None
+)
+```
+
+This proves the rename dropped both the authoritative edge and its scalar
+mirror. The ordinary retarget path cannot move a source that no longer points
+at the predecessor, and forcing past that refusal would erase the very
+concurrency protection the function provides. No edge, scalar, or
+`source_paths` cache was written.
+
+The recut remains stopped. A separate rename-path repair must prevent this data
+loss, and a governed orphan-recovery path must establish authority for rebinding
+these two null/null sources before this release node can resume.
