@@ -8,6 +8,9 @@ schema_needs: []
 ---
 
 Apply the description rubric (provided in the system prompt) to the candidate(s) below. Score **only** the compose-time `description`; the standard name is shown so you can check name↔description consistency.
+No closed vocabulary, parser result, grammar error text, enriched source
+description, or parent context is supplied in this path. Do not turn those
+absences into a grammar or naming score.
 
 ## Candidates to Review
 

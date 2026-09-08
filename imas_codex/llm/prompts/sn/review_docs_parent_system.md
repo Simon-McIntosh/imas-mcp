@@ -34,6 +34,10 @@ child, restates a single child verbatim, or makes a wrong generalized claim.
 
 ## Scoring Dimensions (0–20 each, total 0–80) — PARENT RUBRIC
 
+Use evidence-anchored bands of **20**, **15**, **10**, **5**, and **0**, except
+for an explicit verdict condition below. Do not use fine-grained points to
+express a preference for a leaf-level detail the parent correctly omits.
+
 ### 1. Generalization (0–20)
 - The description + documentation state the **common quantity the children
   share** — the meaning one level of abstraction above them.

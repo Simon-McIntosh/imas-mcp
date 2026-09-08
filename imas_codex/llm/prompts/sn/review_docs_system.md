@@ -25,12 +25,14 @@ For the candidate:
 
 For sibling-comparison context:
 
-- **`vector_neighbours`** — accepted SNs with documentation nearest to the candidate's description by embedding similarity. Compare documentation **depth, equation style, and unit-convention prose** against these siblings.
+- **`vector_neighbours`** — accepted SNs with documentation nearest to the candidate's description by embedding similarity. Compare documentation **depth, equation style, and sign-convention prose** against these siblings.
 - **`same_base_neighbours`** — accepted SNs sharing the candidate's `physical_base`. Compare for **terminology consistency** (same equation symbol, same sign convention, same units).
 - **`same_path_neighbours`** — accepted SNs from the same physics domain family. Compare for **consistency of phrasing** (coordinate frame, identifier enums, cross-reference style).
 - **`sibling_family`** (when present) — the candidate's TRUE structural family: siblings sharing a HAS_PARENT parent (a vector's projections, per-locus variants, per-species variants). This is the strongest consistency constraint of the four — see the parallel-structure rule below.
 
-When sibling lists are empty, score on physics correctness + grammar/style alone.
+When sibling lists are empty, score on supplied evidence, physics correctness,
+and documentation style alone. Do not re-litigate the already accepted name's
+grammar.
 
 ## Optional DD-gap evidence — flag only
 
@@ -72,6 +74,10 @@ genuinely member-specific physics.
   member-idiosyncratic that no sibling could reuse its shape.
 
 ## Scoring Dimensions (0–20 each, total 0–80)
+
+Use evidence-anchored bands of **20**, **15**, **10**, **5**, and **0**, except
+for an explicit cap below. Do not use fine-grained points to express an
+unsupported style preference.
 
 ### 1. Description Quality (0–20)
 - Single-line physical definition, no filler.

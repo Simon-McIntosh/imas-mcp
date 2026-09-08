@@ -34,8 +34,9 @@ and be positioned as their abstraction (not a restatement of any single one):
 {% for c in item.derived_children %}- `{{ c.name }}`{% if c.unit %} [{{ c.unit }}]{% endif %}{% if c.physics_domain %} ({{ c.physics_domain }}){% endif %}{% if c.description %} — {{ c.description }}{% endif %}
 {% endfor %}
 {% else %}
-_(no live children currently linked — score generalization on the name + the
-parent's own grammar; flag in positioning if the parent appears orphaned)_
+_(no live children currently linked — the parent is unscoped for this review.
+Flag the missing child context in positioning; do not re-review the already
+accepted grammar peel as if it were a leaf name.)_
 {% endif %}
 
 ## Sibling-Comparison Context (style/terminology consistency only)

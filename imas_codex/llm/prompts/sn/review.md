@@ -30,6 +30,15 @@ The DD unit is authoritative, and COCOS is fixed DDv4 catalog metadata. Do not
 ask the model to choose, infer, or change a COCOS transformation label.
 `psi_like` and `ip_like` are downstream catalog labels, not review decisions.
 
+Review the observable rather than its acquisition metadata. `measured`,
+`reconstructed`, and `reference` are controlled value-provenance properties on
+the source binding, never Standard Name segments. Estimator facets therefore
+share the underlying base-quantity name unless the authoritative source defines
+another observable. Likewise, error quantities use the grammar's universal
+error modifier rather than a separate error-specific base. A generic DD path
+does not license a generic name: require the supplied source definition to
+identify the observable.
+
 For flux-surface area, DD `area` requires
 `poloidal_plane_cross_sectional_area_of_flux_surface`, while DD `surface` requires
 `surface_area_of_flux_surface`. These denote different observables. The bare
@@ -65,16 +74,23 @@ owner-erasing when the source identifies the outlined object.
 
 ## Scoring Dimensions
 
-Rate each dimension from 0 to 20. The total score is the sum (0-120).
+Rate each dimension from 0 to 20. The total score is the sum (0-120). Use
+evidence-anchored bands of **20** (fully supported), **15** (minor,
+identified deficiency), **10** (material but bounded deficiency), **5**
+(wrong observable or grammar), or **0** (fundamentally unusable), except where
+a more specific cap below applies. Do not manufacture fine-grained distinctions
+from preference alone.
 
 If ISN validation issues are present for an entry, assess whether they are
 genuine quality problems or false positives. Factor genuine issues into your
 grammar and convention scores.
 
 ### 1. Grammar Correctness (0-20)
-- Does the name parse correctly under the ISN 5-group IR?
+- Does the name parse and round-trip under the installed ISN grammar?
 - Is the `physical_base` token in the closed vocabulary?
-- Are prefix operators scoped with `_of_` (`gradient_of_X`, not `gradient_X`)?
+- Does each operator use the installed grammar's canonical join? Scoped prefix
+  operators use `_of_` (for example `gradient_of_X`), while registered bare
+  transformations retain their bare form.
 - Are postfix operators correctly suffixed (`X_magnitude`, not `magnitude_of_X`)?
 - Is the projection prefix in canonical short form (`radial_X`, not `radial_component_of_X`)?
 - Is the locus postfix (`_of_entity`, `_at_position`, `_over_region`)?
@@ -136,7 +152,9 @@ practical-method appendix.
   typical device/experiment values, practical advice, and padding?
 - Is measurement/computation included only when constitutive of the quantity
   or necessary to distinguish it from another quantity?
-- **[I2.1]** Are ALL variables in equations defined with units? Any undefined variable → **score ≤ 5**.
+- **[I2.1]** Are all variables in equations defined by their physical identity?
+  Any undefined variable → **score ≤ 5**. Do not require units in prose: units
+  are structured metadata.
 - **[I2.2]** Is the documentation focused on THIS quantity, or does it introduce tangential physics (e.g., Biot-Savart for a simple current measurement)?
 - **[I2.5]** For COCOS-dependent quantities, is a sign convention present as a separate paragraph (`Sign convention: Positive when ...`)? Missing → **score ≤ 10**.
 - **[I2.6]** If the DD path uses abbreviated names (gm1–gm9), does the documentation mention the alias?
