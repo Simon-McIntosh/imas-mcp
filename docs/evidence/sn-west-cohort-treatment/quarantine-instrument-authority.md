@@ -13,21 +13,25 @@ quarantined. A stored `validation_status = 'quarantined'` with
 quarantine finding. The scalar still carries the outcome, but it has no
 authority without the observation that produced it.
 
-The two campaign helpers are deliberately different operations, not competing
-truth sources:
+The two surfaces that were treated as quarantine instruments do not measure the
+same thing:
 
 | Code path | Predicate it evaluates | Effect |
 |---|---|---|
-| `default_clear_quarantine` | `name_stage = 'accepted' AND validation_status = 'quarantined'` | moves a known quarantine to `pending`, removes its reason and observation time, then makes the name eligible for a new deterministic validation |
-| `default_audit_revalidate` → `drain_validation_for_ids` | explicit ids with `validated_at IS NULL` | executes `validate_name_candidate` and calls `mark_names_validated`, which atomically writes `validation_issues`, `validation_status`, and `validated_at` |
-| `default_revalidate` | campaign prose result after the deterministic drain | re-quarantines a reintroduced prose defect, but refuses to confirm any id that still has `validation_status = 'quarantined'` |
+| `audits.run_audits` | returns the issues produced by its fixed list of codex audit checks for the candidate fields supplied by its caller | produces evidence only; it neither runs the complete ISN admission gate nor writes a verdict or observation time |
+| `default_revalidate` | for proposed clean ids, first matches `coalesce(sn.validation_status, '') = 'quarantined'` | is a campaign prose-confirmation step; it refuses those matched ids and therefore cannot clear a quarantine |
+| `default_audit_revalidate` → `drain_validation_for_ids` | claims explicit ids whose `validated_at IS NULL`, then runs `validate_name_candidate` | calls `mark_names_validated`, which atomically writes `validation_issues`, `validation_status`, and `validated_at`; this is the quarantine authority |
 
-The error in the earlier sweep was using the final confirmation helper as if it
-were the deterministic validator. Its guard was designed to prevent exactly
-that: the query collects the requested ids whose predicate is
+The error in the earlier sweep was treating a fresh `run_audits` issue list as a
+current graph verdict, then using the final confirmation helper as if it were
+the deterministic validator. The confirmation guard is designed to prevent
+that: it collects the requested ids whose predicate is
 `coalesce(sn.validation_status, '') = 'quarantined'` and raises instead of
 setting them `valid`. It cannot clear a quarantine. The correct sequence is
-clear to `pending` → deterministic validation → campaign prose confirmation.
+clear the validation stamp → run the complete deterministic admission gate →
+atomically record the verdict and observation time. For a documentation
+campaign, `default_clear_quarantine` additionally moves an accepted quarantine
+to `pending`; it now clears the old `validated_at` at that same transition.
 
 ## Bounded live census before revalidation
 
@@ -45,30 +49,39 @@ does not assert that the underlying names are valid.
 
 ## Revalidation cohort
 
-The five withheld identities named by the release-tail evidence were evaluated
-with the same pure `validate_name_candidate` function used by
-`drain_validation_for_ids`. Scores are the persisted `review_mean_score` values
-at the pre-run read. This is a non-mutating authority measurement, not a
-release: the backing `default_audit_revalidate` call remains the required next
-operation after the blocked suite gate is restored.
+The independent export ledger identifies exactly five candidate rows excluded
+because their stored status was quarantined. All five were passed to
+`default_audit_revalidate`, which cleared their validation stamps and delegated
+to `drain_validation_for_ids`; no direct status-setting query released a name.
+The receipt was `cleared=5`, four re-quarantined ids, and one valid id.
 
-| identity | score | stored state | authoritative result | required post-gate state |
+Scores below are the live `review_mean_score` before and after the run. Two
+drafted identities have no score. This corrects the older five-scored-name
+description without changing the export-side count of five.
+
+| identity | score before / after | before | authoritative result | after |
 |---|---:|---|---|---|
-| `radial_outline_of_flux_surface` | 0.9021 | quarantined, undated | quarantined: ISN requires `outline` to name the represented entity | quarantined, dated |
-| `radial_outline_of_plasma_boundary` | 0.8444 | quarantined, undated | quarantined: same ISN semantic error | quarantined, dated |
-| `radial_outline_of_wall` | 0.9063 | quarantined, undated | quarantined: same ISN semantic error | quarantined, dated |
-| `toroidal_angle_of_active_limiter_point` | 0.8681 | quarantined, undated | quarantined: `name_unit_consistency_check` sees dimensionless unit `1` for an angle | quarantined, dated |
-| `vertical_coordinate_of_line_of_sight` | 0.8828 | quarantined, undated | valid, no issues | valid, dated |
+| `inner_normalized_toroidal_flux_coordinate_hard_xray_emissivity_peak_half_width` | none / none | drafted, quarantined, undated | grammar round-trip failure | drafted, quarantined, dated |
+| `radial_outline_of_plasma_boundary` | 0.8444 / 0.8444 | accepted, quarantined, undated | ISN semantic error: `outline` does not name the represented entity | accepted, quarantined, dated |
+| `radial_outline_of_wall` | 0.9063 / 0.9063 | accepted, quarantined, undated | same ISN semantic error | accepted, quarantined, dated |
+| `vertical_coordinate_of_line_of_sight` | 0.8828 / 0.8828 | accepted, quarantined, undated | valid, no issues | accepted, valid, dated |
+| `vertical_outline_of_plasma_boundary` | 0.7792 / 0.7792 | drafted, quarantined, undated | ISN semantic error plus missing length-language evidence | drafted, quarantined, dated |
 
-The eventual backing-path run will release one name because the authoritative
-validator found no issue. It will retain four with dated verdicts; their repairs
-belong to the grammar or DD-unit owners, not to a campaign status writer.
+`vertical_coordinate_of_line_of_sight` is released from the quarantine filter.
+The other four remain withheld for newly observed reasons rather than for stale
+scalars. Their grammar, semantic, and documentation repairs belong to their
+own owners; a status writer must not erase them.
 
 ## Corrected census
 
-For the five-name release-tail cohort, the authoritative pre-run classification
-is **4 quarantine findings and 1 valid result**. These are not yet persisted
-verdicts, so the current graph-wide genuine-quarantine census remains unknown
-until the backing path re-stamps the accepted cohort. The important invariant is
-now explicit in the code: clearing a quarantine also clears its observation
-time, so no later reader can confuse a former verdict with a current one.
+For the five export exclusions, the corrected census is **4 genuinely
+quarantined and 1 valid**. Restricting to accepted names, the post-run graph has
+2,360 accepted rows: 13 retain the quarantine scalar, but only **2 are dated
+current quarantines** and 11 remain undated historical values outside this
+five-id operation. The code now makes the temporal invariant explicit:
+campaign clearing removes the old observation time, and only the complete
+deterministic validator restores a dated verdict.
+
+The live graph operation ran on the login node because its Bolt endpoint is a
+login-node-local tunnel. The scope was five indexed ids, every query stayed
+below ten seconds, and no heavy local computation or model call accompanied it.
