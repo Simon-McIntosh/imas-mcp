@@ -4689,7 +4689,8 @@ LIFECYCLELESS_STUB_MANIFEST_SCHEMA = "imas-codex.lifecycleless-stub-manifest"
 LIFECYCLELESS_STUB_RECEIPT_SCHEMA = "imas-codex.lifecycleless-stub-receipt"
 _LIFECYCLELESS_STUB_LOCK_QUERY = (
     "MATCH (stub:StandardName) "
-    "WHERE stub.name_stage IS NULL AND stub.status IS NULL "
+    "WHERE stub.name_stage IS NULL "
+    "AND (stub.status IS NULL OR stub.status = 'draft') "
     "AND stub.origin IS NULL "
     "SET stub._lifecycleless_reconcile_lock = true "
     "REMOVE stub._lifecycleless_reconcile_lock "
@@ -4704,7 +4705,9 @@ class LifecyclelessStubConflict(RuntimeError):
 _READ_LIFECYCLELESS_STUBS_QUERY = """
 // LIFECYCLELESS_STUB_AUTHORITY_READ
 MATCH (stub:StandardName)
-WHERE stub.name_stage IS NULL AND stub.status IS NULL AND stub.origin IS NULL
+WHERE stub.name_stage IS NULL
+  AND (stub.status IS NULL OR stub.status = 'draft')
+  AND stub.origin IS NULL
 CALL (stub) {
   OPTIONAL MATCH (child:StandardName)-[edge:HAS_PARENT]->(stub)
   RETURN collect(CASE WHEN child IS NULL THEN null ELSE {
@@ -5043,7 +5046,7 @@ def _reconcile_spurious_stub_source_scalars(
                     AND source.produced_sn_id IS NULL)
                    OR source.produced_sn_id = repair.expected_scalar)
               AND stub.name_stage IS NULL
-              AND stub.status IS NULL
+              AND (stub.status IS NULL OR stub.status = 'draft')
               AND stub.origin IS NULL
               AND accepted.name_stage = repair.authoritative_name_stage
               AND accepted.validation_status =
@@ -5290,6 +5293,7 @@ def write_standard_names(
             """
             UNWIND $batch AS b
             MERGE (sn:StandardName {id: b.id})
+            ON CREATE SET sn.status = 'draft'
             SET sn.updated_at = datetime(), sn.source_types = coalesce(b.source_types, sn.source_types),
                 sn.description = coalesce(nullIf(b.description, ''), sn.description),
                 sn.documentation = coalesce(b.documentation, sn.documentation),
