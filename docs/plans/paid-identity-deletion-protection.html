@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="docs-project"   content="imas-codex">
+  <meta name="reckon-type" content="plan">
+  <meta name="plan-slug" content="paid-identity-deletion-protection">
+  <meta name="plan-title" content="Work That Cost Money Must Not Be Deletable By A Cleanup Pass">
+  <meta name="plan-summary" content="A structural cleanup destroyed 100 USD of generated names, reviews and docs; make recorded spend the undeletable boundary">
+  <meta name="plan-status" content="draft">
+  <meta name="plan-roi" content="high">
+  <meta name="plan-effort-hours" content="14.0">
+  <meta name="plan-capability-version" content="1.0">
+  <meta name="plan-capability-class" content="orchestrator">
+  <meta name="plan-capability-reasoning" content="deep">
+  <meta name="plan-capability-verification" content="strict">
+  <meta name="plan-capability-risk" content="critical">
+  <meta name="plan-sprint" content="S10">
+  <meta name="plan-owner" content="Simon McIntosh">
+  <meta name="plan-tags" content="standard-names">
+  <meta name="plan-blocks" content="sn-origin-provenance-backfill">
+  <title>Work That Cost Money Must Not Be Deletable By A Cleanup Pass | imas-codex</title>
+  <link rel="stylesheet" href="/_shared/foundation.css">
+  <link rel="stylesheet" href="/_shared/dashboard.css">
+<meta name="plan-modified" content="2026-09-08">
+<meta name="plan-version" content="1">
+</head>
+<body>
+  <main class="plan-doc">
+
+    <h2 id="s1">§1 &mdash; A provenance edit deleted 93 identities and $43 of generated work in eight seconds</h2>
+
+    <p>On 2026-09-08 a repair pass corrected a false <code>origin</code> value on 2,096
+    <code>StandardName</code> identities &mdash; residue from an export and import round trip that no
+    longer exists in the code. It moved 1,179 to <code>pipeline</code>, 246 to <code>derived</code> and
+    671 to null. Between <strong>99 and 107 seconds later</strong>, a structural cleanup pass deleted
+    <strong>78 of the identities the repair had just reclassified</strong>, and 93 in total.</p>
+
+    <p>Nothing malfunctioned. Every component did what it was written to do. The loss came from a
+    coupling that no comment, test, or guard records:</p>
+
+    <figure>
+      <svg viewBox="0 0 880 168" width="100%" role="img"
+           aria-label="Four-stage chain: a provenance write changes which admission question is asked, and the answer is executed as a deletion.">
+        <g font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#1a1a1c">
+          <rect x="4" y="34" width="196" height="64" fill="#ffffff" stroke="#8a8a8f" stroke-width="1"/>
+          <text x="16" y="54" font-weight="600">1. provenance write</text>
+          <text x="16" y="72" font-size="12">origin: catalog_edit</text>
+          <text x="16" y="88" font-size="12">&rarr; derived  (2,096 rows)</text>
+
+          <rect x="228" y="34" width="196" height="64" fill="#ffffff" stroke="#8a8a8f" stroke-width="1"/>
+          <text x="240" y="54" font-weight="600">2. candidate selector</text>
+          <text x="240" y="72" font-size="12">WHERE origin = 'derived'</text>
+          <text x="240" y="88" font-size="12">the safety boundary</text>
+
+          <rect x="452" y="34" width="196" height="64" fill="#ffffff" stroke="#8a8a8f" stroke-width="1"/>
+          <text x="464" y="54" font-weight="600">3. admission question</text>
+          <text x="464" y="72" font-size="12">&ldquo;does a placeholder</text>
+          <text x="464" y="88" font-size="12">deserve to exist here?&rdquo;</text>
+
+          <rect x="676" y="34" width="200" height="64" fill="#ffffff" stroke="#b3261e" stroke-width="1.5"/>
+          <text x="688" y="54" font-weight="600" fill="#b3261e">4. DETACH DELETE</text>
+          <text x="688" y="72" font-size="12">node, reviews, revisions,</text>
+          <text x="688" y="88" font-size="12">derived sources</text>
+
+          <path d="M200 66 h24" stroke="#8a8a8f" stroke-width="1" marker-end="url(#a)"/>
+          <path d="M424 66 h24" stroke="#8a8a8f" stroke-width="1" marker-end="url(#a)"/>
+          <path d="M648 66 h24" stroke="#b3261e" stroke-width="1.5" marker-end="url(#b)"/>
+          <defs>
+            <marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0 0 L8 4 L0 8 z" fill="#8a8a8f"/>
+            </marker>
+            <marker id="b" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0 0 L8 4 L0 8 z" fill="#b3261e"/>
+            </marker>
+          </defs>
+          <text x="4" y="130" font-size="12">Stage 2 asks a question about scaffolding. Stage 4 executes the answer against an identity.</text>
+          <text x="4" y="150" font-size="12">For a real quantity merely labelled &lsquo;derived&rsquo;, those are different things.</text>
+        </g>
+      </svg>
+      <figcaption>The coupling: <code>origin</code> selects which admission question an identity is
+      judged by, and the answer is carried out as a deletion.</figcaption>
+    </figure>
+
+    <p>The pieces, each verifiable in the source:</p>
+
+    <ul>
+      <li><code>_query_derived_parents_for_admission_cleanup</code> selects
+      <code>WHERE parent.origin = 'derived' AND parent.name_stage IN ['pending','accepted']</code>.
+      Its own docstring states the restriction exists <em>&ldquo;so that catalog-authoritative and
+      pipeline-authored names are never touched by this cleanup&rdquo;</em> &mdash; so
+      <code>origin</code> is the safety boundary, written as a comment rather than as a guard.</li>
+
+      <li><code>is_admissible_parent_name</code> decides whether a name <em>&ldquo;deserves a
+      StandardName <strong>placeholder</strong> + HAS_PARENT edge&rdquo;</em>. That is a question
+      about scaffolding, not about whether a physics quantity is legitimate.</li>
+
+      <li><code>normalize_derived_parent_lifecycle</code> passes every inadmissible id straight to
+      <code>_delete_derived_parent_nodes</code> with <strong>no volume ceiling, no dry run, no
+      publication check, and no call to <code>filter_protected</code></strong> &mdash; which exists
+      in <code>protection.py</code> for exactly this purpose and is never invoked here.</li>
+
+      <li>The change row a deletion writes carries <code>from_name</code>, <code>to_name</code>,
+      <code>operation</code>, <code>origin</code>, <code>reason</code> and <code>changed_at</code>
+      and nothing else. So the record proves a deletion happened and <strong>cannot support undoing
+      it</strong>.</li>
+    </ul>
+
+    <p><strong>The asymmetry this exposes is the finding.</strong> Every control in this codebase sits
+    on the <em>write</em> path for names: claim tokens, compare-and-set preconditions, quorum gates,
+    <code>filter_protected</code>, approval as the sole writer of <code>active</code>. There is no
+    equivalent control on the <em>delete</em> path, and no invariant anywhere states that a published
+    identity is undeletable. <code>etendue_of_spectrometer_channel</code> carried three
+    <code>unchanged_ratification</code> records and sat in a published review cut of 208 names; none
+    of that was visible to the query that condemned it.</p>
+
+    <h3 id="s1-cost">What it cost, in currency</h3>
+
+    <p><code>LLMCost</code> nodes carry <code>standard_name_ids</code>, so the spend is attributable
+    per identity and was measured directly:</p>
+
+    <table>
+      <thead>
+        <tr><th>Scope</th><th>Identities</th><th>Cost rows</th><th>Spend destroyed</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>The 11:57 pass on 2026-09-08 (8 seconds)</td><td>93</td><td>785</td><td><strong>$43.12</strong></td></tr>
+        <tr><td>Every still-absent deletion by this path, all time</td><td>491</td><td>1,894</td><td><strong>$100.47</strong></td></tr>
+      </tbody>
+    </table>
+
+    <p>All seven pipeline phases are represented in the destroyed rows &mdash;
+    <code>generate_name</code>, <code>review_name</code>, <code>refine_name</code>,
+    <code>generate_docs</code>, <code>review_docs</code>, <code>refine_docs</code> and
+    <code>enrich_parents</code>. The largest single losses were
+    <code>spectral_etendue_of_spectrometer_channel</code> at $4.03,
+    <code>deuterium_tritium_density_at_pedestal_top</code> at $2.03 and
+    <code>density_at_pedestal_top</code> at $1.62. The deleted set is not scaffolding-shaped: it
+    includes <code>power_due_to_fusion</code>, <code>plasma_energy</code>,
+    <code>energy_flux_at_wall</code>, <code>critical_electric_field</code>, and the complete
+    <code>*_density_at_pedestal_top</code> family across twenty species.</p>
+
+    <h2 id="s2">§2 &mdash; Recorded spend is the boundary, and it is a better instrument than provenance</h2>
+
+    <p><strong>An identity on which money has been spent must not be deletable by an automatic
+    pass.</strong> Not gated, not warned about &mdash; refused. A human or an explicitly authorised
+    operation may still remove it; a cleanup sweep may not.</p>
+
+    <p>This is not a proxy for the real rule, it <em>is</em> the real rule. Spend is the durable
+    evidence that a person or a pipeline invested in an identity: a name was composed, reviewers were
+    paid to judge it, documentation was generated and refined. That investment is exactly what a
+    structural sweep has no standing to discard.</p>
+
+    <p>The metric was validated against the loss before this plan was written, and it outperforms the
+    explanation the incident first suggested:</p>
+
+    <table>
+      <thead>
+        <tr><th>Test</th><th>Protects</th><th>Misses</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>&ldquo;was it reclassified by the origin repair?&rdquo;</td>
+          <td>78 of 93</td>
+          <td>15, including the published cut name <code>etendue_of_spectrometer_channel</code></td>
+        </tr>
+        <tr>
+          <td><strong>&ldquo;did it cost money?&rdquo;</strong></td>
+          <td><strong>75 of 93</strong></td>
+          <td>18, all with zero recorded spend</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>Three properties make it the right choice. It is <strong>independent of how an identity got
+    labelled</strong>, so it cannot be switched off by a provenance edit &mdash; which is precisely
+    how this loss happened. It <strong>catches nine identities the provenance reasoning misses
+    entirely</strong>, among them the one name from the published cut. And it
+    <strong>discriminates</strong>: the 18 zero-spend rows are plausibly genuine free scaffolding, so
+    the cleanup keeps its legitimate job rather than being disabled.</p>
+
+    <p>One caveat to carry into implementation: <code>standard_name_ids</code> is a list property on
+    <code>LLMCost</code> and there is no index on it, so a naive <code>any(x IN
+    c.standard_name_ids WHERE x IN $names)</code> is a scan of roughly 37,000 rows. It completed
+    inside the ten-second login-node ceiling at that size, but a per-identity call inside a delete
+    loop would not. The guard needs a set-based pre-check or a materialised
+    <code>PAID_FOR</code> edge, decided in §3.</p>
+
+    <h2 id="s3">§3 &mdash; The guard: give the delete path the protections the write path already has</h2>
+
+    <p>One node. It restores nothing &mdash; it makes restoration safe by ensuring a restored
+    identity cannot be destroyed again by the next pipeline run.</p>
+
+    <p><strong>Done when</strong> no identity carrying recorded spend, a promotion record, a catalog
+    binding, or <code>name_stage = 'approved'</code> can be removed by an automatic pass, whatever
+    its <code>origin</code> says; and a pass whose candidate set exceeds a stated ceiling refuses in
+    full and reports rather than executing part of it.</p>
+
+    <p>Four requirements, in priority order:</p>
+
+    <ol>
+      <li><strong>Spend is a hard refusal.</strong> Any identity with a non-zero
+      <code>LLMCost</code> attribution is undeletable by an automatic path. The refusal must name the
+      identity, its spend, and the protection that held it &mdash; a silent skip is as bad as a
+      silent delete. Decide between a set-based pre-check and a materialised edge, and state the
+      measured cost of the choice.</li>
+
+      <li><strong>Publication state is a hard refusal too</strong>, independent of spend: an
+      identity any catalog cut names, one carrying an <code>unchanged_ratification</code> or other
+      promotion record, or one at <code>name_stage = 'approved'</code>. Route through
+      <code>filter_protected</code> if that function can express it &mdash; but read its definition
+      first. It matches <code>name_stage = 'approved'</code>, and zero rows currently hold that
+      value, so it returns the empty set for every input it is given today. A function named for
+      catalog protection that protects nothing is worse than no function.</li>
+
+      <li><strong>A volume ceiling that refuses the whole pass.</strong> Ninety-three identities in
+      eight seconds is currently indistinguishable from correct operation. Choose the ceiling from
+      the measured history &mdash; this path's per-day totals this month are 104, 180, 132, 125, 74,
+      327, 116 and 155 &mdash; and justify the number. Partial execution is not acceptable: a pass
+      that would breach the ceiling reports its candidate set and stops.</li>
+
+      <li><strong>A deletion must carry its own recovery material.</strong> Write the removed node's
+      properties and its edge inventory into the change row or an adjacent tombstone, so the graph
+      can answer what was lost without reaching for a store dump.</li>
+    </ol>
+
+    <p><strong>The scope is the class, not the function.</strong> There are 37
+    <code>DETACH DELETE</code> statements across <code>graph_ops.py</code> and
+    <code>provenance_lifecycle.py</code>, and nine call sites of the
+    <code>deletion_change_cypher</code> helper. The reaper is one of nine recorded delete paths.
+    Enumerate all nine, state for each whether it is automatic or operator-invoked, and apply the
+    protections to every automatic one. A guard on the single function that caused today's loss
+    leaves eight doors open.</p>
+
+    <p><strong>Measure the exposure before closing the path.</strong> Closing a fail-open guard
+    converts whatever was passing <em>because</em> it was open into failures, all at once. Flip it in
+    a scratch copy and count first; the number belongs in the brief rather than being discovered by
+    the worker. Expect the exposed failures to be legitimate.</p>
+
+    <h2 id="s4">§4 &mdash; The restore, and the reclassification it cannot avoid</h2>
+
+    <p>The recovery material is complete. The archive at
+    <code>~/.local/share/imas-codex/exports/imas-codex-graph-dev-002bf65-20260906T220012Z.tar.gz</code>
+    is a <strong>full store dump</strong> taken 2026-09-06T22:01Z &mdash; 1,630,556 nodes and
+    4,276,396 relationships &mdash; and every one of the 93 was alive in it:</p>
+
+    <table>
+      <thead><tr><th>Label in the dump</th><th>Count</th></tr></thead>
+      <tbody>
+        <tr><td><code>StandardName</code></td><td>5,078 (live now 5,048)</td></tr>
+        <tr><td><code>StandardNameReview</code></td><td>27,936</td></tr>
+        <tr><td><code>DocsRevision</code></td><td>3,540</td></tr>
+        <tr><td><code>StandardNameSource</code></td><td>9,912</td></tr>
+        <tr><td><code>StandardNameChange</code></td><td>12,659</td></tr>
+        <tr><td><code>LLMCost</code></td><td>37,185</td></tr>
+      </tbody>
+    </table>
+
+    <p>So the reviews, docs revisions, parent edges, derived sources and spend records are all
+    recoverable, and restoring from the dump costs <strong>zero LLM spend</strong>. Re-derivation
+    through the pipeline is the wrong route here and the reason is concrete: whole families went in
+    one pass &mdash; <code>density_at_pedestal_top</code> together with its argon, beryllium, boron,
+    carbon, deuterium, deuterium-tritium, electron, helium-3, helium-4, hydrogen, iron, krypton,
+    lithium, neon, nitrogen, oxygen, total-ion, tritium, tungsten and xenon variants. A derived
+    parent is an abstraction over its children; where the children are gone too, re-derivation has no
+    substrate.</p>
+
+    <p>Three constraints bind the restore, and the third is the one that needs a decision rather than
+    an implementation:</p>
+
+    <ol>
+      <li><strong>The guard in §3 lands first.</strong> These identities still fail
+      placeholder-admission, so restoring them under the current selector queues them for the next
+      sweep.</li>
+
+      <li><strong>Selective merge, never a replay.</strong> The dump predates two days of landed
+      work. Extract the subgraph for the affected identities and merge it; never point a load at the
+      running store. Loading the dump is heavy and belongs on a debug partition, into a database name
+      that is not the live one.</li>
+
+      <li><strong>The dump predates the origin correction</strong>, so a naive restore reinstates the
+      false <code>catalog_edit</code> value the repair was right to remove. Restore and
+      reclassification are therefore one action, and each identity needs its correct
+      <code>origin</code> decided. For most of the 78 the answer is very likely
+      <code>pipeline</code> &mdash; which is what would have kept them safe &mdash; but that is a
+      per-identity judgement, not a bulk rewrite. Repeating a bulk rewrite is what caused this.</li>
+    </ol>
+
+    <p>The classification of which identities warrant restoration is in flight as a separate
+    investigation; its first pass returned a uniform verdict for all 78 rows without executing the
+    archive read, and was rejected and resumed with that correction. Do not accept a classification
+    whose verdict column does not vary.</p>
+
+    <h2 id="s5">§5 &mdash; The blast radius beyond this incident</h2>
+
+    <p>This path has removed 539 identities all time and 491 remain absent, so the great majority of
+    the loss predates today and predates the origin repair. Today's incident is a magnifier, not the
+    origin of the problem.</p>
+
+    <p>Two questions this plan owes an answer to, once §3 has landed:</p>
+
+    <ul>
+      <li><strong>What else did the earlier 398 deletions cost?</strong> The all-time destroyed spend
+      is $100.47, of which $43.12 is today's pass. The remainder is spread over deletions on
+      2026-09-01 through 2026-09-06, none of which anyone examined at the time. Establish whether any
+      of them was published, ratified, or named by a catalog cut &mdash; four are already known to
+      carry <code>unchanged_ratification</code> records.</li>
+
+      <li><strong>Do the other automatic delete paths share the defect?</strong> Eight further
+      recorded delete sites exist. The question for each is the same: does it consult spend,
+      publication state, or a volume ceiling before removing an identity?</li>
+    </ul>
+
+    <p>One more coupling to record while it is fresh. The plan
+    <code>sn-origin-provenance-backfill</code> is in <strong>draft in S12</strong> with its
+    recovery sections unstarted, and its remaining work rewrites <code>origin</code> on more
+    identities. Its own §4 is titled <em>&ldquo;Close the footgun, or this recurs&rdquo;</em> and the
+    footgun it means is the import path. Today proved there are two, and that plan knows about one of
+    them. <strong>It must not run before §3 lands</strong>, which is why this plan declares
+    <code>plan-blocks</code> against it.</p>
+
+    <section data-reckon="decisions" id="decisions" class="r-decisions">
+<h2><span class="sec">§</span> Decisions</h2>
+<div class="r-dec" data-key="spend-threshold" data-choice="" data-by="" data-when="">
+    <p class="r-dec-q">Is any non-zero recorded spend enough to make an identity undeletable, or
+        should there be a floor?</p>
+    <p class="r-dec-opts">
+      <button class="r-opt" data-value="any-nonzero">Any non-zero spend protects</button>
+      <button class="r-opt" data-value="floor">A stated cost floor</button>
+      </p>
+    <p class="r-dec-rat">Recommendation: any non-zero spend. A floor invites the question of what
+        a cent of generation is worth, and the answer is that the money is not the point — the
+        spend record is evidence that the pipeline invested in this identity. The 18 zero-spend rows
+        in the incident set show the test already discriminates without a threshold.</p>
+    </div>
+<div class="r-dec" data-key="spend-lookup-mechanism" data-choice="" data-by="" data-when="">
+    <p class="r-dec-q">How should the guard read spend — a set-based pre-check over LLMCost , or a materialised edge from cost to identity?</p>
+    <p class="r-dec-opts">
+      <button class="r-opt" data-value="materialised-edge">Materialise a PAID_FOR edge</button>
+      <button class="r-opt" data-value="set-precheck">Set-based pre-check per pass</button>
+      </p>
+    <p class="r-dec-rat">Recommendation: the materialised edge, because it makes the protection
+        cheap enough to apply at every delete site rather than only in the one pass that can afford a
+        scan. standard_name_ids is an unindexed list property over ~37,000 rows; the
+        scan is viable once per pass and not once per identity. The edge is also the honest shape:
+        this repository&#x27;s own rule is that an edge is the source of truth and a scalar is derived,
+        and a list of ids inside a cost row is the same mirrored-scalar pattern that produced seven
+        other defects in this surface.</p>
+    </div>
+<div class="r-dec" data-key="restore-scope" data-choice="" data-by="" data-when="">
+    <p class="r-dec-q">Restore only the identities carrying spend, or every identity the cleanup
+        removed?</p>
+    <p class="r-dec-opts">
+      <button class="r-opt" data-value="paid-only">Only those carrying spend</button>
+      <button class="r-opt" data-value="all-93">All 93 from today&#x27;s pass</button>
+      <button class="r-opt" data-value="all-491">All 491 still absent</button>
+      </p>
+    <p class="r-dec-rat">Recommendation: those carrying spend, from today&#x27;s pass first. The
+        zero-spend rows are the ones the cleanup had the best claim to remove, and restoring them
+        would reinstate scaffolding the admission gate legitimately rejects. Widening to the earlier
+        398 should wait on the §5 census, which will say whether any of them was ever published.</p>
+    </div>
+</section>
+
+    <section data-reckon="followups" id="followups" class="r-followups">
+<h2><span class="sec">§</span> Followups</h2>
+<article class="r-fu" data-id="f-pidp-001" data-status="open" data-capability-version="1.0" data-capability-class="orchestrator" data-capability-reasoning="deep" data-capability-verification="strict" data-capability-risk="critical" data-written-by="reckon-create" data-written-at="2026-09-08" data-recommends-skill="/reckon-ship paid-identity-deletion-protection §3" data-resolved-at="" data-resolved-by="">
+    <h4 class="r-fu-title">Land the delete-path guard before any restore or further origin work</h4>
+    <div class="r-fu-body"><p><strong>Start here, and start with &sect;3.</strong> The guard is the only piece that stops recurrence, and both the restore (&sect;4) and the queued origin recovery in <code>sn-origin-provenance-backfill</code> are unsafe until it lands.</p><p>Three decisions in the decisions section are unlocked and each has a recommendation with its reasoning. They do not need to block dispatch of &sect;3 &mdash; the first two shape its implementation and the third only affects &sect;4 &mdash; but take them early rather than letting a worker infer them.</p><p><strong>Two traps this surface has already sprung, both measured.</strong> First, <code>filter_protected</code> in <code>protection.py</code> matches <code>name_stage = 'approved'</code> and <strong>zero rows hold that value</strong>, so it returns the empty set for every input it is given today; read its definition before routing a protection through it. Second, closing this fail-open path will expose failures that were passing <em>because</em> it was open &mdash; measure that count in a scratch flip before writing the change, and expect the exposed failures to be legitimate.</p><p><strong>Do not accept a uniform verdict.</strong> The classification of which identities warrant restoration returned all 78 rows reading <code>RESTORE / high</code> with an identical note while its own follow-ons admitted the archive read was never executed. A verdict column that does not vary is the absence of a classification wearing the shape of one.</p></div>
+    <pre class="r-fu-prompt">/reckon-ship paid-identity-deletion-protection §3</pre>
+    </article>
+</section>
+
+  </main>
+</body>
+</html>
