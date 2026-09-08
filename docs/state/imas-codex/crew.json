@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T01:31:44",
+  "updated": "2026-09-08T02:25:36",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -100362,6 +100362,158 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260907T190053145745-n-sgr-does-the-edits-flag-scope-the-run",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a78",
+        "node": "n-sgr-does-the-edits-flag-scope-the-run",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1733,
+                "cached_input_tokens": 253182,
+                "input_tokens": 254917,
+                "output_tokens": 1377,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 256294,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A report at the write path stating whether the edits_only path at imas_codex/cli/sn.py:332-395 actually scopes the run, traced through to the pool machinery it reaches, and naming what the two prior invocations hit when they exited 1 twice without landing a rotation. Those runs ran the whole pool machinery \u2014 source reconcile, grammar validation, structural-edge derivation, post-drain parent and doc-link normalization \u2014 rather than a scoped review. Reach the underlying entry point directly rather than through the CLI, because the file log did not capture the traceback and stdout truncation hid it; record the traceback verbatim if one appears. Also report the live count of successors sitting at drafted with edit_status open (expected around 137) so the scope this flag must select is measured rather than assumed. Report only \u2014 change no source file.",
+          "estimated_hours": null,
+          "goal": "Establish whether sn run --only review --edits now scopes to the open edits and what stops the batch review landing",
+          "id": "n-sgr-does-the-edits-flag-scope-the-run",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T190053145745-n-sgr-does-the-edits-flag-scope-the-run/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a78",
+          "spec_level": "guided",
+          "time_budget": "40m",
+          "write_paths": [
+            "docs/evidence/sn-grammar-refinement/review-scope-currency.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "clive-graphtarget",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-07T19:01:03Z",
+        "completed_at": "2026-09-08T00:22:01.997Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 18885,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 19258,
+        "stalled": true,
+        "time_budget": "40m",
+        "base_sha": "69f24046b143dce1048f82f02fd25878b2849126",
+        "commits": [
+          "ff7130519ea0df8d88ae9ff4e4362abe8c49106f"
+        ],
+        "changed_lines": {
+          "added": 108,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "coordinator verified the scoping verdict at graph_ops.py:15322 and loop.py:1284 and re-queried the edit_status=open stage census against the live graph",
+          "exit_status": 0,
+          "log_path": "docs/evidence/sn-grammar-refinement/review-scope-verification.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T190053145745-n-sgr-does-the-edits-flag-scope-the-run/manifest.md",
+        "scope_changed": false,
+        "session_id": "9f20462c-d13e-4ccc-a9fa-dafcccbb8bee",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 19291177,
+            "input_tokens_cumulative": 22619736,
+            "output_tokens": 34231,
+            "output_tokens_cumulative": 41153,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 19254.229,
+          "generated_tokens": 41153,
+          "generation_seconds": 19145.158,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 43.4,
+          "machine_seconds": 109.071,
+          "peak_input_tokens": 441553,
+          "tokens_per_second": 2.15,
+          "wall_tokens_per_second": 2.14
+        },
+        "follow_on_paths": [
+          "drafted/open",
+          "plan/lead",
+          "advancement/retirement"
+        ],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sgr-does-the-edits-flag-scope-the-run",
+          "session_id": "9f20462c-d13e-4ccc-a9fa-dafcccbb8bee",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T00:22:01.997Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -100604,6 +100756,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1918
+    "_version": 1919
   }
 }
