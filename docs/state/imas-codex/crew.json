@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T04:59:14",
+  "updated": "2026-09-08T06:42:12",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -211,9 +211,11 @@
         "id": "cx-binding",
         "harness": "codex",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "01a07f48-973f-72a2-ae83-daa3aed4f5f8",
+        "session_model": "gpt-5.6-terra",
+        "sessions": {
+          "{\"alias\":\"terra5.6\",\"backend\":\"codex-terra\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-terra\",\"sandbox\":\"worktree-full\"}": "01a07f48-973f-72a2-ae83-daa3aed4f5f8"
+        },
         "created": "2026-09-07"
       },
       {
@@ -101828,6 +101830,145 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260908T043050502592-n-sgr-the-review-throw-is-reproduced-and-named",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a78",
+        "node": "n-sgr-the-review-throw-is-reproduced-and-named",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1277,
+                "cached_input_tokens": 631841,
+                "input_tokens": 633120,
+                "output_tokens": 997,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 634117,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A report at the write path carrying the VERBATIM traceback of the raise, its real exception type, and the file and line that raises it, obtained by reproducing the failure rather than by reading alone. A prior report claimed the review path raises _NonCanonicalParseError; that symbol exists NOWHERE in the package, so the claim is unverified and this plan is fenced against building on it. What is established: parse_canonical_name at grammar_adapter.py:117 raises a bare ValueError with the message that a name is not canonical and the ordered grammar renders something else, and EVERY parse_canonical_name call in workers.py, the review module, is wrapped in try/except catching ValueError at lines 492, 530, 1351 and 3476, so a non-canonical name does not propagate from there. Unguarded raises DO exist at models.py:498 and models.py:568 via to_ir. Establish whether the review path actually reaches either, by driving a scoped review over an open-edit successor whose stored spelling the merged grammar rejects, reaching the underlying entry point directly rather than through the CLI because the file log did not capture the traceback before. Also report the current count of drafted successors at edit_status open whose spelling is strict-non-canonical; a prior figure of 49 of 105 is unverified and its description of the tokens as trailing is wrong, since they sit mid-name between base and locus. If the review path turns out NOT to raise, that is a valid and valuable answer: say so and name what else stopped the two prior invocations exiting 1. Read-only: change no source file and land no rename. DURABILITY, not optional: write your manifest with the findings you already hold BEFORE any long output, and append the report incrementally rather than composing it in one final generation.",
+          "estimated_hours": null,
+          "goal": "Reproduce the exception a scoped batch review raises on a non-canonical successor and name its real type and site",
+          "id": "n-sgr-the-review-throw-is-reproduced-and-named",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T043050502592-n-sgr-the-review-throw-is-reproduced-and-named/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a78",
+          "spec_level": "guided",
+          "time_budget": "40m",
+          "write_paths": [
+            "docs/evidence/sn-grammar-refinement/review-throw-reproduction.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "cx-binding",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T04:30:58Z",
+        "completed_at": "2026-09-08T04:39:38Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 520,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 520,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "b70da103168360fceaec0730f707d7acffb03e87",
+        "commits": [
+          "ba672d6bef9321a3b69fde6397b1a35579e63045"
+        ],
+        "changed_lines": {
+          "added": 135,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "coordinator re-verified the exception hierarchy and catch site upstream and in-package at base b70da1031",
+          "exit_status": 0,
+          "log_path": "docs/evidence/sn-grammar-refinement/review-throw-reproduction.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T043050502592-n-sgr-the-review-throw-is-reproduced-and-named/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07f48-973f-72a2-ae83-daa3aed4f5f8",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 4992768,
+            "cached_input_tokens_cumulative": 4992768,
+            "input_tokens": 5182879,
+            "input_tokens_cumulative": 5182879,
+            "output_tokens": 16235,
+            "output_tokens_cumulative": 16235,
+            "reasoning_output_tokens": 5321,
+            "reasoning_output_tokens_cumulative": 5321
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 21556,
+          "peak_input_tokens": 10175647
+        },
+        "follow_on_paths": [
+          "49/105",
+          "drafted/open"
+        ],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sgr-the-review-throw-is-reproduced-and-named",
+          "session_id": "01a07f48-973f-72a2-ae83-daa3aed4f5f8",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T04:39:38Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -102018,13 +102159,13 @@
         "backend": "codex-terra",
         "purpose": "dispatch",
         "opened_at": "2026-09-06T08:06:41Z",
-        "closed_at": null,
-        "held_seconds": null,
+        "closed_at": "2026-09-08T04:30:56Z",
+        "held_seconds": 159855,
         "utilisation_pct": 95.0,
         "resets_at": "2026-09-11T04:24:27Z",
         "effective_ceiling_pct": 95.0,
         "reason": "utilisation 95% with burn multiple 3.1x is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
-        "closed_by_purpose": null,
+        "closed_by_purpose": "dispatch",
         "resumption_fired": false
       },
       {
@@ -102070,6 +102211,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1928
+    "_version": 1931
   }
 }
