@@ -8,7 +8,7 @@
   <meta name="plan-slug" content="paid-identity-deletion-protection">
   <meta name="plan-title" content="Work That Cost Money Must Not Be Deletable By A Cleanup Pass">
   <meta name="plan-summary" content="A structural cleanup destroyed 100 USD of generated names, reviews and docs; make recorded spend the undeletable boundary">
-  <meta name="plan-status" content="draft">
+  <meta name="plan-status" content="active">
   <meta name="plan-roi" content="high">
   <meta name="plan-effort-hours" content="14.0">
   <meta name="plan-capability-version" content="1.0">
@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-08">
-<meta name="plan-version" content="1">
+<meta name="plan-version" content="3">
 </head>
 <body>
   <main class="plan-doc">
@@ -322,44 +322,32 @@
 
     <section data-reckon="decisions" id="decisions" class="r-decisions">
 <h2><span class="sec">§</span> Decisions</h2>
-<div class="r-dec" data-key="spend-threshold" data-choice="" data-by="" data-when="">
+<div class="r-dec" data-key="spend-threshold" data-choice="any-nonzero" data-by="Simon McIntosh" data-when="2026-09-08T16:26:52+00:00">
     <p class="r-dec-q">Is any non-zero recorded spend enough to make an identity undeletable, or
         should there be a floor?</p>
     <p class="r-dec-opts">
-      <button class="r-opt" data-value="any-nonzero">Any non-zero spend protects</button>
+      <button class="r-opt chosen" data-value="any-nonzero">Any non-zero spend protects</button>
       <button class="r-opt" data-value="floor">A stated cost floor</button>
       </p>
-    <p class="r-dec-rat">Recommendation: any non-zero spend. A floor invites the question of what
-        a cent of generation is worth, and the answer is that the money is not the point — the
-        spend record is evidence that the pipeline invested in this identity. The 18 zero-spend rows
-        in the incident set show the test already discriminates without a threshold.</p>
+    <p class="r-dec-rat">Any non-zero recorded spend makes an identity undeletable by an automatic pass. No floor: the money is not the point, the spend record is evidence that the pipeline invested in this identity. The eighteen zero-spend rows in the incident set show the test already discriminates without a threshold.</p>
     </div>
-<div class="r-dec" data-key="spend-lookup-mechanism" data-choice="" data-by="" data-when="">
+<div class="r-dec" data-key="spend-lookup-mechanism" data-choice="materialised-edge" data-by="Simon McIntosh" data-when="2026-09-08T16:26:52+00:00">
     <p class="r-dec-q">How should the guard read spend — a set-based pre-check over LLMCost , or a materialised edge from cost to identity?</p>
     <p class="r-dec-opts">
-      <button class="r-opt" data-value="materialised-edge">Materialise a PAID_FOR edge</button>
+      <button class="r-opt chosen" data-value="materialised-edge">Materialise a PAID_FOR edge</button>
       <button class="r-opt" data-value="set-precheck">Set-based pre-check per pass</button>
       </p>
-    <p class="r-dec-rat">Recommendation: the materialised edge, because it makes the protection
-        cheap enough to apply at every delete site rather than only in the one pass that can afford a
-        scan. standard_name_ids is an unindexed list property over ~37,000 rows; the
-        scan is viable once per pass and not once per identity. The edge is also the honest shape:
-        this repository&#x27;s own rule is that an edge is the source of truth and a scalar is derived,
-        and a list of ids inside a cost row is the same mirrored-scalar pattern that produced seven
-        other defects in this surface.</p>
+    <p class="r-dec-rat">Materialise the cost-to-identity edge so the protection is cheap enough to apply at every delete site rather than only in the one pass that can afford a scan. standard_name_ids is an unindexed list property over roughly 37,000 rows: viable once per pass, not once per identity. It is also the honest shape, since this repository holds that an edge is the source of truth and a scalar derived from it, and a list of ids inside a cost row is the same mirrored-scalar pattern that produced the other defects on this surface.</p>
     </div>
-<div class="r-dec" data-key="restore-scope" data-choice="" data-by="" data-when="">
+<div class="r-dec" data-key="restore-scope" data-choice="paid-only" data-by="Simon McIntosh" data-when="2026-09-08T16:26:52+00:00">
     <p class="r-dec-q">Restore only the identities carrying spend, or every identity the cleanup
         removed?</p>
     <p class="r-dec-opts">
-      <button class="r-opt" data-value="paid-only">Only those carrying spend</button>
+      <button class="r-opt chosen" data-value="paid-only">Only those carrying spend</button>
       <button class="r-opt" data-value="all-93">All 93 from today&#x27;s pass</button>
       <button class="r-opt" data-value="all-491">All 491 still absent</button>
       </p>
-    <p class="r-dec-rat">Recommendation: those carrying spend, from today&#x27;s pass first. The
-        zero-spend rows are the ones the cleanup had the best claim to remove, and restoring them
-        would reinstate scaffolding the admission gate legitimately rejects. Widening to the earlier
-        398 should wait on the §5 census, which will say whether any of them was ever published.</p>
+    <p class="r-dec-rat">Restore the identities carrying recorded spend, from the pass of 2026-09-08 first. The zero-spend rows are the ones the cleanup had the best claim to remove and restoring them would reinstate scaffolding the admission gate legitimately rejects. Widening to the earlier deletions waits on the census that establishes whether any of them was ever published.</p>
     </div>
 </section>
 
@@ -367,8 +355,13 @@
 <h2><span class="sec">§</span> Followups</h2>
 <article class="r-fu" data-id="f-pidp-001" data-status="open" data-capability-version="1.0" data-capability-class="orchestrator" data-capability-reasoning="deep" data-capability-verification="strict" data-capability-risk="critical" data-written-by="reckon-create" data-written-at="2026-09-08" data-recommends-skill="/reckon-ship paid-identity-deletion-protection §3" data-resolved-at="" data-resolved-by="">
     <h4 class="r-fu-title">Land the delete-path guard before any restore or further origin work</h4>
-    <div class="r-fu-body"><p><strong>Start here, and start with &sect;3.</strong> The guard is the only piece that stops recurrence, and both the restore (&sect;4) and the queued origin recovery in <code>sn-origin-provenance-backfill</code> are unsafe until it lands.</p><p>Three decisions in the decisions section are unlocked and each has a recommendation with its reasoning. They do not need to block dispatch of &sect;3 &mdash; the first two shape its implementation and the third only affects &sect;4 &mdash; but take them early rather than letting a worker infer them.</p><p><strong>Two traps this surface has already sprung, both measured.</strong> First, <code>filter_protected</code> in <code>protection.py</code> matches <code>name_stage = 'approved'</code> and <strong>zero rows hold that value</strong>, so it returns the empty set for every input it is given today; read its definition before routing a protection through it. Second, closing this fail-open path will expose failures that were passing <em>because</em> it was open &mdash; measure that count in a scratch flip before writing the change, and expect the exposed failures to be legitimate.</p><p><strong>Do not accept a uniform verdict.</strong> The classification of which identities warrant restoration returned all 78 rows reading <code>RESTORE / high</code> with an identical note while its own follow-ons admitted the archive read was never executed. A verdict column that does not vary is the absence of a classification wearing the shape of one.</p></div>
+    <div class="r-fu-body"><p><strong>Start here, and start with §3.</strong> The guard is the only piece that stops recurrence, and both the restore (§4) and the queued origin recovery in <code>sn-origin-provenance-backfill</code> are unsafe until it lands.</p><p>Three decisions in the decisions section are unlocked and each has a recommendation with its reasoning. They do not need to block dispatch of §3 — the first two shape its implementation and the third only affects §4 — but take them early rather than letting a worker infer them.</p><p><strong>Two traps this surface has already sprung, both measured.</strong> First, <code>filter_protected</code> in <code>protection.py</code> matches <code>name_stage = 'approved'</code> and <strong>zero rows hold that value</strong>, so it returns the empty set for every input it is given today; read its definition before routing a protection through it. Second, closing this fail-open path will expose failures that were passing <em>because</em> it was open — measure that count in a scratch flip before writing the change, and expect the exposed failures to be legitimate.</p><p><strong>Do not accept a uniform verdict.</strong> The classification of which identities warrant restoration returned all 78 rows reading <code>RESTORE / high</code> with an identical note while its own follow-ons admitted the archive read was never executed. A verdict column that does not vary is the absence of a classification wearing the shape of one.</p></div>
     <pre class="r-fu-prompt">/reckon-ship paid-identity-deletion-protection §3</pre>
+    </article>
+<article class="r-fu" data-id="f-pidp-002" data-status="open" data-capability-version="1.0" data-capability-class="orchestrator" data-capability-reasoning="deep" data-capability-verification="strict" data-capability-risk="critical" data-written-by="reckon-create" data-written-at="2026-09-08" data-recommends-skill="/reckon-ship paid-identity-deletion-protection §4" data-resolved-at="" data-resolved-by="">
+    <h4 class="r-fu-title">A restored identity must carry its edges, not just its name and prose</h4>
+    <div class="r-fu-body"><p><strong>Acceptance criterion for the restore: the identity comes back with its relationships, or it has not come back.</strong> A name and its documentation with no provenance is not a recovery &mdash; it is a plausible-looking assertion with no evidence behind it, and that is worse than the gap, because nothing would mark it as unsupported.</p><p>A live <code>StandardName</code> carries up to thirty-one distinct relationship roles. The restore must reinstate every role the archived identity actually held, and the manifest must report, per identity, which roles came back and which were absent in the archive. The load-bearing ones, with their live population for scale:</p><table><thead><tr><th>Relationship</th><th>What it carries</th><th>Live edges</th></tr></thead><tbody><tr><td><code>PRODUCED_NAME</code> from <code>StandardNameSource</code></td><td>the DD source bindings &mdash; the provenance itself</td><td>5,543</td></tr><tr><td><code>HAS_STANDARD_NAME</code> from <code>IMASNode</code></td><td>the DD path binding that makes the name usable</td><td>5,177</td></tr><tr><td><code>HAS_REVIEW</code></td><td>the review receipts the spend paid for</td><td>27,274</td></tr><tr><td><code>DOCS_REVISION_OF</code></td><td>documentation history</td><td>3,428</td></tr><tr><td><code>HAS_PARENT</code> and <code>REFINED_FROM</code></td><td>hierarchy and rename lineage</td><td>1,525 and 1,818</td></tr><tr><td><code>HAS_INTERNAL_CHANGE</code></td><td>the identity's own change history</td><td>10,450</td></tr><tr><td><code>HAS_UNIT</code>, <code>HAS_COCOS</code>, <code>HAS_PHYSICS_DOMAIN</code>, <code>IN_CLUSTER</code></td><td>unit, sign convention, domain, semantic cluster</td><td>5,040 / 1,033 / 3,439 / 606</td></tr><tr><td>the grammar decomposition &mdash; <code>HAS_SEGMENT</code>, <code>HAS_LOCUS</code>, <code>HAS_SUBJECT</code>, <code>HAS_COMPONENT</code>, <code>HAS_PHYSICAL_BASE</code>, <code>HAS_AGGREGATION</code>, <code>HAS_PROCESS</code>, <code>HAS_GEOMETRIC_BASE</code>, <code>HAS_POSITION</code>, <code>HAS_COORDINATE</code>, <code>HAS_POPULATION</code>, <code>HAS_ORBIT</code>, <code>HAS_DEVICE</code>, <code>HAS_REGION</code></td><td>the parsed identity, one edge per token role</td><td>2,837 segments plus 4,100 role edges</td></tr><tr><td><code>HAS_STRUCTURAL_AUTHORITY</code> and <code>ENTAILED_FROM_CHILD</code></td><td>structural entailment</td><td>315 and 709</td></tr></tbody></table><p>The spend attribution is the one link that is <strong>not</strong> an edge today: <code>LLMCost</code> reaches an identity through the <code>standard_name_ids</code> list property. The locked decision materialises it, so the guard and the restore share one mechanism rather than two.</p><p><strong>Verify by comparison, never by absence of error.</strong> For each restored identity, count its edges by type against the archive's count for that same identity and require equality per type. A restore that reports success while reinstating fewer edge types than the archive held is exactly the failure this criterion exists to catch &mdash; and it will look like success.</p></div>
+    <pre class="r-fu-prompt">/reckon-ship paid-identity-deletion-protection §4</pre>
     </article>
 </section>
 
