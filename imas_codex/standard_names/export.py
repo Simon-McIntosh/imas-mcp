@@ -504,7 +504,8 @@ def _fetch_candidates(
     - a reachable winning docs-axis review group with no docs quorum shortfall
       — the review evidence is authoritative when it disagrees with the
       scalar ``docs_stage`` projection (skipped when *names_only*).
-    - ``validation_status = 'valid'`` — excludes quarantined nodes.
+    - ``validation_status = 'valid'`` and a non-null ``validated_at`` —
+      excludes quarantined nodes and refuses an undated historical verdict.
     - ``review_quorum_shortfall IS NULL`` — excludes a name accepted while its
       reviewer chain had not reached a verdict. A quorate review clears the
       marker, so an accepted node still carrying one arrived by a path that
@@ -538,6 +539,7 @@ def _fetch_candidates(
     WHERE (sn.name_stage = 'approved' OR sn.id IN $batch)
       AND {tombstone_clause}
       AND sn.validation_status = 'valid'
+      AND sn.validated_at IS NOT NULL
       AND sn.review_quorum_shortfall IS NULL
     """
         params["batch"] = batch
@@ -547,6 +549,7 @@ def _fetch_candidates(
     WHERE sn.name_stage IN ['accepted', 'approved']
       AND {tombstone_clause}
       AND sn.validation_status = 'valid'
+      AND sn.validated_at IS NOT NULL
       AND sn.review_quorum_shortfall IS NULL
     """
     if not names_only:
@@ -679,6 +682,7 @@ def _fetch_export_population(
         _has_docs_review: has_docs_review,
         _has_winning_docs_review:
             accepting_docs_review IS NOT NULL OR strict_docs_review_eligibility,
+        _validation_observed_at: sn.validated_at,
         docs_review_resolution_method:
             accepting_docs_review.resolution_method,
         _docs_review_group_id: accepting_docs_review.review_group_id,
@@ -778,6 +782,12 @@ def _classify_export_population(
         elif candidate.get("validation_status") != "valid":
             reason = "invalid_validation_status"
             detail = f"validation_status={candidate.get('validation_status')!r}"
+        elif (
+            "_validation_observed_at" in candidate
+            and candidate["_validation_observed_at"] is None
+        ):
+            reason = "validation_observation_missing"
+            detail = "validation_status='valid' has no validated_at observation time"
         elif candidate.get("name_stage") not in {"accepted", "approved"}:
             reason = "name_not_accepted"
             detail = f"name_stage={candidate.get('name_stage')!r}"
