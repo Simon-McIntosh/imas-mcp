@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T08:57:07",
+  "updated": "2026-09-08T08:59:21",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -38,6 +38,15 @@
         "role": "implement",
         "session_id": "c4283d0f-4079-4b90-bea6-4d584a1301bd",
         "created": "2026-08-22"
+      },
+      {
+        "id": "claude-opus-a",
+        "harness": "claude-opus",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-08"
       },
       {
         "id": "clive-binding",
@@ -195,6 +204,51 @@
           "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "9ffab023-6ad1-4472-885f-8c28a521b547"
         },
         "created": "2026-09-05"
+      },
+      {
+        "id": "codex-luna-a",
+        "harness": "codex-luna",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-08"
+      },
+      {
+        "id": "codex-luna-b",
+        "harness": "codex-luna",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-08"
+      },
+      {
+        "id": "codex-spark-a",
+        "harness": "codex-spark",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-08"
+      },
+      {
+        "id": "codex-terra-a",
+        "harness": "codex-terra",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-08"
+      },
+      {
+        "id": "codex-terra-b",
+        "harness": "codex-terra",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-08"
       },
       {
         "id": "cx-betatangle",
@@ -103248,6 +103302,169 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260907T185823799379-n-sgr-the-fold-guard-reads-the-present",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a79",
+        "node": "n-sgr-the-fold-guard-reads-the-present",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2614,
+                "cached_input_tokens": 247907,
+                "input_tokens": 250523,
+                "output_tokens": 1771,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 252294,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "The divergence set is enumerated and recorded BEFORE the guard changes: every live name whose verdict differs under the ledger rule versus the edge-existence rule, written to docs/evidence/sn-grammar-refinement/fold-guard-divergence.md with each row's reason. Expect that set to be small and to consist of reverted renames; a large set means the new rule is wrong rather than the old guard. Then _fold_guard_reason at imas_codex/standard_names/edit.py:2025 decides ambiguity from StandardNameChange ordering (operation, changed_at, from_name, to_name) \u2014 the most recent rename or supersede event not itself reverted \u2014 leaving REFINED_FROM as the complete history it is and deleting no edge. The measure is that sn supersede normalized_toroidal_plasma_beta --into normalized_toroidal_beta clears its dry run AND that no other fold's verdict moves, proven by the recorded before/after comparison. Tests in tests/standard_names/test_fold_guard_current_successor.py must fail by name when the change is reverted, and must cover the reverted-rename case (beta was renamed to the normalized identity at 2026-07-22T13:07:04 by regenerate and back at 13:10:05 by human_edit). Report added failures against a stated base for tests/standard_names.",
+          "estimated_hours": null,
+          "goal": "Make the fold ambiguity guard decide from the change ledger's current successor rather than from the existence of a REFINED_FROM edge",
+          "id": "n-sgr-the-fold-guard-reads-the-present",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T185823799379-n-sgr-the-fold-guard-reads-the-present/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "60m",
+          "write_paths": [
+            "imas_codex/standard_names/edit.py",
+            "tests/standard_names/test_fold_guard_current_successor.py",
+            "docs/evidence/sn-grammar-refinement/fold-guard-divergence.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "clive-drain",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-07T18:58:42Z",
+        "completed_at": "2026-09-08T06:58:08.808Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 43071,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 43166,
+        "stalled": true,
+        "time_budget": "60m",
+        "base_sha": "69f24046b143dce1048f82f02fd25878b2849126",
+        "commits": [
+          "7ee06421b34a9e57287cbcf0b4d7f89889bf8845"
+        ],
+        "changed_lines": {
+          "added": 447,
+          "removed": 2,
+          "files": 3
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "focused fold-guard tests plus a live divergence enumeration over the 1710 names carrying successor edges",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "pre-fold beta state clears its dry run through supersede_into and fails by name under the old edge-existence reading; a live non-reverted successor and an edge with no ledger record still refuse; divergence enumerated live at 7 of 1710, all reverted-lineage, none of the other 1703 moving"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T185823799379-n-sgr-the-fold-guard-reads-the-present/manifest.md",
+        "scope_changed": false,
+        "session_id": "d2279ead-28da-443e-b57d-3d3682040928",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 24266379,
+            "input_tokens_cumulative": 24266379,
+            "output_tokens": 145350,
+            "output_tokens_cumulative": 145350,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 0,
+          "cumulative_input_tokens": 25552687,
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 43162.589,
+          "generated_tokens": 145350,
+          "generation_seconds": 42685.211,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 28.4,
+          "machine_seconds": 477.378,
+          "peak_input_tokens": 289074,
+          "tokens_per_second": 3.41,
+          "wall_tokens_per_second": 3.37
+        },
+        "follow_on_paths": [
+          "tests/standard_names",
+          "successor/source",
+          "test_tombstone_supersede.py"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sgr-the-fold-guard-reads-the-present",
+          "session_id": "d2279ead-28da-443e-b57d-3d3682040928",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T06:58:08.808Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -103490,6 +103707,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1947
+    "_version": 1954
   }
 }
