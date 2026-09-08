@@ -36,15 +36,30 @@ def analyse(run_dir):
             except Exception:
                 continue
             idx += 1
+            # claude-shaped stream: message.content[].tool_use
             msg = r.get("message") or {}
             content = msg.get("content")
-            if not isinstance(content, list):
+            if isinstance(content, list):
+                for c in content:
+                    if not isinstance(c, dict) or c.get("type") != "tool_use":
+                        continue
+                    inp = c.get("input") or {}
+                    blob = " ".join(str(inp.get(k) or "") for k in ("file_path","path","command"))
+                    if targets and any(t in blob for t in targets):
+                        hits.append(idx)
                 continue
-            for c in content:
-                if not isinstance(c, dict) or c.get("type") != "tool_use":
-                    continue
-                inp = c.get("input") or {}
-                blob = " ".join(str(inp.get(k) or "") for k in ("file_path","path","command"))
+            # codex-shaped stream: item.completed with a file_change or command
+            # NOTE: a first version handled only the claude shape and reported
+            # every codex run as "DELIVERABLE NEVER WRITTEN" -- a false negative,
+            # not a finding. Any lane-comparison using this must handle both.
+            if r.get("type") in ("item.completed", "item.started"):
+                it = r.get("item") or {}
+                blobs = []
+                if it.get("type") == "file_change":
+                    blobs += [str(ch.get("path") or "") for ch in (it.get("changes") or [])]
+                blobs.append(str(it.get("command") or ""))
+                blobs.append(str(it.get("arguments") or ""))
+                blob = " ".join(blobs)
                 if targets and any(t in blob for t in targets):
                     hits.append(idx)
     total = idx or 1

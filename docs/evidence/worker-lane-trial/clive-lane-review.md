@@ -101,9 +101,22 @@ Recorded because it changed outcomes, not as balance.
 
 - **Long multi-part briefs do not survive this lane.** Six failures, all
   report-shaped or multi-file.
-- **A fabricated symbol.** One report named `_NonCanonicalParseError`, which
-  exists nowhere; the real raise is a bare `ValueError`. Stated as fact and
-  load-bearing for a downstream remediation, so the plan was fenced against it.
+- ~~**A fabricated symbol.**~~ **WITHDRAWN — the coordinator was wrong, not the
+  worker.** I recorded that a report named `_NonCanonicalParseError`, "which
+  exists nowhere". It exists: upstream at
+  `imas-standard-names/imas_standard_names/grammar/parser.py:380`, a `ParseError`
+  subclass raised at `:411` and `:2006`. **My grep covered only `imas_codex/`** —
+  I scoped the search to one repository of a two-repository system and read the
+  absence as fabrication. The worker was right about the name. A later node on
+  another lane found it in nine minutes.
+  What survives is narrower and was the part that mattered: the *causal* claim is
+  still disproved. `ParseError` subclasses `ValueError` (`parser.py:365`) and
+  `_enrich_name_review_items` catches `ValueError` around
+  `strict_review_grammar_context` (`workers.py:7414`), so the raise is swallowed
+  and does not terminate a review. **The error to learn from here is mine**: an
+  accusation of fabrication needs a wider search than a claim of existence does,
+  because the cost of being wrong is asymmetric — I propagated it to two peer
+  sessions before checking the sibling repository.
 - **`status: complete` with an absent deliverable.** Caught only by the cheap
   untrust checks; a passing gate would have hidden it entirely.
 - **Ephemeral evidence paths.** Two nodes cited `/tmp` for gate logs and

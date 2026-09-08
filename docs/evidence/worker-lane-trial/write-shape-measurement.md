@@ -57,3 +57,18 @@ It detects **`status: complete` with a never-written deliverable from the stream
 alone**, with no worktree inspection: `which-section-rows` reports zero
 deliverable writes. That class cost this session a near-miss — a passing gate
 would have hidden it — and it is cheap to check automatically at promotion.
+
+
+## Instrument limitation found in use, and fixed
+
+The first version handled only the claude-shaped stream
+(`message.content[].tool_use`). Codex streams carry no `tool_use` at all — they
+emit `item.completed` records with `file_change`, `command_execution` and
+`mcp_tool_call` items — so the instrument reported **every codex run as
+"DELIVERABLE NEVER WRITTEN"**, a false negative rather than a finding. It now
+handles both shapes, and any lane comparison drawn from it must, or it will
+manufacture exactly the result it is looking for.
+
+Proof both shapes read correctly: a codex node that wrote its report across ten
+operations late in its run reads `n=10, span 0.78–0.91`; a claude node reads
+`n=6, span 0.10–0.98`; a claude node that never wrote still reads zero.
