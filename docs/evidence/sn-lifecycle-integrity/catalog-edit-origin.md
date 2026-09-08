@@ -98,4 +98,7 @@ uv run --no-sync pytest -p no:cacheprovider \
   tests/standard_names/test_graph_ops.py
 ```
 
-The full `tests/standard_names` suite remains a separate merged-head gate.
+The full `tests/standard_names` gate then passed `7267 passed, 11 skipped,
+323 deselected, 34 warnings` in `292.86s` on the `all_debug` partition, with
+exit status 0. No failure ids were emitted and no failure was attributable to
+either changed path.
