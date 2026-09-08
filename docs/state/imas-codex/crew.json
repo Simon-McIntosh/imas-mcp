@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T06:49:02",
+  "updated": "2026-09-08T06:54:29",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -102108,6 +102108,142 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260908T043009015768-n-sli-the-reasonless-failures-carry-a-cause",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-the-reasonless-failures-carry-a-cause",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 665,
+                "cached_input_tokens": 631176,
+                "input_tokens": 631843,
+                "output_tokens": 840,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 632683,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A report at the write path with one row per failed StandardNameSource carrying no error text, each classified by cause read from the graph and the code rather than guessed, the live count stated at the top, and rows grouped by cause with counts so the tail is sized. The section-currency audit measured 59 of 101 such rows remaining; report the current live figure and say so if it has moved. Three write paths that could park a source at failed with no reason now refuse before the graph is opened, so no NEW reasonless row can be created; these are the pre-existing rows repair left untouched. Per row give the source path, when it failed, what the surrounding state implies (upstream path removed, attachment conflict, fit-artifact bookkeeping, geometry dimension, vocabulary gap, or genuinely unknown), and whether a name is still reachable. Read-only: write no reason onto any node, reset no counter, run no pipeline pool. DURABILITY, not optional: write the report INCREMENTALLY, appending each cause group as you finish it rather than composing the whole document in one final generation, and write your manifest with the findings you already hold BEFORE any long output. Measured across two fleets here, every lost node on the local lane died at the report-writing turn with a complete investigation and nothing on disk; the only survivors were those whose durable write preceded the long generation.",
+          "estimated_hours": null,
+          "goal": "Classify every failed source that records no error text and give each one a stated cause",
+          "id": "n-sli-the-reasonless-failures-carry-a-cause",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T043009015768-n-sli-the-reasonless-failures-carry-a-cause/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "guided",
+          "time_budget": "40m",
+          "write_paths": [
+            "docs/evidence/sn-lifecycle-integrity/reasonless-failure-triage.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "cx-guard",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T04:30:17Z",
+        "completed_at": "2026-09-08T04:52:35Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1338,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1338,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "b70da103168360fceaec0730f707d7acffb03e87",
+        "commits": [
+          "dc25496d28d713a053b326c7171fddd4bda52482"
+        ],
+        "changed_lines": {
+          "added": 133,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "coordinator re-queried the full partition against the live graph at base b70da1031",
+          "exit_status": 0,
+          "log_path": "docs/evidence/sn-lifecycle-integrity/reasonless-failure-triage.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T043009015768-n-sli-the-reasonless-failures-carry-a-cause/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07a66-71c5-7231-9f83-6ae197503c99",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 5040896,
+            "cached_input_tokens_cumulative": 9193216,
+            "input_tokens": 5280150,
+            "input_tokens_cumulative": 9495649,
+            "output_tokens": 13621,
+            "output_tokens_cumulative": 29363,
+            "reasoning_output_tokens": 5447,
+            "reasoning_output_tokens_cumulative": 8854
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 38217,
+          "peak_input_tokens": 18688865
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sli-the-reasonless-failures-carry-a-cause",
+          "session_id": "01a07a66-71c5-7231-9f83-6ae197503c99",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T04:52:35Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -102350,6 +102486,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1933
+    "_version": 1934
   }
 }
