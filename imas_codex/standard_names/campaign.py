@@ -650,8 +650,10 @@ def default_clear_quarantine(gc: Any, ids: Sequence[str]) -> int:
 
     The docs review/accept path excludes ``validation_status='quarantined'``,
     so an accepted-but-quarantined name would never surface a refined doc.
-    Reset to ``'pending'`` (an honest transient) before the drain; the
-    post-drain re-validation restores 'valid' or re-quarantines.
+    Reset to ``'pending'`` (an honest transient) before the drain and discard
+    the prior validation observation.  The post-drain deterministic validation
+    writes both the replacement verdict and its ``validated_at`` observation
+    time, restoring ``'valid'`` or re-quarantining from one authority.
     """
     if not ids:
         return 0
@@ -663,6 +665,7 @@ def default_clear_quarantine(gc: Any, ids: Sequence[str]) -> int:
           AND coalesce(sn.validation_status, '') = 'quarantined'
         SET sn.validation_status = 'pending',
             sn.quarantine_reason = null,
+            sn.validated_at = null,
             sn.updated_at = datetime()
         RETURN count(sn) AS n
         """,
