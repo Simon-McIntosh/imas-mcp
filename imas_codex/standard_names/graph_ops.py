@@ -39,6 +39,10 @@ from imas_codex.standard_names.provenance_lifecycle import (
     deletion_change_cypher,
     deletion_change_params,
 )
+from imas_codex.standard_names.protection import (
+    derived_parent_deletion_protections,
+    filter_protected,
+)
 from imas_codex.standard_names.signed_manifest import apply_signed_manifest
 
 logger = logging.getLogger(__name__)
@@ -60,6 +64,15 @@ _TERMINAL_BINDING_NAME_STAGES: frozenset[str] = frozenset(
     }
 )
 _CLAIM_TIMEOUT_SECONDS = 300
+
+# The lowest observed daily structural-reaper total is 74.  Eighty allows a
+# normal-sized cleanup while refusing the 93-identity deletion that exposed the
+# missing guard.
+DERIVED_PARENT_CLEANUP_DELETION_LIMIT = 80
+
+
+class DerivedParentCleanupRefusal(RuntimeError):
+    """A structural cleanup cannot prove that its deletion is safe."""
 
 
 class _TransactionQuery:
@@ -3638,7 +3651,38 @@ def _delete_derived_parent_nodes(
     reason: str | None = None,
     expected_producer_ids_by_parent: dict[str, list[str]] | None = None,
 ) -> int:
-    """Delete derived-parent nodes and their review/derived-source scaffolding."""
+    """Delete only unprotected structural placeholders with recovery material.
+
+    Admission determines whether scaffolding is warranted. It is not a licence
+    to delete a physics identity, so this path requires the explicit
+    ``needs_composition`` placeholder marker and refuses a complete batch when
+    it contains publication evidence or an unusual candidate volume.
+    """
+    parent_ids = sorted(set(parent_ids))
+    if not parent_ids:
+        return 0
+    if len(parent_ids) > DERIVED_PARENT_CLEANUP_DELETION_LIMIT:
+        raise DerivedParentCleanupRefusal(
+            "Refused structural derived-parent cleanup: "
+            f"{len(parent_ids)} candidate identities exceeds the "
+            f"{DERIVED_PARENT_CLEANUP_DELETION_LIMIT}-identity ceiling"
+        )
+
+    protected_reasons = derived_parent_deletion_protections(gc, parent_ids)
+    _filtered, protected_ids = filter_protected(
+        [{"id": parent_id, "status": "delete"} for parent_id in parent_ids],
+        protected_names=set(protected_reasons),
+    )
+    if protected_ids:
+        details = ", ".join(
+            f"{parent_id} ({protected_reasons[parent_id]})"
+            for parent_id in protected_ids
+        )
+        raise DerivedParentCleanupRefusal(
+            "Refused structural derived-parent cleanup for protected identity: "
+            + details
+        )
+
     deleted = 0
     deletion_clause = deletion_change_cypher("sn")
     deletion_params = deletion_change_params(
@@ -3657,6 +3701,7 @@ def _delete_derived_parent_nodes(
             gc.query(
                 f"""
                 MATCH (sn:StandardName {{id: $parent_id}})
+                WHERE sn.needs_composition = true
                 CALL (sn) {{
                   OPTIONAL MATCH (producer:StandardNameSource)
                   WHERE producer.produced_sn_id = sn.id
@@ -3683,8 +3728,20 @@ def _delete_derived_parent_nodes(
                                WHERE id IN $expected_producer_ids)
                        AND all(id IN $expected_producer_ids
                                WHERE id IN current_producer_ids))
+                CALL (sn) {{
+                  OPTIONAL MATCH (sn)-[edge]-(neighbor)
+                  RETURN collect(DISTINCT {{
+                    relationship_type: type(edge),
+                    direction: CASE WHEN startNode(edge) = sn
+                                    THEN 'outgoing' ELSE 'incoming' END,
+                    neighbor_id: coalesce(neighbor.id, elementId(neighbor)),
+                    relationship_properties: properties(edge)
+                  }}) AS edge_inventory
+                }}
                 {deletion_clause}
                 SET change.manifest_sha256 = $stub_manifest_sha256
+                SET change.deleted_node_properties = toString(properties(sn)),
+                    change.deleted_edge_inventory = toString(edge_inventory)
                 FOREACH (source IN mirror_sources |
                   SET source.produced_sn_id = null)
                 FOREACH (source IN derived_sources | DETACH DELETE source)

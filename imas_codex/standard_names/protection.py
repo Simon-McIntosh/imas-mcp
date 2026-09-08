@@ -60,6 +60,55 @@ class PipelineAuthorityError(RuntimeError):
     """A catalog write cannot prove that pipeline authority is preserved."""
 
 
+def derived_parent_deletion_protections(
+    gc: Any, name_ids: list[str]
+) -> dict[str, str]:
+    """Return durable publication evidence that bars structural deletion.
+
+    A derived-parent cleanup may ask whether structural scaffolding is still
+    warranted.  It must not use that answer to withdraw a name that a catalog
+    cut, ratification, or approval has made durable authority.  The result is
+    keyed by identity so callers can name the exact evidence that refused a
+    deletion.
+    """
+    names = sorted({name for name in name_ids if name})
+    if not names:
+        return {}
+    rows = gc.query(
+        """
+        UNWIND $names AS name
+        MATCH (sn:StandardName {id: name})
+        OPTIONAL MATCH (sn)-[:HAS_INTERNAL_CHANGE]->(change:StandardNameChange)
+        WITH sn, collect(DISTINCT change.operation) AS operations
+        WITH sn, operations,
+             [reason IN [
+               CASE WHEN sn.name_stage = 'approved'
+                    THEN 'name_stage=approved' END,
+               CASE WHEN sn.catalog_pr_number IS NOT NULL
+                    THEN 'catalog_pr_number' END,
+               CASE WHEN sn.catalog_merge_commit_sha IS NOT NULL
+                    THEN 'catalog_merge_commit_sha' END,
+               CASE WHEN sn.catalog_commit_sha IS NOT NULL
+                    THEN 'catalog_commit_sha' END,
+               CASE WHEN sn.exported_at IS NOT NULL
+                    THEN 'exported_at' END,
+               CASE WHEN 'unchanged_ratification' IN operations
+                    THEN 'unchanged_ratification' END,
+               CASE WHEN 'content_edit' IN operations
+                    THEN 'content_edit' END
+             ] WHERE reason IS NOT NULL] AS reasons
+        WHERE size(reasons) > 0
+        RETURN sn.id AS id, reasons
+        """,
+        names=names,
+    )
+    return {
+        str(row["id"]): ", ".join(sorted(str(reason) for reason in row["reasons"]))
+        for row in (rows or [])
+        if row.get("id") and row.get("reasons")
+    }
+
+
 def _authority_value(value: Any) -> Any:
     """Normalize relationship collections without changing scalar meaning."""
     if isinstance(value, list | tuple | set | frozenset):
