@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T10:09:40",
+  "updated": "2026-09-08T10:16:41",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -104895,6 +104895,169 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T074451792754-n-swct-the-parked-sources-and-stalled-docs-are-driven-through",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a79",
+        "node": "n-swct-the-parked-sources-and-stalled-docs-are-driven-through",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 690,
+                "cached_input_tokens": 367061,
+                "input_tokens": 367753,
+                "output_tokens": 1594,
+                "reasoning_output_tokens": 88,
+                "total_tokens": 369347,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "The 15 source paths parked at name_stage extracted have been through a compose pass, and the 4 names sitting at reviewed or drafted have been through a docs rotation, with each identity's before and after state reported and the actual spend reported beside the ceiling. BUDGET: the lead has authorised up to 150 US dollars for this regeneration. Pass a cost limit to the run so the soft cap applies, report actual spend beside the 150 ceiling, and state why any remainder went unspent rather than leaving a reader to infer it. THE PROMPTS WERE JUST REPAIRED AND MERGED, which is why this run happens now: all 34 standard-name prompts were audited against the grammar and 34 files changed across compose, review and refine. Two corrections bear on what you are about to generate \u2014 reviewers had been told poloidal_flux was a valid registered token when it is not a valid Standard Name, and reviewer scores are now evidence-anchored bands rather than an unanchored scale. Pull main before running so your worktree carries them, because a run on the old prompts spends the budget on output the repaired reviewer would mark down. TWO NAMES MAY NEED VOCABULARY THAT IS NOT YET RELEASED: an event-instant base and signal_to_noise_ratio are being admitted in a concurrent grammar-repository node and no release is cut, while the source summary/disruption/time/value needs the event instant. Determine before spending whether any of your 15 or 4 depends on either token, HOLD those identities rather than composing them against a vocabulary that will reject them, and report which you held. Spend the budget on the remainder. OPERATIONAL FACTS so you do not rediscover them at cost: compose concurrency has a measured knee near 4 on the two-H200 host rather than 32, and exceeding it produced 69 API timeouts in one measured run; the request timeout is 600 seconds; the run's -t flag is minutes rather than threads; and a mid-pipeline name is a normal state rather than a stranded one, so do not halt a run because names are still moving. Compose grounds on the rich enriched source description and never on the terse Data Dictionary documentation string. REPORT PER IDENTITY: the source path or name, its stage before, its stage after, and for any name that did not advance, the reason. A name ending the run where it started with no stated reason is the defect this cohort already carries, so do not reproduce it. Do not force a name past a validation refusal and do not lower a score threshold to make a name pass. The graph tunnel is login-node-local so graph reads run on the LOGIN NODE, bounded, with the exception declared in the manifest; the GPU pipeline is served by its own endpoint. Gate: tests/standard_names, added failures against a base taken at your own head. The current base is 18 failures rather than 118, so pull main first, and a reading of 118 means a stale tree. Do NOT pass -q to pytest: quiet mode is removed from addopts so a run emits its totals line, and quote it. DURABILITY: write your manifest before any long output and append each identity as it completes, because a pipeline run whose receipt was deferred loses the record of what the money bought.",
+          "estimated_hours": null,
+          "goal": "Drive the parked WEST sources and the stalled docs rotations through the pipeline under an authorised budget",
+          "id": "n-swct-the-parked-sources-and-stalled-docs-are-driven-through",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T074451792754-n-swct-the-parked-sources-and-stalled-docs-are-driven-through/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "docs/evidence/sn-west-cohort-treatment/pipeline-drain-receipts.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "codex-terra-a",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T07:45:09Z",
+        "completed_at": "2026-09-08T08:08:03Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1374,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1374,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "ea277fdbbaceea4580f22ac56dba28e70b58fdbc",
+        "commits": [
+          "f09cfb06372f7ef7fda36b6932cfbd529b0a207c",
+          "62abf5bf3bde271173f52a8ed90d79f866ade7df"
+        ],
+        "changed_lines": {
+          "added": 83,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "srun --partition=all_debug uv run pytest -p no:cacheprovider tests/standard_names/ baseline and after",
+          "exit_status": 1,
+          "log_path": null,
+          "log_digest": "baseline at ea277fdbb reported 20 failed, 7227 passed, 11 skipped, 323 deselected; the post-receipt run reported the identical 20 failure ids and identical counts, so zero failures were added; the node flagged that its own 20-failure base differs from the expected 18 and retained it as observed rather than normalising it"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T074451792754-n-swct-the-parked-sources-and-stalled-docs-are-driven-through/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07ffa-5fb1-7a22-aa72-17faf393e0a9",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 13948416,
+            "cached_input_tokens_cumulative": 13948416,
+            "input_tokens": 14224221,
+            "input_tokens_cumulative": 14224221,
+            "output_tokens": 33901,
+            "output_tokens_cumulative": 33901,
+            "reasoning_output_tokens": 12311,
+            "reasoning_output_tokens_cumulative": 12311
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T08:08:03Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 21.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T08:08:03Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 13948416,
+          "cumulative_input_tokens": 28172637,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 46212
+        },
+        "follow_on_paths": [
+          "decide/admit",
+          "calorimetry/group/component/power",
+          "equilibrium/time_slice/profiles_1d/darea_dpsi"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swct-the-parked-sources-and-stalled-docs-are-driven-through",
+          "session_id": "01a07ffa-5fb1-7a22-aa72-17faf393e0a9",
+          "session_source": "stream",
+          "retained_at": "2026-09-08T08:08:03Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -105137,6 +105300,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1965
+    "_version": 1966
   }
 }
