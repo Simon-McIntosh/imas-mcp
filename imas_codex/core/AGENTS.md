@@ -110,6 +110,26 @@ The tool boundaries are part of the route:
 | `sn remove-lineage SUCCESSOR PREDECESSOR` | Remove one incorrect directed `REFINED_FROM` edge with a recorded reason. | Direction is checked. A superseded predecessor must retain another incoming successor; outgoing predecessor history cannot satisfy that guard. |
 | `sn recover-terminal-attachments` | Return an exact manifest-bound cohort whose sources were finalized against terminal names to fresh composition. | The default is a zero-write plan. Apply requires the exact manifest SHA-256 and atomically removes the terminal realization, resets the source and writes both retry and change receipts; any cohort or compare-and-set mismatch refuses the whole operation. |
 
+### Resume state unless a reset is the intended repair
+
+A name at `drafted`, `reviewed`, `refining`, or a docs-axis intermediate state
+is ordinary pipeline state. Continue its eligible pool with a bounded `sn run`;
+do not erase its reviews, lineage, source binding, or already-paid attempts just
+because the cohort has not yet completed. The command forms below name the few
+cases where changing state is the actual repair. Their implementations live in
+`imas_codex/cli/sn.py` and `imas_codex/standard_names/graph_ops.py`.
+
+| Situation | Command form | Use it when | Do not use it when |
+|---|---|---|---|
+| A source failed or was deliberately skipped, and a concrete repair now makes a fresh composition meaningful. | `uv run --no-sync imas-codex sn retry --failed <dd-path> --reason "<evidence>" --dry-run` | The exact source is blocked and the reason records why a retry is justified. `--failed` also releases extracted sources at the compose-attempt cap. | The source is merely progressing through ordinary pipeline lifecycle states; a retry is a lifecycle transition, not a way to hurry an in-flight claim. |
+| A drafted cohort needs a deliberate re-compose without starting generation. | `uv run --no-sync imas-codex sn run --reset-to drafted --since <timestamp> --before <timestamp> --reset-only` | The intended operation is to reset the explicitly bounded drafted cohort, inspect the outcome, and then run the next bounded pass. | You only need the eligible review or refine pool to continue. Resetting discards useful in-progress state rather than using it. |
+| A bounded cohort must be rebuilt from its authoritative source facts. | `uv run --no-sync imas-codex sn run --reset-to extracted --since <timestamp> --before <timestamp> --reset-only` | The matching name nodes must be cleared so composition starts again from their DD sources. | A spelling is known. Use `sn edit --rename` for a successor or `sn edit --hint` for regeneration; `--force` is not a rename route. |
+| A catalog-authoritative accepted name is deliberately included in a reset or deletion cohort. | Add `--include-accepted` to the guarded reset or prune command after a dry run. | The operation was explicitly reviewed as affecting export-eligible identities. | A routine recovery can avoid accepted names. `sn clear` has no equivalent guard and is a full subsystem wipe, never a targeted recovery tool. |
+
+Every reset preserves lineage and documentation history; it changes claimability
+or stage, not the evidence trail. Dry-run first, then state the exact selected
+cohort and the reason in the applied operation.
+
 Name generation is source-claim driven, not an in-place renderer. The
 `generate_name` claim takes only `StandardNameSource` rows at `status='extracted'`
 with `attempt_count < 5`, then charges the attempt when it claims the row. A

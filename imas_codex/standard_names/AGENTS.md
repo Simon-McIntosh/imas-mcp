@@ -312,6 +312,33 @@ that folds the operators into one base and silently drops the division. An hones
   matters more while the qualifier class is being decomposed into ordered
   binding-depth segments.
 
+## Work a bounded pipeline cohort by its problem
+
+Run `uv run --no-sync imas-codex sn run --help` when a capability is not listed
+here. This guide maps the situations that recur during cohort work to the small
+part of the surface that solves them; it is deliberately not an option index.
+The implementation boundary is `imas_codex/cli/sn.py` for scope construction and
+`imas_codex/standard_names/loop.py` for pool selection, claims, budget admission,
+and completion.
+
+| Situation | Command form | Use it when | Do not use it when |
+|---|---|---|---|
+| A cohort is part-way through review, refinement, documentation, or parent enrichment and needs to finish without minting more source names. | `uv run --no-sync imas-codex sn run --flush -c <usd> -t <minutes>` | The work is already queued and recovery means draining its downstream pipeline state. `--flush` suppresses auto-seeding and `generate_name`, but keeps review, refine, docs, and parent enrichment alive. | You need a previously unrepresented DD source to receive its first name: flush does not halt everything, but it cannot generate that missing name either. |
+| One pool is the question, rather than the whole pipeline. | `uv run --no-sync imas-codex sn run --only review_name --name <standard-name> --skip-global-maintenance` | An exact identity needs another name-axis review without unrelated global maintenance. Use `--only review_name` or `--only refine_name` for one name-axis action. | You mean every review-adjacent pool: `--only review` is intentionally broader, and `--only compose` also includes docs generation and parent enrichment. |
+| Only the documentation axis needs work. | `uv run --no-sync imas-codex sn run --docs-only --name <standard-name> --skip-global-maintenance` | The name identity is already accepted and its documentation needs generation, review, or refinement. | The name axis still needs composition or a name review; `--docs-only` intentionally excludes those pools. |
+| A known standard-name identity needs normal pipeline work from its current state. | `uv run --no-sync imas-codex sn run --name <standard-name> --skip-global-maintenance` | The name is mid-pipeline. Its current stage is normal state, not proof that it is stranded, so let its eligible pool claim it rather than stopping it early or resetting it. | You are addressing a DD source path; `--name` identifies `StandardName` nodes, not data-dictionary paths. |
+| A few DD sources need the full pipeline rather than the population. | `uv run --no-sync imas-codex sn run --focus <dd-path> --focus <dd-path> --skip-global-maintenance` | The unit of work is one or more exact DD paths. Focus creates an ephemeral run scope and, by default, preserves already-progressed rows; it is a gap-only mop-up. | You have a standard-name id. `--focus` is source scope, not name scope; giving it a name attempts to seed a `dd:` source that does not exist. |
+| A repeatable source cohort must retain one identity through mop-up and catalog work. | `uv run --no-sync imas-codex sn run --batch <manifest-token> --skip-global-maintenance --dry-run` | A committed source manifest defines the cohort. After the dry run verifies membership, use the same token for the live bounded run and the catalog route. | A mutable physics-domain query is being used as a release cohort; write and validate the explicit manifest instead. |
+| A run must have a bounded wall-clock or dollar exposure. | `uv run --no-sync imas-codex sn run -c <usd> -t <minutes>` | You need a stated spend ceiling and a graceful deadline. `-t` is **minutes**, not a worker-count control. | You need an exact invoice boundary: `--cost-limit` is a soft cap because an already-issued provider request can report its actual charge after the call. Lease admission and the hard-stop watchdog now prevent the historical headless overshoot, but report actual spend and any recorded overspend. |
+| Compose throughput needs tuning on the two-H200 host. | `IMAS_CODEX_SN_POOLS_GENERATE_NAME_REPLICAS=4 uv run --no-sync imas-codex sn run --focus <dd-path> --skip-global-maintenance` | Composition is the limiting pool. Pool replica counts come from `get_pool_replicas()`; four generate replicas is the measured knee on this host. | You are trying to set concurrency with `-t`, or raising generate replicas toward 32 by default. That setting produced 69 API timeouts in one run and only adds claim traffic after the knee. |
+| A focused cohort already has useful lifecycle state and needs another pass. | `uv run --no-sync imas-codex sn run --focus <dd-path> --skip-global-maintenance` | The default focused route keeps existing source and name state, allowing drafted, reviewed, and documentation work to continue through their eligible pools. | You want a full re-composition. `--reseed` deliberately returns focused paths to the pending queue; use it only after deciding that prior state is no longer the state to preserve. |
+
+`--skip-global-maintenance` is required above whenever a normal run carries an
+explicit scope. It keeps a focused recovery from also starting startup,
+background, or post-drain global maintenance. It is not valid for reset,
+reseed, revalidation, or maintenance-only modes; those are deliberate wider
+operations and must be planned as such.
+
 ## Release recipe
 
 Use one committed batch manifest from graph drain through approval. Every numbered item below has a command, an
