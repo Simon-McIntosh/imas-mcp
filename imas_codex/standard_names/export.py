@@ -467,6 +467,23 @@ class ExportReport:
 # =============================================================================
 
 
+def _tombstone_exclusion_clause() -> str:
+    """Return the shared predicate that excludes retired identities.
+
+    A superseded identity is a tombstone that keeps its graph record for
+    lineage while being non-exportable. Selection must exclude it at the
+    population boundary rather than let the export drop it later and count it
+    as an exclusion: an identity that is never selected never enters the
+    candidate population. ``status`` carries the catalog tombstone and
+    ``name_stage`` can carry the same state for identities retired through the
+    lifecycle, so both are suppressed.
+    """
+    return (
+        "coalesce(sn.status, '') <> 'superseded' "
+        "AND coalesce(sn.name_stage, '') <> 'superseded'"
+    )
+
+
 def _fetch_candidates(
     *,
     include_unreviewed: bool = False,
@@ -513,18 +530,21 @@ def _fetch_candidates(
     )
 
     params: dict[str, Any] = {}
+    tombstone_clause = _tombstone_exclusion_clause()
     if batch is not None:
-        cypher = """
+        cypher = f"""
     MATCH (sn:StandardName)
     WHERE (sn.name_stage = 'approved' OR sn.id IN $batch)
+      AND {tombstone_clause}
       AND sn.validation_status = 'valid'
       AND sn.review_quorum_shortfall IS NULL
     """
         params["batch"] = batch
     else:
-        cypher = """
+        cypher = f"""
     MATCH (sn:StandardName)
     WHERE sn.name_stage IN ['accepted', 'approved']
+      AND {tombstone_clause}
       AND sn.validation_status = 'valid'
       AND sn.review_quorum_shortfall IS NULL
     """
@@ -588,6 +608,7 @@ def _fetch_export_population(
     cypher = f"""
     MATCH (sn:StandardName)
     WHERE {name_predicate}
+      AND {_tombstone_exclusion_clause()}
     WITH sn,
          EXISTS {{
              MATCH (:IMASNode)-[:HAS_STANDARD_NAME]->(sn)
