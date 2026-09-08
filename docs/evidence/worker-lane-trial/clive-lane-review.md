@@ -19,38 +19,53 @@ before dying, and one wrote its findings into its manifest but never its declare
 report. **Four of the six had their deliverable recovered** — three by the
 coordinator reading the question directly, one by merging the orphaned commit.
 
-## The throughput split, which is the finding worth carrying
+## The throughput split — RETRACTED
 
-Sorting all 14 by generated tokens per second:
+This section originally reported that generated tokens per second separated every
+success from every failure in this wave (passes 2.04–4.18, failures 1.43–2.03, no
+overlap across 14 runs) and proposed it as an early-abort signal.
 
-| outcome | range | mean |
-|---|---|---|
-| passed | 2.04 – 4.18 tok/s | 2.62 |
-| infrastructure failure | 1.43 – 2.03 tok/s | 1.82 |
+**That does not hold, and no rule should be built on it.** The peer fleet tested it
+against 26 clive runs and found **full overlap**: passes 1.69–6.54 output-tokens/s,
+failures 1.79–6.12, with its *fastest* failure (6.12 out/s, 68 turns) dying and its
+*slowest* pass (1.69 out/s) landing clean. The split here was a small-sample
+artifact — in this wave tokens/second happened to track node **shape**, and shape
+is the real variable. The larger sample breaks the throughput correlation while
+preserving the shape result.
 
-**No overlap.** Every failure at or below 2.03; every pass at or above 2.04. The
-fastest run of the wave, 4.18, was also the most tightly briefed — `exact` spec
-level, two files, both root causes pre-isolated so it had nothing to re-derive.
+What survives from the measurement is the negative half: **`machine_seconds` is not
+the discriminator either.** Failures spent 65–1,684 s of machine time, passes
+109–935 s, and one node computed for **137 s across 26,879 s of life** — 0.5%. The
+work is not heavy; it is queued.
 
-If the split holds on another fleet, tokens/second is usable as an **early-abort
-signal**: a coordinator could redispatch a slow node rather than discover at hour
-seven that its response never arrived.
-
-`machine_seconds` is *not* the discriminator. Failures spent 65–1,684 s of machine
-time, passes 109–935 s. One node computed for **137 s across 26,879 s of life** —
-0.5%. The work is not heavy; it is queued.
-
-## Mechanism
+## Mechanism — corrected
 
 Every stream carries `cache_read_input_tokens: 0` and
-`cache_creation_input_tokens: 0` — **no prompt caching on this lane**. One node
-re-sent 9.07M input tokens across 25 turns. Per-turn cost therefore grows with an
-accumulating context, and every death is a response that stopped arriving
-(`subtype: success` with `is_error: true`, or `Request timed out`).
+`cache_creation_input_tokens: 0` — **no prompt caching on this lane**, confirmed on
+all 14 streams here and all 26 of the peer fleet's. One node here re-sent 9.07M
+input tokens across 25 turns; the peer's heaviest re-sent 37M across 173 turns.
+That uncached per-turn re-send is the genuine cost driver.
 
-Turn counts at death: **81, 61, 43, 25**. Every loss was a long report-shaped or
-multi-file brief. **Not one narrow single-outcome node died.** That is the shape
-the mechanism predicts, and it is the shape the wave produced.
+**But context accumulation is not what kills a node, and the original claim here
+that it "walks itself into the window" was wrong.** The peer fleet's figures invert
+it: per-turn context is *higher* in the survivors — dead scouts carried 41k–101k
+input tokens per turn against 107k–215k for passing implement nodes — and its
+largest run of all passed at 173 turns and 37.1M cumulative input. Turn count and
+cumulative input separate nothing.
+
+The mechanism that explains **both** fleets is a **long single output late in a
+long session under load**. Deaths cluster at or near the report-writing turn,
+40–150 minutes in, and never hit a node whose brief made the deliverable a small,
+early, incremental write.
+
+That accounts for the two partial survivors here, which had been filed as luck: one
+wrote its findings **into the manifest** and then died before its report, so the
+findings survived; another **committed** and then died, so the commit survived.
+Both survived because the durable write came before the long output. The four total
+losses all had the report as one final generation.
+
+Turn counts at the four total losses here: 81, 61, 43, 25 — but the peer's passing
+run at 173 turns shows that is a symptom of shape, not a threshold.
 
 ## What these workers did well
 
@@ -105,14 +120,21 @@ Recorded because it changed outcomes, not as balance.
 
 ## What the coordinator changes as a result
 
-1. **Split multi-file briefs per file**, and prefer `exact` spec level with causes
-   pre-isolated. The one node briefed that way was the fastest of the wave.
-2. **Measure what rests on a contract before briefing its change.** One node was
+1. **Make the deliverable a small, early, incremental write**, and write the
+   manifest before any long output. This is the highest-value change in either
+   fleet's data: both partial survivors here survived because a durable write
+   preceded the long generation, and the peer fleet's four rescues had complete
+   deliverables on disk with no manifest.
+2. **Route reading-shaped work off this lane.** 0 of 5 scouts finished on the peer
+   fleet against 3 of 3 on codex in 11–27 minutes; report-shaped nodes here landed
+   3 of 8. Split multi-file briefs per file and prefer `exact` spec level with
+   causes pre-isolated.
+3. **Measure what rests on a contract before briefing its change.** One node was
    recorded `malformed-node` for exactly this omission; the failures it exposed
    were legitimate and predictable.
-3. **Never cite `/tmp` as gate evidence.** Preserve logs into the repository
+4. **Never cite `/tmp` as gate evidence.** Preserve logs into the repository
    before a ledger row points at them.
-4. **Read the diff and the logs, never the gate verdict.** Of eight landings,
+5. **Read the diff and the logs, never the gate verdict.** Of eight landings,
    every one had something the summary did not say: a fabricated symbol, an absent
    artifact, a doubled exposure figure, a duplicated helper.
 
