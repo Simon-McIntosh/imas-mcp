@@ -13204,6 +13204,117 @@ def reconcile_provenance() -> dict[str, int]:
     }
 
 
+def reconcile_catalog_edit_origins(
+    gc: Any | None = None,
+    *,
+    dry_run: bool = False,
+) -> dict[str, int]:
+    """Remove catalog authority from identities without catalog evidence.
+
+    ``StandardName.origin`` describes how an identity entered the graph.  A
+    catalog edit is a stronger claim: it says a catalog request supplied the
+    authoritative edit.  Keep that claim only when the identity carries a
+    catalog request number, approval timestamp, or approved lifecycle stage.
+
+    The export/import provenance path historically used ``catalog_edit`` as a
+    fallback for every imported identity.  For the unearned residue, recover
+    the strongest provenance still present in the graph: a derived source
+    wins over a regular DD or signal source, and an identity with no such
+    evidence has the stale property removed.  The operation is idempotent and
+    records one non-catalog reconciliation event per changed identity.
+
+    Returns counts for ``eligible``, ``pipeline``, ``derived``, ``unset``, and
+    ``changed``.  With ``dry_run=True`` no graph mutation occurs.
+    """
+    own = gc is None
+    client = GraphClient() if own else gc
+    try:
+        classification = client.query(
+            """
+            MATCH (sn:StandardName {origin: 'catalog_edit'})
+            WHERE sn.catalog_pr_number IS NULL
+              AND sn.catalog_approved_at IS NULL
+              AND coalesce(sn.name_stage, '') <> 'approved'
+            OPTIONAL MATCH (source:StandardNameSource)-[:PRODUCED_NAME]->(sn)
+            WITH sn, collect(DISTINCT source.source_type) AS source_types
+            WITH CASE
+                   WHEN 'derived' IN source_types THEN 'derived'
+                   WHEN any(kind IN source_types
+                            WHERE kind IN ['dd', 'signals']) THEN 'pipeline'
+                   ELSE null
+                 END AS target_origin
+            RETURN target_origin, count(*) AS changed
+            ORDER BY target_origin
+            """
+        )
+        counts = {
+            "eligible": sum(int(row.get("changed") or 0) for row in classification),
+            "pipeline": sum(
+                int(row.get("changed") or 0)
+                for row in classification
+                if row.get("target_origin") == "pipeline"
+            ),
+            "derived": sum(
+                int(row.get("changed") or 0)
+                for row in classification
+                if row.get("target_origin") == "derived"
+            ),
+            "unset": sum(
+                int(row.get("changed") or 0)
+                for row in classification
+                if row.get("target_origin") is None
+            ),
+            "changed": 0,
+        }
+        if dry_run or not counts["eligible"]:
+            return counts
+
+        changed = client.query(
+            """
+            MATCH (sn:StandardName {origin: 'catalog_edit'})
+            WHERE sn.catalog_pr_number IS NULL
+              AND sn.catalog_approved_at IS NULL
+              AND coalesce(sn.name_stage, '') <> 'approved'
+            OPTIONAL MATCH (source:StandardNameSource)-[:PRODUCED_NAME]->(sn)
+            WITH sn, collect(DISTINCT source.source_type) AS source_types
+            WITH sn, CASE
+                       WHEN 'derived' IN source_types THEN 'derived'
+                       WHEN any(kind IN source_types
+                                WHERE kind IN ['dd', 'signals']) THEN 'pipeline'
+                       ELSE null
+                     END AS target_origin
+            SET sn.origin = target_origin, sn.updated_at = datetime()
+            CREATE (change:StandardNameChange {
+              id: 'sn-change:' + randomUUID(),
+              from_name: sn.id,
+              to_name: sn.id,
+              operation: 'reconcile_catalog_edit_origin',
+              reason: 'catalog_edit origin had no catalog request evidence',
+              origin: 'lineage_reconciliation',
+              changed_at: datetime(),
+              internal: true
+            })
+            MERGE (sn)-[:HAS_INTERNAL_CHANGE]->(change)
+            RETURN count(sn) AS changed
+            """
+        )
+        counts["changed"] = int(changed[0].get("changed") or 0) if changed else 0
+    finally:
+        if own:
+            client.close()
+
+    if counts["changed"]:
+        logger.info(
+            "reconcile_catalog_edit_origins: reassigned %d identity origin(s) "
+            "(%d pipeline, %d derived, %d unset)",
+            counts["changed"],
+            counts["pipeline"],
+            counts["derived"],
+            counts["unset"],
+        )
+    return counts
+
+
 def reconcile_standard_name_cocos_links(gc: Any | None = None) -> dict[str, int]:
     """Link COCOS-dependent standard names to the catalog's COCOS convention.
 
