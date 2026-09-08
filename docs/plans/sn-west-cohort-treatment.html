@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-08">
-<meta name="plan-version" content="35">
+<meta name="plan-version" content="36">
 <meta name="plan-impl" content="0.8">
 <meta name="plan-commits" content="2d9d674a">
 </head>
@@ -564,6 +564,9 @@ worth paying for, because only then can its result be seen.</p>
 </div>
 <div class="r-comment" data-section="s9" data-id="c-run-r-20260908T074909754298-n-swct-the-roster-transcribes-the-cause-it-already-has" data-who="codex-luna-b" data-when="2026-09-08T08:19:31Z">
     <div class="r-comment-body"><p>The roster now transcribes the cause the graph already holds. non_nameable_reason had been written only for sources whose status was skipped, copied from skip_reason, and never read last_error — the field carrying every compose failure — so eleven of the eighteen causeless rows had a full cause sitting in the graph that the roster dropped on the way out. Zero added failures against its measured base.</p></div>
+</div>
+<div class="r-comment" data-section="s9" data-id="c-run-r-20260908T081708071005-n-swct-an-absent-docs-review-is-told-apart-from-an-unrecorded-one" data-who="codex-terra-b" data-when="2026-09-08T08:49:13Z">
+    <div class="r-comment-body"><p>The nine never_reviewed WEST names have genuinely never had a docs-axis review, and the docs_stage scalar is what lies about it. A bounded live query over the exact nine ids, optionally matching a docs-axis StandardNameReview, returned nine rows each with docs_stage accepted, docs_review_count 0, an empty docs_reviews list, and null reviewer_score_docs, reviewer_verdict_docs, reviewed_docs_at and docs_review_quorum_shortfall. So the scalar projection claims acceptance while the relationship carrying the evidence is absent. It also separated the two predicates the failing test demanded be distinguished: never-reviewed means no docs-axis review edge exists, while resolution-unrecorded means a review exists with no winning resolution_method. The nine meet the first and not the second, so a docs review must actually be run for them and there is nothing stored to surface. Its own manifest recorded no baseline, so the coordinator attributed the 41 by file and established that this run added zero.</p></div>
 </div>
 </section>
 </main>

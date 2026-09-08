@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T10:38:49",
+  "updated": "2026-09-08T10:54:45",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -105370,6 +105370,169 @@
           "reason": "the session's remaining context is superseded rather than useful: it stopped because supersede_into's postflight disagreed with its own dry run, that defect is now root-caused and merged at commit a3ad987cc, and the correct continuation is a fresh run whose dry runs are re-verified against the fixed tree rather than a resume carrying verdicts taken before the fix"
         },
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T081708071005-n-swct-an-absent-docs-review-is-told-apart-from-an-unrecorded-one",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a79",
+        "node": "n-swct-an-absent-docs-review-is-told-apart-from-an-unrecorded-one",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1637,
+                "cached_input_tokens": 449634,
+                "input_tokens": 451273,
+                "output_tokens": 1603,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 452876,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "The two regressed export-reason tests pass, and the mechanism making a docs review unreachable for nine WEST names is named with evidence. THE TWO TESTS, both regressed from merged commit 8144726bc and attributed by test id in a peer manifest: tests/standard_names/test_catalog_status_reconcile.py::test_export_reader_withholds_valid_but_exhausted_names and tests/standard_names/test_docs_review_eligibility.py::test_export_reason_distinguishes_absence_from_unrecorded_resolution. The suite base is 18 failures and these two take it to 20. THE NINE NAMES ARE THE SAME MECHANISM, which is why this is one node. A real WEST export over the 214-name batch closed its accounting exactly, 214 minus 196 equals 18 with residue zero, and the largest bucket is never_reviewed at 9: no docs-axis review is reachable for them EVEN THOUGH the lifecycle projection reports docs_stage accepted. Those two statements cannot both be true. The lead's reading, to be tested rather than assumed, is that this is a deadlock rather than a missing capability: a name whose docs_stage already reads accepted is not eligible to be claimed for review work, so nothing reviews it, and the false stage value is itself what makes the review unreachable. WHAT TO ESTABLISH: which predicate decides docs-review eligibility, what it reads, and what the nine names actually carry on the docs axis against what the projection reports. Name the field that disagrees. Then state plainly whether the nine have genuinely never been reviewed, or were reviewed and had the resolution dropped, because the repair differs: the first needs a review run, the second needs the recorded resolution surfaced. WHAT TO CHANGE: make the export reason tell those two states apart, which is what the failing test's name asks for, and make eligibility read the evidence rather than the projection wherever they disagree. Do NOT set docs_stage by hand to make the nine eligible, and do not relax the eligibility predicate to admit them: either the projection is wrong and the code computing it is the defect, or the names are genuinely unreviewed and eligibility should already admit them. Report the nine by identity with the docs-axis fields each carries. VERIFY: both named tests pass, and re-run the full tests/standard_names showing the total returns to 18, quoting pytest's own counts line verbatim. Then re-run the export accounting and report the arithmetic; residue must stay zero, and say what never_reviewed reads now. Do not perform the docs rotation itself; that is the next node and it carries the budget. The graph tunnel is login-node-local so live reads run on the LOGIN NODE, bounded to these nine identities, ten seconds per query, exception declared in the manifest. Do NOT pass -q to pytest: quiet mode is removed from addopts so a run emits its totals line. Run the suite on all_debug with --export=ALL,TMPDIR=/tmp and --time 00:59:00, and write the uv command without --no-sync. DURABILITY: write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Make the export reason distinguish an absent docs review from one whose resolution was never recorded",
+          "id": "n-swct-an-absent-docs-review-is-told-apart-from-an-unrecorded-one",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T081708071005-n-swct-an-absent-docs-review-is-told-apart-from-an-unrecorded-one/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "50m",
+          "write_paths": [
+            "imas_codex/standard_names/export.py",
+            "docs/evidence/sn-west-cohort-treatment/docs-review-reachability.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "codex-terra-b",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T08:17:22Z",
+        "completed_at": "2026-09-08T08:49:13Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1911,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1911,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "621a8951c7c3956228872474c08f8389adddbda4",
+        "commits": [
+          "62730a4002ffca666629316bff72eaa17c67e388",
+          "e6986c6aef40b5082b9e954d3b05d19a8529a852",
+          "edcb25eedb2cc2992ea05d4d6b5909dd416b30b8",
+          "84fd3c17eccf9b9527092b77a82b0bb0a24f6a09",
+          "c68ac3039e775457bdf0eeb5f02d6a51cb5f5a88"
+        ],
+        "changed_lines": {
+          "added": 109,
+          "removed": 9,
+          "files": 2
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "focused named regressions and export-query authority checks, plus the full tests/standard_names on all_debug",
+          "exit_status": 1,
+          "log_path": null,
+          "log_digest": "focused: 5 passed including both named regressions; full suite 41 failed, 7211 passed, 11 skipped, 323 deselected in 287.03s. The coordinator attributed the 41 by file: 14 test_tombstone_supersede plus 9 test_supersede_into_tombstone are a coordinator-merged regression from f62ff059e, and the remaining 18 are exactly the known base, so this run added zero"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T081708071005-n-swct-an-absent-docs-review-is-told-apart-from-an-unrecorded-one/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07fd2-64f0-7812-9739-574de8f4cefa",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 22509568,
+            "cached_input_tokens_cumulative": 22509568,
+            "input_tokens": 23106403,
+            "input_tokens_cumulative": 23106403,
+            "output_tokens": 45880,
+            "output_tokens_cumulative": 45880,
+            "reasoning_output_tokens": 10567,
+            "reasoning_output_tokens_cumulative": 10567
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T08:49:13Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 23.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T08:49:13Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 22509568,
+          "cumulative_input_tokens": 45615971,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 56447
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "run the full tests",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swct-an-absent-docs-review-is-told-apart-from-an-unrecorded-one",
+          "session_id": "01a07fd2-64f0-7812-9739-574de8f4cefa",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T08:49:13Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -105612,6 +105775,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1968
+    "_version": 1969
   }
 }
