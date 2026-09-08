@@ -2459,9 +2459,7 @@ def run_export(
         require_docs_review=not names_only,
     )
     missing_status_ids = sorted(
-        candidate["id"]
-        for candidate in population
-        if "status" in candidate and candidate["status"] is None
+        candidate["id"] for candidate in population if candidate.get("status") is None
     )
     status_gate = GateResult(
         gate=GATE_CATALOG_STATUS,
