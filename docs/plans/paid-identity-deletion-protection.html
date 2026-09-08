@@ -7,7 +7,7 @@
   <meta name="reckon-type" content="plan">
   <meta name="plan-slug" content="paid-identity-deletion-protection">
   <meta name="plan-title" content="Work That Cost Money Must Not Be Deletable By A Cleanup Pass">
-  <meta name="plan-summary" content="A structural cleanup destroyed 100 USD of generated names, reviews and docs; make recorded spend the undeletable boundary">
+  <meta name="plan-summary" content="A cleanup removed identities that 100 USD of LLM spend had produced; make recorded spend the boundary an automatic pass may not cross">
   <meta name="plan-status" content="active">
   <meta name="plan-roi" content="high">
   <meta name="plan-effort-hours" content="14.0">
@@ -24,12 +24,15 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-08">
-<meta name="plan-version" content="5">
+<meta name="plan-version" content="6">
+<meta name="plan-commits" content="ec9ffff58e52af06b454987705ee4f88bfa14358,33361a5354b03e1f3a56f0cb626157cb1139dca0,2e0c1b534ac98f490780f7d9b2de7e5d8a24eb7f,f11e43096b10f2a5f55466e3f82e03b1ff080688,b22d348610f58b624ef9b8448b9c721279600e54,057a04786654db8ce7a5b79b77d3b53d110fa9f6">
+<meta name="plan-artifacts" content="docs/evidence/sn-lifecycle-integrity/delete-path-protections.md,docs/evidence/sn-lifecycle-integrity/unshielded-identity-deletions.md,docs/evidence/sn-lifecycle-integrity/mirrored-state-review.md">
+<meta name="plan-impl" content="0.35">
 </head>
 <body>
   <main class="plan-doc">
 
-    <h2 id="s1">§1 &mdash; A provenance edit deleted 93 identities and $43 of generated work in eight seconds</h2>
+    <h2 id="s1">§1 &mdash; A provenance edit removed 93 identities in eight seconds, and $43 of spend had produced them</h2>
 
     <p>On 2026-09-08 a repair pass corrected a false <code>origin</code> value on 2,096
     <code>StandardName</code> identities &mdash; residue from an export and import round trip that no
@@ -122,7 +125,7 @@
 
     <table>
       <thead>
-        <tr><th>Scope</th><th>Identities</th><th>Cost rows</th><th>Spend destroyed</th></tr>
+        <tr><th>Scope</th><th>Identities</th><th>Cost rows</th><th>Spend that produced them</th></tr>
       </thead>
       <tbody>
         <tr><td>The 11:57 pass on 2026-09-08 (8 seconds)</td><td>93</td><td>785</td><td><strong>$43.12</strong></td></tr>
@@ -130,7 +133,18 @@
       </tbody>
     </table>
 
-    <p>All seven pipeline phases are represented in the destroyed rows &mdash;
+    <p><strong>What the figure is, and what it is not.</strong> It is 1,894 individual
+    <code>LLMCost</code> rows, and in six of the seven phases each row names exactly one
+    identity, so attribution is unambiguous and apportioning the shared rows moves the total
+    by sixteen cents. It is <em>not</em> money that must be spent again: <strong>$97.72 of
+    the $100.31 is documentation work</strong> &mdash; <code>review_docs</code> $44.05,
+    <code>generate_docs</code> $27.60, <code>refine_docs</code> $26.07 &mdash; against $2.61
+    for all name composition, review and refinement combined. Documentation is precisely what
+    the store dump holds intact, so restoring from the archive recovers it at zero LLM cost.
+    The accurate statement is that $100.31 of spend produced identities now absent from the
+    graph; only the regeneration route respends any of it.</p>
+
+    <p>All seven pipeline phases are represented in those rows &mdash;
     <code>generate_name</code>, <code>review_name</code>, <code>refine_name</code>,
     <code>generate_docs</code>, <code>review_docs</code>, <code>refine_docs</code> and
     <code>enrich_parents</code>. The largest single losses were
@@ -353,14 +367,20 @@
 
     <section data-reckon="followups" id="followups" class="r-followups">
 <h2><span class="sec">§</span> Followups</h2>
-<article class="r-fu" data-id="f-pidp-001" data-status="open" data-capability-version="1.0" data-capability-class="orchestrator" data-capability-reasoning="deep" data-capability-verification="strict" data-capability-risk="critical" data-written-by="reckon-create" data-written-at="2026-09-08" data-recommends-skill="/reckon-ship paid-identity-deletion-protection §3" data-resolved-at="" data-resolved-by="">
+<article class="r-fu" data-id="f-pidp-001" data-status="resolved" data-capability-version="1.0" data-capability-class="orchestrator" data-capability-reasoning="deep" data-capability-verification="strict" data-capability-risk="critical" data-written-by="reckon-create" data-written-at="2026-09-08" data-recommends-skill="/reckon-ship paid-identity-deletion-protection §3" data-resolved-at="2026-09-08T18:45:05+00:00" data-resolved-by="reckon-ship">
     <h4 class="r-fu-title">Land the delete-path guard before any restore or further origin work</h4>
     <div class="r-fu-body"><p><strong>Start here, and start with §3.</strong> The guard is the only piece that stops recurrence, and both the restore (§4) and the queued origin recovery in <code>sn-origin-provenance-backfill</code> are unsafe until it lands.</p><p>Three decisions in the decisions section are unlocked and each has a recommendation with its reasoning. They do not need to block dispatch of §3 — the first two shape its implementation and the third only affects §4 — but take them early rather than letting a worker infer them.</p><p><strong>Two traps this surface has already sprung, both measured.</strong> First, <code>filter_protected</code> in <code>protection.py</code> matches <code>name_stage = 'approved'</code> and <strong>zero rows hold that value</strong>, so it returns the empty set for every input it is given today; read its definition before routing a protection through it. Second, closing this fail-open path will expose failures that were passing <em>because</em> it was open — measure that count in a scratch flip before writing the change, and expect the exposed failures to be legitimate.</p><p><strong>Do not accept a uniform verdict.</strong> The classification of which identities warrant restoration returned all 78 rows reading <code>RESTORE / high</code> with an identical note while its own follow-ons admitted the archive read was never executed. A verdict column that does not vary is the absence of a classification wearing the shape of one.</p></div>
     <pre class="r-fu-prompt">/reckon-ship paid-identity-deletion-protection §3</pre>
+    <p class="r-fu-outcome">Section 3 is landed and merged; the suite is green at 7292 passed, 11 skipped, 0 failed. An automatic pass can no longer remove an identity carrying any positive LLM spend, one of seven publication signals, or one sitting in a batch above the eighty-identity ceiling, and it must hold positive proof its target is a placeholder rather than merely having failed admission. 32,203 LLMCost FOR_STANDARD_NAME edges were materialised on the live graph in 1.29 seconds, so the spend check is a real query. The deletion snapshot went into the SHARED deletion_change_cypher builder, so all eight deletion uses now leave the removed node's properties plus one StandardNameDeletedEdge per incident edge — recoverability everywhere rather than only on the three guarded routes. Both traps this followup warned about were real and both were hit: filter_protected does return the empty set, so the guard supplies its protected set explicitly; and closing the fail-open path exposed nine failures across five files, all repaired in fixtures with no assertion deleted and no protection weakened. Two errors of mine are on the record against it — I fenced graph_ops.py rather than the shared builder the better design needed, and I scoped the exposure measurement to a 47-test cohort that found 4 of the 9. The uniform-verdict warning also proved necessary: the classification's first pass returned 78 identical RESTORE rows with the archive read unexecuted, was rejected, and on resume produced 67 RESTORE, 11 CORRECTLY REMOVED and 0 UNDETERMINED.</p>
     </article>
 <article class="r-fu" data-id="f-pidp-002" data-status="open" data-capability-version="1.0" data-capability-class="orchestrator" data-capability-reasoning="deep" data-capability-verification="strict" data-capability-risk="critical" data-written-by="reckon-create" data-written-at="2026-09-08" data-recommends-skill="/reckon-ship paid-identity-deletion-protection §4" data-resolved-at="" data-resolved-by="">
     <h4 class="r-fu-title">A restored identity must carry its edges, not just its name and prose</h4>
     <div class="r-fu-body"><p><strong>Acceptance criterion for the restore: the identity comes back with its relationships, or it has not come back.</strong> A name and its documentation with no provenance is not a recovery — it is a plausible-looking assertion with no evidence behind it, and that is worse than the gap, because nothing would mark it as unsupported.</p><p>A live <code>StandardName</code> carries up to thirty-one distinct relationship roles. The restore must reinstate every role the archived identity actually held, and the manifest must report, per identity, which roles came back and which were absent in the archive. The load-bearing ones, with their live population for scale:</p><table><thead><tr><th>Relationship</th><th>What it carries</th><th>Live edges</th></tr></thead><tbody><tr><td><code>PRODUCED_NAME</code> from <code>StandardNameSource</code></td><td>the DD source bindings — the provenance itself</td><td>5,543</td></tr><tr><td><code>HAS_STANDARD_NAME</code> from <code>IMASNode</code></td><td>the DD path binding that makes the name usable</td><td>5,177</td></tr><tr><td><code>HAS_REVIEW</code></td><td>the review receipts the spend paid for</td><td>27,274</td></tr><tr><td><code>DOCS_REVISION_OF</code></td><td>documentation history</td><td>3,428</td></tr><tr><td><code>HAS_PARENT</code> and <code>REFINED_FROM</code></td><td>hierarchy and rename lineage</td><td>1,525 and 1,818</td></tr><tr><td><code>HAS_INTERNAL_CHANGE</code></td><td>the identity's own change history</td><td>10,450</td></tr><tr><td><code>HAS_UNIT</code>, <code>HAS_COCOS</code>, <code>HAS_PHYSICS_DOMAIN</code>, <code>IN_CLUSTER</code></td><td>unit, sign convention, domain, semantic cluster</td><td>5,040 / 1,033 / 3,439 / 606</td></tr><tr><td>the grammar decomposition — <code>HAS_SEGMENT</code>, <code>HAS_LOCUS</code>, <code>HAS_SUBJECT</code>, <code>HAS_COMPONENT</code>, <code>HAS_PHYSICAL_BASE</code>, <code>HAS_AGGREGATION</code>, <code>HAS_PROCESS</code>, <code>HAS_GEOMETRIC_BASE</code>, <code>HAS_POSITION</code>, <code>HAS_COORDINATE</code>, <code>HAS_POPULATION</code>, <code>HAS_ORBIT</code>, <code>HAS_DEVICE</code>, <code>HAS_REGION</code></td><td>the parsed identity, one edge per token role</td><td>2,837 segments plus 4,100 role edges</td></tr><tr><td><code>HAS_STRUCTURAL_AUTHORITY</code> and <code>ENTAILED_FROM_CHILD</code></td><td>structural entailment</td><td>315 and 709</td></tr></tbody></table><p>The spend attribution is the one link that is <strong>not</strong> an edge today: <code>LLMCost</code> reaches an identity through the <code>standard_name_ids</code> list property. The locked decision materialises it, so the guard and the restore share one mechanism rather than two.</p><p><strong>Verify by comparison, never by absence of error.</strong> For each restored identity, count its edges by type against the archive's count for that same identity and require equality per type. A restore that reports success while reinstating fewer edge types than the archive held is exactly the failure this criterion exists to catch — and it will look like success.</p></div>
+    <pre class="r-fu-prompt">/reckon-ship paid-identity-deletion-protection §4</pre>
+    </article>
+<article class="r-fu" data-id="f-pidp-003" data-status="open" data-capability-version="1.0" data-capability-class="orchestrator" data-capability-reasoning="deep" data-capability-verification="strict" data-capability-risk="elevated" data-written-by="reckon-ship" data-written-at="2026-09-08" data-recommends-skill="/reckon-ship paid-identity-deletion-protection §4" data-resolved-at="" data-resolved-by="">
+    <h4 class="r-fu-title">Nothing is restored yet: 67 identities remain absent and the route for each is proven</h4>
+    <div class="r-fu-body"><p><strong>State this plainly to anyone picking this up: the recovery has not happened.</strong> Section 3 stops the loss recurring and every identity is dispositioned, but zero identities are back. <code>power_due_to_fusion</code>, <code>plasma_energy</code>, the twenty-species <code>*_density_at_pedestal_top</code> family and <code>etendue_of_spectrometer_channel</code> are still absent from the graph.</p><p><strong>The classification that governs the restore</strong> is <code>docs/evidence/sn-lifecycle-integrity/unshielded-identity-deletions.md</code>: 67 RESTORE, 11 CORRECTLY REMOVED, 0 UNDETERMINED. The verdict for 20 of those came from the locked spend boundary rather than from placeholder admission, because the archive predates the deletion and the change record omitted the deletion-time topology — and the same boundary overrode 15 of the classification's own CORRECTLY REMOVED verdicts, taking that column from 26 to 11.</p><p><strong>Four routes, in this order.</strong> Twenty-eight identities regenerate from thirty surviving <code>extracted</code> DD sources, which is the preferred path because a recomposed name carries real provenance while a hand-written node carries none. The nineteen-member pedestal-top density family rebuilds <em>before</em> its parent, since a derived parent is an abstraction over children and cannot be composed before them. Only the source-less ratified and spend-protected identities need a signed selective reconstruction from the store dump, and that is a subgraph extract and merge, never a replay onto the live store. <code>etendue_of_spectrometer_channel</code>, the one identity from the published 208-name cut, is recoverable because its direct <code>soft_x_rays/channel/etendue</code> source survives: reset and recompose it, then reattach its ratified spectral child.</p><p><strong>The constraint that needs a judgement, not an implementation.</strong> The dump predates the origin correction, so a naive restore reinstates the false <code>catalog_edit</code> value the repair was right to remove. Restore and reclassification are one action, and each identity needs its correct <code>origin</code> decided. For most the answer is very likely <code>pipeline</code> — which is what would have kept them safe — but that is a per-identity judgement. A bulk rewrite is what caused this.</p><p>Acceptance is the per-type edge count against the archive, per <code>f-pidp-002</code>. Budget: 100 USD is authorised and none of it is spent; the regeneration path is what consumes it, and the archive path costs nothing.</p></div>
     <pre class="r-fu-prompt">/reckon-ship paid-identity-deletion-protection §4</pre>
     </article>
 </section>
