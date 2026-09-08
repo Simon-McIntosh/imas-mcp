@@ -4,7 +4,8 @@ Date: 2026-09-08
 
 ## Result
 
-No request was closed or opened. The required recut cannot carry
+This node opened no request and changed no catalog branch or tag. The required
+recut cannot carry
 `net_power_due_to_ion_cyclotron_heating` because the live graph and the
 release export agree that the successor is not publishable.
 
@@ -38,8 +39,8 @@ an export report. The report's accounting closes:
 ```
 
 The previous review cut exported 208 names. This preflight would export 206,
-two fewer. It is not a valid replacement for request 18 because the new
-identity is one of the seven `name_not_accepted` exclusions:
+two fewer. It would not have been a valid replacement for request 18 because
+the new identity is one of the seven `name_not_accepted` exclusions:
 
 ```text
 net_power_due_to_ion_cyclotron_heating:
@@ -60,10 +61,10 @@ variant stays untouched: it is a protected catalog-edited identity. This recut
 did not pass `--override-edits`, did not rename either descendant, and did
 not alter `total_power_due_to_ion_cyclotron_heating`.
 
-No `--skip-gate` option was used. No fork request was closed, no branch was
-force-pushed, no tag was created, and no catalog commit was made. Closing
-request 18 before the successor becomes exportable would leave reviewers with
-no request carrying the intended identity.
+No `--skip-gate` option was used. This node did not close a fork request,
+force-push a branch, create a tag, or make a catalog commit. The lead later
+closed request 18 directly and deliberately retained its branch and tag as the
+reviewable record of the earlier cut; this node did not alter either ref.
 
 ## Required next action
 
@@ -111,9 +112,8 @@ still omit the exact identity this recut exists to carry.
 
 The next action is a governed provenance/docs repair, not a release override:
 restore the successor's source bindings through their backing lifecycle path
-and complete its documentation axis, then repeat the preflight. Request 18
-remains open until a zero-residue export positively contains the renamed
-identity.
+and complete its documentation axis, then repeat the preflight. No replacement
+request should open until that and the concurrent lifecycle repairs land.
 
 ## Source-retarget refusal
 
@@ -206,3 +206,30 @@ and `docs_stage=pending` immediately after attachment.
 The rename operation dropping both bindings remains a defect in the rename
 path. `sn attach` repaired the affected live state through the ordinary
 composition-equivalent writer; it does not fix that underlying path.
+
+## Final measurement-only preflight
+
+After both attachments, the release preflight was run once more without
+staging a branch, tag, commit, or request. The net identity returned to the
+candidate population, but its documentation axis still prevents publication:
+
+```text
+225 candidates - 206 published = 19 accounted exclusions; residue = 0
+```
+
+The reason buckets are `invalid_validation_status=12`,
+`name_not_accepted=6`, and `never_reviewed=1`. The sole `never_reviewed` row is
+`net_power_due_to_ion_cyclotron_heating`, with detail `no docs-axis review is
+reachable`. Both recovered sources reconcile to that accepted terminal
+identity, but neither is emitted because the identity remains
+`docs_stage=pending`. The superseded spelling is also absent, as intended.
+
+The measured published count is 206, two below request 18's 208. Direct catalog
+comparison shows no additions and exactly two removals:
+`power_due_to_ion_cyclotron_heating` and
+`etendue_of_spectrometer_channel`. The first is the superseded spelling whose
+accepted successor is presently withheld for the missing docs-axis review. The
+second is outside this node's source-repair scope and is left to the concurrent
+lifecycle census rather than being inferred from this export. The export report
+is present in staging, `all_gates_passed=true`, and its accounting residue is
+zero; it is measurement evidence only, not a release artifact.
