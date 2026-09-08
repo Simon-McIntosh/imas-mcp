@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-08">
-<meta name="plan-version" content="32">
+<meta name="plan-version" content="33">
 <meta name="plan-impl" content="0.8">
 <meta name="plan-commits" content="2d9d674a">
 </head>
@@ -554,7 +554,10 @@ worth paying for, because only then can its result be seen.</p>
     <div class="r-comment-body"><p>Refine and parent-enrichment prompts now bound how far a refine may move a name, which is what improve-only has to mean if the self-refine pre-loop is not to become a review vote and the pipeline's weakest reviewer. The largest changes are in refine_name_system and refine_name_user, where the constraint on output identity is stated so a refine cannot emit a name the pipeline is then unable to persist — the mechanism behind refine products colliding onto placeholder names and stranding at name_stage pending.</p></div>
 </div>
 <div class="r-comment" data-section="s9" data-id="c-run-r-20260908T070210875779-n-swct-every-unnamed-row-states-its-cause" data-who="clive-units" data-when="2026-09-08T07:47:00.263Z">
-    <div class="r-comment-body"><p>Every one of the 31 unnamed roster rows now ends with a name or a stated cause, read out of the live graph rather than guessed, with the frozen roster identity v0.10.0rc1+west-task-2e named so the count is reproducible. The controlling finding is a transcription defect rather than missing data: the roster&#x27;s non_nameable_reason is populated only for sources whose source_status is skipped, copied from skip_reason, and NEVER reads last_error — the field carrying every compose failure — while also blanking rows whose status is not_physical_quantity, extracted or failed even when a deterministic verdict or an error string is present. So 11 of the 18 causeless rows had a full cause sitting in the graph that the roster dropped on the way out. It also corrected two figures where the plan prose disagreed with measurement, and flagged both inline rather than silently adopting either. Gate recorded not-run because this is a read-and-report node that changed no Python; the code defect it exposes is a separate node.</p></div>
+    <div class="r-comment-body"><p>Every one of the 31 unnamed roster rows now ends with a name or a stated cause, read out of the live graph rather than guessed, with the frozen roster identity v0.10.0rc1+west-task-2e named so the count is reproducible. The controlling finding is a transcription defect rather than missing data: the roster's non_nameable_reason is populated only for sources whose source_status is skipped, copied from skip_reason, and NEVER reads last_error — the field carrying every compose failure — while also blanking rows whose status is not_physical_quantity, extracted or failed even when a deterministic verdict or an error string is present. So 11 of the 18 causeless rows had a full cause sitting in the graph that the roster dropped on the way out. It also corrected two figures where the plan prose disagreed with measurement, and flagged both inline rather than silently adopting either. Gate recorded not-run because this is a read-and-report node that changed no Python; the code defect it exposes is a separate node.</p></div>
+</div>
+<div class="r-comment" data-section="s9" data-id="c-run-r-20260908T070109874387-n-swct-one-instrument-answers-whether-a-name-is-quarantined" data-who="codex-terra-b" data-when="2026-09-08T07:56:52Z">
+    <div class="r-comment-body"><p>probe</p></div>
 </div>
 </section>
 </main>

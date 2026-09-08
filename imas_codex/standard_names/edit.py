@@ -1505,6 +1505,12 @@ CALL (target) {
 RETURN sources_moved, projections_moved
 """
 
+#: Both participants take their modification stamp from ``$changed_at`` — the
+#: same instant the fold's ledger event carries — rather than from the
+#: transaction clock. The postflight exact-state proof compares a readback with
+#: an expectation computed before any write, so a stamp the expectation cannot
+#: name would make the proof refuse every fold. One declared instant lets both
+#: sides derive the same value.
 _FOLD_NAME_MUTATION_QUERY = """
 // ATOMIC_FOLD_MUTATE_NAMES
 MATCH (old:StandardName {id: $old_id}),
@@ -1520,10 +1526,10 @@ SET old.superseded_from_stage = $predecessor_stage,
       WHEN old.edit_status = 'open' THEN 'applied'
       ELSE old.edit_status
     END,
-    old.updated_at = datetime(),
+    old.updated_at = datetime($changed_at),
     target.source_paths = $target_paths,
     target.name_stage = coalesce($target_revived_stage, target.name_stage),
-    target.updated_at = datetime()
+    target.updated_at = datetime($changed_at)
 MERGE (target)-[:REFINED_FROM]->(old)
 RETURN old.name_stage AS old_stage,
        old.superseded_from_stage AS predecessor_stage,
@@ -2376,6 +2382,11 @@ def _fold_expected_state(
     )
     old_source_ids = {source["id"] for source in old_sources}
     old_backing_ids = {backing["element_id"] for backing in old_backings}
+    # The fold stamps both participants' modification time with the receipt's
+    # own instant, so the expectation names the value the readback will carry.
+    # Re-parsing normalises whatever ISO spelling the caller passed into the
+    # form a graph readback renders, which is what the comparison sees.
+    stamped_at = _fold_json_safe(DateTime.from_iso_format(changed_at))
     if include_domain_mutation:
         old_properties = expected["names"]["old"]
         old_properties.update(
@@ -2383,6 +2394,7 @@ def _fold_expected_state(
                 "name_stage": "superseded",
                 "superseded_from_stage": predecessor_stage,
                 "source_paths": [],
+                "updated_at": stamped_at,
             }
         )
         old_properties.pop("claim_token", None)
@@ -2390,6 +2402,7 @@ def _fold_expected_state(
         if old_properties.get("edit_status") == "open":
             old_properties["edit_status"] = "applied"
         expected["names"]["target"]["source_paths"] = target_paths
+        expected["names"]["target"]["updated_at"] = stamped_at
         if target_revived_stage is not None:
             expected["names"]["target"]["name_stage"] = target_revived_stage
         target_reference = {
@@ -2855,6 +2868,7 @@ def supersede_into(
                         predecessor_stage=predecessor_stage,
                         target_paths=target_paths,
                         target_revived_stage=target_revived_stage,
+                        changed_at=changed_at,
                     )
                 )
                 if len(name_rows) != 1:
