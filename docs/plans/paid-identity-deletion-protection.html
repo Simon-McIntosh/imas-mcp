@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-08">
-<meta name="plan-version" content="9">
+<meta name="plan-version" content="10">
 <meta name="plan-commits" content="ec9ffff58e52af06b454987705ee4f88bfa14358,33361a5354b03e1f3a56f0cb626157cb1139dca0,2e0c1b534ac98f490780f7d9b2de7e5d8a24eb7f,f11e43096b10f2a5f55466e3f82e03b1ff080688,b22d348610f58b624ef9b8448b9c721279600e54,057a04786654db8ce7a5b79b77d3b53d110fa9f6">
 <meta name="plan-artifacts" content="docs/evidence/sn-lifecycle-integrity/delete-path-protections.md,docs/evidence/sn-lifecycle-integrity/unshielded-identity-deletions.md,docs/evidence/sn-lifecycle-integrity/mirrored-state-review.md">
 <meta name="plan-impl" content="0.35">
@@ -295,11 +295,22 @@
 
       <li><strong>The dump predates the origin correction</strong>, so a naive restore reinstates the
       false <code>catalog_edit</code> value the repair was right to remove. Restore and
-      reclassification are therefore one action, and each identity needs its correct
-      <code>origin</code> decided. For most of the 78 the answer is very likely
-      <code>pipeline</code> &mdash; which is what would have kept them safe &mdash; but that is a
-      per-identity judgement, not a bulk rewrite. Repeating a bulk rewrite is what caused this.</li>
+      reclassification are therefore one action. <strong>The value is settled and is not a
+      per-name judgement:</strong> the locked decision <code>restored-origin-value</code> writes
+      <code>origin='pipeline'</code> on every restored name, with no exception for the
+      documentation-only ones, because the schema defines <code>derived</code> as scaffolding and
+      a name carrying generated, reviewed documentation is not scaffolding. That makes this
+      constraint cheaper than the paragraph above it once read: the restore writes one value
+      deliberately rather than deciding sixty-seven times. What remains forbidden is a bulk
+      rewrite of <code>origin</code> across a population, which is what caused &sect;1 &mdash;
+      writing a settled value onto the identities being restored is not that.</li>
     </ol>
+
+    <p><strong>Approval is withheld from every restored identity.</strong> A restored name comes
+    back at <code>name_stage=accepted</code> with <code>status</code> still
+    <code>draft</code>. Restoration recovers the identity and the work that produced it; it does
+    not re-confer publication, and the open fork review is closed rather than approved. A
+    restore that arrives already approved has asserted an editorial decision nobody made.</p>
 
     <p>The classification of which identities warrant restoration is in flight as a separate
     investigation; its first pass returned a uniform verdict for all 78 rows without executing the
