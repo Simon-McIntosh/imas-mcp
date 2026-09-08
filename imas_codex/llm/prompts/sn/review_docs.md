@@ -19,7 +19,10 @@ Each candidate below carries its previously-accepted standard name plus the fres
 
 ## Scoring Dimensions
 
-Rate each dimension from 0 to 20. The total score is the sum (0-80).
+Rate each dimension from 0 to 20. The total score is the sum (0-80). Use
+evidence-anchored bands of **20**, **15**, **10**, **5**, and **0**, except for
+an explicit cap below. Do not use fine-grained points to express an unsupported
+style preference.
 
 ### 1. Description Quality (0-20)
 - Is the short ``description`` a precise, single-line physical definition?
@@ -29,7 +32,9 @@ Rate each dimension from 0 to 20. The total score is the sum (0-80).
 
 ### 2. Documentation Quality (0-20)
 - Does the long-form ``documentation`` provide a clear defining equation where applicable?
-- Are all variables in equations defined with units immediately after they appear?
+- Are all variables in equations defined by their physical identity immediately
+  after they appear? Units remain structured metadata and must not be repeated
+  in prose.
 - Are sign conventions explicit for COCOS-dependent quantities? State direction using prose (e.g. "positive when counter-clockwise viewed from above") — NEVER cite a COCOS number (COCOS-11, COCOS-17, etc.) in prose. The COCOS convention is structured metadata on the node.
 - Is LaTeX properly escaped (literal block scalar, no corrupted backslashes)?
 - Are references to other standard names rendered as inline links (`[name](#name)`)?

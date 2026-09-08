@@ -122,7 +122,7 @@ member only when the DD leaf itself fixes one.
 {% endif %}{% if item.source_context_omitted %}- **Bounded source context**: {{ item.source_context_omitted }} additional exact source binding(s) omitted after deterministic ordering.
 {% endif %}
 {% if item.validation_issues %}
-**ISN Validation Issues:**
+**ISN grammar error text (deterministic reviewer input):**
 {% for issue in item.validation_issues %}
 - {{ issue }}
 {% endfor %}
@@ -131,7 +131,7 @@ member only when the DD leaf itself fixes one.
 
 {{ item.semantic_warning }}
 {% endif %}{% if item.value_provenance or item.data_type or item.node_type or item.coordinate_paths or item.timebase or item.cocos_label or item.lifecycle_status or item.parent_path or item.parent_description or item.ancestor_context or item.identifier_schema or item.identifier_values or item.semantic_comparators or item.dd_paths_docs or item.hybrid_neighbours or item.related_neighbours or item.error_fields or item.sibling_fields %}
-{% if item.value_provenance %}- **Value provenance**: {{ item.value_provenance }}; review the underlying quantity at `{{ item.provenance_base_path }}` rather than encoding the estimator in the name.
+{% if item.value_provenance %}- **Value provenance**: {{ item.value_provenance }}; review the underlying quantity at `{{ item.provenance_base_path }}` rather than encoding the estimator in the name. `measured`, `reconstructed`, and `reference` are edge properties, never name segments.
 {% endif %}{% if item.data_type %}- **Data type**: {{ item.data_type }}
 {% endif %}{% if item.node_type %}- **Node type**: {{ item.node_type }}
 {% endif %}{% if item.coordinate_paths %}- **Coordinates**: {{ item.coordinate_paths | join(', ') }}

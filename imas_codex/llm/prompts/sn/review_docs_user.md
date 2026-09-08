@@ -8,6 +8,8 @@ schema_needs: []
 ---
 
 Apply the rubric (provided in the system prompt) to the candidate below.
+The name has already passed name review. This prompt supplies no full grammar
+registry or parser error text; do not score the name's grammar here.
 
 ## Candidate
 
@@ -99,6 +101,10 @@ faithful per-member physics differences expressed inside the shared template —
 flattening distinct physics into false uniformity is a Physics Accuracy
 failure, not consistency.
 {% endif %}
+
+For a derived parent, the dedicated parent-review path supplies the children as
+the primary context. This ordinary docs path does not: do not infer a parent
+obligation from comparison neighbours alone.
 
 {% if not vector_neighbours and not same_base_neighbours and not same_path_neighbours and not sibling_family %}
 *No accepted siblings found — score on physics correctness alone.*
