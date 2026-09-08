@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T03:01:12",
+  "updated": "2026-09-08T03:31:02",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -100948,6 +100948,155 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260907T190204562452-n-crs-the-archive-and-its-instrument-name-one-store",
+        "plan": "catalog-review-surface",
+        "section": "s4b",
+        "node": "n-crs-the-archive-and-its-instrument-name-one-store",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2267,
+                "cached_input_tokens": 254915,
+                "input_tokens": 257184,
+                "output_tokens": 1622,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 258806,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A bare imas-codex graph export taken as a backup registers with get_backup_currency without needing an explicit output path, proven by a test that fails when the agreement is reverted. get_backup_currency is at imas_codex/graph/neo4j_ops.py:594 and reads BACKUPS_DIR from imas_codex/graph/profiles.py:67, while a bare export writes into EXPORTS_DIR from imas_codex/graph/dirs.py:40 \u2014 so an archive taken as briefed lands where the instrument never looks and reads as no_backup, indistinguishable from an absent one. Second, the currency condition is wrong and must be replaced: currency compares the newest archive's mtime against the newest live-database file's, so a fresh checkpoint reads stale by seconds (measured age_seconds 22.956782) because the restart writes into the live tree after the archive is sealed, making age_seconds 0 unreachable for every export that brings the service back. Require the archive's existence and its verified contents instead \u2014 a gzip tar carrying a non-empty graph.dump member \u2014 and report that verdict rather than an age. Tests must cover a misfiled archive, a fresh archive that would previously have read stale, and an archive whose dump member is empty. Report added failures against a stated base for tests/graph and any focused test module you add.",
+          "estimated_hours": null,
+          "goal": "Make the backup currency instrument and the graph export agree on where a recovery archive lives and what makes one current",
+          "id": "n-crs-the-archive-and-its-instrument-name-one-store",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T190204562452-n-crs-the-archive-and-its-instrument-name-one-store/manifest.md",
+          "plan": "catalog-review-surface",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "s4b",
+          "spec_level": "guided",
+          "time_budget": "60m",
+          "write_paths": [
+            "imas_codex/graph/neo4j_ops.py",
+            "tests/graph/test_backup_currency_contents.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "clive-postcopy",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-07T19:02:14Z",
+        "completed_at": "2026-09-08T01:28:52.748Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 23035,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 23198,
+        "stalled": true,
+        "time_budget": "60m",
+        "base_sha": "69f24046b143dce1048f82f02fd25878b2849126",
+        "commits": [
+          "f39508320a56db9599efc04b32c05d64a0598569"
+        ],
+        "changed_lines": {
+          "added": 171,
+          "removed": 8,
+          "files": 2
+        },
+        "tests_added": 4,
+        "gate": "failed",
+        "gate_check": null,
+        "suite_delta": null,
+        "failure_classification": "malformed-node",
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T190204562452-n-crs-the-archive-and-its-instrument-name-one-store/manifest.md",
+        "scope_changed": false,
+        "session_id": "c0b416e7-c239-4629-8a50-6d0d7115bdd3",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 8288145,
+            "input_tokens_cumulative": 8288145,
+            "output_tokens": 56034,
+            "output_tokens_cumulative": 56034,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 23194.467,
+          "generated_tokens": 56498,
+          "generation_seconds": 22920.957,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 14.7,
+          "machine_seconds": 273.51,
+          "peak_input_tokens": 149656,
+          "tokens_per_second": 2.46,
+          "wall_tokens_per_second": 2.44
+        },
+        "follow_on_paths": [
+          "tests/graph/test_backup_currency.py",
+          "tests/core/test_backup_currency.py",
+          "imas_codex/graph/AGENTS.md",
+          "docs/evidence/catalog-review-surface/graph-checkpoint.md"
+        ],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-crs-the-archive-and-its-instrument-name-one-store",
+          "session_id": "c0b416e7-c239-4629-8a50-6d0d7115bdd3",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T01:28:52.748Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -101190,6 +101339,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1922
+    "_version": 1923
   }
 }
