@@ -813,7 +813,9 @@ def _fetch_target(gc: GraphClient, sn_id: str) -> dict[str, Any] | None:
                  MATCH (src:StandardNameSource)-[:PRODUCED_NAME]->(sn)
                  WHERE coalesce(src.source_type, '') <> 'derived'
                    AND coalesce(src.status, '') IN $live_source_statuses
-               } AS has_live_source
+               } AS has_live_source,
+               [(src:StandardNameSource)-[:PRODUCED_NAME]->(sn) | src.id]
+                 AS producing_source_ids
         """,
         live_source_statuses=sorted(_LIVE_SOURCE_STATUSES),
         id=sn_id,
@@ -1824,21 +1826,38 @@ def _derive_rename_unit(
     return authorities[0][1]
 
 
-#: Marked read of the exact ``PRODUCED_NAME`` cohort one name claims. The
-#: edge is the source of truth for what produced a standard name; the
-#: ``produced_sn_id`` scalar mirrors it and is never read as authority here,
-#: because a mirror that has drifted is exactly the state this read exists
-#: to expose.
-_RENAME_PRODUCER_QUERY = """
-// EDIT_FETCH_PRODUCING_SOURCE_IDS
+def _producing_source_ids(target_row: dict[str, Any]) -> list[str]:
+    """The source ids ``PRODUCED_NAME`` binds to a fetched target.
+
+    The cohort travels on the target fetch rather than on a read of its own,
+    because that fetch is the one observation taken before any write — the
+    rename empties the predecessor's side, so a later read cannot recover what
+    it held. The edge is the source of truth for what produced a standard
+    name; the ``produced_sn_id`` scalar mirrors it and is not consulted, since
+    a mirror that has drifted is part of what the comparison exists to expose.
+    """
+    return sorted(
+        {
+            str(source_id)
+            for source_id in target_row.get("producing_source_ids") or ()
+            if source_id
+        }
+    )
+
+
+#: Marked readback of what ``PRODUCED_NAME`` binds to one name right now.
+#: Used only after the rename has written, to compare the successor's holdings
+#: against the cohort the target fetch recorded.
+_BOUND_SOURCES_QUERY = """
+// EDIT_FETCH_BOUND_SOURCE_IDS
 MATCH (source:StandardNameSource)-[:PRODUCED_NAME]->(sn:StandardName {id: $id})
 RETURN source.id AS source_id
 """
 
 
-def _producing_source_ids(gc: GraphClient, sn_id: str) -> list[str]:
-    """The source ids currently bound to ``sn_id`` by ``PRODUCED_NAME``."""
-    rows = gc.query(_RENAME_PRODUCER_QUERY, id=sn_id)
+def _bound_source_ids(gc: GraphClient, sn_id: str) -> list[str]:
+    """The source ids bound to ``sn_id`` by ``PRODUCED_NAME`` at read time."""
+    rows = gc.query(_BOUND_SOURCES_QUERY, id=sn_id)
     return sorted({row["source_id"] for row in rows if row.get("source_id")})
 
 
@@ -1883,7 +1902,7 @@ def _carry_rename_sources(
     if not expected_source_ids:
         return f"no producing source bound to {old_name!r} — nothing to carry"
 
-    held = set(_producing_source_ids(gc, new_name))
+    held = set(_bound_source_ids(gc, new_name))
     stranded = [source_id for source_id in expected_source_ids if source_id not in held]
     carried = 0
     if stranded:
@@ -1891,7 +1910,7 @@ def _carry_rename_sources(
             retarget_standard_name_sources,
         )
 
-        still_on_predecessor = set(_producing_source_ids(gc, old_name))
+        still_on_predecessor = set(_bound_source_ids(gc, old_name))
         movable = sorted(
             source_id for source_id in stranded if source_id in still_on_predecessor
         )
@@ -1909,7 +1928,7 @@ def _carry_rename_sources(
                 expected_current_bindings=dict.fromkeys(movable, old_name),
             )
 
-    held = set(_producing_source_ids(gc, new_name))
+    held = set(_bound_source_ids(gc, new_name))
     missing = [source_id for source_id in expected_source_ids if source_id not in held]
     if missing:
         raise RuntimeError(
@@ -1919,7 +1938,7 @@ def _carry_rename_sources(
         )
     retained = [
         source_id
-        for source_id in _producing_source_ids(gc, old_name)
+        for source_id in _bound_source_ids(gc, old_name)
         if source_id in set(expected_source_ids)
     ]
     if retained:
@@ -3198,10 +3217,10 @@ def _apply_rename(
 
     successor_unit = _derive_rename_unit(gc, refine_root_old, root_row.get("unit"))
 
-    # The producing cohort is read BEFORE the rename, while the bindings are
-    # still on the predecessor: it is the only moment the expectation can be
-    # established, because the rename itself is what empties that side.
-    producing_source_ids = _producing_source_ids(gc, refine_root_old)
+    # The cohort comes from the target fetch, taken before any write: the
+    # rename empties the predecessor's side, so that fetch is the only
+    # observation from which the expectation can be established.
+    producing_source_ids = _producing_source_ids(root_row)
 
     if dry_run:
         actions.append(

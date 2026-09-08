@@ -54,14 +54,23 @@ class ProducerGraph(FakeGraph):
 
     drop_carriage: bool = False
 
+    def _producers_of(self, name: str) -> list[str]:
+        return sorted(
+            source_id
+            for source_id, target in self.produced_name.items()
+            if target == name
+        )
+
     def query(self, cypher: str, **params: Any) -> list[dict[str, Any]]:
-        if "// EDIT_FETCH_PRODUCING_SOURCE_IDS" in cypher:
+        if "// EDIT_FETCH_BOUND_SOURCE_IDS" in cypher:
             return [
                 {"source_id": source_id}
-                for source_id, target in sorted(self.produced_name.items())
-                if target == params["id"]
+                for source_id in self._producers_of(params["id"])
             ]
-        return super().query(cypher, **params)
+        rows = super().query(cypher, **params)
+        if "// EDIT_FETCH_TARGET" in cypher and rows:
+            rows[0]["producing_source_ids"] = self._producers_of(params["id"])
+        return rows
 
     def _tx_run(self, cypher: str, **params: Any) -> list[dict[str, Any]]:
         rows = super()._tx_run(cypher, **params)
