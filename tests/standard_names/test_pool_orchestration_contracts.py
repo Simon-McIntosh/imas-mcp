@@ -739,7 +739,17 @@ class TestSkeletonSweepNoUseAfterClose:
         gc_sweep = MagicMock()
         gc_sweep.__enter__ = MagicMock(return_value=gc_sweep)
         gc_sweep.__exit__ = MagicMock(return_value=False)
-        gc_sweep.query = MagicMock(return_value=[{"swept": 3}])
+
+        def sweep_query(query: str, **_kwargs):
+            if "MATCH (cost:LLMCost)" in query:
+                return [{"linked": 0}]
+            if "UNWIND $names AS name" in query:
+                return []
+            if "DETACH DELETE sn" in query:
+                return [{"swept": 3}]
+            raise AssertionError(f"unexpected sweep query: {query}")
+
+        gc_sweep.query = MagicMock(side_effect=sweep_query)
 
         return gc_main, gc_sweep
 
@@ -792,10 +802,16 @@ class TestSkeletonSweepNoUseAfterClose:
         gc_main, gc_sweep = self._make_gc_sequence()
         sweep_query_called_while_open: list[bool] = []
 
-        def tracking_query(*args, **kwargs):
-            # If __exit__ has already been called, the client is closed
-            sweep_query_called_while_open.append(gc_sweep.__exit__.call_count == 0)
-            return [{"swept": 0}]
+        def tracking_query(query: str, **_kwargs):
+            if "MATCH (cost:LLMCost)" in query:
+                return [{"linked": 0}]
+            if "UNWIND $names AS name" in query:
+                return []
+            if "DETACH DELETE sn" in query:
+                # If __exit__ has already been called, the client is closed.
+                sweep_query_called_while_open.append(gc_sweep.__exit__.call_count == 0)
+                return [{"swept": 0}]
+            raise AssertionError(f"unexpected sweep query: {query}")
 
         gc_sweep.query = MagicMock(side_effect=tracking_query)
 
