@@ -330,8 +330,6 @@ def test_export_withholds_hard_catalog_semantic_issue(tmp_path: Path) -> None:
 
 
 def test_export_validates_cross_links_against_full_catalog(tmp_path: Path) -> None:
-    from imas_standard_names.validation import run_semantic_checks
-
     population = [
         _candidate(
             "electron_density",
@@ -345,9 +343,12 @@ def test_export_validates_cross_links_against_full_catalog(tmp_path: Path) -> No
         ),
     ]
 
+    # The contract under test is the export's call into the semantic checker
+    # with the published name set, not the checker's live verdict — which
+    # would couple this test's outcome to the on-disk ISN validation models.
     with patch(
         "imas_standard_names.validation.run_semantic_checks",
-        wraps=run_semantic_checks,
+        return_value=[],
     ) as semantic_checks:
         report = _run_fixture_export(tmp_path, population, validate_entries=True)
 
