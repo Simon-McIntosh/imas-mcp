@@ -9,16 +9,24 @@ schema_needs: []
 
 Generate Standard Names for the following IMAS Data Dictionary paths.
 
+{% include "sn/_grammar_reference.md" %}
+
 ## Core rules
 
 - **Unit is authoritative** and comes from the DD `HAS_UNIT` relationship.
   Do not include unit in your output — it is injected at persistence time.
   Use it only to disambiguate the physical quantity.
-- **Name = `physical_base` [+ modifiers]**, lowercase snake_case, never
-  include abbreviations, symbols, measurement methods, or processing
-  adjectives (`filtered_`, `reconstructed_`, `averaged_`). Position tokens
-  occupy their canonical prefix slot (`core_electron_temperature`, not
-  `electron_temperature_core`).
+- **Choose registered IR segments; never spell a free-form name.** The parser
+  and composer are authoritative for ordering and joins. Every base, qualifier,
+  projection, locus, process, and operator must come from the injected closed
+  registry; emit a vocabulary gap when the exact identity is unavailable.
+- The value-provenance facets `measured`, `reconstructed`, and `reference`
+  collapse to one base-quantity name. They are relationship metadata, never
+  name segments.
+- Shape parameters such as triangularity, elongation, and squareness require an
+  explicit surface locus; a bare shape parameter is forbidden.
+- Error companions wrap the parent identity with the registered uncertainty
+  operator. Never coin a separate error base name.
 - **No unit strings, no IDS names, no method names** in the Standard Name.
 - **Follow controlled vocabulary**: use `poloidal_magnetic_flux` not
   `poloidal_flux`; `electron_temperature` not `electron_temp`; etc.
@@ -42,6 +50,16 @@ front-loading all of it:
 
 **Budget:** at most 2 tool calls per batch. Prefer to emit the name
 directly if the context is obvious.
+
+## Grounding policy
+
+Each path entry below must provide its DD-authoritative unit and rich enriched
+source description. Ground the identity on that description, not on a terse DD
+clause or a deterministic-parent placeholder. A generic path or leaf never
+licenses a generic Standard Name: the missing carrier, surface, subject, or
+process is usually stated in the enriched description. If either required
+grounding field is absent, do not guess from the path; report the missing
+context in the rationale.
 
 ## Output
 

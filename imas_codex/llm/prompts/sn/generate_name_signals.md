@@ -8,61 +8,32 @@ dynamic: true
 
 You are a physics nomenclature expert generating standard names for measured quantities at a fusion research facility.
 
+{% include "sn/_grammar_reference.md" %}
+
 ## Standard Name Grammar
 
-A standard name is composed from these optional fields. Only use values from the valid lists below.
-
-### physical_base (required)
-The root physics quantity as a free-form snake_case token. Common examples: temperature, density, magnetic_field, pressure, current, power, energy, flux, velocity, voltage, number_density, frequency, area, volume.
-
-### subject
-What species or population is being measured.
-Valid: {{ subjects | join(', ') }}
-
-### position
-Where in the plasma or device the quantity is measured.
-Valid: {{ positions | join(', ') }}
-
-### component
-Vector or tensor component.
-Valid: {{ components | join(', ') }}
-
-### coordinate
-Coordinate system component (uses same enum as component).
-Valid: {{ coordinates | join(', ') }}
-
-### process
-Physical process or mechanism.
-Valid: {{ processes | join(', ') }}
-
-### transformation
-Mathematical transformation applied to the quantity.
-Valid: {{ transformations | join(', ') }}
-
-### geometric_base
-Geometric quantity (use instead of physical_base for geometric data).
-Valid: {{ geometric_bases | join(', ') }}
-
-### object
-Device component or diagnostic instrument.
-Valid: {{ objects | join(', ') }}
-
-### binary_operator
-For compound names combining two quantities.
-Valid: {{ binary_operators | join(', ') }}
+A candidate is an IR object, not a hand-written string. Choose `base_token` and
+`base_kind`, then place every other registered token in `projection_axis`,
+`qualifiers`, the typed locus fields, `process_token`, or the ordered
+`operators` list. The complete live controlled vocabulary is injected above;
+the shorter context lists below, when present, are search aids rather than an
+alternative grammar.
 
 ## Composition Rules
 
-1. Every name must have either a `physical_base` or a `geometric_base` (not both)
-2. The composed name follows the pattern: `[subject]_[physical_base]_[modifiers]`
+1. Every candidate has one registered `base_token`; `base_kind` selects either a physical quantity or a geometry carrier.
+2. Emit IR fields only. The authoritative composer determines canonical segment order and joining words.
 3. Examples:
-   - electron_temperature → `{"physical_base": "temperature", "subject": "electron"}`
-   - plasma_current → `{"physical_base": "current"}`
-   - line_integrated_density → `{"physical_base": "density", "transformation": "line_integrated"}`
-   - toroidal_magnetic_field_at_magnetic_axis → `{"physical_base": "magnetic_field", "component": "toroidal", "position": "magnetic_axis"}`
+   - electron_temperature → `{"base_token": "temperature", "base_kind": "quantity", "qualifiers": ["electron"]}`
+   - plasma_current → `{"base_token": "current", "base_kind": "quantity", "qualifiers": ["plasma"]}`
+   - line_integrated_electron_density → `{"base_token": "density", "base_kind": "quantity", "qualifiers": ["electron"], "operators": [{"token": "line_integrated"}]}`
+   - toroidal_magnetic_field_at_magnetic_axis → `{"base_token": "magnetic_field", "base_kind": "quantity", "projection_axis": "toroidal", "locus_token": "magnetic_axis", "locus_relation": "at", "locus_type": "position"}`
 4. Use existing standard names as reference for naming conventions
-5. Signal descriptions may be terse or use facility-specific jargon — interpret them using your physics knowledge
+5. Signal descriptions may use facility-specific jargon; resolve it with the supplied enriched description and evidence, never by inventing an unstated semantic axis
 6. Skip signals that are status flags, configuration parameters, or timing references
+7. `measured`, `reconstructed`, and `reference` are controlled value-provenance metadata on the source binding, never name segments; all estimator facets collapse to the base quantity
+8. Triangularity, elongation, squareness, and other shape parameters require an explicit surface locus; never emit a bare shape parameter
+9. Error signals use the registered uncertainty operator around the base identity; never coin a per-error base name
 
 {% if existing_names %}
 ## Existing Standard Names (do not duplicate)
@@ -75,9 +46,14 @@ Valid: {{ binary_operators | join(', ') }}
 
 Facility: {{ facility }}, Domain: {{ domain }}
 
+The enriched signal description is the primary grounding. A generic signal ID
+never licenses a generic Standard Name; preserve the carrier, surface, subject,
+projection, and process stated in the description. Similar DD paths are
+supporting evidence only and must not override the source meaning.
+
 {% for item in items %}
 ### Signal: {{ item.signal_id }}
-- Description: {{ item.description }}
+- Enriched signal description (PRIMARY GROUNDING): {{ item.description }}
 - Units: {{ item.units or 'unspecified' }}
 - Physics domain: {{ item.physics_domain or 'unspecified' }}
 
@@ -110,7 +86,7 @@ For each signal that represents a distinct physics quantity, generate IR segment
         "base_kind": "quantity",
         "qualifiers": ["electron"]
       },
-      "description": "Electron temperature measured by Thomson scattering",
+      "description": "Kinetic temperature of the electron population",
       "reason": "qualifier=electron, base=temperature"
     }
   ],
