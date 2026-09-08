@@ -142,3 +142,85 @@ None of the 78 identities appears in the 208-name WEST review cut. One additiona
 - `imas_codex/standard_names/graph_ops.py:3608`: origin is used as the safety boundary even though independently DD-backed names can carry `origin=derived`. The WEST parent and 28 direct-DD targets prove that this property is not a sufficient authorship guard.
 - `imas_codex/standard_names/graph_ops.py:3633`: deletion destroys source links, reviews, documentation revisions, and node properties while its change record keeps no reconstructive snapshot.
 - The archive is from `2026-09-06`, not the deletion instant. For the 22 UNDETERMINED rows, the exact missing fact is the incoming `HAS_PARENT` child set and non-derived source ownership immediately before deletion, or an explicit catalog receipt. Neither the live graph, the archive, nor `StandardNameChange` contains that state. Their verdicts must remain UNDETERMINED until another durable record supplies it.
+
+## Recorded-spend ruling
+
+The locked protection boundary resolves the remaining disposition without claiming evidence that does not exist: **an identity with any recorded apportioned LLM spend is RESTORE; an identity with zero recorded spend is CORRECTLY REMOVED**. This boundary overrides structural-admission, lifecycle-stage, and shadow verdicts. RESTORE under this rule means that paid identity content must be recovered; it does not assert that the placeholder passed deletion-time admission, and it does not itself authorize catalog publication.
+
+The canonical ledger measure is `sum(LLMCost.llm_cost / size(LLMCost.standard_name_ids))` for every cost row naming the identity. One bounded exact-cohort query over the 46 identities reconsidered here completed in 0.418 s. Amounts below retain six decimal places so a small nonzero charge cannot display as zero.
+
+### Formerly undetermined identities
+
+Twenty of the 22 identities carry spend. Their unrounded apportioned total is **$9.401273**; summing the displayed per-identity amounts at cent precision gives the lead's **$9.42** census. Those 20 move to RESTORE. The two zero-spend identities move to CORRECTLY REMOVED.
+
+| identity | cost rows | apportioned spend USD | final verdict | basis |
+|---|---:|---:|---|---|
+| `absorbed_power_of_neutral_beam_injector` | 5 | 0.180494 | RESTORE | recorded spend boundary |
+| `absorbed_power_of_plant_system` | 9 | 0.748731 | RESTORE | recorded spend boundary |
+| `atomic_mass_of_wall_material` | 3 | 0.096340 | RESTORE | recorded spend boundary |
+| `bulk_plasma_velocity_due_to_diamagnetic_drift` | 6 | 0.305236 | RESTORE | recorded spend boundary |
+| `current_density_due_to_viscosity` | 6 | 0.466935 | RESTORE | recorded spend boundary |
+| `deuterium_deuterium_neutron_flux_due_to_beam_thermal_fusion` | 9 | 0.331046 | RESTORE | recorded spend boundary |
+| `deuterium_tritium_neutron_flux_due_to_beam_thermal_fusion` | 12 | 0.798974 | RESTORE | recorded spend boundary |
+| `effective_charge_at_pedestal_top` | 8 | 0.387125 | RESTORE | recorded spend boundary |
+| `gyrocenter_pressure` | 10 | 0.837723 | RESTORE | recorded spend boundary |
+| `normalized_gyrocenter_perturbed_pressure` | 0 | 0.000000 | CORRECTLY REMOVED | no recorded spend and no founded source/catalog authority |
+| `normalized_perturbed_vector_potential` | 2 | 0.025751 | RESTORE | recorded spend boundary |
+| `parallel_normalized_perturbed_vector_potential` | 5 | 0.166676 | RESTORE | recorded spend boundary |
+| `parity_of_gyrokinetic_eigenmode` | 4 | 0.154603 | RESTORE | recorded spend boundary |
+| `perturbed_gyrocenter_pressure` | 17 | 1.580814 | RESTORE | recorded spend boundary |
+| `perturbed_particle_pressure` | 0 | 0.000000 | CORRECTLY REMOVED | no recorded spend and no founded source/catalog authority |
+| `perturbed_plasma_mass_density` | 2 | 0.053806 | RESTORE | recorded spend boundary |
+| `perturbed_plasma_temperature` | 2 | 0.061814 | RESTORE | recorded spend boundary |
+| `perturbed_pressure` | 13 | 1.227714 | RESTORE | recorded spend boundary |
+| `plasma_current_due_to_ohmic_induction` | 9 | 0.577351 | RESTORE | recorded spend boundary |
+| `power_due_to_fusion` | 9 | 0.477672 | RESTORE | recorded spend boundary |
+| `power_due_to_radiation` | 9 | 0.633191 | RESTORE | recorded spend boundary |
+| `temperature_at_midplane` | 6 | 0.289277 | RESTORE | recorded spend boundary |
+
+The largest protected amounts are `perturbed_gyrocenter_pressure` at $1.580814 across 17 rows, `perturbed_pressure` at $1.227714 across 13, `gyrocenter_pressure` at $0.837723 across 10, `deuterium_tritium_neutron_flux_due_to_beam_thermal_fusion` at $0.798974 across 12, `absorbed_power_of_plant_system` at $0.748731 across 9, `power_due_to_radiation` at $0.633191 across 9, `plasma_current_due_to_ohmic_induction` at $0.577351 across 9, and `power_due_to_fusion` at $0.477672 across 9.
+
+### Spend override of the 24 structural or terminal removals
+
+Fifteen of the 24 identities previously classified CORRECTLY REMOVED carry recorded spend totaling **$5.552639** and therefore move to RESTORE. This is an intentional override: the paid-only boundary does not depend on whether the admission gate considered the identity a shadow, or whether the archived lifecycle was terminal. Nine carry no spend and remain CORRECTLY REMOVED.
+
+| identity | earlier archive classification | cost rows | apportioned spend USD | final verdict |
+|---|---|---:|---:|---|
+| `angle_of_electron_cyclotron_launcher_mirror` | single-child shadow | 1 | 0.001795 | RESTORE |
+| `atomic_count_of_pellet` | single-child shadow | 3 | 0.110874 | RESTORE |
+| `atomic_fraction_of_neutron_detector_converter` | archived `exhausted` | 4 | 0.193833 | RESTORE |
+| `count_of_pellet` | parent of a shadow | 0 | 0.000000 | CORRECTLY REMOVED |
+| `critical_electric_field` | archived `exhausted` | 6 | 0.230265 | RESTORE |
+| `density_of_pellet` | archived `superseded` | 4 | 0.153961 | RESTORE |
+| `electron_power_density_due_to_collisions` | single-child shadow | 6 | 0.254140 | RESTORE |
+| `energy_convection_velocity` | single-child shadow | 0 | 0.000000 | CORRECTLY REMOVED |
+| `flux_due_to_diamagnetic_drift` | single-child shadow | 15 | 1.083086 | RESTORE |
+| `ion_momentum` | archived `superseded` | 0 | 0.000000 | CORRECTLY REMOVED |
+| `ion_power_density` | single-child shadow | 12 | 0.797604 | RESTORE |
+| `ion_state_energy_flux` | archived `superseded` | 0 | 0.000000 | CORRECTLY REMOVED |
+| `ion_state_momentum_flux` | archived `superseded` | 0 | 0.000000 | CORRECTLY REMOVED |
+| `launched_power_of_electron_cyclotron_launcher` | archived `exhausted` | 0 | 0.000000 | CORRECTLY REMOVED |
+| `mass_of_wall_material` | archived `exhausted` | 10 | 0.388255 | RESTORE |
+| `particle_flux_at_wall` | single-child shadow | 0 | 0.000000 | CORRECTLY REMOVED |
+| `particle_flux_at_wall_due_to_recombination` | single-child shadow | 3 | 0.119584 | RESTORE |
+| `plasma_energy` | single-child shadow | 8 | 0.372074 | RESTORE |
+| `poloidal_angle` | archived `superseded` | 18 | 0.307689 | RESTORE |
+| `power_at_inner_divertor_target` | single-child shadow | 9 | 0.438327 | RESTORE |
+| `power_at_outer_divertor_target` | single-child shadow | 10 | 0.596409 | RESTORE |
+| `power_at_wall_due_to_recombination` | single-child shadow | 0 | 0.000000 | CORRECTLY REMOVED |
+| `target_atomic_fraction_of_neutron_detector_converter` | single-child shadow | 10 | 0.504743 | RESTORE |
+| `voltage_of_neutron_detector` | archived `exhausted` | 0 | 0.000000 | CORRECTLY REMOVED |
+
+### Final disposition and recovery order
+
+The authoritative final disposition is therefore **67 RESTORE, 11 CORRECTLY REMOVED, 0 UNDETERMINED**. The earlier archive verdict table remains useful for explaining provenance, topology, and feasible regeneration, but this spend ruling supersedes its disposition column wherever the two differ.
+
+The recovery order remains:
+
+1. Regenerate the 28 directly DD-backed identities from the 30 surviving `extracted` sources.
+2. Rebuild the 19 DD-backed pedestal-top density members before deriving `density_at_pedestal_top`.
+3. Build a signed selective archive-reconstruction manifest for source-less ratified and spend-protected identities; never replay the full archive.
+4. Reset and recompose the surviving `soft_x_rays/channel/etendue` source, then reconstruct or reattach its ratified spectral child.
+5. Land the separately owned delete-path guard before restored paid identities are exposed to cleanup again.
+
+The content-less `StandardNameChange` remains the limiting defect exposed by this census. The spend boundary supplies a preservation decision, but it does not recover the deleted topology or prove that every paid placeholder should be structurally admitted in the future.
