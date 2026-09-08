@@ -20,6 +20,9 @@ from urllib.parse import quote
 from uuid import uuid4
 
 from imas_codex.standard_names.defaults import DEFAULT_MIN_SCORE
+from imas_codex.standard_names.protection import (
+    refuse_protected_automatic_deletion,
+)
 from imas_codex.standard_names.signed_manifest import (
     StaleSourceDetachConflict as StaleSourceDetachConflict,
     _load_signed_stale_source_rows as _load_signed_stale_source_rows,
@@ -84,10 +87,21 @@ def _guard_comparison_binding_cypher(binding_alias: str) -> str:
 
 
 def deletion_change_cypher(name_alias: str) -> str:
-    """Return a Cypher clause that records a name deletion in its transaction."""
+    """Return an atomic deletion receipt containing its complete graph state."""
     if not name_alias.isidentifier():
         raise ValueError(f"invalid Cypher name alias: {name_alias!r}")
     return f"""
+        CALL ({name_alias}) {{
+          OPTIONAL MATCH ({name_alias})-[edge]-(neighbor)
+          RETURN collect(DISTINCT CASE WHEN edge IS NULL THEN null ELSE {{
+              relationship_type: type(edge),
+              direction: CASE WHEN startNode(edge) = {name_alias}
+                              THEN 'outgoing' ELSE 'incoming' END,
+              neighbor_id: coalesce(neighbor.id, elementId(neighbor)),
+              neighbor_labels: labels(neighbor),
+              relationship_properties: properties(edge)
+            }} END) AS deleted_edge_inventory
+        }}
         CREATE (change:StandardNameChange {{
           id: 'sn-change:' + randomUUID(),
           from_name: {name_alias}.id,
@@ -99,6 +113,22 @@ def deletion_change_cypher(name_alias: str) -> str:
           changed_at: datetime(),
           internal: true
         }})
+        CREATE (snapshot:StandardNameDeletionSnapshot)
+        SET snapshot = properties({name_alias}),
+            snapshot.original_id = {name_alias}.id,
+            snapshot.id = change.id + ':node',
+            snapshot.captured_at = datetime()
+        CREATE (change)-[:HAS_DELETION_SNAPSHOT]->(snapshot)
+        FOREACH (item IN deleted_edge_inventory |
+          CREATE (edge_snapshot:StandardNameDeletedEdge)
+          SET edge_snapshot = item.relationship_properties,
+              edge_snapshot.id = change.id + ':edge:' + randomUUID(),
+              edge_snapshot.relationship_type = item.relationship_type,
+              edge_snapshot.direction = item.direction,
+              edge_snapshot.neighbor_id = item.neighbor_id,
+              edge_snapshot.neighbor_labels = item.neighbor_labels
+          CREATE (snapshot)-[:HAS_EDGE_SNAPSHOT]->(edge_snapshot)
+        )
     """
 
 
@@ -1750,6 +1780,10 @@ def retire_unrecoverable_provenance_orphans(
             "accepted provenance orphans require include_accepted=True: "
             + ", ".join(accepted)
         )
+
+    refuse_protected_automatic_deletion(
+        gc, sorted(found), operation="provenance-orphan retirement"
+    )
 
     deletion_clause = deletion_change_cypher("sn")
     deletion_params = deletion_change_params(

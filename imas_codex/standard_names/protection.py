@@ -60,6 +60,99 @@ class PipelineAuthorityError(RuntimeError):
     """A catalog write cannot prove that pipeline authority is preserved."""
 
 
+class ProtectedDeletionError(RuntimeError):
+    """An automatic deletion targeted an identity carrying durable authority."""
+
+
+def materialize_llm_cost_name_edges(gc: Any) -> int:
+    """Materialize positive spend-to-name authority once per graph pass."""
+    if vars(gc).get("_llm_cost_name_edges_materialized", False):
+        return 0
+    rows = gc.query(
+        """
+        MATCH (cost:LLMCost)
+        WHERE coalesce(cost.llm_cost, 0.0) > 0.0
+          AND size(coalesce(cost.standard_name_ids, [])) > 0
+        UNWIND cost.standard_name_ids AS name_id
+        MATCH (sn:StandardName {id: name_id})
+        MERGE (cost)-[:FOR_STANDARD_NAME]->(sn)
+        RETURN count(*) AS linked
+        """
+    )
+    gc._llm_cost_name_edges_materialized = True
+    return int(rows[0]["linked"]) if rows else 0
+
+
+def automatic_deletion_protections(gc: Any, name_ids: list[str]) -> dict[str, str]:
+    """Return durable authority evidence that bars automatic deletion.
+
+    A derived-parent cleanup may ask whether structural scaffolding is still
+    warranted.  It must not use that answer to withdraw a name that a catalog
+    cut, ratification, or approval has made durable authority.  The result is
+    keyed by identity so callers can name the exact evidence that refused a
+    deletion.
+    """
+    names = sorted({name for name in name_ids if name})
+    if not names:
+        return {}
+    materialize_llm_cost_name_edges(gc)
+    rows = gc.query(
+        """
+        UNWIND $names AS name
+        MATCH (sn:StandardName {id: name})
+        OPTIONAL MATCH (sn)-[:HAS_INTERNAL_CHANGE]->(change:StandardNameChange)
+        WITH sn, collect(DISTINCT change.operation) AS operations
+        OPTIONAL MATCH (cost:LLMCost)-[:FOR_STANDARD_NAME]->(sn)
+        WITH sn, operations, sum(coalesce(cost.llm_cost, 0.0)) AS recorded_spend
+        WITH sn, operations, recorded_spend,
+             [reason IN [
+               CASE WHEN sn.name_stage = 'approved'
+                    THEN 'name_stage=approved' END,
+               CASE WHEN sn.catalog_pr_number IS NOT NULL
+                    THEN 'catalog_pr_number' END,
+               CASE WHEN sn.catalog_merge_commit_sha IS NOT NULL
+                    THEN 'catalog_merge_commit_sha' END,
+               CASE WHEN sn.catalog_commit_sha IS NOT NULL
+                    THEN 'catalog_commit_sha' END,
+               CASE WHEN sn.exported_at IS NOT NULL
+                    THEN 'exported_at' END,
+               CASE WHEN 'unchanged_ratification' IN operations
+                    THEN 'unchanged_ratification' END,
+               CASE WHEN 'content_edit' IN operations
+                    THEN 'content_edit' END,
+               CASE WHEN recorded_spend > 0.0
+                    THEN 'recorded_llm_spend_usd=' + toString(recorded_spend) END
+             ] WHERE reason IS NOT NULL] AS reasons
+        WHERE size(reasons) > 0
+        RETURN sn.id AS id, reasons, recorded_spend
+        """,
+        names=names,
+    )
+    return {
+        str(row["id"]): ", ".join(sorted(str(reason) for reason in row["reasons"]))
+        for row in (rows or [])
+        if row.get("id") and row.get("reasons")
+    }
+
+
+def refuse_protected_automatic_deletion(
+    gc: Any, name_ids: list[str], *, operation: str
+) -> None:
+    """Refuse a whole automatic batch when any identity is protected."""
+    protected_reasons = automatic_deletion_protections(gc, name_ids)
+    _filtered, protected_ids = filter_protected(
+        [{"id": name_id, "status": "delete"} for name_id in name_ids],
+        protected_names=set(protected_reasons),
+    )
+    if protected_ids:
+        details = ", ".join(
+            f"{name_id} ({protected_reasons[name_id]})" for name_id in protected_ids
+        )
+        raise ProtectedDeletionError(
+            f"Refused {operation} automatic deletion for protected identity: " + details
+        )
+
+
 def _authority_value(value: Any) -> Any:
     """Normalize relationship collections without changing scalar meaning."""
     if isinstance(value, list | tuple | set | frozenset):

@@ -35,6 +35,10 @@ from imas_codex.standard_names.defaults import (
 )
 from imas_codex.standard_names.doc_links import find_name_references
 from imas_codex.standard_names.ledger import reattach_produced_name_edges
+from imas_codex.standard_names.protection import (
+    ProtectedDeletionError,
+    refuse_protected_automatic_deletion,
+)
 from imas_codex.standard_names.provenance_lifecycle import (
     deletion_change_cypher,
     deletion_change_params,
@@ -60,6 +64,15 @@ _TERMINAL_BINDING_NAME_STAGES: frozenset[str] = frozenset(
     }
 )
 _CLAIM_TIMEOUT_SECONDS = 300
+
+# The lowest observed daily structural-reaper total is 74.  Eighty allows a
+# normal-sized cleanup while refusing the 93-identity deletion that exposed the
+# missing guard.
+DERIVED_PARENT_CLEANUP_DELETION_LIMIT = 80
+
+
+class DerivedParentCleanupRefusal(RuntimeError):
+    """A structural cleanup cannot prove that its deletion is safe."""
 
 
 class _TransactionQuery:
@@ -3638,7 +3651,30 @@ def _delete_derived_parent_nodes(
     reason: str | None = None,
     expected_producer_ids_by_parent: dict[str, list[str]] | None = None,
 ) -> int:
-    """Delete derived-parent nodes and their review/derived-source scaffolding."""
+    """Delete only unprotected structural placeholders with recovery material.
+
+    Admission determines whether scaffolding is warranted. It is not a licence
+    to delete a physics identity, so this path requires the explicit
+    ``needs_composition`` placeholder marker and refuses a complete batch when
+    it contains publication evidence or an unusual candidate volume.
+    """
+    parent_ids = sorted(set(parent_ids))
+    if not parent_ids:
+        return 0
+    if len(parent_ids) > DERIVED_PARENT_CLEANUP_DELETION_LIMIT:
+        raise DerivedParentCleanupRefusal(
+            "Refused structural derived-parent cleanup: "
+            f"{len(parent_ids)} candidate identities exceeds the "
+            f"{DERIVED_PARENT_CLEANUP_DELETION_LIMIT}-identity ceiling"
+        )
+
+    try:
+        refuse_protected_automatic_deletion(
+            gc, parent_ids, operation="structural derived-parent cleanup"
+        )
+    except ProtectedDeletionError as exc:
+        raise DerivedParentCleanupRefusal(str(exc)) from exc
+
     deleted = 0
     deletion_clause = deletion_change_cypher("sn")
     deletion_params = deletion_change_params(
@@ -3657,6 +3693,7 @@ def _delete_derived_parent_nodes(
             gc.query(
                 f"""
                 MATCH (sn:StandardName {{id: $parent_id}})
+                WHERE sn.needs_composition = true
                 CALL (sn) {{
                   OPTIONAL MATCH (producer:StandardNameSource)
                   WHERE producer.produced_sn_id = sn.id
@@ -5685,6 +5722,11 @@ def write_standard_names(
     swept_count = 0
     if skeleton_candidate_ids:
         with nullcontext(gc) if gc is not None else GraphClient() as sweep_gc:
+            refuse_protected_automatic_deletion(
+                sweep_gc,
+                sorted(skeleton_candidate_ids),
+                operation="skeleton placeholder cleanup",
+            )
             deletion_clause = deletion_change_cypher("sn")
             swept = sweep_gc.query(
                 f"""
