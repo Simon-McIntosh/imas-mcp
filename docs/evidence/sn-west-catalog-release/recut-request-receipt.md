@@ -233,3 +233,8 @@ second is outside this node's source-repair scope and is left to the concurrent
 lifecycle census rather than being inferred from this export. The export report
 is present in staging, `all_gates_passed=true`, and its accounting residue is
 zero; it is measurement evidence only, not a release artifact.
+
+Remote readback confirms the retained earlier branch and annotated tag still
+exist, while no branch or tag was created for the dry-run identity and the
+fork has no open request. The lead's closure and preservation boundary
+therefore holds exactly.
