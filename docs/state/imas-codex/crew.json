@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T12:16:18",
+  "updated": "2026-09-08T13:01:25",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -107449,6 +107449,489 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T102344481657-n-crs-reviewer-silence-is-not-assent",
+        "plan": "catalog-review-surface",
+        "section": "s4b",
+        "node": "n-crs-reviewer-silence-is-not-assent",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 333,
+                "cached_input_tokens": 653691,
+                "input_tokens": 654026,
+                "output_tokens": 1572,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 655598,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "An identity in a reviewed batch does not auto-promote to an approved active name while an unresolved reviewer comment bears on it, demonstrated by exercising the fold-back against a request carrying comments and no edits. THE DEFECT, whose wrong assumption the code states in a comment at imas_codex/standard_names/promote.py near line 1084: 'With no edits AND no batch there is nothing to do. A batch with no edits is the common case (reviewers approved as-is) \u2014 fall through to the untouched auto-approve below.' That assumption is false for the review shape this project actually receives. The lead has stated that reviewers will predominantly leave comments, specific or generic, rather than edit names or documentation prose. So no-edits will indeed be the common case, and it will mean the reviewer commented rather than assented. Under the current code a request full of unaddressed physics objections promotes the entire batch to approved active names. WHAT THE FOLD-BACK ALREADY DOES RIGHT and must be preserved: sn approve reads the catalog-entry diff, matches each change to its graph identity by id, re-attaches the human edit as a steered proposal carrying a candidate and a reason with no refine so a human wording is never silently mutated, routes names through the rename cascade with PRODUCED_NAME provenance, scores each proposal through the review pipeline, and freezes anything below threshold as contested for human adjudication. That machinery is right; the gap is that its only input is a diff. NO COMMENT INGESTION EXISTS ANYWHERE in this repository \u2014 the sole near-match, export_review_comments in graph_ops.py, runs the opposite way and exports our own StandardNameReview nodes to a file. YOUR SCOPE IS THE GUARD RATHER THAN THE TRIAGE. Make the untouched auto-promote conditional on there being no unresolved reviewer comment bearing on that identity, closing the unsafe default before anyone runs approve on the WEST request. The minimum ingestion that needs is resolving which comments bear on which identity: a line-anchored review comment resolves to a catalog entry through the file and line it annotates, and a request-level comment bears on the batch as a whole rather than on one identity. Treat an unresolvable comment as bearing on the whole batch, because dropping it is the failure this node exists to prevent. Classifying what a comment ASKS FOR, and routing it to a rename or a wording proposal, is a separate node and is explicitly not yours. WHAT TO REPORT: for a request carrying comments and no edits, which identities were withheld from auto-promotion and why; and for a request carrying neither comments nor edits, that the existing auto-promote still runs so a genuinely silent approval is not broken. Exercise both cases. Do not weaken the existing diff path, do not change the contested threshold, and do not make approval write status active anywhere new \u2014 approval is already the sole writer of active and must remain so. Gate: tests/standard_names, added failures against a base you take at your own head; the suite is GREEN at 7259 passed with zero failures, so any failure is unambiguous. Do not pass -q; quiet mode is removed from addopts so a run emits its own totals line, and quote it. Graph reads run on the LOGIN NODE because the tunnel is login-node-local, bounded, declared in the manifest. DURABILITY: write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Stop an unedited reviewed batch auto-promoting while reviewer comments are unread",
+          "id": "n-crs-reviewer-silence-is-not-assent",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T102344481657-n-crs-reviewer-silence-is-not-assent/manifest.md",
+          "plan": "catalog-review-surface",
+          "requested_backend": "codex-luna",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "s4b",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/promote.py",
+            "tests/standard_names/test_approve_withholds_on_comments.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "codex-luna-a",
+        "backend": "codex-luna",
+        "local": false,
+        "agent": {
+          "alias": "luna5.6",
+          "backend": "codex-luna",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-luna",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T10:23:54Z",
+        "completed_at": "2026-09-08T10:41:24Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1050,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1050,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "e0e35463f16e3d7131ffef14a7e712f3e0631235",
+        "commits": [
+          "37bd07ad87971c6f1fff645b28f273eeea20561e"
+        ],
+        "changed_lines": {
+          "added": 236,
+          "removed": 7,
+          "files": 2
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "focused test_approve_withholds_on_comments, then the full tests/standard_names on all_debug",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "focused 3 passed; full gate 7262 passed, 11 skipped, 323 deselected, 34 warnings, exit 0 with zero failures, the suite growing by exactly its three new tests; ruff check and format passed on both changed paths"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T102344481657-n-crs-reviewer-silence-is-not-assent/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a0808b-b64f-7020-a508-391354cf1424",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 9237248,
+            "cached_input_tokens_cumulative": 9237248,
+            "input_tokens": 9416551,
+            "input_tokens_cumulative": 9416551,
+            "output_tokens": 32726,
+            "output_tokens_cumulative": 32726,
+            "reasoning_output_tokens": 12418,
+            "reasoning_output_tokens_cumulative": 12418
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T10:41:24Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 30.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T10:41:24Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 9237248,
+          "cumulative_input_tokens": 18653799,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 45144
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-crs-reviewer-silence-is-not-assent",
+          "session_id": "01a0808b-b64f-7020-a508-391354cf1424",
+          "session_source": "stream",
+          "retained_at": "2026-09-08T10:41:24Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T102450494864-n-crs-a-reviewer-comment-becomes-a-routed-proposal",
+        "plan": "catalog-review-surface",
+        "section": "s4b",
+        "node": "n-crs-a-reviewer-comment-becomes-a-routed-proposal",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2009,
+                "cached_input_tokens": 654024,
+                "input_tokens": 656035,
+                "output_tokens": 1766,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 657801,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A reviewer comment on a catalog review request is ingested, resolved to the identities it bears on, classified by what it asks for, and routed to the existing mechanism that serves that ask \u2014 with the comment recorded as the provenance of any resulting change. THE REVIEW SHAPE THIS SERVES, stated by the lead: external reviewers will predominantly leave comments, specific or generic, rather than edit names or documentation prose. Comment triage is therefore the main path and edit fold-back is the rare one, which is the reverse of what this plan assumed. NOTHING READS COMMENTS TODAY. The only near-match, export_review_comments in graph_ops.py, runs the opposite way and exports our own StandardNameReview nodes to a file. A peer node is separately closing the unsafe default whereby an unedited batch auto-promotes; that guard is not yours and you must not duplicate or weaken it. THE MECHANISM YOU ROUTE INTO ALREADY EXISTS AND MUST BE REUSED RATHER THAN REBUILT: sn approve turns a catalog diff into a steered proposal carrying a candidate and a reason, with no refine so a human wording is never silently mutated; it routes names through the rename cascade with PRODUCED_NAME provenance; it scores each proposal through the review pipeline; and it freezes anything below threshold as contested for human adjudication. Your job is a second input source into that same machinery: comment in, proposal out. WHAT TO BUILD. Ingestion: read both line-anchored review comments and request-level comments. Resolution: a line-anchored comment resolves to a catalog entry through the file and line it annotates; a request-level comment bears on the batch rather than one identity. Classification: for each comment say which of these it asks for \u2014 a change of name, a change of description or documentation wording, a physics objection to the quantity itself, a question about whether the entry belongs in the batch, or an acknowledgement requiring no action. Routing: a name change goes through the rename cascade, a wording change becomes a steered proposal with the comment text as its reason, a physics objection becomes contested rather than a proposal because it disputes the quantity rather than its spelling, a scope question is reported for batch-membership adjudication, and an acknowledgement closes. Provenance: a change that originated in a comment must record that comment as its origin, so the graph can trace an accepted wording to the reviewer's remark rather than to a diff that never existed. THE CASE THAT MATTERS MOST is the comment you cannot classify or cannot resolve to an identity. It must surface for human adjudication and must never be silently dropped or silently absorbed, because a dropped objection is indistinguishable from an approval and that is precisely the failure mode this whole section exists to remove. Report how many comments each disposition received when you exercise it. DO NOT auto-apply a classification you are not confident in, do not let a classifier's uncertainty resolve toward the permissive outcome, and do not invent a new lifecycle state where contested already serves. Exercise this against a purpose-made request on the FORK at Simon-McIntosh/imas-standard-names-catalog carrying comments of several shapes including one deliberately ambiguous, then close it and delete its branch. Do not exercise it against the live WEST request, which the lead intends to review personally. Gate: tests/standard_names, added failures against a base you take at your own head; the suite is GREEN at 7259 passed with zero failures. Do not pass -q; quiet mode is removed from addopts so a run emits its own totals line, and quote it. Graph reads run on the LOGIN NODE because the tunnel is login-node-local, bounded, declared in the manifest. DURABILITY: write your manifest before any long output and record the request number as soon as it exists.",
+          "estimated_hours": null,
+          "goal": "Turn a reviewer comment into a routed proposal the pipeline can act on",
+          "id": "n-crs-a-reviewer-comment-becomes-a-routed-proposal",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T102450494864-n-crs-a-reviewer-comment-becomes-a-routed-proposal/manifest.md",
+          "plan": "catalog-review-surface",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "s4b",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/review_triage.py",
+            "tests/standard_names/test_review_comment_triage.py",
+            "docs/evidence/catalog-review-surface/comment-triage.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "codex-terra-a",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T10:24:59Z",
+        "completed_at": "2026-09-08T10:48:49Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1430,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1430,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "e0e35463f16e3d7131ffef14a7e712f3e0631235",
+        "commits": [
+          "a2b4881156c03798dcc4b4f66360c2a3f35dedd5",
+          "5fa4fdbf84e190e4048e33965ed0f49583128f72"
+        ],
+        "changed_lines": {
+          "added": 649,
+          "removed": 0,
+          "files": 3
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "focused test_review_comment_triage, then the full tests/standard_names on all_debug",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "focused 5 passed; full after-change gate 7264 passed, 11 skipped, 323 deselected, 0 failed on all_debug"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T102450494864-n-crs-a-reviewer-comment-becomes-a-routed-proposal/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a0808c-b2b7-7693-b34c-a9984d7e3b93",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 8754176,
+            "cached_input_tokens_cumulative": 8754176,
+            "input_tokens": 8982323,
+            "input_tokens_cumulative": 8982323,
+            "output_tokens": 35788,
+            "output_tokens_cumulative": 35788,
+            "reasoning_output_tokens": 7357,
+            "reasoning_output_tokens_cumulative": 7357
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T10:48:49Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 31.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T10:48:49Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 8754176,
+          "cumulative_input_tokens": 17736499,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 43145
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-crs-a-reviewer-comment-becomes-a-routed-proposal",
+          "session_id": "01a0808c-b2b7-7693-b34c-a9984d7e3b93",
+          "session_source": "stream",
+          "retained_at": "2026-09-08T10:48:49Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T101057311332-n-swcr-the-west-batch-goes-out-for-review",
+        "plan": "sn-west-catalog-release",
+        "section": "release-contract",
+        "node": "n-swcr-the-west-batch-goes-out-for-review",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 459,
+                "cached_input_tokens": 626590,
+                "input_tokens": 627051,
+                "output_tokens": 1412,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 628463,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A review request is open on the catalog FORK carrying the current WEST batch, on a branch named for the batch identity the export actually produces, with the export report riding the commit and the accounting closing at residue zero. THE LEAD HAS SETTLED THE SHAPE: a new branch at the new identity, because fork request 16 on branch review/v0.4.0rc5+west-task-2e predates today's work and would misdescribe what it carries. Do NOT touch request 16; the coordinator closes it. Do NOT target upstream; every prior review request went to the fork at Simon-McIntosh/imas-standard-names-catalog whose guard workflow is proven there, and upstream comes later through the release CLI. WHAT CHANGED TODAY, so you know a re-cut is required rather than a re-push: 47 identities migrated to canonical spellings through 35 folds and 12 staged renames; 9 names that had sat in the never_reviewed bucket now carry real docs-axis review evidence; 2 candidates excluded for a null physics_domain carry assigned domains; and a tombstoned identity no longer enters the candidate population. The population was 214 candidates and 196 published; expect it to have moved and REPORT the new figures rather than adopting mine. USE THE REPOSITORY'S OWN RELEASE RECIPE, which you read before starting \u2014 imas_codex/standard_names/AGENTS.md is the authoritative runbook for every catalog cut \u2014 and invent no steps. VERIFY BEFORE OPENING THE REQUEST: the export accounting must close, candidate count minus published count equalling the sum of the per-reason buckets with residue zero, and .export_report.json must be present in what the publish stages, because a reviewer receiving the catalog without the reasoning about what left the batch is exactly the gap closed today. Report that arithmetic. ALSO VERIFY the three newly released grammar tokens are available to validation: the catalog tooling now pins imas-standard-names 0.9.1 at commit 61c6cc8, that version is live on PyPI, and the tag exists on both the fork and upstream. If any batch name needs event_instant, signal_to_noise_ratio or signal_to_noise_level, say so and confirm it validates. The request body uses markdown links rather than bare URLs, carries no AI attribution of any kind, and names no plan label, sprint or ticket. Report the request number and branch. Gate: tests/standard_names, added failures against a base you take at your own head; the suite is GREEN at 7259 passed with zero failures, so any failure is unambiguous and blocks the cut. Do not pass -q; quiet mode is removed from addopts so a run emits its own totals line, and quote it. Graph reads run on the LOGIN NODE because the tunnel is login-node-local, bounded, declared in the manifest. DURABILITY: write your manifest before any long output, and record the branch and request number as soon as they exist.",
+          "estimated_hours": null,
+          "goal": "Cut the governed WEST review release onto a new branch at the current batch identity",
+          "id": "n-swcr-the-west-batch-goes-out-for-review",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T101057311332-n-swcr-the-west-batch-goes-out-for-review/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "release-contract",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "docs/evidence/sn-west-catalog-release/review-request-receipt.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "codex-terra-b",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T10:11:07Z",
+        "completed_at": "2026-09-08T11:00:23Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 2956,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 2956,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "c126a29bf67527decafbe179218f839b8350a616",
+        "commits": [
+          "30fab1d4a62e5de092399a294e7c468eca7ae9e4",
+          "ee01967c9a09437de5cdc2c2b48c3d5a58e453dd"
+        ],
+        "changed_lines": {
+          "added": 60,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "export preflight and live cut through the release recipe, plus the full tests/standard_names on all_debug",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "reconcile_catalog_status changed 77 identities, 25 draft and 52 superseded with 0 active, and all five null-status blockers became draft while remaining valid; corrected preflight and live cut passed all 8 export gates with 226 candidates, 208 published, 18 excluded, residue 0; all_debug full gate 7259 passed, 11 skipped, 323 deselected in 291.00s, exit 0; fork request 18 open on review/v0.4.0rc6+west-task-2e with every required check passing, additions-only files, and report, guide and preview links returning HTTP 200"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T101057311332-n-swcr-the-west-batch-goes-out-for-review/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07fd2-64f0-7812-9739-574de8f4cefa",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 10661120,
+            "cached_input_tokens_cumulative": 24184064,
+            "input_tokens": 10487728,
+            "input_tokens_cumulative": 24483898,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 30303,
+            "reasoning_output_tokens": 3164,
+            "reasoning_output_tokens_cumulative": 10430
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T11:00:23Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 31.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T11:00:23Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 24184064,
+          "cumulative_input_tokens": 48667962,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 40733
+        },
+        "follow_on_paths": [
+          "imas_codex/standard_names/manifests/reviews/v0.4.0rc6+west-task-2e.sn_names.yaml",
+          "kind/domain",
+          "v0.9.1"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "resume",
+        "attempt": 2,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swcr-the-west-batch-goes-out-for-review",
+          "session_id": "01a07fd2-64f0-7812-9739-574de8f4cefa",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T11:00:23Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -107705,6 +108188,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1982
+    "_version": 1985
   }
 }
