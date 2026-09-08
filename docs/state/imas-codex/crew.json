@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T06:59:21",
+  "updated": "2026-09-08T08:57:07",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -203,7 +203,8 @@
         "session_id": "01a0788a-5374-7b40-8959-cb5623103fe4",
         "session_model": "gpt-5.6-sol",
         "sessions": {
-          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a0788a-5374-7b40-8959-cb5623103fe4"
+          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a0788a-5374-7b40-8959-cb5623103fe4",
+          "{\"alias\":\"terra5.6\",\"backend\":\"codex-terra\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-terra\",\"sandbox\":\"worktree-full\"}": "01a0788a-5374-7b40-8959-cb5623103fe4"
         },
         "created": "2026-09-06"
       },
@@ -233,9 +234,11 @@
         "id": "cx-docsinherit",
         "harness": "codex",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "49d5a3e4-09f9-4c99-9d4a-72b199a81f77",
+        "session_model": "claude-haiku-4-5-20251001",
+        "sessions": {
+          "{\"alias\":\"haiku4.5\",\"backend\":\"claude-haiku\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"claude-haiku-4-5-20251001\",\"sandbox\":\"worktree-full\"}": "49d5a3e4-09f9-4c99-9d4a-72b199a81f77"
+        },
         "created": "2026-09-06"
       },
       {
@@ -245,7 +248,8 @@
         "session_id": "01a06b0b-d298-7183-b659-aed9331c37c4",
         "session_model": "gpt-5.6-sol",
         "sessions": {
-          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"medium\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a06b0b-d298-7183-b659-aed9331c37c4"
+          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"medium\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a06b0b-d298-7183-b659-aed9331c37c4",
+          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a07f7a-b991-7071-8163-e5a92f884012"
         },
         "created": "2026-09-04"
       },
@@ -277,9 +281,11 @@
         "id": "cx-guardmocks",
         "harness": "codex",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "01a07f80-ea0c-7502-9f1f-1ca799ebd33f",
+        "session_model": "gpt-5.6-sol",
+        "sessions": {
+          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a07f80-ea0c-7502-9f1f-1ca799ebd33f"
+        },
         "created": "2026-09-04"
       },
       {
@@ -102384,6 +102390,864 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260908T043346777307-n-crs-the-checkpoint-guidance-matches-the-instrument",
+        "plan": "catalog-review-surface",
+        "section": "s4b",
+        "node": "n-crs-the-checkpoint-guidance-matches-the-instrument",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 958,
+                "cached_input_tokens": 638662,
+                "input_tokens": 639622,
+                "output_tokens": 768,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 640390,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "imas_codex/graph/AGENTS.md no longer says a bare graph export never registers as a backup, no longer says -o is required to place the archive where the currency check looks, and no longer tells a reader to expect stale with a nonzero age. All three became false at commits f39508320 and 8862a65f3: get_backup_currency now scans EXPORTS_DIR as well as BACKUPS_DIR and reports status from a verified archive's existence and contents, and the stale verdict is retired because age_seconds 0 is unreachable for any export that brings the service back. State the new contract in its place, that an archive registers from either directory and that the condition is existence plus verified contents, a gzip tar carrying a non-empty graph.dump member. Grep the repository for other prose repeating any of the three retired claims, in CLI help, README and docs/evidence/catalog-review-surface, and correct or explicitly list what you find. Note that offsite currency is UNCHANGED and still reports age-based staleness, so do not flatten that distinction. Documentation only: change no Python. Verify each claim you write against the code rather than against this brief. DURABILITY: write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Correct the checkpoint guidance that now states three things the instrument no longer does",
+          "id": "n-crs-the-checkpoint-guidance-matches-the-instrument",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T043346777307-n-crs-the-checkpoint-guidance-matches-the-instrument/manifest.md",
+          "plan": "catalog-review-surface",
+          "requires_decisions": [],
+          "role": "documentation",
+          "section": "s4b",
+          "spec_level": "exact",
+          "time_budget": "35m",
+          "write_paths": [
+            "imas_codex/graph/AGENTS.md"
+          ]
+        },
+        "role": "documentation",
+        "spec_level": "exact",
+        "member": "clive-vocab",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "xhigh",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-08T04:33:53Z",
+        "completed_at": "2026-09-08T06:03:23.145Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 5225,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 5370,
+        "stalled": true,
+        "time_budget": "35m",
+        "base_sha": "b70da103168360fceaec0730f707d7acffb03e87",
+        "commits": [
+          "4d73bac45e9b7a8580240a48afca0b2b1a2f887c"
+        ],
+        "changed_lines": {
+          "added": 17,
+          "removed": 12,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "grep -c the three retired claims in imas_codex/graph/AGENTS.md",
+          "exit_status": 1,
+          "log_path": null,
+          "log_digest": "zero occurrences of the three retired claims; I independently confirmed neo4j_ops.py:616 scans (BACKUPS_DIR, EXPORTS_DIR), so the both-directories claim the doc now makes is true of the code"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T043346777307-n-crs-the-checkpoint-guidance-matches-the-instrument/manifest.md",
+        "scope_changed": false,
+        "session_id": "0e6d5998-baff-487c-a68d-8463757948c5",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 2658907,
+            "input_tokens_cumulative": 2658907,
+            "output_tokens": 21266,
+            "output_tokens_cumulative": 21266,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 5366.276,
+          "generated_tokens": 21266,
+          "generation_seconds": 5358.469,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 10.8,
+          "machine_seconds": 7.807,
+          "peak_input_tokens": 109804,
+          "tokens_per_second": 3.97,
+          "wall_tokens_per_second": 3.96
+        },
+        "follow_on_paths": [
+          "imas_codex/graph/AGENTS.md):"
+        ],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-crs-the-checkpoint-guidance-matches-the-instrument",
+          "session_id": "0e6d5998-baff-487c-a68d-8463757948c5",
+          "session_source": "stream",
+          "retained_at": "2026-09-08T06:03:23.145Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "documentation",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260908T052453415692-n-swcr-the-deferred-imports-say-why-they-are-deferred",
+        "plan": "sn-west-catalog-release",
+        "section": "release-run-residues",
+        "node": "n-swcr-the-deferred-imports-say-why-they-are-deferred",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2902,
+                "cached_input_tokens": 731667,
+                "input_tokens": 734571,
+                "output_tokens": 938,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 735509,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "Each of the three function-local imports of release_notes inside imas_codex/standard_names/catalog_release.py, at lines 1679, 1750 and 1988, carries a short comment stating that it is deferred to avoid a circular import, because release_notes now imports _run_git and _github_slug from catalog_release at MODULE level. Plus a test in tests/standard_names/test_release_import_locality.py that FAILS if any of those three is hoisted to module scope: parse catalog_release.py with ast, assert no module-level ImportFrom targets imas_codex.standard_names.release_notes, and assert both import orders still load. Verify the hazard is real before writing the comment, by confirming the module-level import exists in release_notes and that all three catalog_release imports are inside function bodies; if the code has changed and the cycle is gone, say so and write no comment. State the mechanism in the comment, never a plan reference or a commit id. Report added failures against a stated base for tests/standard_names. DURABILITY: commit each deliverable as you complete it and write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Record at each deferred import why it must stay function-local, so a later tidy cannot reintroduce the cycle",
+          "id": "n-swcr-the-deferred-imports-say-why-they-are-deferred",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T052453415692-n-swcr-the-deferred-imports-say-why-they-are-deferred/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "release-run-residues",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "imas_codex/standard_names/catalog_release.py",
+            "tests/standard_names/test_release_import_locality.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-docsinherit",
+        "backend": "claude-haiku",
+        "local": false,
+        "agent": {
+          "alias": "haiku4.5",
+          "backend": "claude-haiku",
+          "effort": "high",
+          "launch": "cli",
+          "model": "claude-haiku-4-5-20251001",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T05:25:01Z",
+        "completed_at": "2026-09-08T05:41:30.744Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 976,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 989,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "23461893c9d2b9818b3f3eb8ba1ccdc2ea3c69f3",
+        "commits": [
+          "51f9f9131c1a0620dacd37bbaee46f3d5411fb0e"
+        ],
+        "changed_lines": {
+          "added": 96,
+          "removed": 0,
+          "files": 2
+        },
+        "tests_added": null,
+        "gate": "not-run",
+        "gate_check": null,
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T052453415692-n-swcr-the-deferred-imports-say-why-they-are-deferred/manifest.md",
+        "scope_changed": false,
+        "session_id": "49d5a3e4-09f9-4c99-9d4a-72b199a81f77",
+        "budget": {
+          "headroom": "known",
+          "utilisation_pct": 87.0,
+          "rate_limit_type": "seven_day",
+          "rate_limit_period_minutes": null,
+          "resets_at": "2026-09-10T18:00:00Z",
+          "threshold_status": "allowed_warning",
+          "surpassed_threshold": 0.75,
+          "tokens": {
+            "cache_creation_input_tokens": 33067,
+            "cache_creation_input_tokens_cumulative": 33067,
+            "cache_read_input_tokens": 3584089,
+            "cache_read_input_tokens_cumulative": 3584089,
+            "inference_geo": "not_available",
+            "input_tokens": 345,
+            "input_tokens_cumulative": 345,
+            "output_tokens": 12507,
+            "output_tokens_cumulative": 12507,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": 0.4874229,
+          "refusal": false,
+          "detail": "backend reports utilisation and reset time",
+          "cost_usd_cumulative": 0.4874229
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 600.119,
+          "generated_tokens": 12507,
+          "generation_seconds": 173.257,
+          "input_budget_tokens": 200000,
+          "input_utilisation_pct": 49.0,
+          "machine_seconds": 426.862,
+          "peak_input_tokens": 97911,
+          "tokens_per_second": 72.19,
+          "wall_tokens_per_second": 20.84
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 2,
+        "attempt_kind": "resume",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swcr-the-deferred-imports-say-why-they-are-deferred",
+          "session_id": "49d5a3e4-09f9-4c99-9d4a-72b199a81f77",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T05:41:30.744Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260908T053220427913-n-sgr-the-noncanonical-successors-have-a-route",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a78",
+        "node": "n-sgr-the-noncanonical-successors-have-a-route",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1226,
+                "cached_input_tokens": 755241,
+                "input_tokens": 756469,
+                "output_tokens": 2194,
+                "reasoning_output_tokens": 1237,
+                "total_tokens": 758663,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A report at the write path with one row per strict-non-canonical drafted-and-open successor giving: its stored spelling, the canonical spelling the ordered grammar composes for it, whether that canonical spelling is already occupied by another live identity, and which route can reach it - a staged rename, a fold onto the occupied identity, or blocked with the guard that refuses it named. A prior node verified the cohort at 49 of 105 drafted-and-open successors strict-non-canonical, alongside 94 valid, 8 quarantined and 3 pending; re-measure and say so if it has moved. Group by route with counts so the migration can be sized. The whole-cohort migration of 2026-09-05 already met this population once: 137 of 149 rows staged cleanly and TEN refused, nine sharing a DD source with a co-bound second identity and one whose source read status stale, so expect the co-bound-source guard in retarget_standard_name_sources to be the dominant blocker and report how many of the 49 it would refuse. Read-only: stage no rename, execute no fold, change no source file, and do not run sn run. This is the plan a migration node will be cut from, so a route you cannot name is more useful reported as blocked than guessed. DURABILITY, not optional: append each route group to the report as you finish it rather than composing the whole document in one final generation, and write your manifest with the rows you already hold BEFORE any long output.",
+          "estimated_hours": null,
+          "goal": "Enumerate the exact route each non-canonical drafted successor needs before a batch review can carry grammar context for all of them",
+          "id": "n-sgr-the-noncanonical-successors-have-a-route",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T053220427913-n-sgr-the-noncanonical-successors-have-a-route/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a78",
+          "spec_level": "guided",
+          "time_budget": "45m",
+          "write_paths": [
+            "docs/evidence/sn-grammar-refinement/noncanonical-successor-routes.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "cx-guardmocks",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T05:32:29Z",
+        "completed_at": "2026-09-08T06:06:26Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 2037,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 2037,
+        "stalled": false,
+        "time_budget": "45m",
+        "base_sha": "23461893c9d2b9818b3f3eb8ba1ccdc2ea3c69f3",
+        "commits": [
+          "e77156cc8d00b5532cc3a49550ac59f9fa3ddd06",
+          "6d26cfe6f84a8027cf16967e637294c78b05a6b3"
+        ],
+        "changed_lines": {
+          "added": 185,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "bounded read-only live parser and route census over the 105 drafted-and-open successors, with per-row dry-run preflights",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "48 of 48 strict-non-canonical rows routed: fold 35, staged_rename 12, blocked_fold 1, plus 1 generic parse failure held separate; co-bound-source refusals 0 of 12; slowest per-row preflight 2.943s, cohort queries 0.025-0.074s, all inside the ten-second login-node ceiling; no edit staged, no fold executed, sn run not invoked"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T053220427913-n-sgr-the-noncanonical-successors-have-a-route/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07f80-ea0c-7502-9f1f-1ca799ebd33f",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 5437312,
+            "cached_input_tokens_cumulative": 5437312,
+            "input_tokens": 5488270,
+            "input_tokens_cumulative": 5488270,
+            "output_tokens": 24012,
+            "output_tokens_cumulative": 24012,
+            "reasoning_output_tokens": 7201,
+            "reasoning_output_tokens_cumulative": 7201
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 5437312,
+          "cumulative_input_tokens": 10925582,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 31213
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 2,
+        "attempt_kind": "resume",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sgr-the-noncanonical-successors-have-a-route",
+          "session_id": "01a07f80-ea0c-7502-9f1f-1ca799ebd33f",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T06:06:26Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260908T053735165564-n-crs-the-repl-bounds-its-own-output",
+        "plan": "catalog-review-surface",
+        "section": "\u00a73",
+        "node": "n-crs-the-repl-bounds-its-own-output",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1068,
+                "cached_input_tokens": 777756,
+                "input_tokens": 778826,
+                "output_tokens": 2519,
+                "reasoning_output_tokens": 1242,
+                "total_tokens": 781345,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "repl at imas_codex/llm/server.py:1965 returns at most a bounded number of characters, and when it truncates it SAYS SO in the returned text, naming how many characters were produced and how many were dropped. A silent prefix is not acceptable. Choose a cap well under the client's 16 MB guard and state the number you chose and why. Proven by tests in tests/llm/test_repl_output_bound.py that fail by name when the bound is removed: one where a small result passes through byte-identical, and one where a deliberately huge result comes back truncated, under the cap, and carrying the truncation notice with both figures. DO NOT CHASE A STDOUT-VERSUS-STDERR BUG: the client's own error text says 'the server is likely writing logs or other non-protocol data to stdout instead of stderr', and that is a misattribution for this failure. The capture is already correct - repl wraps its eval and exec in redirect_stdout into an io.StringIO at :1968-1971, so print output does not reach the real stdout. The actual fault is that the captured string is returned UNBOUNDED at :1980-1983, so a single large result becomes a JSON-RPC message exceeding the client's guard and the transport is closed mid-message. Verify that reading of the code before you change anything, and if you find genuine non-protocol writes to stdout as well, report them separately rather than folding them in. EVIDENCE, from the client log at ~/.cache/claude-cli-nodejs/-home-ITER-mcintos-Code-imas-codex/mcp-logs-imas-cx/2026-09-07T18-44-14-101Z.jsonl: at 2026-09-08T05:33:47.677 a repl call started, at 05:33:50.899 the client raised 'wrote >16MB to stdout without a JSON-RPC message boundary. Disconnecting to prevent unbounded memory growth', then closed the transport, and the tool failed after 3s with Connection closed. The trigger was a Cypher query with a cartesian product over 12,946 StandardNameChange rows. ALSO REPORT, do not fix: the server logs 'Encoder warmup failed (will retry on first query): No module named torch' on every start, and the client truncates the search_standard_names description from 2775 to 2048 characters and edit_standard_name from 2577 to 2048, so part of those tools' contracts never reaches a model. Report added failures against a stated base for tests/llm. DURABILITY: commit each deliverable as you complete it and write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Bound the repl tool's returned output so one large result cannot disconnect the MCP transport",
+          "id": "n-crs-the-repl-bounds-its-own-output",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T053735165564-n-crs-the-repl-bounds-its-own-output/manifest.md",
+          "plan": "catalog-review-surface",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a73",
+          "spec_level": "exact",
+          "time_budget": "45m",
+          "write_paths": [
+            "imas_codex/llm/server.py",
+            "tests/llm/test_repl_output_bound.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-betatangle",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T05:37:53Z",
+        "completed_at": "2026-09-08T06:24:00Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 2767,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 2767,
+        "stalled": false,
+        "time_budget": "45m",
+        "base_sha": "23461893c9d2b9818b3f3eb8ba1ccdc2ea3c69f3",
+        "commits": [
+          "018ed2ba7b4a245a7f41529b16c4dd548974ba2a"
+        ],
+        "changed_lines": {
+          "added": 75,
+          "removed": 2,
+          "files": 2
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "uv run pytest -p no:cacheprovider tests/llm",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T053735165564-n-crs-the-repl-bounds-its-own-output/after-tests-llm.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T053735165564-n-crs-the-repl-bounds-its-own-output/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a0788a-5374-7b40-8959-cb5623103fe4",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": null,
+          "cost_usd": null,
+          "refusal": false,
+          "detail": ""
+        },
+        "lineage": {
+          "attempt": 5,
+          "kind": "lane-change",
+          "lanes": [
+            {
+              "changed_at": "2026-09-08T06:22:00Z",
+              "detail": "continued session '01a0788a-5374-7b40-8959-cb5623103fe4' on harness 'codex'",
+              "from_backend": "codex",
+              "from_harness": "codex",
+              "reason": "three sol sessions died from harness faults with corrupted tool arguments \u2014 a truncated worktree path with stray words spliced into the command text, then write_stdin failed with an unknown process id and a rollout thread not found; the work and its gate are complete and only the commit is missing",
+              "session": "continued",
+              "to_backend": "codex-terra",
+              "to_harness": "codex"
+            }
+          ],
+          "root_run_id": "r-20260908T053735165564-n-crs-the-repl-bounds-its-own-output"
+        },
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 5,
+        "attempt_kind": "lane-change",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-crs-the-repl-bounds-its-own-output",
+          "session_id": "01a0788a-5374-7b40-8959-cb5623103fe4",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T06:24:00Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
+      },
+      {
+        "run_id": "r-20260908T052534103727-n-sli-a-minted-name-carries-a-status",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a75",
+        "node": "n-sli-a-minted-name-carries-a-status",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1384,
+                "cached_input_tokens": 734569,
+                "input_tokens": 735955,
+                "output_tokens": 906,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 736861,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "The batch mint path in imas_codex/standard_names/graph_ops.py, the MERGE (sn:StandardName {id: b.id}) statement near line 5292 inside write_standard_names, sets a catalog status ON CREATE so a newly minted identity is never left null. Use ON CREATE SET rather than an unconditional SET, because an existing row's status must not be overwritten by a re-mint; that distinction is the whole point and getting it wrong would silently reset published lifecycle state. Choose draft as the created value, consistent with the reconcile that currently heals these rows and with the locked ruling that a null status reads as not-yet-published. Proven by tests in tests/standard_names/test_mint_sets_status.py that fail by name when reverted: one asserting a freshly minted identity carries status draft, and one asserting a re-mint of an identity already at a different status leaves that status untouched. WHY: a section-currency audit found 5 identities at null status, all name_stage drafted, minted inside a four-minute window and healed only by the next reconcile pass, so a strict zero-null invariant is aspirational rather than held. All 5 sat outside the accepted or approved export population, so no cut was exposed. Report added failures against a stated base for tests/standard_names. DURABILITY: commit each deliverable as you complete it and write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Give a freshly minted standard name a catalog status on CREATE so the zero-null invariant holds without waiting for a reconcile",
+          "id": "n-sli-a-minted-name-carries-a-status",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T052534103727-n-sli-a-minted-name-carries-a-status/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "imas_codex/standard_names/graph_ops.py",
+            "tests/standard_names/test_mint_sets_status.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "cx-exportstatus",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T05:25:44Z",
+        "completed_at": "2026-09-08T06:39:43Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 4439,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 4439,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "23461893c9d2b9818b3f3eb8ba1ccdc2ea3c69f3",
+        "commits": [
+          "5794d24ee6390a2957a414afe4e72307e3ff445b"
+        ],
+        "changed_lines": {
+          "added": 80,
+          "removed": 3,
+          "files": 2
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "pytest -m graph tests/standard_names/test_mint_sets_status.py on all_debug against the live graph, plus tests/standard_names for the delta",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "graph-marked live test 1 passed on all_debug and again login-local; live EXPLAIN of the guarded repair query passed in 0.201s; tests/standard_names base 21 failures, after 18, all contained in the base set, added failures 0 and base-only 3"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T052534103727-n-sli-a-minted-name-carries-a-status/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07f7a-b991-7071-8163-e5a92f884012",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 19363712,
+            "cached_input_tokens_cumulative": 19363712,
+            "input_tokens": 19463174,
+            "input_tokens_cumulative": 19463174,
+            "output_tokens": 34442,
+            "output_tokens_cumulative": 34442,
+            "reasoning_output_tokens": 12594,
+            "reasoning_output_tokens_cumulative": 12594
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 19363712,
+          "cumulative_input_tokens": 38826886,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 47036
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "resume",
+        "attempt": 2,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sli-a-minted-name-carries-a-status",
+          "session_id": "01a07f7a-b991-7071-8163-e5a92f884012",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T06:39:43Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T060914409633-n-sli-the-suite-base-is-a-complete-run",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a76",
+        "node": "n-sli-the-suite-base-is-a-complete-run",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 527,
+                "cached_input_tokens": 136606,
+                "input_tokens": 137135,
+                "output_tokens": 1410,
+                "reasoning_output_tokens": 84,
+                "total_tokens": 138545,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A report at the write path carrying (a) ONE completed run of tests/standard_names whose evidence includes pytest's own final counts line, so a base exists at all, and (b) the mechanism that truncated the earlier runs, named with evidence rather than inferred. THE EVIDENCE YOU ARE EXPLAINING, all four logs from this sprint: three runs reported 18 failures at 50180, 50191 and 50577 bytes, and a fourth reported 118 at 359400 bytes. The known 18 are a STRICT SUBSET of the 118. Every one of the 18 sorts alphabetically between test_audits and test_parent_admission; all 100 extras sort after p, led by test_release_verify 26, test_unit_overrides 13, test_supersession_source_migration 13, test_sn_approve 10. NO log of the four carries pytest's final counts line, and every one begins with the line 'slurmstepd: error: Unable to create TMPDIR [/run/user/39486]: Permission denied' and ends on 'srun: error ... Exited with exit code 1'. The three live under their run directories in /home/ITER/mcintos/.config/reckon/crew/runs/ as after-tests-standard-names.log, after-standard-names.log and scratch/after_suite.log; the fourth is /home/ITER/mcintos/after_suite_20260908.log. TWO HYPOTHESES I COULD NOT SEPARATE and want separated rather than assumed: a capture cap on the worker's log, which the 400-byte spread across three files argues against because a hard cap would give identical sizes; or the runs genuinely executing a smaller selection, which the missing counts line can neither confirm nor refute. A third I did not test is that the TMPDIR failure changes pytest's behaviour, since pytest writes tmp_path and its cache under TMPDIR. Reckon has searched its own manifest, ledger and promotion paths and found NO byte ceiling, so this is not reckon-side. DO NOT skip the completed run: without a counts line there is no base, and every added-failure measurement in this sprint was made against a list that stops at p, so no regression in the export, supersession, approval or unit-override surface was visible to anyone. Set TMPDIR=/tmp explicitly and run on a SLURM debug partition with --time 00:59:00; if one hour is not enough, split by test path and report each part's counts line separately, saying so. Pass --no-sync exactly once and keep UV_NO_SYNC=1 in the environment. DURABILITY: write your manifest with the counts you already hold BEFORE any long output, and append findings incrementally.",
+          "estimated_hours": null,
+          "goal": "Establish one complete failure list for the standard-names suite and find why the recorded runs stop short",
+          "id": "n-sli-the-suite-base-is-a-complete-run",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T060914409633-n-sli-the-suite-base-is-a-complete-run/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a76",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "docs/evidence/sn-lifecycle-integrity/suite-base-complete-run.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "cx-fitclass",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T06:09:22Z",
+        "completed_at": "2026-09-08T06:51:40Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 2538,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 2538,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "3d7faa0d61299b7502240268a161555dec7ccfe4",
+        "commits": [
+          "9c066378ab9a7a064b0fd382ced83a6faf553368",
+          "e5dbabb7261ee0c24a9eed0a8da9554c61eecdb0"
+        ],
+        "changed_lines": {
+          "added": 296,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "srun --export=ALL,TMPDIR=/tmp --partition=all_debug uv run pytest -p no:cacheprovider tests/standard_names/",
+          "exit_status": 1,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T060914409633-n-sli-the-suite-base-is-a-complete-run/complete-standard-names.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T060914409633-n-sli-the-suite-base-is-a-complete-run/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07f49-37c0-7d01-80b9-141b43433c6c",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 0,
+            "cached_input_tokens_cumulative": 3465600,
+            "input_tokens": 0,
+            "input_tokens_cumulative": 3576324,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 20597,
+            "reasoning_output_tokens": 711,
+            "reasoning_output_tokens_cumulative": 7329
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 3465600,
+          "cumulative_input_tokens": 7041924,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 27926
+        },
+        "follow_on_paths": [
+          "tests/standard_names/test_release_import_locality.py"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "resume",
+        "attempt": 3,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sli-the-suite-base-is-a-complete-run",
+          "session_id": "01a07f49-37c0-7d01-80b9-141b43433c6c",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T06:51:40Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -102560,13 +103424,13 @@
         "backend": "codex-spark",
         "purpose": "dispatch",
         "opened_at": "2026-09-06T08:06:41Z",
-        "closed_at": null,
-        "held_seconds": null,
+        "closed_at": "2026-09-08T06:45:43Z",
+        "held_seconds": 167942,
         "utilisation_pct": 95.0,
         "resets_at": "2026-09-11T04:24:27Z",
         "effective_ceiling_pct": 95.0,
         "reason": "utilisation 95% with burn multiple 3.1x is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
-        "closed_by_purpose": null,
+        "closed_by_purpose": "dispatch",
         "resumption_fired": false
       },
       {
@@ -102626,6 +103490,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1936
+    "_version": 1947
   }
 }
