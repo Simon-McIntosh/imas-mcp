@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T10:54:45",
+  "updated": "2026-09-08T11:17:20",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -88,7 +88,8 @@
         "session_id": "aadb3c4d-38dd-434c-a6ad-2ea8998034d7",
         "session_model": "deepseek-v4-flash",
         "sessions": {
-          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "aadb3c4d-38dd-434c-a6ad-2ea8998034d7"
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"local\":true,\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "aadb3c4d-38dd-434c-a6ad-2ea8998034d7",
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "a1870210-c6f2-463e-948b-587570fbbf9d"
         },
         "created": "2026-09-05"
       },
@@ -105533,6 +105534,548 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T083914377970-n-sgr-the-successor-migration-runs-to-completion",
+        "plan": "sn-grammar-refinement",
+        "section": "\u00a76",
+        "node": "n-sgr-the-successor-migration-runs-to-completion",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1687,
+                "cached_input_tokens": 484757,
+                "input_tokens": 486446,
+                "output_tokens": 1578,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 488024,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "The 48 strict-non-canonical drafted-and-open successors have reached their canonical spellings, with a per-identity receipt recording the identity before, the route taken, the canonical target, and the state read back from the graph afterwards. THE PLAN AND THE BLOCKER ARE BOTH ALREADY SOLVED, so re-derive neither. Read docs/evidence/sn-grammar-refinement/noncanonical-successor-routes.md for the routes: 35 folds, 12 staged renames, 1 blocked fold, plus 1 identity that cannot be parsed far enough to supply any target and is held separate from the 48. An earlier attempt re-verified all 48 dry runs then stopped on the FIRST identity because supersede_into's postflight exact-state proof refused and rolled back, leaving 0 committed mutations. THAT CAUSE IS FIXED AND MERGED at commit a3ad987cc: the postflight compared a readback against an expectation computed before the write, while the mutation stamped updated_at from the transaction clock, an instant the expectation could not name, so five fields diverged, all updated_at \u2014 the two participants plus three embedded copies carried by the target's projection, binding and scalar target. Both sides now take the stamp from the single instant the receipt declares for the ledger event. Pull main before starting so you have it; if a dry run passes and the live transaction still refuses on updated_at, your tree is stale. ALSO MERGED SINCE THE CENSUS and relevant to one of your rows: the fold guard reads the current successor from the ordering of StandardNameChange rows rather than from REFINED_FROM edge existence, at commit 7ee06421b. The census flagged that its ONE blocked fold must be rechecked if the fold guard changed its answer, so recheck that row and report whether it is now foldable. HOW TO EXECUTE: re-run each route's dry run immediately before executing that route, then execute, folds before renames, ONE IDENTITY AT A TIME. Never force a route whose dry run does not pass. STOP on the first unexpected refusal or any result that does not match the planned route, report what completed, and do not continue past it \u2014 a partial migration with a complete receipt is recoverable and is the outcome I want if anything surprises you. Do not force a guard, do not delete a REFINED_FROM edge, and do not repair a refusal by editing a guard; a guard that refuses is a finding and belongs in the receipt. The unparseable identity, and the blocked fold if it remains blocked, are follow-on conditions rather than work for this node. The graph tunnel is login-node-local so live work runs on the LOGIN NODE, each query bounded, ten seconds per query ceiling, exception declared in the manifest. Gate: tests/standard_names, added failures against a base you measure at your own head after pulling. Do NOT pass -q to pytest: quiet mode is removed from addopts so a run emits its totals line, and quote it. DURABILITY: write your manifest before any long output and append each identity's receipt as you complete it, because a half-finished migration whose receipt was deferred is the one outcome I cannot recover from.",
+          "estimated_hours": null,
+          "goal": "Move every non-canonical drafted successor to its canonical spelling along the enumerated routes",
+          "id": "n-sgr-the-successor-migration-runs-to-completion",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T083914377970-n-sgr-the-successor-migration-runs-to-completion/manifest.md",
+          "plan": "sn-grammar-refinement",
+          "requested_backend": "claude-opus",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a76",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "docs/evidence/sn-grammar-refinement/successor-migration-receipts.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "claude-opus-a",
+        "backend": "claude-opus",
+        "local": false,
+        "agent": {
+          "alias": "opus 5",
+          "backend": "claude-opus",
+          "effort": "high",
+          "launch": "cli",
+          "model": "claude-opus-5",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T08:39:25Z",
+        "completed_at": "2026-09-08T08:58:43.309Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 1151,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 1158,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "9697ab3a70e69c057dd856c705782940ef6e1914",
+        "commits": [
+          "10cac4c353ad86ceb99827a173d60b0175219544"
+        ],
+        "changed_lines": {
+          "added": 160,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "the live migration itself, plus tests/standard_names on all_debug before and after",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "migration exited 0 with 47 of 47 executable routes committed and verified, 35 folds then 12 staged renames, one identity at a time with each route's own dry run immediately before its live transaction, 0 refusals and 0 rollbacks; the blocked-fold recheck returned ok=false and was not forced; suite 43 failed, 7214 passed, 11 skipped, 323 deselected before and the identical counts after, with byte-identical failure sets and 0 added failures"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T083914377970-n-sgr-the-successor-migration-runs-to-completion/manifest.md",
+        "scope_changed": false,
+        "session_id": "deaaf47d-fb2c-415b-9277-aa0147e00256",
+        "budget": {
+          "headroom": "known",
+          "utilisation_pct": 98.0,
+          "rate_limit_type": "five_hour",
+          "rate_limit_period_minutes": null,
+          "resets_at": "2026-09-08T11:20:00Z",
+          "threshold_status": "allowed_warning",
+          "surpassed_threshold": 0.9,
+          "tokens": {
+            "cache_creation_input_tokens": 123191,
+            "cache_creation_input_tokens_cumulative": 123191,
+            "cache_read_input_tokens": 3409407,
+            "cache_read_input_tokens_cumulative": 3409407,
+            "inference_geo": "not_available",
+            "input_tokens": 64,
+            "input_tokens_cumulative": 64,
+            "output_tokens": 24720,
+            "output_tokens_cumulative": 24720,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": 3.5549335,
+          "refusal": false,
+          "detail": "backend reports utilisation and reset time",
+          "cost_usd_cumulative": 3.5549335
+        },
+        "lane_receipt": {
+          "quota_state": "unmeasured",
+          "observed_at": "2026-09-08T08:58:43.309Z",
+          "effective_context_window": "unmeasured",
+          "quota_windows": [],
+          "unmeasured": {
+            "effective_context_window": "missing_rollout",
+            "quota_windows": "missing_rollout"
+          }
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 3409407,
+          "cumulative_input_tokens": 3532662,
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 1154.865,
+          "generated_tokens": 24720,
+          "generation_seconds": 353.167,
+          "input_budget_tokens": 1000000,
+          "input_utilisation_pct": 13.6,
+          "machine_seconds": 801.698,
+          "peak_input_tokens": 136405,
+          "tokens_per_second": 70.0,
+          "wall_tokens_per_second": 21.41
+        },
+        "follow_on_paths": [
+          "tests/standard_names",
+          "baseline-failures.txt"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sgr-the-successor-migration-runs-to-completion",
+          "session_id": "deaaf47d-fb2c-415b-9277-aa0147e00256",
+          "session_source": "stream",
+          "retained_at": "2026-09-08T08:58:43.309Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T085529698033-n-swct-the-tombstone-suppression-keeps-the-supersede-contract",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a79",
+        "node": "n-swct-the-tombstone-suppression-keeps-the-supersede-contract",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 648,
+                "cached_input_tokens": 504092,
+                "input_tokens": 504742,
+                "output_tokens": 2375,
+                "reasoning_output_tokens": 725,
+                "total_tokens": 507117,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "tests/standard_names/test_tombstone_supersede.py and tests/standard_names/test_supersede_into_tombstone.py pass, and a superseded identity is still not selected as an export candidate. THE MEASUREMENT, taken by the coordinator at main head with pytest's own counts line: 43 failed, 7214 passed, 11 skipped, 323 deselected in 275.15s. Of those, 14 are in test_tombstone_supersede.py and 9 in test_supersede_into_tombstone.py. Those 23 are yours. The other 20 are pre-existing or belong to other nodes and are not your concern. THE CAUSE IS ON MAIN AND IS THE COORDINATOR'S: commit 15a48babc, merged as f62ff059e, added _tombstone_exclusion_clause to imas_codex/standard_names/export.py and applied it in both candidate-selection queries, suppressing identities where coalesce(sn.status,'') equals superseded or coalesce(sn.name_stage,'') equals superseded. It was merged on evidence of six passing focused tests with no full-suite count demanded. WHAT THE CHANGE IS FOR AND MUST KEEP DOING: a superseded identity is a tombstone that keeps its graph record for lineage while being non-exportable. It had been entering the candidate population at every cut, dropped downstream as not accepted, and accounted as an exclusion forever. Selection must exclude it at the population boundary so it is never a candidate and never counted. The two selection queries deliberately share one predicate so the candidate count and the eligibility decision cannot drift apart; that property must still hold when you finish. FOR EACH OF THE 23 FAILURES report which of exactly two states it is in, quoting the assertion as evidence. State A: the suppression is too broad and catches an identity that is not a tombstone \u2014 then narrow the predicate to name tombstones only and report what it was over-catching. State B: the test encodes an expectation the tombstone ruling replaces \u2014 then update the test and say in its body what changed and why. Every one of the 23 must be placed in A or B with evidence; an unplaced failure is an incomplete result. NEVER delete a test to make a count fall, never remove the suppression, never exempt either suite from it, and never widen the predicate back to admitting tombstones, because that restores the defect the change fixed. VERIFY by running the FULL tests/standard_names and quoting pytest's own counts line verbatim, showing the total falling from 43 by 23, and list every id that remains so other nodes can take them. Separately demonstrate that a superseded identity is not selected as a candidate. Run on all_debug with --export=ALL,TMPDIR=/tmp and --time 00:59:00, write the uv command without --no-sync, and do not pass -q because quiet mode is removed from addopts and a run now emits its own totals line. DURABILITY: write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Make the tombstone selection suppression hold without breaking the supersede contract beside it",
+          "id": "n-swct-the-tombstone-suppression-keeps-the-supersede-contract",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T085529698033-n-swct-the-tombstone-suppression-keeps-the-supersede-contract/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/export.py",
+            "tests/standard_names/test_tombstone_supersede.py",
+            "tests/standard_names/test_supersede_into_tombstone.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "codex-terra-a",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T08:55:41Z",
+        "completed_at": "2026-09-08T09:13:53Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1092,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1092,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "74b4bb5a1ff945e6393d907979f17e0338206cc5",
+        "commits": [
+          "60b1cb53633f047f3fa04fc9790b85d55b8aa3c5"
+        ],
+        "changed_lines": {
+          "added": 12,
+          "removed": 2,
+          "files": 2
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "focused test_export_tombstone_selection plus both supersede suites, then the full tests/standard_names on all_debug",
+          "exit_status": 1,
+          "log_path": null,
+          "log_digest": "focused 55 passed in 7.34s; full all_debug after: 18 failed, 7239 passed, 11 skipped, 323 deselected in 283.78s, down from the coordinator's 43 at main head"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T085529698033-n-swct-the-tombstone-suppression-keeps-the-supersede-contract/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a0803a-f27a-77a0-941d-8385cfb4adbf",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 7026176,
+            "cached_input_tokens_cumulative": 7026176,
+            "input_tokens": 7216727,
+            "input_tokens_cumulative": 7216727,
+            "output_tokens": 20042,
+            "output_tokens_cumulative": 20042,
+            "reasoning_output_tokens": 5397,
+            "reasoning_output_tokens_cumulative": 5397
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T09:13:53Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 24.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T09:13:53Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 7026176,
+          "cumulative_input_tokens": 14242903,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 25439
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "running the FULL tests",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swct-the-tombstone-suppression-keeps-the-supersede-contract",
+          "session_id": "01a0803a-f27a-77a0-941d-8385cfb4adbf",
+          "session_source": "stream",
+          "retained_at": "2026-09-08T09:13:53Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T075231302992-n-swct-the-recoverable-exclusions-are-recovered",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a79",
+        "node": "n-swct-the-recoverable-exclusions-are-recovered",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1047,
+                "cached_input_tokens": 388941,
+                "input_tokens": 389990,
+                "output_tokens": 2097,
+                "reasoning_output_tokens": 501,
+                "total_tokens": 392087,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "The two candidates excluded for a null physics_domain carry an assigned domain, and the one tombstoned identity is excluded from candidate selection rather than from the export, with each of the three reported by identity before and after. THE COHORT IS ALREADY MEASURED, so do not re-derive it: a peer node ran the real WEST review export over the 214-name batch and closed its accounting exactly, 214 candidates minus 196 published equals 18 accounted exclusions with residue zero. The eighteen are 5 invalid_validation_status because validation_status is quarantined, 2 missing_physics_domain, 2 name_not_accepted because name_stage is reviewed rather than accepted or approved, and 9 never_reviewed. Its report is docs/evidence/sn-west-cohort-treatment/export-accounting-closure.md and it names the rows. YOUR THREE ROWS AND NOBODY ELSE'S: the 2 missing_physics_domain candidates, plus the tombstoned identity. The 5 quarantined rows belong to a concurrent node revalidating them, and the 9 never_reviewed rows are a follow-on about a lifecycle projection disagreeing with reachable review data \u2014 leave both alone and do not touch their state. FIRST, THE TWO NULL DOMAINS: assign each a physics domain derived from what the source actually measures, using the domain vocabulary the pipeline already uses and the physics-domain mapping the repository already has. Report for each the identity, the source path, the domain assigned, and the evidence for that assignment in one sentence. A domain assigned because it lets the name through rather than because it describes the physics is the wrong repair, so state the physics reason. SECOND, THE TOMBSTONED IDENTITY: it must stop being SELECTED as a candidate rather than being dropped later by the export. Those are different repairs with different accounting consequences: excluded-at-the-export means it counts as an exclusion forever, while never-selected means it correctly never enters the population. Find where candidate selection admits it, make selection skip a tombstone, and state which predicate you changed. Report the candidate count before and after, which must fall by exactly one. THIRD, PROVE IT: re-run the export accounting and report the new arithmetic \u2014 candidate count, published count, each bucket, residue. Residue must remain zero, and missing_physics_domain must now read zero. If the two recovered names do not publish, say why per name rather than reporting a count. DO NOT repair data with ad-hoc Cypher: assign through the backing code path so the change is reproducible, which is this repository's standing rule for data defects. DO NOT weaken any export predicate to admit a name; the point is that a name either satisfies the predicate or is counted with a cause. The graph tunnel is login-node-local so live work runs on the LOGIN NODE, bounded to these three identities and the export population, ten seconds per query, exception declared in the manifest. Gate: tests/standard_names, added failures against a base taken at your own head; the current base is 18 failures rather than 118 because the import-locality test file was repaired and merged, so pull main first and a reading of 118 means a stale tree. Do NOT pass -q to pytest: quiet mode is removed from addopts so a run emits its totals line, and quote it. DURABILITY: write your manifest before any long output and append each identity as you finish it.",
+          "estimated_hours": null,
+          "goal": "Recover the three WEST exclusions that a repair can return to the batch",
+          "id": "n-swct-the-recoverable-exclusions-are-recovered",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T075231302992-n-swct-the-recoverable-exclusions-are-recovered/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requested_backend": "clive",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "docs/evidence/sn-west-cohort-treatment/recovered-exclusions.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "clive-tail",
+        "backend": "clive",
+        "local": false,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-08T07:52:48Z",
+        "completed_at": "2026-09-08T08:30:11.241Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 2233,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 2243,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "124a21fda386fa415b8b8ff69d531ea96f22326e",
+        "commits": [
+          "15a48babc78d7c4a1a491f8d865fc951b5331496",
+          "96f4a880605eb3a37c2c348403056b3f635f842b",
+          "d79c0174661eadc5295b54127c0a9d34bf656213"
+        ],
+        "changed_lines": {
+          "added": 799,
+          "removed": 11,
+          "files": 11
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "tests/standard_names on all_debug plus focused test_export_tombstone_selection and test_reclassify_domain_edge",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "focused 6 passed 0 failed; full tests/standard_names on all_debug with the delta recorded in the evidence file"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T075231302992-n-swct-the-recoverable-exclusions-are-recovered/manifest.md",
+        "scope_changed": true,
+        "session_id": "1ace6583-dfa5-4e08-b47c-86440c0e7bf8",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 15023038,
+            "input_tokens_cumulative": 15023038,
+            "output_tokens": 66085,
+            "output_tokens_cumulative": 66085,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lane_receipt": {
+          "quota_state": "unmeasured",
+          "observed_at": "2026-09-08T08:30:11.241Z",
+          "effective_context_window": "unmeasured",
+          "quota_windows": [],
+          "unmeasured": {
+            "effective_context_window": "missing_rollout",
+            "quota_windows": "unmetered"
+          }
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 0,
+          "cumulative_input_tokens": 15023038,
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 2239.193,
+          "generated_tokens": 66085,
+          "generation_seconds": 1359.667,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 18.9,
+          "machine_seconds": 879.526,
+          "peak_input_tokens": 192349,
+          "tokens_per_second": 48.6,
+          "wall_tokens_per_second": 29.51
+        },
+        "follow_on_paths": [
+          "tests/standard_names",
+          "test_supersede_into_tombstone.py/test_tombstone_supersede.py",
+          "supersede/tombstone"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": [
+          {
+            "path": "docs/evidence/sn-west-cohort-treatment/pipeline-drain-receipts.md",
+            "reason": "not this run's authored work: my brief under-fenced it and it also pulled main to measure against the current base, so its range spans the merges I landed this session. Its own three commits are export.py, its tombstone-selection test, and its evidence document."
+          },
+          {
+            "path": "docs/evidence/sn-west-cohort-treatment/quarantine-instrument-authority.md",
+            "reason": "not this run's authored work: my brief under-fenced it and it also pulled main to measure against the current base, so its range spans the merges I landed this session. Its own three commits are export.py, its tombstone-selection test, and its evidence document."
+          },
+          {
+            "path": "docs/plans/sn-grammar-refinement.html",
+            "reason": "not this run's authored work: my brief under-fenced it and it also pulled main to measure against the current base, so its range spans the merges I landed this session. Its own three commits are export.py, its tombstone-selection test, and its evidence document."
+          },
+          {
+            "path": "docs/plans/sn-west-cohort-treatment.html",
+            "reason": "not this run's authored work: my brief under-fenced it and it also pulled main to measure against the current base, so its range spans the merges I landed this session. Its own three commits are export.py, its tombstone-selection test, and its evidence document."
+          },
+          {
+            "path": "docs/state/imas-codex/crew.json",
+            "reason": "not this run's authored work: my brief under-fenced it and it also pulled main to measure against the current base, so its range spans the merges I landed this session. Its own three commits are export.py, its tombstone-selection test, and its evidence document."
+          },
+          {
+            "path": "imas_codex/standard_names/campaign.py",
+            "reason": "not this run's authored work: my brief under-fenced it and it also pulled main to measure against the current base, so its range spans the merges I landed this session. Its own three commits are export.py, its tombstone-selection test, and its evidence document."
+          },
+          {
+            "path": "imas_codex/standard_names/edit.py",
+            "reason": "not this run's authored work: my brief under-fenced it and it also pulled main to measure against the current base, so its range spans the merges I landed this session. Its own three commits are export.py, its tombstone-selection test, and its evidence document."
+          },
+          {
+            "path": "imas_codex/standard_names/export.py",
+            "reason": "not this run's authored work: my brief under-fenced it and it also pulled main to measure against the current base, so its range spans the merges I landed this session. Its own three commits are export.py, its tombstone-selection test, and its evidence document."
+          },
+          {
+            "path": "tests/standard_names/test_export_tombstone_selection.py",
+            "reason": "not this run's authored work: my brief under-fenced it and it also pulled main to measure against the current base, so its range spans the merges I landed this session. Its own three commits are export.py, its tombstone-selection test, and its evidence document."
+          },
+          {
+            "path": "tests/standard_names/test_fold_dry_run_predicts_live.py",
+            "reason": "not this run's authored work: my brief under-fenced it and it also pulled main to measure against the current base, so its range spans the merges I landed this session. Its own three commits are export.py, its tombstone-selection test, and its evidence document."
+          }
+        ],
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swct-the-recoverable-exclusions-are-recovered",
+          "session_id": "1ace6583-dfa5-4e08-b47c-86440c0e7bf8",
+          "session_source": "stream",
+          "retained_at": "2026-09-08T08:30:11.241Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -105775,6 +106318,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1969
+    "_version": 1973
   }
 }

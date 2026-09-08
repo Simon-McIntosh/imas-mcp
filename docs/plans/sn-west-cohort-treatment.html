@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-08">
-<meta name="plan-version" content="36">
+<meta name="plan-version" content="38">
 <meta name="plan-impl" content="0.8">
 <meta name="plan-commits" content="2d9d674a">
 </head>
@@ -567,6 +567,12 @@ worth paying for, because only then can its result be seen.</p>
 </div>
 <div class="r-comment" data-section="s9" data-id="c-run-r-20260908T081708071005-n-swct-an-absent-docs-review-is-told-apart-from-an-unrecorded-one" data-who="codex-terra-b" data-when="2026-09-08T08:49:13Z">
     <div class="r-comment-body"><p>The nine never_reviewed WEST names have genuinely never had a docs-axis review, and the docs_stage scalar is what lies about it. A bounded live query over the exact nine ids, optionally matching a docs-axis StandardNameReview, returned nine rows each with docs_stage accepted, docs_review_count 0, an empty docs_reviews list, and null reviewer_score_docs, reviewer_verdict_docs, reviewed_docs_at and docs_review_quorum_shortfall. So the scalar projection claims acceptance while the relationship carrying the evidence is absent. It also separated the two predicates the failing test demanded be distinguished: never-reviewed means no docs-axis review edge exists, while resolution-unrecorded means a review exists with no winning resolution_method. The nine meet the first and not the second, so a docs review must actually be run for them and there is nothing stored to surface. Its own manifest recorded no baseline, so the coordinator attributed the 41 by file and established that this run added zero.</p></div>
+</div>
+<div class="r-comment" data-section="s9" data-id="c-run-r-20260908T085529698033-n-swct-the-tombstone-suppression-keeps-the-supersede-contract" data-who="codex-terra-a" data-when="2026-09-08T09:13:53Z">
+    <div class="r-comment-body"><p>The suite falls from 43 failures to 18, and the cause was not what I briefed. I attributed the 23 failures to my tombstone-selection merge because the failing files are named test_tombstone_supersede and test_supersede_into_tombstone; in fact those suites exercise supersede and fold operations, and what moved under them was the fold updated_at repair at a3ad987cc, which made the postflight pin the modification time to an exact expected value. The fixtures had never modelled that stamp. The repair is test-only, 12 insertions across the two files, mirroring the timestamps applied to both fold participants so the stateful transaction fixtures satisfy exact postflight receipt verification including tombstone revival. No production code changed, no assertion weakened, and the tombstone suppression still suppresses. One record defect worth noting: its manifest recorded a full commit sha, 60b1cb536c7b2a76dcf7182d0cadfd986711ac08, that does not exist — only the nine-character prefix matches the real commit 60b1cb53633f047f3fa04fc9790b85d55b8aa3c5, so a merge on the recorded value was refused as unmergeable and the true sha came from reading the worktree.</p></div>
+</div>
+<div class="r-comment" data-section="s9" data-id="c-run-r-20260908T075231302992-n-swct-the-recoverable-exclusions-are-recovered" data-who="clive-tail" data-when="2026-09-08T08:30:11.241Z">
+    <div class="r-comment-body"><p>A tombstoned identity now stops at the selection boundary rather than entering the candidate population and being accounted as an exclusion at every cut. One shared predicate feeds both selection queries so the candidate count and the eligibility decision cannot drift apart, suppressing both tombstone encodings through null-safe coalesce comparisons rather than bare equality. The two null-domain candidates carry assigned domains. Reconciliation was deferred because it wrote export.py outside its declared fence — my defect, since I asked for a selection change while fencing only the evidence document — and a live peer legitimately claimed that file until now, which reckon correctly refused to let this run accept.</p></div>
 </div>
 </section>
 </main>
