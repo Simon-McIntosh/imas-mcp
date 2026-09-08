@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T10:16:41",
+  "updated": "2026-09-08T10:30:55",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -105058,6 +105058,165 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T074909754298-n-swct-the-roster-transcribes-the-cause-it-already-has",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a79",
+        "node": "n-swct-the-roster-transcribes-the-cause-it-already-has",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 428,
+                "cached_input_tokens": 377367,
+                "input_tokens": 377797,
+                "output_tokens": 1388,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 379185,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A roster row that has a recorded cause carries that cause in non_nameable_reason, demonstrated by regenerating the WEST roster and reporting the count of unnamed rows with an empty reason before and after. THE DEFECT IS LOCATED, so do not search for it: imas_codex/standard_names/graph_ops.py at line 12324 builds non_nameable_reason from the joined skip_reason and skip_reason_detail ONLY when source_status equals the string skipped, and emits an empty string for every other status. It never reads last_error, the field carrying every compose failure. A peer node measured the consequence on the frozen roster v0.10.0rc1+west-task-2e: of 355 manifest_sources rows, 324 have a name and 31 do not; of those 31, 18 record no cause, and ELEVEN of the 18 have a full cause in the graph that this function dropped in transcription. Its report at docs/evidence/sn-west-cohort-treatment/unnamed-row-causes.md enumerates the rows \u2014 read it rather than re-deriving the cohort. WHAT TO CHANGE: the reason must be sourced from whichever field holds it for that row's status, so a status of not_physical_quantity, extracted or failed can each carry its recorded verdict or error rather than an empty string. State the precedence explicitly in the code: which field wins when more than one is populated, and what a row with nothing recorded emits. A row with no recorded cause must emit a value a reader can tell apart from a transcription failure, because an empty string is exactly what hid this defect for a whole cohort. DO NOT invent or synthesise a cause for a row whose state carries none, and do not widen the roster schema to smuggle one in; sources_manifest.py declares non_nameable_reason as a string and that is the field to fill. VERIFY BY REGENERATION rather than by unit test alone: regenerate the roster against the live graph, report the before and after counts of unnamed rows carrying an empty reason, and give three named examples whose cause now appears together with the field each came from. A unit test on a fixture cannot show that live rows transcribe, which is the whole claim. Also add a test that fails if a row with a populated last_error emits an empty reason. Gate: tests/standard_names, added failures against a base taken at your own head; the current base is 18 failures rather than 118 because the import-locality test file was repaired and merged, so pull main first and a reading of 118 means a stale tree. Do NOT pass -q to pytest: quiet mode is removed from addopts so a run emits its totals line, and quote it as evidence the list is whole. The graph tunnel is login-node-local so live reads run on the LOGIN NODE, bounded to this roster, ten seconds per query, declared in the manifest. DURABILITY: write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Make the roster emit the cause the graph already records, instead of blanking it",
+          "id": "n-swct-the-roster-transcribes-the-cause-it-already-has",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T074909754298-n-swct-the-roster-transcribes-the-cause-it-already-has/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requested_backend": "codex-luna",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "50m",
+          "write_paths": [
+            "imas_codex/standard_names/graph_ops.py",
+            "tests/standard_names/test_roster_reason_transcription.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "codex-luna-b",
+        "backend": "codex-luna",
+        "local": false,
+        "agent": {
+          "alias": "luna5.6",
+          "backend": "codex-luna",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-luna",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T07:49:33Z",
+        "completed_at": "2026-09-08T08:19:31Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1798,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1798,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "124a21fda386fa415b8b8ff69d531ea96f22326e",
+        "commits": [
+          "e20817e41ff047e9199a957685d9f92da7bfefde"
+        ],
+        "changed_lines": {
+          "added": 63,
+          "removed": 5,
+          "files": 2
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "focused transcription and projection tests, plus the full tests/standard_names baseline and after",
+          "exit_status": 1,
+          "log_path": null,
+          "log_digest": "focused 2 passed exit 0; full gate baseline 7213 passed with 33 failed, final 7228 passed with 20 failed, zero added failure ids"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T074909754298-n-swct-the-roster-transcribes-the-cause-it-already-has/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07ffe-6615-7b33-af16-ce2409104e98",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 16222464,
+            "cached_input_tokens_cumulative": 16222464,
+            "input_tokens": 16474834,
+            "input_tokens_cumulative": 16474834,
+            "output_tokens": 35107,
+            "output_tokens_cumulative": 35107,
+            "reasoning_output_tokens": 10355,
+            "reasoning_output_tokens_cumulative": 10355
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T08:19:31Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 21.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T08:19:31Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 16222464,
+          "cumulative_input_tokens": 32697298,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 45462
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swct-the-roster-transcribes-the-cause-it-already-has",
+          "session_id": "01a07ffe-6615-7b33-af16-ce2409104e98",
+          "session_source": "stream",
+          "retained_at": "2026-09-08T08:19:31Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -105300,6 +105459,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1966
+    "_version": 1967
   }
 }
