@@ -67,8 +67,50 @@ no request carrying the intended identity.
 
 ## Required next action
 
-The reviewer or lead must decide how to resolve the exhausted rename proposal.
-A later node may re-steer or otherwise adjudicate
-`net_power_due_to_ion_cyclotron_heating` through the governed name-review
-path. Only after it reaches an exportable state can request 18 be closed and a
-new branch and fork review request be cut.
+The lead adjudicated the exhausted proposal after this first preflight. The
+backing path was `promote._contest` followed by
+`promote.revert_contested`: the first represents the human-versus-rubric
+disagreement, and the second records the human resolution while returning the
+identity to the exportable name-axis stage. No threshold or review row was
+changed.
+
+Before adjudication the identity was `exhausted`, valid, catalog-draft, with
+`reviewer_score_name=0.6875`. Exactly nine name-axis review rows were present,
+spanning scores `0.6875` through `1.0`. After adjudication it read
+`name_stage=accepted`, `validation_status=valid`, catalog `status=draft`,
+the same reviewer score, the same nine review rows, and a
+`contested_resolution` carrying the physics reason: net is the
+forward-minus-reflected antenna-boundary power and distinguishes this identity
+from the forward, reflected, and total variants.
+
+## Second release preflight
+
+A fresh execution of the same release preflight still could not produce the
+required catalog. Its accounting also closes:
+
+```text
+224 candidates - 206 exported = 18 accounted exclusions; residue = 0
+```
+
+The successor is no longer an exclusion, but it is also not a candidate.
+A bounded state read explains the population-boundary result:
+
+```text
+name_stage=accepted
+docs_stage=pending
+status=draft
+source_paths=[]
+PRODUCED_NAME source count=0
+```
+
+The exported entry files again contain neither the accepted successor nor the
+superseded predecessor. Compared with request 18's 208 published entries, the
+second preflight remains two entries smaller. Because the successor has no
+source provenance and no accepted docs axis, opening the 206-name request would
+still omit the exact identity this recut exists to carry.
+
+The next action is a governed provenance/docs repair, not a release override:
+restore the successor's source bindings through their backing lifecycle path
+and complete its documentation axis, then repeat the preflight. Request 18
+remains open until a zero-residue export positively contains the renamed
+identity.
