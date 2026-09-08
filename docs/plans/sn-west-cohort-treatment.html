@@ -23,8 +23,8 @@
   <title>WEST Cohort Treatment and Batch Scoping | imas-codex</title>
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
-<meta name="plan-modified" content="2026-09-07">
-<meta name="plan-version" content="27">
+<meta name="plan-modified" content="2026-09-08">
+<meta name="plan-version" content="31">
 <meta name="plan-impl" content="0.8">
 <meta name="plan-commits" content="2d9d674a">
 </head>
@@ -540,6 +540,18 @@ worth paying for, because only then can its result be seen.</p>
 </div>
 <div class="r-comment" data-section="_top" data-id="c-swct-exclusion-accounting-hole" data-who="" data-when="">
     <div class="r-comment-body"><p><strong>The export gate named <code>exclusion_accounting</code> passed on a header whose own arithmetic does not close.</strong> The cut declares <code>candidate_count: 214</code> and <code>published_count: 196</code>, then declares <code>excluded_below_score_count: 0</code> and <code>excluded_unreviewed_count: 0</code>. Eighteen names left the batch through neither counter.</p><p>Two of the paths they actually took are now identified. A null <code>physics_domain</code> puts a name outside <code>domains_included</code> and drops it; <code>validation_status: quarantined</code> drops it as well. Neither is counted, so the artifact cannot report either. Recovering the names is worth doing once; making the gate cover every exit is what stops the next candidate losing names as quietly as this one did, and it should land before any re-cut.</p><p>A third reading in the same header is worth carrying forward: the published set contains a name scored 0.568 against a declared <code>min_score_applied: 0.65</code>, while every withheld name scores 0.779 or above. Whatever separated the two sets, it was not the score filter the header claims to have applied.</p></div>
+</div>
+<div class="r-comment" data-section="s9" data-id="c-run-r-20260908T070933065747-n-swct-the-export-accounts-for-every-exit" data-who="codex-luna-a" data-when="2026-09-08T07:23:11Z">
+    <div class="r-comment-body"><p>Every name that leaves the WEST export is now counted with a stated cause, proven on the real 214-name batch rather than on a fixture: 214 minus 196 equals 18 with residue zero. The eighteen resolve as 5 quarantined, 2 with a null physics_domain, 2 whose name_stage is reviewed rather than accepted, and 9 with no reachable docs-axis review. It also killed the false comment I had flagged as a lead: the exporter claimed domain filtering happened upstream so its domain counter was always zero, which was untrue on the accounting path — a scoped export must keep a candidate long enough to record why it was dropped. The nine never_reviewed rows are a real follow-on rather than a closed question, because the lifecycle projection reports docs_stage accepted for names whose docs review cannot be reached, and those two statements cannot both be right.</p></div>
+</div>
+<div class="r-comment" data-section="s9" data-id="c-run-r-20260908T064855471079-n-swct-the-compose-prompts-state-the-grammar-they-must-obey" data-who="cx-betatangle" data-when="2026-09-08T07:35:51Z">
+    <div class="r-comment-body"><p>The nine compose-stage prompts are aligned with the grammar they are supposed to enforce, with a per-file record of what disagreed. The node also reported honestly that a focused login-node run was interrupted after 92 passes when it crossed the ten-second placement boundary, and excluded it from gate evidence rather than presenting a partial run as a measurement.</p></div>
+</div>
+<div class="r-comment" data-section="s9" data-id="c-run-r-20260908T065032864788-n-swct-the-review-prompts-judge-what-the-grammar-judges" data-who="cx-exportstatus" data-when="2026-09-08T07:11:16Z">
+    <div class="r-comment-body"><p>Reviewer prompts now judge against the grammar rather than against taste, and two corrections matter beyond tidiness. The prompt had asserted poloidal_flux was a valid registered token; it is not a valid Standard Name and must not be endorsed, so reviewers were being told to bless a spelling the grammar rejects. And scores are now evidence-anchored bands of 20, 15, 10, 5 and 0 with an instruction not to manufacture fine-grained distinctions from preference — which addresses the measured near-threshold coin flip, where an unchanged scope swung 0.0755 on a re-run, ten times the decision margin. Sign conventions and value provenance are moved out of the name and into structured metadata, consistent with the settled provenance rule.</p></div>
+</div>
+<div class="r-comment" data-section="s9" data-id="c-run-r-20260908T065238352525-n-swct-the-refine-prompts-improve-without-drifting" data-who="cx-docsinherit" data-when="2026-09-08T07:15:34.825Z">
+    <div class="r-comment-body"><p>Refine and parent-enrichment prompts now bound how far a refine may move a name, which is what improve-only has to mean if the self-refine pre-loop is not to become a review vote and the pipeline&#x27;s weakest reviewer. The largest changes are in refine_name_system and refine_name_user, where the constraint on output identity is stated so a refine cannot emit a name the pipeline is then unable to persist — the mechanism behind refine products colliding onto placeholder names and stranding at name_stage pending.</p></div>
 </div>
 </section>
 </main>

@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T08:59:21",
+  "updated": "2026-09-08T09:39:35",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -245,9 +245,11 @@
         "id": "codex-terra-b",
         "harness": "codex-terra",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "01a07fd2-64f0-7812-9739-574de8f4cefa",
+        "session_model": "gpt-5.6-terra",
+        "sessions": {
+          "{\"alias\":\"terra5.6\",\"backend\":\"codex-terra\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-terra\",\"sandbox\":\"worktree-full\"}": "01a07fd2-64f0-7812-9739-574de8f4cefa"
+        },
         "created": "2026-09-08"
       },
       {
@@ -303,7 +305,8 @@
         "session_model": "gpt-5.6-sol",
         "sessions": {
           "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"medium\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a06b0b-d298-7183-b659-aed9331c37c4",
-          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a07f7a-b991-7071-8163-e5a92f884012"
+          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a07f7a-b991-7071-8163-e5a92f884012",
+          "{\"alias\":\"terra5.6\",\"backend\":\"codex-terra\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-terra\",\"sandbox\":\"worktree-full\"}": "01a07f7a-b991-7071-8163-e5a92f884012"
         },
         "created": "2026-09-04"
       },
@@ -103465,6 +103468,1112 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T063149446323-n-sli-a-test-run-always-reports-its-own-totals",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a76",
+        "node": "n-sli-a-test-run-always-reports-its-own-totals",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1655,
+                "cached_input_tokens": 209078,
+                "input_tokens": 210735,
+                "output_tokens": 1962,
+                "reasoning_output_tokens": 625,
+                "total_tokens": 212697,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "pytest in this repository always reports its own totals and every failure id verbatim, and the documented commands stop defeating that. THE MEASURED DEFECT, which you must not re-derive: pyproject.toml line 944 already carries -q inside addopts, so a command that adds its own -q runs at verbosity -2, and pytest drops its summary-stats line entirely at that verbosity. I isolated it on tests/standard_names/test_release_verify.py, 30 tests, four runs: addopts neutralised prints '30 passed, 1 warning in 7.02s'; addopts '-q' prints it; addopts '-q --durations=10' prints it after the durations block; addopts '-q --durations=10' plus a second -q on the command line prints NO totals line, exit 0. This cost the whole sprint its measurements \u2014 four suite logs carried no totals line, and workers therefore reported added failures against lists whose completeness nobody could check. THREE CHANGES. First, add -ra to the addopts list in pyproject.toml so the short test summary lists every failure and error verbatim regardless of verbosity, and verify by measurement that the totals line and a complete FAILED list both survive a doubled -q; if -ra does not survive verbosity -2, say so and instead remove -q from addopts, which is the alternative fix, and state which you chose and why. Second, correct every documented pytest command in AGENTS.md that adds -q, including the 'uv run pytest tests/standard_names/ -q' line in the Testing section, and state in one or two sentences why adding -q is harmful here: addopts already supplies it and the second one deletes the completeness signal. Grep the repository for other documented pytest invocations passing -q and correct them too, in AGENTS.md files at any depth, docs, skills and CLI help; list what you found. Third, while you are in the root AGENTS.md, the Checkpointing paragraph still says an export 'needs -o into BACKUPS_DIR or the currency instrument never sees it'; that became false when get_backup_currency began scanning both directories at neo4j_ops.py:616, and imas_codex/graph/AGENTS.md has already been corrected, so bring the root line into agreement rather than leaving the two files contradicting each other. Do not weaken --strict-markers or --strict-config, do not change the marker expression, and do not touch the timeout values. Gate: run tests/standard_names and report the totals line verbatim plus the complete failure list, and state the added-failure delta against the base revision you measured. On a compute node write the uv command WITHOUT --no-sync, because the shell function in .bashrc inserts it and a second one is refused before pytest starts. Use a debug partition with --time 00:59:00. DURABILITY: write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Make a test run always emit its totals and its full failure list, so a partial result cannot pass as a complete one",
+          "id": "n-sli-a-test-run-always-reports-its-own-totals",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T063149446323-n-sli-a-test-run-always-reports-its-own-totals/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a76",
+          "spec_level": "guided",
+          "time_budget": "45m",
+          "write_paths": [
+            "pyproject.toml",
+            "AGENTS.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "cx-guardmocks",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T06:32:16Z",
+        "completed_at": "2026-09-08T07:03:38Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1882,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1882,
+        "stalled": false,
+        "time_budget": "45m",
+        "base_sha": "4f6c04649f69b775b277bdc8f6f2e70fb0038cde",
+        "commits": [
+          "4a937c3df487f4c3da7a57340617f1115a6e8a67"
+        ],
+        "changed_lines": {
+          "added": 18,
+          "removed": 10,
+          "files": 4
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "srun --export=ALL,TMPDIR=/tmp --partition=all_debug uv run pytest -p no:cacheprovider tests/standard_names/ before and after",
+          "exit_status": 1,
+          "log_path": null,
+          "log_digest": "after totals line present verbatim: 118 failed, 7119 passed, 11 skipped, 322 deselected, 34 warnings in 296.53s; complete failure-set delta 0 added and 0 removed; no scoped pytest invocation still passes -q"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T063149446323-n-sli-a-test-run-always-reports-its-own-totals/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07f80-ea0c-7502-9f1f-1ca799ebd33f",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 0,
+            "cached_input_tokens_cumulative": 4693888,
+            "input_tokens": 0,
+            "input_tokens_cumulative": 4782223,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 20126,
+            "reasoning_output_tokens": 0,
+            "reasoning_output_tokens_cumulative": 5159
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 4693888,
+          "cumulative_input_tokens": 9476111,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 25285
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "run tests",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "resume",
+        "attempt": 2,
+        "scope_acceptances": [
+          {
+            "path": ".github/skills/project-dev/SKILL.md",
+            "reason": "same grant: the fourth documented -q site, enumerated by me and authorised in the resume advice"
+          },
+          {
+            "path": "docs/architecture/standard-names.md",
+            "reason": "scope granted mid-run: my dispatch fenced two files while the done-when asked for four, and the worker correctly refused rather than exceeding it"
+          }
+        ],
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sli-a-test-run-always-reports-its-own-totals",
+          "session_id": "01a07f80-ea0c-7502-9f1f-1ca799ebd33f",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T07:03:38Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T043250602299-n-srr-the-exclusion-accounting-reaches-the-reviewer",
+        "plan": "sn-release-readiness",
+        "section": "\u00a73",
+        "node": "n-srr-the-exclusion-accounting-reaches-the-reviewer",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1304,
+                "cached_input_tokens": 635910,
+                "input_tokens": 637216,
+                "output_tokens": 1003,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 638219,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "The complete per-reason exclusion accounting reaches the published catalog, proven by a test that fails when the delivery is reverted. THE ACCOUNTING ALREADY EXISTS AND IS COMPLETE, so do not build a new one: ExportReport.record_exclusions at imas_codex/standard_names/export.py:367-395 derives six counters AND a full identities_by_reason grouping, the exclusion_accounting gate at :1128 is total over its population and passed on the real 2026-09-07 cut, and _fetch_export_population at :546 selects approved-union-batch with no domain, validation, quorum or documentation predicate, so every batch name enters the population and every drop is already counted. The defect is delivery: that record is written only to staging/.export_report.json at :2200, and publish.py copies standard_names/*.yml and catalog.yml alone at :417-431 and git-adds exactly those two at :458, so the accounting is discarded with the staging directory. Confirmed: no .export_report.json exists anywhere on this machine. Do NOT try to widen catalog.yml, which cannot carry more: StandardNameCatalogManifest is extra=forbid with exactly excluded_below_score_count and excluded_unreviewed_count declared. Either copy and commit the export report alongside catalog.yml, or fold its per-reason breakdown into the exclusion ledger the release body already links; choose one, state why, and make candidate_count minus published_count equal the sum of accounted exclusions verifiable from what a reviewer can open. Report added failures against a stated base for tests/standard_names. DURABILITY: commit each deliverable as you complete it and write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Publish the exclusion accounting where a reviewer reads it instead of discarding it with the staging directory",
+          "id": "n-srr-the-exclusion-accounting-reaches-the-reviewer",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T043250602299-n-srr-the-exclusion-accounting-reaches-the-reviewer/manifest.md",
+          "plan": "sn-release-readiness",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a73",
+          "spec_level": "guided",
+          "time_budget": "50m",
+          "write_paths": [
+            "imas_codex/standard_names/publish.py",
+            "tests/standard_names/test_export_report_is_published.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "clive-census",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-08T04:32:58Z",
+        "completed_at": "2026-09-08T07:06:58.648Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 8973,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 9240,
+        "stalled": true,
+        "time_budget": "50m",
+        "base_sha": "b70da103168360fceaec0730f707d7acffb03e87",
+        "commits": [
+          "c48e96ad3b023cb30b546eb724225a94c6be9036"
+        ],
+        "changed_lines": {
+          "added": 250,
+          "removed": 1,
+          "files": 2
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "publish-adjacent gate, base versus head",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "publish-adjacent tests pass at head; 233-line test asserts the export report is copied, counted and staged for commit, and that a staging directory lacking it still publishes"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T043250602299-n-srr-the-exclusion-accounting-reaches-the-reviewer/manifest.md",
+        "scope_changed": false,
+        "session_id": "ef833336-cd1e-4ca1-83f6-1fbf8ea7d99f",
+        "budget": {
+          "cost_usd": null,
+          "detail": "no events yet",
+          "headroom": "unknown",
+          "rate_limit_period_minutes": null,
+          "rate_limit_type": null,
+          "refusal": false,
+          "resets_at": null,
+          "surpassed_threshold": null,
+          "threshold_status": null,
+          "tokens": null,
+          "utilisation_pct": null
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "follow_on_paths": [
+          "catalog.yml",
+          ".export_report.json"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-srr-the-exclusion-accounting-reaches-the-reviewer",
+          "session_id": "ef833336-cd1e-4ca1-83f6-1fbf8ea7d99f",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T07:06:58.648Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T070005647464-n-sli-the-import-guard-does-not-poison-the-suite",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a76",
+        "node": "n-sli-the-import-guard-does-not-poison-the-suite",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 876,
+                "cached_input_tokens": 295245,
+                "input_tokens": 296123,
+                "output_tokens": 1936,
+                "reasoning_output_tokens": 639,
+                "total_tokens": 298059,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "tests/standard_names/test_release_import_locality.py still fails if any module-level import of release_notes is hoisted into catalog_release, and it no longer causes failures in other files. THE MEASUREMENT, exact, do not re-derive it: at revision 3d7faa0d6 the full tests/standard_names run reports 118 failed, 7119 passed, 11 skipped, 322 deselected in 316.75s. Excluding ONLY this one file gives 18 failed, 7217 passed. The file passes 30 of 30 in isolation. So it causes 100 failures in OTHER files while being green itself. MECHANISM: it imports imas_codex.standard_names.catalog_release and imas_codex.standard_names.release_notes at module scope, in both orders, to demonstrate no circular import. That mutates sys.modules for the remainder of the session, so every later test in the process sees modules imported in an order it does not expect. A test that changes global interpreter state without restoring it is the defect, not the modules under test. WHAT THE GUARD MUST STILL DO, because it protects something real: release_notes.py line 29 imports _github_slug and _run_git from catalog_release at MODULE level, so the three imports of release_notes inside catalog_release near lines 1679, 1750 and 1988 must stay function-local or the cycle returns. Confirm that is still true before changing anything, and say so if the code has moved. HOW TO FIX \u2014 choose one and justify it, do not do all three. The hoisting check needs no import at all: parse catalog_release.py with ast and assert no module-level ImportFrom targets release_notes; that is completely hermetic and is the whole guard for that case. The both-orders load check does need real imports, so run it in a SUBPROCESS, one per order, asserting each exits zero, because a subprocess cannot pollute the parent. If you keep any in-process import it must save and restore the affected sys.modules entries around itself, but prefer the subprocess: restoring sys.modules correctly is harder than it looks and a partial restore is the same bug again. GATE, which is the point of the node: run the FULL tests/standard_names and show the total is now 18 failures rather than 118, quoting pytest's own counts line verbatim. Then run this file alone and show it still passes. Then prove the guard still bites \u2014 in a scratch copy hoist one import to module scope, show the test fails, revert, and do not commit that. Do NOT pass -q to pytest: addopts already supplies one and a second deletes the counts line, which is the exact signal this node's result rests on. Run on all_debug with --export=ALL,TMPDIR=/tmp and --time 00:59:00, and write the uv command WITHOUT --no-sync because the shell function on SLURM inserts it. DURABILITY: write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Make the import-locality guard prove its point without breaking every test collected after it",
+          "id": "n-sli-the-import-guard-does-not-poison-the-suite",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T070005647464-n-sli-the-import-guard-does-not-poison-the-suite/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a76",
+          "spec_level": "guided",
+          "time_budget": "45m",
+          "write_paths": [
+            "tests/standard_names/test_release_import_locality.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "codex-terra-a",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T07:00:22Z",
+        "completed_at": "2026-09-08T07:15:04Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 882,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 882,
+        "stalled": false,
+        "time_budget": "45m",
+        "base_sha": "66ce45d8fd0db8905ee6720207ac6cdfd156d3d9",
+        "commits": [
+          "488a663c8e9c2e6aa06838d38f140f0b500da767"
+        ],
+        "changed_lines": {
+          "added": 72,
+          "removed": 58,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "focused gate at HEAD, a counterfactual with one import hoisted, and the full tests/standard_names on all_debug",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "focused gate 3 passed in 6.91s at committed HEAD; counterfactual gate exited 1 as required, so the guard still bites; full all_debug suite completed with the known 18 failures rather than 118"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T070005647464-n-sli-the-import-guard-does-not-poison-the-suite/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07fd1-6251-7dc0-9dc5-d8f8e729cc65",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 5114624,
+            "cached_input_tokens_cumulative": 5114624,
+            "input_tokens": 5238901,
+            "input_tokens_cumulative": 5238901,
+            "output_tokens": 23124,
+            "output_tokens_cumulative": 23124,
+            "reasoning_output_tokens": 8627,
+            "reasoning_output_tokens_cumulative": 8627
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 5114624,
+          "cumulative_input_tokens": 10353525,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 31751
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "run the FULL tests",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sli-the-import-guard-does-not-poison-the-suite",
+          "session_id": "01a07fd1-6251-7dc0-9dc5-d8f8e729cc65",
+          "session_source": "stream",
+          "retained_at": "2026-09-08T07:15:04Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T070933065747-n-swct-the-export-accounts-for-every-exit",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a79",
+        "node": "n-swct-the-export-accounts-for-every-exit",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1573,
+                "cached_input_tokens": 317548,
+                "input_tokens": 319123,
+                "output_tokens": 1865,
+                "reasoning_output_tokens": 416,
+                "total_tokens": 320988,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A run of the WEST review export whose report demonstrably closes: candidate_count minus published_count equals the sum of the per-reason exclusion buckets, with no residue, and every one of the eighteen names that left the batch silently is attributed to a named cause. THE MEASURED DEFECT: eighteen names left the batch with BOTH declared exclusion counters reading zero while the exclusion_accounting gate passed. A null physics_domain and a quarantine verdict are two confirmed silent exits. Six accepted-and-valid drops are still unexplained, and the strongest signal is a null link_status on nine of the eighteen against two of the published 196. WHAT IS ALREADY SETTLED, so you do not redo it: catalog.yml deliberately carries only excluded_below_score_count and excluded_unreviewed_count because the ISN manifest model forbids extra fields, and the FULL accounting belongs in the sibling .export_report.json via ExportReport.to_dict \u2014 that is by design, not a bug. A node just landed at commit c48e96ad3 making that report ride the published commit. Your job is the accounting itself, not its delivery. NOTE THE LEAD I FOUND BY READING: export.py around line 345 carries a comment saying a candidate excluded by domain NEVER REACHES THIS REPORT and that its counter is tracked elsewhere. If that is still true, it is a silent exit by construction and is very likely one of your eighteen \u2014 establish whether it is, and if so make that exit counted rather than merely commented. WHAT TO DELIVER. First, run the export for the WEST review batch and capture its .export_report.json. Second, compute the closure arithmetic explicitly and show it: candidate_count, published_count, every reason bucket by name with its count, and the residue, which must be zero. Third, for each of the eighteen names, state its identity and the cause it is now attributed to. Fourth, where a name has no cause the code can supply, say which field would have carried it and why it is empty, because a silent exit whose mechanism you can name is a real result and a guessed cause is not. Fifth, if closing the accounting requires a code change, make it \u2014 add the missing counter, thread it through record_exclusions and to_dict \u2014 but do not widen or weaken the exclusion_accounting gate to make it pass, because a gate that passes by lowering its own bar is the defect this whole node exists to remove. DISCIPLINE: a missing property returns zero rows rather than an error, so a zero counter is not evidence of zero exclusions \u2014 prove each predicate can match before trusting its count. Live graph work runs on the LOGIN NODE because the graph tunnel is login-node-local, bounded, ten seconds per query, declared in the manifest. Gate: tests/standard_names, added failures against a base you measure yourself. Do NOT pass -q to pytest; quiet mode was just removed from addopts so a run now emits its totals line, and adding -q would suppress it again. DURABILITY: write your manifest before any long output and append each attributed name as you resolve it.",
+          "estimated_hours": null,
+          "goal": "Prove on a real export that every candidate leaves either published or counted with a stated cause",
+          "id": "n-swct-the-export-accounts-for-every-exit",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T070933065747-n-swct-the-export-accounts-for-every-exit/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requested_backend": "codex-luna",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "docs/evidence/sn-west-cohort-treatment/export-accounting-closure.md",
+            "imas_codex/standard_names/export.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "codex-luna-a",
+        "backend": "codex-luna",
+        "local": false,
+        "agent": {
+          "alias": "luna5.6",
+          "backend": "codex-luna",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-luna",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T07:09:58Z",
+        "completed_at": "2026-09-08T07:23:11Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 793,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 793,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "b72c99e8b727054eb3d058abcdf5e858ddf46fe0",
+        "commits": [
+          "8144726bc4ca1ea6c476893cfd4b0475c305e6fd"
+        ],
+        "changed_lines": {
+          "added": 215,
+          "removed": 4,
+          "files": 2
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "real WEST review export over the 214-name batch, plus the focused export gates",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "closure exact: candidate 214, published 196, accounted exclusions 18, residue 0; buckets invalid_validation_status 5, missing_physics_domain 2, name_not_accepted 2, never_reviewed 9; manifest_source_accounting also passed with 355 source rows as 290 emitted, 52 excluded, 13 documented non-nameable; focused export gates 17 passed before and after, expanded selection 41 passed"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T070933065747-n-swct-the-export-accounts-for-every-exit/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07fda-2d6d-77f2-8ec1-7b23957edd84",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 7217152,
+            "cached_input_tokens_cumulative": 7217152,
+            "input_tokens": 7426548,
+            "input_tokens_cumulative": 7426548,
+            "output_tokens": 28181,
+            "output_tokens_cumulative": 28181,
+            "reasoning_output_tokens": 9617,
+            "reasoning_output_tokens_cumulative": 9617
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 7217152,
+          "cumulative_input_tokens": 14643700,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 37798
+        },
+        "follow_on_paths": [
+          "tests/standard_names"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swct-the-export-accounts-for-every-exit",
+          "session_id": "01a07fda-2d6d-77f2-8ec1-7b23957edd84",
+          "session_source": "stream",
+          "retained_at": "2026-09-08T07:23:11Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T064855471079-n-swct-the-compose-prompts-state-the-grammar-they-must-obey",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a79",
+        "node": "n-swct-the-compose-prompts-state-the-grammar-they-must-obey",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 555,
+                "cached_input_tokens": 263141,
+                "input_tokens": 263698,
+                "output_tokens": 3152,
+                "reasoning_output_tokens": 1250,
+                "total_tokens": 266850,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "The nine compose-stage prompt files are assessed against the authorities that govern them and corrected where they disagree, with the assessment recorded at the write path. YOUR FILES, and no others: generate_name_system.md, generate_name_dd.md, generate_name_dd_names.md, generate_name_dd_tool_calling.md, generate_name_signals.md, generate_docs_system.md, generate_docs_user.md, fanout_propose.md, fanout_evidence_block.md, all under imas_codex/llm/prompts/sn/. THE AUTHORITIES you check against, in order of precedence: the live ISN grammar and its controlled vocabulary in the imas-standard-names package that this repo pins; imas_codex/core/AGENTS.md on standard-name naming, family harmonization and lifecycle; imas_codex/graph/AGENTS.md; and the repository root AGENTS.md. Where a prompt states a rule the grammar does not have, or omits one the grammar enforces, the grammar wins and the prompt is wrong. FOUR QUESTIONS PER FILE, and answer each with evidence rather than impression. First, CORRECTNESS: does every rule the prompt asserts actually hold in the grammar? Quote the prompt line and the grammar authority side by side for each disagreement. Second, COVERAGE: does the prompt give the model everything the task needs to succeed? A prompt that asks for a name while withholding the controlled vocabulary, the unit, or the enriched source description is under-specified, and this pipeline has been burned by exactly that \u2014 a review prompt was once missing the full closed vocabulary and reviewers docked valid rare-base names such as etendue. Third, GROUNDING: compose and docs must ground on the rich enriched description of the source, never on the terse Data Dictionary documentation string, and must not present a deterministic-parent placeholder as if it were content. Say for each prompt which field it actually grounds on. Fourth, SELF-DESCRIPTIVENESS: a generic Data Dictionary path never licenses a generic standard name, and the better name is usually already present in the description \u2014 check that the prompt says so. THINGS THAT ARE SETTLED AND MUST NOT BE RE-OPENED, because a prompt that contradicts them causes real churn: provenance values measured, reconstructed and reference are controlled vocabulary and an edge property, NEVER a name segment; estimator facets collapse to one base-quantity name; shape parameters such as triangularity, elongation and squareness must be surface-explicit, and a bare shape parent is forbidden; error quantities take a universal error modifier on the base name rather than per-error names. WHAT TO CHANGE: correct what is wrong, add what is missing, and delete nothing whose purpose you cannot establish. Do not rewrite for style, do not restructure a prompt that is correct, and do not add plan labels, ticket references or author attributions to any prompt. Record in the write path, per file, what you found and what you changed, so a reader can audit the judgement without diffing. Two vocabulary admissions are in flight in the grammar repository right now, an event-instant base and signal_to_noise_ratio; if a prompt enumerates bases exhaustively, say so and flag it as needing a refresh after that release rather than hard-coding the new tokens yourself. Gate: tests/llm plus tests/standard_names, added failures against a stated base. Do NOT pass -q to pytest \u2014 addopts already supplies one and a second deletes the totals line. On a compute node write the uv command without --no-sync. DURABILITY: write your manifest before any long output and append findings per file as you go.",
+          "estimated_hours": null,
+          "goal": "Assess and correct the compose-stage prompts against the grammar and rules they are supposed to enforce",
+          "id": "n-swct-the-compose-prompts-state-the-grammar-they-must-obey",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T064855471079-n-swct-the-compose-prompts-state-the-grammar-they-must-obey/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "50m",
+          "write_paths": [
+            "imas_codex/llm/prompts/sn/generate_name_system.md",
+            "imas_codex/llm/prompts/sn/generate_name_dd.md",
+            "imas_codex/llm/prompts/sn/generate_name_dd_names.md",
+            "imas_codex/llm/prompts/sn/generate_name_dd_tool_calling.md",
+            "imas_codex/llm/prompts/sn/generate_name_signals.md",
+            "imas_codex/llm/prompts/sn/generate_docs_system.md",
+            "imas_codex/llm/prompts/sn/generate_docs_user.md",
+            "imas_codex/llm/prompts/sn/fanout_propose.md",
+            "imas_codex/llm/prompts/sn/fanout_evidence_block.md",
+            "docs/evidence/sn-west-cohort-treatment/compose-prompt-audit.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "cx-betatangle",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T06:49:24Z",
+        "completed_at": "2026-09-08T07:35:51Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 2787,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 2787,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "88fc3b611e1fd1c030d6baae4dd2708a8fde8504",
+        "commits": [
+          "2767752d361d67dad512dccb0347e61ba0600632"
+        ],
+        "changed_lines": {
+          "added": 325,
+          "removed": 108,
+          "files": 9
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "srun all_debug uv run pytest -p no:cacheprovider tests/llm tests/standard_names, baseline and after",
+          "exit_status": 1,
+          "log_path": null,
+          "log_digest": "baseline and after each 118 failed, 7344 passed, 20 skipped, 328 deselected; exact FAILED-id diff empty so 0 added failures"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T064855471079-n-swct-the-compose-prompts-state-the-grammar-they-must-obey/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a0788a-5374-7b40-8959-cb5623103fe4",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 33524608,
+            "cached_input_tokens_cumulative": 33524608,
+            "input_tokens": 33911959,
+            "input_tokens_cumulative": 33911959,
+            "output_tokens": 50927,
+            "output_tokens_cumulative": 50927,
+            "reasoning_output_tokens": 14608,
+            "reasoning_output_tokens_cumulative": 14608
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 33524608,
+          "cumulative_input_tokens": 67436567,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 65535
+        },
+        "follow_on_paths": [
+          "dependency/context"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest \u2014",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swct-the-compose-prompts-state-the-grammar-they-must-obey",
+          "session_id": "01a0788a-5374-7b40-8959-cb5623103fe4",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T07:35:51Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T065032864788-n-swct-the-review-prompts-judge-what-the-grammar-judges",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a79",
+        "node": "n-swct-the-review-prompts-judge-what-the-grammar-judges",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 3685,
+                "cached_input_tokens": 263696,
+                "input_tokens": 267383,
+                "output_tokens": 2053,
+                "reasoning_output_tokens": 59,
+                "total_tokens": 269436,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "The review-stage prompt files are assessed against the authorities that govern them and corrected where they disagree, with the assessment recorded at the write path. YOUR FILES, and no others, all under imas_codex/llm/prompts/sn/: review.md, review_names.md, review_names_system.md, review_names_user.md, review_docs.md, review_docs_system.md, review_docs_user.md, review_docs_parent_system.md, review_docs_parent_user.md, review_description_system.md, review_description_user.md, judge_physics_correctness_system.md, judge_physics_correctness_user.md. THE AUTHORITIES, in precedence order: the live ISN grammar and its controlled vocabulary from the imas-standard-names package this repo pins; imas_codex/core/AGENTS.md on naming, family harmonization and lifecycle; the root AGENTS.md. Where a prompt asserts a rule the grammar does not have, the grammar wins. THE MEASURED FAILURE MODE THIS NODE EXISTS TO PREVENT, which you must check for in every reviewer prompt: a review prompt was once missing the full closed vocabulary, so reviewers marked down valid rare-base names such as etendue for using a base they could not see was legal. A reviewer that cannot see the closed vocabulary is not reviewing, it is guessing, and its score is noise that then drives refine loops. So for each prompt state explicitly which of these the model actually receives: the full closed vocabulary, the unit, the enriched source description, the parent context where one exists, and the grammar's own error text when a parse failed. Name what is missing. FOUR QUESTIONS PER FILE. Correctness: does every asserted rule hold in the grammar, quoted side by side for each disagreement. Coverage: does the prompt supply what the judgement needs, per the paragraph above. Calibration: does the prompt tell the reviewer what a score means and what to dock for, or does it invite an unanchored preference? A single-run LLM-judged gate near a threshold is a coin flip \u2014 one measured re-run swung an unchanged scope by 0.0755, ten times the decision margin \u2014 so a prompt that asks for a fine-grained score without anchoring it is producing false precision, and you should say so. Parent handling: derived parents are abstractions and are structurally accepted rather than name-reviewed, and parent-aware docs review is a distinct path; check the parent prompts reflect that and do not ask a reviewer to judge a parent as if it were a leaf. SETTLED AND NOT RE-OPENABLE, flag any prompt that contradicts these: provenance values measured, reconstructed and reference are controlled vocabulary and an edge property, never a name segment; estimator facets collapse to one base-quantity name; shape parameters must be surface-explicit and a bare shape parent is forbidden; error quantities take a universal error modifier rather than per-error names; a generic Data Dictionary path never licenses a generic standard name. Correct what is wrong, add what is missing, delete nothing whose purpose you cannot establish, do not rewrite for style, and add no plan labels, ticket references or author attributions. Record per file what you found and what you changed. Two vocabulary admissions are in flight in the grammar repository, an event-instant base and signal_to_noise_ratio; if a prompt enumerates bases exhaustively, flag it as needing a refresh after that release rather than hard-coding the tokens. Gate: tests/llm plus tests/standard_names, added failures against a stated base. Do NOT pass -q to pytest \u2014 addopts already supplies one and a second deletes the totals line. On a compute node write the uv command without --no-sync. DURABILITY: write your manifest before any long output and append per-file findings as you go.",
+          "estimated_hours": null,
+          "goal": "Assess and correct the review-stage prompts so a reviewer scores against the grammar rather than against taste",
+          "id": "n-swct-the-review-prompts-judge-what-the-grammar-judges",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T065032864788-n-swct-the-review-prompts-judge-what-the-grammar-judges/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "50m",
+          "write_paths": [
+            "imas_codex/llm/prompts/sn/review.md",
+            "imas_codex/llm/prompts/sn/review_names.md",
+            "imas_codex/llm/prompts/sn/review_names_system.md",
+            "imas_codex/llm/prompts/sn/review_names_user.md",
+            "imas_codex/llm/prompts/sn/review_docs.md",
+            "imas_codex/llm/prompts/sn/review_docs_system.md",
+            "imas_codex/llm/prompts/sn/review_docs_user.md",
+            "imas_codex/llm/prompts/sn/review_docs_parent_system.md",
+            "imas_codex/llm/prompts/sn/review_docs_parent_user.md",
+            "imas_codex/llm/prompts/sn/review_description_system.md",
+            "imas_codex/llm/prompts/sn/review_description_user.md",
+            "imas_codex/llm/prompts/sn/judge_physics_correctness_system.md",
+            "imas_codex/llm/prompts/sn/judge_physics_correctness_user.md",
+            "docs/evidence/sn-west-cohort-treatment/review-prompt-audit.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "cx-exportstatus",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T06:51:21Z",
+        "completed_at": "2026-09-08T07:11:16Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1195,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1195,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "88fc3b611e1fd1c030d6baae4dd2708a8fde8504",
+        "commits": [
+          "9d9f3b4afd41854a520e6def95577ccf2cbb3608"
+        ],
+        "changed_lines": {
+          "added": 183,
+          "removed": 25,
+          "files": 14
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "srun all_debug uv run pytest -p no:cacheprovider tests/llm tests/standard_names, baseline and after",
+          "exit_status": 1,
+          "log_path": null,
+          "log_digest": "baseline and after both 118 failed, 7344 passed, 20 skipped, 328 deselected; added failures 0"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T065032864788-n-swct-the-review-prompts-judge-what-the-grammar-judges/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07f7a-b991-7071-8163-e5a92f884012",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 0,
+            "cached_input_tokens_cumulative": 10243840,
+            "input_tokens": 0,
+            "input_tokens_cumulative": 10482873,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 29756,
+            "reasoning_output_tokens": 0,
+            "reasoning_output_tokens_cumulative": 8457
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lineage": {
+          "attempt": 2,
+          "kind": "lane-change",
+          "lanes": [
+            {
+              "changed_at": "2026-09-08T06:54:50Z",
+              "detail": "continued session '01a07f7a-b991-7071-8163-e5a92f884012' on harness 'codex'",
+              "from_backend": "codex",
+              "from_harness": "codex",
+              "reason": "five concurrent nodes had defaulted onto one lane because the dispatch omitted a backend override; spreading the prompt audits so they do not contend",
+              "session": "continued",
+              "to_backend": "codex-terra",
+              "to_harness": "codex"
+            }
+          ],
+          "root_run_id": "r-20260908T065032864788-n-swct-the-review-prompts-judge-what-the-grammar-judges"
+        },
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 10243840,
+          "cumulative_input_tokens": 20726713,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 38213
+        },
+        "follow_on_paths": [
+          "tests/llm",
+          "tests/standard_names"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest \u2014",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "lane-change",
+        "attempt": 2,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swct-the-review-prompts-judge-what-the-grammar-judges",
+          "session_id": "01a07f7a-b991-7071-8163-e5a92f884012",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T07:11:16Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T065238352525-n-swct-the-refine-prompts-improve-without-drifting",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a79",
+        "node": "n-swct-the-refine-prompts-improve-without-drifting",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2920,
+                "cached_input_tokens": 267381,
+                "input_tokens": 270303,
+                "output_tokens": 3497,
+                "reasoning_output_tokens": 337,
+                "total_tokens": 273800,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "The refine, self-refine, parent-enrichment and notes prompts are assessed against their authorities and corrected where they disagree, with the assessment at the write path. YOUR FILES, and no others, under imas_codex/llm/prompts/sn/: refine_name_system.md, refine_name_user.md, refine_docs_system.md, refine_docs_user.md, self_refine_system.md, self_refine_user.md, enrich_parent_system.md, enrich_parent_user.md, approval_notes_system.md, approval_notes_user.md, release_notes_system.md, release_notes_user.md. AUTHORITIES in precedence order: the live ISN grammar and controlled vocabulary from the pinned imas-standard-names package; imas_codex/core/AGENTS.md; the root AGENTS.md. Where a prompt asserts a rule the grammar lacks, the grammar wins. THE DESIGN FACTS THAT GOVERN THESE PROMPTS, which are settled and which you must not contradict. The free local self-refine pre-loop is an IMPROVE-ONLY step and explicitly NOT a review vote \u2014 treating it as a vote reintroduces self-bias and makes it the weakest reviewer in the chain, which is why it is shaped this way. Derived parents are abstractions: they are structurally accepted rather than name-reviewed, they get a single-model parent review, and parent-aware generate and refine docs are distinct paths. Refine must ground on the rich enriched source description, never the terse Data Dictionary documentation string, and must not treat a deterministic-parent placeholder as content. THE MEASURED FAILURE MODE TO CHECK FOR: refine products have collided onto placeholder names and stranded at name_stage pending, never reaching review. A refine prompt that can emit a name the pipeline cannot then persist is a defect in the prompt as much as in the code, so state for each refine prompt what constrains its output identity. FOUR QUESTIONS PER FILE. Correctness: does every asserted rule hold in the grammar, quoted side by side per disagreement. Coverage: does the prompt supply the closed vocabulary, the unit, the enriched description, the parent context and the reviewer's stated objection? A refine asked to fix a name without being told what was wrong with it is guessing. Drift: does the prompt bound how far a refine may move the name, or does it invite a rewrite? Improve-only means the output must remain the same physical quantity. Idempotence: would a second pass over an already-good name change it? A prompt that always finds something to improve produces churn, and this pipeline has measured exactly that. SETTLED AND NOT RE-OPENABLE: provenance values measured, reconstructed and reference are controlled vocabulary and an edge property, never a name segment; estimator facets collapse to one base-quantity name; shape parameters must be surface-explicit; error quantities take a universal error modifier rather than per-error names. Correct what is wrong, add what is missing, delete nothing whose purpose you cannot establish, do not rewrite for style, add no plan labels, ticket references or author attributions. Record per file what you found and changed. Two vocabulary admissions are in flight in the grammar repository, an event-instant base and signal_to_noise_ratio; flag any prompt enumerating bases exhaustively rather than hard-coding the new tokens. Gate: tests/llm plus tests/standard_names, added failures against a stated base. Do NOT pass -q to pytest \u2014 addopts supplies one and a second deletes the totals line. On a compute node write the uv command without --no-sync. DURABILITY: manifest before any long output, per-file findings appended as you go.",
+          "estimated_hours": null,
+          "goal": "Assess and correct the refine and parent-enrichment prompts so a refine loop improves a name without drifting it",
+          "id": "n-swct-the-refine-prompts-improve-without-drifting",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T065238352525-n-swct-the-refine-prompts-improve-without-drifting/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requested_backend": "codex",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "50m",
+          "write_paths": [
+            "imas_codex/llm/prompts/sn/refine_name_system.md",
+            "imas_codex/llm/prompts/sn/refine_name_user.md",
+            "imas_codex/llm/prompts/sn/refine_docs_system.md",
+            "imas_codex/llm/prompts/sn/refine_docs_user.md",
+            "imas_codex/llm/prompts/sn/self_refine_system.md",
+            "imas_codex/llm/prompts/sn/self_refine_user.md",
+            "imas_codex/llm/prompts/sn/enrich_parent_system.md",
+            "imas_codex/llm/prompts/sn/enrich_parent_user.md",
+            "imas_codex/llm/prompts/sn/approval_notes_system.md",
+            "imas_codex/llm/prompts/sn/approval_notes_user.md",
+            "imas_codex/llm/prompts/sn/release_notes_system.md",
+            "imas_codex/llm/prompts/sn/release_notes_user.md",
+            "docs/evidence/sn-west-cohort-treatment/refine-prompt-audit.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "cx-docsinherit",
+        "backend": "claude-opus",
+        "local": false,
+        "agent": {
+          "alias": "opus 5",
+          "backend": "claude-opus",
+          "effort": "high",
+          "launch": "cli",
+          "model": "claude-opus-5",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T06:53:03Z",
+        "completed_at": "2026-09-08T07:15:34.825Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 1219,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 1351,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "88fc3b611e1fd1c030d6baae4dd2708a8fde8504",
+        "commits": [
+          "bce2ef44204370b297de06b6a768ed9fdee9ab09"
+        ],
+        "changed_lines": {
+          "added": 586,
+          "removed": 41,
+          "files": 11
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "srun --partition=all_debug uv run pytest -p no:cacheprovider tests/llm tests/standard_names",
+          "exit_status": 1,
+          "log_path": null,
+          "log_digest": "118 failed, 7344 passed, 20 skipped, 328 deselected in 336s; added failures attributable to this commit 0 test ids, with per-failure attribution recorded"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T065238352525-n-swct-the-refine-prompts-improve-without-drifting/manifest.md",
+        "scope_changed": false,
+        "session_id": "abe2bbf2-9a84-4864-b34e-355e1cbb14b0",
+        "budget": {
+          "headroom": "known",
+          "utilisation_pct": 33.0,
+          "rate_limit_type": "five_hour",
+          "rate_limit_period_minutes": null,
+          "resets_at": "2026-09-08T11:20:00Z",
+          "threshold_status": "allowed_warning",
+          "surpassed_threshold": 1,
+          "tokens": {
+            "cache_creation_input_tokens": 197469,
+            "cache_creation_input_tokens_cumulative": 197469,
+            "cache_read_input_tokens": 9681656,
+            "cache_read_input_tokens_cumulative": 9681656,
+            "inference_geo": "not_available",
+            "input_tokens": 148,
+            "input_tokens_cumulative": 148,
+            "output_tokens": 58732,
+            "output_tokens_cumulative": 58732,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": 8.284558,
+          "refusal": false,
+          "detail": "backend reports utilisation and reset time",
+          "cost_usd_cumulative": 8.284558
+        },
+        "lineage": {
+          "attempt": 2,
+          "kind": "lane-change",
+          "lanes": [
+            {
+              "changed_at": "2026-09-08T06:55:02Z",
+              "detail": "starting fresh because the session cannot follow the move from harness 'codex' to 'claude'",
+              "from_backend": "codex",
+              "from_harness": "codex",
+              "reason": "five concurrent nodes had defaulted onto one lane; this audit turns on nuanced judgement about drift and idempotence in refine prompts, which suits a different lane",
+              "session": "fresh",
+              "to_backend": "claude-opus",
+              "to_harness": "claude"
+            }
+          ],
+          "root_run_id": "r-20260908T065238352525-n-swct-the-refine-prompts-improve-without-drifting"
+        },
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 9681656,
+          "cumulative_input_tokens": 9879273,
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 1228.199,
+          "generated_tokens": 58732,
+          "generation_seconds": 813.593,
+          "input_budget_tokens": 1000000,
+          "input_utilisation_pct": 20.8,
+          "machine_seconds": 414.606,
+          "peak_input_tokens": 208171,
+          "tokens_per_second": 72.19,
+          "wall_tokens_per_second": 47.82
+        },
+        "follow_on_paths": [
+          "sn/refine_name_user",
+          "sn/refine_docs_user",
+          "tests/standard_names/golden_edit_prompts/refine_name_user.txt",
+          "refine_docs_user.txt",
+          "generate_name_dd.md",
+          "benchmark_roles.py",
+          "campaign_pricing.py",
+          "graph_ops.py",
+          "/",
+          "workers.py",
+          "sn/_grammar_reference.md"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest \u2014",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "lane-change",
+        "attempt": 2,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swct-the-refine-prompts-improve-without-drifting",
+          "session_id": "abe2bbf2-9a84-4864-b34e-355e1cbb14b0",
+          "session_source": "stream",
+          "retained_at": "2026-09-08T07:15:34.825Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -103707,6 +104816,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1954
+    "_version": 1963
   }
 }
