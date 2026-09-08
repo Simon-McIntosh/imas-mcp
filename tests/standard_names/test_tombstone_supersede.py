@@ -53,7 +53,11 @@ class _State:
 
 
 class _Transaction:
-    """Copy-on-write graph transaction that mirrors the production queries."""
+    """Copy-on-write transaction mirroring the fold's observable mutations.
+
+    Exact postflight verification includes the timestamp stamped on both fold
+    participants, so the stateful mock must preserve that receipt evidence.
+    """
 
     def __init__(self, graph: _Graph) -> None:
         self.graph = graph
@@ -598,12 +602,14 @@ class _Transaction:
                 return []
             old["superseded_from_stage"] = params["predecessor_stage"]
             old["name_stage"] = "superseded"
+            old["updated_at"] = params["changed_at"]
             old.pop("claim_token", None)
             old.pop("claimed_at", None)
             old["source_paths"] = []
             if old.get("edit_status") == "open":
                 old["edit_status"] = "applied"
             target["source_paths"] = list(params["target_paths"])
+            target["updated_at"] = params["changed_at"]
             lineage = (params["into_id"], params["old_id"])
             if lineage not in self.state.refined_from:
                 self.state.refined_from.append(lineage)
