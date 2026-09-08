@@ -12249,6 +12249,7 @@ def fetch_manifest_source_release_rows(
                    source.status AS source_status,
                    source.skip_reason AS skip_reason,
                    source.skip_reason_detail AS skip_reason_detail,
+                   source.last_error AS last_error,
                    source.produced_sn_id AS produced_sn_id,
                    collect(DISTINCT direct.id) AS direct_ids
             ORDER BY source_path
@@ -12309,8 +12310,16 @@ def fetch_manifest_source_release_rows(
             if seed_id is None and produced_id:
                 seed_id = produced_id
             terminal = terminal_by_seed.get(str(seed_id)) if seed_id else None
+            last_error = str(row.get("last_error") or "").strip()
             skip_reason = str(row.get("skip_reason") or "").strip()
             skip_detail = str(row.get("skip_reason_detail") or "").strip()
+            skip_cause = ": ".join(part for part in [skip_reason, skip_detail] if part)
+            # A terminal error is the current cause and wins over an older skip
+            # record. Otherwise preserve the deterministic skip verdict and its
+            # detail, and distinguish recorded silence from lost transcription.
+            non_nameable_reason = last_error or skip_cause or "cause not recorded"
+            if terminal or seed_id:
+                non_nameable_reason = ""
             resolved.append(
                 {
                     "source_path": str(row["source_path"]),
@@ -12321,11 +12330,7 @@ def fetch_manifest_source_release_rows(
                     "terminal_stage": (
                         terminal.get("terminal_stage") if terminal else None
                     ),
-                    "non_nameable_reason": (
-                        ": ".join(part for part in [skip_reason, skip_detail] if part)
-                        if row.get("source_status") == "skipped"
-                        else ""
-                    ),
+                    "non_nameable_reason": non_nameable_reason,
                 }
             )
         return resolved
