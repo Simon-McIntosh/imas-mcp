@@ -140,5 +140,13 @@ the domain assignment, so no per-name failure needs stating for them.
   ten-second ceiling, exception declared in the worker manifest.
 - Export driver: `/tmp/run_west_export.py`; run log:
   `west_export_run.log`; report: `/tmp/west-export-after-recovered/.export_report.json`.
-- Suite gate: `tests/standard_names` baseline-versus-after deltas recorded in
-  the worker manifest (`baseline-suite-main.log`, `after-suite.log`).
+- Suite gate: `tests/standard_names` (default markers, on the `all_debug`
+  partition):
+  - baseline at `origin/main` `6a5525dc6`: **43 failed, 7209 passed**.
+  - after at the merged head `14b8a9693` (`origin/main` + the tombstone-selection
+    change): **43 failed, 7213 passed**.
+  - added failures: **0**; added passes: **4** (the new tombstone-selection
+    regression tests). The failure sets are identical between the two runs;
+    the 43 are the current-main shared base, including a supersede/tombstone
+    test cluster that lives in the successor-migration write scope rather than
+    this node's. Logs: `baseline-suite-main.log`, `after-suite.log`.
