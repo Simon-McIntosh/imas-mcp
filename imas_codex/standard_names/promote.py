@@ -60,6 +60,9 @@ _APPROVAL_OUTCOMES = frozenset({"unchanged_ratification", "content_edit"})
 _RESOLVED_PR_ACTORS: dict[tuple[int, str, str], str] = {}
 _RESOLVED_PR_REVIEW_BASES: dict[tuple[int, str, str], str] = {}
 
+_COMMENT_GUARD_REASON = "unresolved reviewer comment bears on this catalog entry"
+_BATCH_COMMENT_GUARD_REASON = "unresolved reviewer comment bears on the catalog batch"
+
 
 # ---------------------------------------------------------------------------
 # Data structures
@@ -553,6 +556,71 @@ def read_pr_changes(isnc_dir: str | Path, base_ref: str) -> list[ApprovalChange]
     return changes
 
 
+def _catalog_identity_at_line(
+    isnc_dir: str | Path, *, path: str, line: int
+) -> str | None:
+    """Resolve an inline review comment to the catalog identity it annotates."""
+    if line < 1:
+        return None
+    repo = Path(isnc_dir)
+    relative = path.removeprefix("./")
+    if not relative.startswith("standard_names/"):
+        return None
+    candidate = repo / relative
+    if not candidate.is_file() or candidate.suffix not in {".yml", ".yaml"}:
+        return None
+    text = candidate.read_text(encoding="utf-8")
+    for name, start, end in _catalog_sequence_entries(text, source=relative):
+        start_line = text.count("\n", 0, start) + 1
+        end_line = text.count("\n", 0, max(start, end - 1)) + 1
+        if start_line <= line <= end_line:
+            return name
+    return None
+
+
+def _comment_guard_holds(
+    isnc_dir: str | Path,
+    *,
+    batch: list[str],
+    evidence: dict[str, Any],
+) -> dict[str, str]:
+    """Return untouched batch identities bearing unresolved review comments.
+
+    Issue comments and review bodies have no catalog location and therefore
+    bear on the whole batch. Inline review comments are resolved through the
+    file and line supplied by the review API. A location that cannot be
+    resolved is deliberately widened to the whole batch so review text is
+    never discarded by an incomplete parser.
+    """
+    batch_ids = set(batch)
+    if evidence.get("_comment_sources_unavailable"):
+        return dict.fromkeys(batch, _BATCH_COMMENT_GUARD_REASON)
+
+    holds: dict[str, str] = {}
+    if any(
+        (row.get("body") or "").strip()
+        for key in ("comments", "reviews")
+        for row in evidence.get(key) or []
+        if isinstance(row, dict)
+    ):
+        holds.update(dict.fromkeys(batch, _BATCH_COMMENT_GUARD_REASON))
+
+    for row in evidence.get("review_comments") or []:
+        if not isinstance(row, dict) or not (row.get("body") or "").strip():
+            continue
+        path = row.get("path")
+        line = row.get("line") or row.get("original_line")
+        if not isinstance(path, str) or not isinstance(line, int):
+            holds.update(dict.fromkeys(batch, _BATCH_COMMENT_GUARD_REASON))
+            continue
+        identity = _catalog_identity_at_line(isnc_dir, path=path, line=line)
+        if identity is None:
+            holds.update(dict.fromkeys(batch, _BATCH_COMMENT_GUARD_REASON))
+        elif identity in batch_ids:
+            holds[identity] = _COMMENT_GUARD_REASON
+    return holds
+
+
 # ---------------------------------------------------------------------------
 # Review scorer — FULL review, NO refine
 # ---------------------------------------------------------------------------
@@ -1018,6 +1086,7 @@ def run_approval(
     catalog_reviewer_actor: str | None = None,
     dry_run: bool = False,
     batch: list[str] | None = None,
+    review_evidence: dict[str, Any] | None = None,
     gc: GraphClient | None = None,
 ) -> ApprovalReport:
     """Fold a reviewed catalog PR back into the graph-ledger.
@@ -1037,6 +1106,10 @@ def run_approval(
     gc:
         Optional open :class:`GraphClient`.  When omitted, one is opened for
         the call.
+    review_evidence:
+        Optional pull-request conversation evidence.  The CLI obtains this
+        from GitHub when it opens the graph client; callers may provide it
+        directly when the transport has already been read.
 
     Returns
     -------
@@ -1082,12 +1155,32 @@ def run_approval(
     changes = read_pr_changes(isnc_dir, review_base_ref)
     report.changes_seen = len(changes)
     # With no edits AND no batch there is nothing to do. A batch with no edits
-    # is the common case (reviewers approved as-is) — fall through to the
-    # untouched auto-approve below.
+    # still needs the review conversation checked before untouched identities
+    # can be auto-approved below.
     if not changes and not batch:
         return report
 
     owns_gc = gc is None
+    comment_holds: dict[str, str] = {}
+    if batch and not dry_run:
+        evidence = review_evidence
+        if evidence is None and owns_gc and catalog_pr_url:
+            try:
+                parse_pull_request_url(catalog_pr_url)
+            except ValueError:
+                pass
+            else:
+                fetched = fetch_pr_evidence(catalog_pr_url)
+                if not fetched or not fetched.get("_comment_sources_available", False):
+                    evidence = {"_comment_sources_unavailable": True}
+                else:
+                    evidence = fetched
+        if evidence is not None:
+            comment_holds = _comment_guard_holds(
+                isnc_dir,
+                batch=batch,
+                evidence=evidence,
+            )
     if gc is None:
         gc = GraphClient()
     try:
@@ -1277,8 +1370,20 @@ def run_approval(
         # promoted directly (no re-review). Only with complete PR metadata.
         if batch and not dry_run and all(v is not None for v in approval_values):
             edited_ids = {c.sn_id for c in changes}
-            for nid in batch:
+            for nid, reason in comment_holds.items():
                 if nid in edited_ids:
+                    continue
+                report.blocked.append({"sn_id": nid, "reason": reason})
+                report.outcomes.append(
+                    ApprovalOutcome(
+                        sn_id=nid,
+                        axis="name",
+                        decision="blocked",
+                        reason=reason,
+                    )
+                )
+            for nid in batch:
+                if nid in edited_ids or nid in comment_holds:
                     continue
                 if mark_catalog_name_approved(
                     nid,
@@ -1795,10 +1900,10 @@ def resolve_tag_remote(
 def fetch_pr_evidence(pr_url: str) -> dict[str, Any]:
     """Gather the approval summary's evidence from the PR itself, over REST.
 
-    Four reads return the PR description, the full conversation (issue
-    comments + reviews), and the commit list (whose first entry locates the
-    review-delta base). Never raises — a failed read returns ``{}`` so the
-    summary degrades to the deterministic block alone.
+    Five reads return the PR description, the full conversation (issue
+    comments + reviews + inline review comments), and the commit list (whose
+    first entry locates the review-delta base). Never raises — a failed read
+    returns ``{}`` so the summary degrades to the deterministic block alone.
     """
     try:
         repo, number = parse_pull_request_url(pr_url)
@@ -1813,6 +1918,9 @@ def fetch_pr_evidence(pr_url: str) -> dict[str, Any]:
         )
         review_status, reviews = _pull_request_call(
             repo, f"/pulls/{number}/reviews?per_page=100"
+        )
+        inline_status, inline_comments = _pull_request_call(
+            repo, f"/pulls/{number}/comments?per_page=100"
         )
         commit_status, commits = _pull_request_call(
             repo, f"/pulls/{number}/commits?per_page=100"
@@ -1841,6 +1949,19 @@ def fetch_pr_evidence(pr_url: str) -> dict[str, Any]:
             }
             for row in _rows(review_status, reviews)
         ],
+        "review_comments": [
+            {
+                "author": {"login": (row.get("user") or {}).get("login", "")},
+                "body": row.get("body") or "",
+                "path": row.get("path"),
+                "line": row.get("line"),
+                "original_line": row.get("original_line"),
+            }
+            for row in _rows(inline_status, inline_comments)
+        ],
+        "_comment_sources_available": all(
+            status == 200 for status in (comment_status, review_status, inline_status)
+        ),
         "commits": [_commit_record(row) for row in _rows(commit_status, commits)],
     }
 
