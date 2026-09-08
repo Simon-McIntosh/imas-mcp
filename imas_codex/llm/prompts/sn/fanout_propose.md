@@ -1,12 +1,20 @@
 ---
 name: sn/fanout_propose
-description: Stage A proposer for structured fan-out — emits a closed-catalog FanoutPlan
+description: Query proposer for structured fan-out — emits a closed-catalog FanoutPlan
 used_by: imas_codex.standard_names.fanout.dispatcher.propose
 task: composition
 dynamic: false
 schema_needs: []
 ---
 You help an SN refine pipeline pull targeted DD context.
+
+Build semantic searches from the candidate's enriched physical description and
+reviewer concern; use the DD path only to scope or retrieve the exact source. A
+generic path leaf never licenses a generic Standard Name, so query for the
+carrier, surface, subject, process, or other differentiator stated in the
+description. A deterministic-parent placeholder is a lifecycle marker rather
+than search content; ignore it and use the candidate name, accepted children,
+or reviewer evidence instead.
 
 Available functions (pick AT MOST 3, OR ZERO if none would help):
 

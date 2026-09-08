@@ -17,8 +17,9 @@ Standard names are a **standalone semantic data model** for fusion plasma physic
 
 Your documentation must reinforce this independence: describe the **physics quantity itself** — what it is, how it behaves, what governs it — without referencing how or where it is stored. Source provenance (DD paths, IDS names, diagnostic systems) is tracked externally via graph edges and must never appear in descriptions or documentation.
 
-You receive batches of standard names together with their Data Dictionary path
-documentation, nearby standard names (by semantic similarity), and sibling names
+You receive batches of standard names together with rich enriched source
+descriptions (with terse Data Dictionary documentation only as fallback), nearby
+standard names (by semantic similarity), and sibling names
 from the same physics domain. Your job is to write — or improve — the
 documentation fields for each name. You must NOT change the name itself, its
 grammar fields, kind, or unit.
@@ -199,7 +200,7 @@ hyphen into a standard name. Prose may hyphenate a compound species freely
 
 ## Grounding & Faithfulness (HARD — source-faithfulness outranks richness)
 
-The documentation must be grounded in (a) the provided DD path documentation/context for this name and (b) well-established, textbook plasma-physics consensus. Use that evidence to write a strict normative definition, not practical guidance.
+The documentation must be grounded in (a) the provided rich enriched source description and context for this name and (b) well-established, textbook plasma-physics consensus. Terse DD documentation is secondary evidence and must never erase physical meaning present in the enriched description. Use that evidence to write a strict normative definition, not practical guidance.
 
 - **Do NOT add practical-method material.** Generic diagnostic lists,
   reconstruction or simulation recipes, estimator workflows, typical values,
@@ -207,7 +208,7 @@ The documentation must be grounded in (a) the provided DD path documentation/con
   plausible. Measurement/computation belongs only when constitutive of the
   quantity or necessary to distinguish it from another quantity; state only
   that semantic distinction.
-- **Thin or absent source → restraint, not invention.** Some names (especially `derived` structural parents) arrive with little or no DD documentation. For these, write a *proportionate* entry: define the quantity, its scope, and its governing relation if one is standard — and STOP. A correct short entry beats padded prose. Documentation length follows the grounded content; never pad it to reach a target.
+- **Thin or absent source → restraint, not invention.** Some names (especially `derived` structural parents) arrive with little or no DD documentation. A deterministic-parent placeholder is a lifecycle marker, never content. Ground a derived parent only on the real accepted children supplied in context; otherwise write a *proportionate* entry: define the quantity, its scope, and its governing relation if one is standard — and STOP. A correct short entry beats padded prose. Documentation length follows the grounded content; never pad it to reach a target.
 - **No invented mechanism / direction / weighting / location** beyond what the source or universal physics supports — the same faithfulness bar applied to the enriched DD descriptions.
 - **Name–quantity consistency check.** If the name appears to mis-describe the source quantity (e.g. the source is *effective charge* $Z_\mathrm{eff}$ but the name is bare `charge`), document the quantity the SOURCE actually represents and flag the mismatch in your reasoning — do NOT paper over a wrong name with eloquent prose for a different quantity.
 
@@ -286,9 +287,11 @@ never its unit. If the spectral denominator is missing from the structured
 `unit` field, note the inconsistency explicitly.
 
 ### Boilerplate suppression
-- For χ² constraint weights: do NOT re-derive the generic inverse-problem
-  role. Use a one-line reference: "Standard χ² weight controlling the
-  relative importance of this measurement in the equilibrium reconstruction."
+- Pure inverse-problem weights, residuals, and iteration diagnostics are
+  `fit_artifact` sources and must not reach documentation generation. If a
+  constraint path is an estimator facet (`measured`, `reconstructed`, or
+  `reference`), document the one underlying base quantity; estimator provenance
+  remains relationship metadata.
 - For Maxwellian-pressure variants: do NOT repeat the ideal-gas-law
   derivation (`p = nkT`) for every pressure name. Reference the defining
   relation from the base name (e.g. "see `thermal_electron_pressure`").
@@ -428,7 +431,7 @@ Descriptions must not introduce physical content not encoded in the SN's grammar
 | `coordinate=second_dimension` (axis-agnostic) | Must NOT specify Z-direction or vertical-direction |
 | No normalization segment in grammar | Must NOT mention normalization |
 | `subject=element` | Must NOT use "molecular" or "compound ion" (higher-level concepts) |
-| No handedness/COCOS segment in grammar | Must NOT introduce sign conventions ("counter-clockwise", "viewed from above") |
+| No supplied COCOS transformation metadata | Must NOT invent sign conventions ("counter-clockwise", "viewed from above") |
 
 ### PR-8 Implementation leakage ban
 Descriptions and documentation must describe **physics**, not storage or

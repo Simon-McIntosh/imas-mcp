@@ -262,7 +262,7 @@ Standard names describe **what** is measured, not **when**, **how**, or **where 
 | `raw_`, `calibrated_`, `corrected_`, `smoothed_`, `filtered_` | Processing state — pipeline stage is metadata |
 | `launched_`, `post_crash_`, `prefill_` | State-of-knowledge prefixes |
 
-Also forbidden anywhere in a name (encode data-model structure or solver semantics, not physics): `explicit_`, `implicit_part_of_`, `equilibrium_reconstruction_`, `ggd_object_`, `_constraint`, `_constraint_weight`, `_measurement_time`, `obtained_from`, `stored_in`, `derived_from`, `referenced_by`, `defined_in`, `used_for`. Provenance qualifiers (`measured`, `reconstructed`, `simulated`) may appear ONLY when they distinguish genuinely different physical quantities (a measured signal vs a synthetic diagnostic), never as method annotations.
+Also forbidden anywhere in a name (encode data-model structure or solver semantics, not physics): `explicit_`, `implicit_part_of_`, `equilibrium_reconstruction_`, `ggd_object_`, `_constraint`, `_constraint_weight`, `_measurement_time`, `obtained_from`, `stored_in`, `derived_from`, `referenced_by`, `defined_in`, `used_for`. The controlled value-provenance facets `measured`, `reconstructed`, and `reference` are relationship metadata, NEVER name segments: every estimator facet collapses to the one base-quantity name. A synthetic diagnostic's genuinely different observable must be distinguished by its physical quantity, locus, or process — never by an estimator adjective.
 - ❌ `electron_temperature_fit_measured` → ✅ `electron_temperature`
 - ❌ `plasma_current_reconstructed_value` → ✅ `plasma_current`
 - ❌ `pressure_chi_squared` → ✅ skip (a fit diagnostic, not a physics quantity)
@@ -337,7 +337,7 @@ These terms are NOT synonyms — pick the one supported by the source descriptio
 
 ### Boilerplate suppression
 
-- For χ² weights: one-line reference, do not re-derive the generic inverse-problem role per name — "Standard χ² weight controlling the relative importance of this measurement in the equilibrium reconstruction."
+- For inverse-problem weights, residuals, and iteration diagnostics: emit `skipped`; these are fit roles, not quantities that need a Standard Name or documentation.
 - For Maxwellian pressure: do not repeat the ideal-gas-law derivation (`p = nkT`) per variant — "Thermal pressure of the electron population; see `thermal_electron_pressure` for the defining relation."
 
 ## REJECT — Forbidden Name Tokens (audit-enforced quick list)
@@ -504,11 +504,11 @@ creating per-index entries. Never gain compactness by dropping the carrier,
 representation, surface kind, or owning object; use a vocabulary gap when the
 public grammar cannot represent the required distinction.
 
-**SS-2 Standalone fitting quantities.** Generic fitting/uncertainty quantities (`chi_squared`, `fitting_weight`, `residual`) are standalone standard names, not repeated per measured quantity.
+**SS-2 Fit roles and error companions.** Pure inverse-problem roles such as constraint weights, solver residuals, and iteration diagnostics are `fit_artifact` sources and are skipped rather than named. Measured/reconstructed/reference estimator facets collapse to the base-quantity name. Error companions are derived from that same base identity with the registered uncertainty operators; never invent a separate per-error base name.
 
 **SS-3 Boundary definition.** When creating boundary-related quantities, document which plasma-boundary definition is assumed (LCFS, 99% ψ_norm, etc.) or note that it is code-dependent.
 
-**SS-4 Vector units limitation.** Position vectors may have mixed units (m for R, Z; rad for φ). Document this in the description when it applies.
+**SS-4 Vector unit authority.** Coordinate components may carry different DD-authoritative units. Preserve each supplied unit as structured metadata; never infer one unit for the whole vector or restate units in the generated description.
 
 ### Formatting
 
@@ -617,7 +617,7 @@ it or report a `vocab_gap`.
     "projection_axis": "poloidal",
     "qualifiers": []
   },
-  "description": "Poloidal magnetic flux on the 1D radial grid",
+  "description": "Poloidal magnetic flux as a function of radial position",
   "kind": "scalar",
   "dd_paths": ["equilibrium/time_slice/profiles_1d/psi"],
   "reason": "projection=poloidal component, base=magnetic_flux"
@@ -731,18 +731,18 @@ it or report a `vocab_gap`.
 {
   "source_id": "core_transport/model/profiles_1d/ion/energy/flux_due_to_collisions",
   "segments": {
-    "base_token": "energy",
+    "base_token": "flux",
     "base_kind": "quantity",
-    "qualifiers": ["ion"],
+    "qualifiers": ["ion", "energy"],
     "process_token": "collisions"
   },
   "description": "Ion energy flux due to collisional processes",
   "kind": "scalar",
   "dd_paths": ["core_transport/model/profiles_1d/ion/energy/flux_due_to_collisions"],
-  "reason": "qualifier=ion, base=energy, process=collisions"
+  "reason": "subject=ion, channel=energy, base=flux, process=collisions"
 }
 ```
-→ Composed name: `ion_energy_due_to_collisions`
+→ Composed name: `ion_energy_flux_due_to_collisions`
 
 **Multi-qualifier:**
 ```json
