@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T11:17:20",
+  "updated": "2026-09-08T11:36:26",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -106076,6 +106076,569 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T085655684181-n-sli-the-registered-loci-and-dimensionless-ratios-stop-being-flagged",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a76",
+        "node": "n-sli-the-registered-loci-and-dimensionless-ratios-stop-being-flagged",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1570,
+                "cached_input_tokens": 507572,
+                "input_tokens": 509144,
+                "output_tokens": 3848,
+                "reasoning_output_tokens": 908,
+                "total_tokens": 512992,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "All eight tests/standard_names/test_audits.py failures pass. THE EXACT EIGHT, measured by the coordinator at main head where a full run reported 43 failed, 7214 passed, 11 skipped, 323 deselected in 275.15s: TestCanonicalLocusCheck::test_every_registered_locus_is_never_flagged for the five parameters reflectometer_cutoff_position, charge_exchange_channel, thomson_scattering_channel_position, langmuir_probe_position and calorimetry_component; and TestOperatorUnitConsistency::test_equal_dimension_ratios_accept_dimensionless_unit for the three parameters ratio_of_ion_average_temperature_to_volume_averaged_ion_average_temperature with unit 1, with unit written as a bare dash, and with unit none. No other failure in that run is yours. THE FIVE LOCUS FAILURES HAVE A LIKELY CAUSE YOU MUST CONFIRM OR REJECT BY MEASUREMENT rather than assume: those five names are the five diagnostic measurement-destination loci registered upstream in the grammar repository at commit 563562a. This repository has a known trap where an upstream pin bump does NOT sync the graph's grammar snapshot, because scoped runs skip that step \u2014 so the audit can be reading a snapshot that predates the registration while the installed grammar carries it. Establish which of the two the audit actually consults, quote the code path, and say whether the snapshot and the installed grammar disagree for these five tokens. If they do, sync the snapshot through the backing code path rather than patching the audit to special-case the names, and never hard-code a locus list into the audit. If they do not disagree, the audit's own predicate is the defect and you should fix that instead, saying what it was testing that it should not. THE THREE RATIO FAILURES: a ratio of two same-dimension quantities is dimensionless, and dimensionless in this stack is the unit string '1' \u2014 never an absent unit, because a null unit is a different and wrong state, and a defect that once dropped '1' to null severed 706 unit edges silently. The three parameters are the three spellings a dimensionless unit can arrive as, so establish which spellings the consistency check accepts today and make it accept all three as dimensionless without accepting a genuinely missing unit. Say explicitly how your change distinguishes a declared dimensionless unit from an absent one. VERIFY by running the FULL tests/standard_names and quoting pytest's own counts line verbatim, showing the total fall by eight, and list the ids that remain. Run on all_debug with --export=ALL,TMPDIR=/tmp and --time 00:59:00, write the uv command without --no-sync, and do not pass -q because quiet mode is removed from addopts. Live graph or snapshot work runs on the LOGIN NODE because the tunnel is login-node-local, bounded, ten seconds per query, declared in the manifest. DURABILITY: write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Clear the eight audit failures so a registered locus and a dimensionless ratio are never flagged",
+          "id": "n-sli-the-registered-loci-and-dimensionless-ratios-stop-being-flagged",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T085655684181-n-sli-the-registered-loci-and-dimensionless-ratios-stop-being-flagged/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requested_backend": "codex-luna",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a76",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/audits.py",
+            "tests/standard_names/test_audits.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "codex-luna-a",
+        "backend": "codex-luna",
+        "local": false,
+        "agent": {
+          "alias": "luna5.6",
+          "backend": "codex-luna",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-luna",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T08:57:10Z",
+        "completed_at": "2026-09-08T09:19:20Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1330,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1330,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "74b4bb5a1ff945e6393d907979f17e0338206cc5",
+        "commits": [
+          "85710f0cf04f91e335d42d4941db3319ab20fb42"
+        ],
+        "changed_lines": {
+          "added": 67,
+          "removed": 3,
+          "files": 2
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "focused audit gate, the exact-eight gate, and the full tests/standard_names on all_debug",
+          "exit_status": 1,
+          "log_path": null,
+          "log_digest": "focused audit gate 238 passed, 253 deselected in 8.67s; exact-eight gate 4 passed in 6.30s; full suite 33 failed, 7225 passed, 11 skipped, 323 deselected in 299.05s, down eight from its 41-failure base"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T085655684181-n-sli-the-registered-loci-and-dimensionless-ratios-stop-being-flagged/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a0803c-4c66-7062-992d-29678d76f50b",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 10104320,
+            "cached_input_tokens_cumulative": 10104320,
+            "input_tokens": 10316773,
+            "input_tokens_cumulative": 10316773,
+            "output_tokens": 37546,
+            "output_tokens_cumulative": 37546,
+            "reasoning_output_tokens": 13933,
+            "reasoning_output_tokens_cumulative": 13933
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T09:19:20Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 24.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T09:19:20Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 10104320,
+          "cumulative_input_tokens": 20421093,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 51479
+        },
+        "follow_on_paths": [
+          "prompt/derivation",
+          "supersede/fold"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "running the FULL tests",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sli-the-registered-loci-and-dimensionless-ratios-stop-being-flagged",
+          "session_id": "01a0803c-4c66-7062-992d-29678d76f50b",
+          "session_source": "stream",
+          "retained_at": "2026-09-08T09:19:20Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T085736617922-n-swct-the-prompt-examples-round-trip-again",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a79",
+        "node": "n-swct-the-prompt-examples-round-trip-again",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1570,
+                "cached_input_tokens": 507572,
+                "input_tokens": 509144,
+                "output_tokens": 3848,
+                "reasoning_output_tokens": 908,
+                "total_tokens": 512992,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "These three tests pass: tests/standard_names/test_compose_prompt_examples_round_trip.py::test_endorsed_prompt_name_round_trips[toroidal_surface_integrated_current_density], the same file's test_operator_projection_forms_round_trip for that same parameter, and tests/standard_names/test_edit_prompt_injection.py::test_no_edit_render_matches_golden. They were measured by the coordinator at main head in a run reporting 43 failed, 7214 passed, 11 skipped, 323 deselected in 275.15s; no other failure in that run is yours. THE LIKELY CAUSE IS RECENT AND IS THE COORDINATOR'S: three prompt-audit nodes landed today and changed 34 files under imas_codex/llm/prompts/sn/, merged as commits 2767752d3, 9d9f3b4af and bce2ef442. Two of your three failures assert that a name used as an example inside a compose prompt round-trips through the grammar, and the third asserts a rendered prompt matches a stored golden. Both are exactly what an edit to prompt text breaks. CONFIRM THAT BEFORE CHANGING ANYTHING: check whether toroidal_surface_integrated_current_density appears in a prompt those commits touched, and whether the golden render's input changed. THEN CHOOSE PER FAILURE, and report which you chose with evidence. If a prompt now carries an example name the grammar does not accept, the prompt is wrong and the example must become a name that parses \u2014 a prompt teaching a model an invalid name is worse than a failing test, and one of those audits already found the prompts asserting poloidal_flux was valid when it is not. If instead the example is valid and the round-trip check is stale, fix the check and say what it was asserting that no longer holds. For the golden render, regenerate the golden ONLY if you can state what in the prompt legitimately changed; a golden regenerated without that explanation hides the regression rather than fixing it. NEVER delete a test or an assertion to make a count fall, and never remove an example from a prompt merely to dodge the round-trip check \u2014 if an example goes, a valid one replaces it. VERIFY by running the FULL tests/standard_names, quoting pytest's own counts line verbatim, showing the total fall by three, and listing the ids that remain. Run on all_debug with --export=ALL,TMPDIR=/tmp and --time 00:59:00, write the uv command without --no-sync, and do not pass -q because quiet mode is removed from addopts. DURABILITY: write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Clear the three prompt-render failures the prompt audits introduced",
+          "id": "n-swct-the-prompt-examples-round-trip-again",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T085736617922-n-swct-the-prompt-examples-round-trip-again/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requested_backend": "clive",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "tests/standard_names/test_compose_prompt_examples_round_trip.py",
+            "tests/standard_names/test_edit_prompt_injection.py",
+            "imas_codex/llm/prompts/sn/generate_name_system.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "clive-gate",
+        "backend": "clive",
+        "local": false,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-08T08:57:49Z",
+        "completed_at": "2026-09-08T09:26:24.943Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 1707,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 1715,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "74b4bb5a1ff945e6393d907979f17e0338206cc5",
+        "commits": [
+          "e4e0fbfd21aa356c8de101f6125f79a54e4d71bd",
+          "4066a923a7fc2b0e443532a858de70e89c74d660"
+        ],
+        "changed_lines": {
+          "added": 144,
+          "removed": 43,
+          "files": 7
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "srun --export=ALL,TMPDIR=/tmp --partition=all_debug uv run pytest -p no:cacheprovider tests/standard_names/",
+          "exit_status": 1,
+          "log_path": null,
+          "log_digest": "totals verbatim: 15 failed, 7242 passed, 11 skipped, 323 deselected, 34 warnings in 279.82s, down three from its 18-failure base"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T085736617922-n-swct-the-prompt-examples-round-trip-again/manifest.md",
+        "scope_changed": true,
+        "session_id": "a1870210-c6f2-463e-948b-587570fbbf9d",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 2764128,
+            "input_tokens_cumulative": 2764128,
+            "output_tokens": 13552,
+            "output_tokens_cumulative": 13552,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lane_receipt": {
+          "quota_state": "unmeasured",
+          "observed_at": "2026-09-08T09:26:24.943Z",
+          "effective_context_window": "unmeasured",
+          "quota_windows": [],
+          "unmeasured": {
+            "effective_context_window": "missing_rollout",
+            "quota_windows": "unmetered"
+          }
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 0,
+          "cumulative_input_tokens": 2764128,
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 595.455,
+          "generated_tokens": 13552,
+          "generation_seconds": 234.152,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 16.8,
+          "machine_seconds": 361.303,
+          "peak_input_tokens": 170408,
+          "tokens_per_second": 57.88,
+          "wall_tokens_per_second": 22.76
+        },
+        "follow_on_paths": [
+          "registered-locus/unit"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "running the FULL tests",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "resume",
+        "attempt": 2,
+        "scope_acceptances": [
+          {
+            "path": "imas_codex/llm/prompts/shared/sn/_exemplars_name_only.md",
+            "reason": "not this run's authored work: it folded main forward mid-flight to measure against the current base, so its range spans the merges I landed this session. Its own two commits are the exemplar file, the round-trip test and the six re-captured goldens."
+          },
+          {
+            "path": "tests/standard_names/golden_edit_prompts/generate_docs_user.txt",
+            "reason": "not this run's authored work: it folded main forward mid-flight to measure against the current base, so its range spans the merges I landed this session. Its own two commits are the exemplar file, the round-trip test and the six re-captured goldens."
+          },
+          {
+            "path": "tests/standard_names/golden_edit_prompts/generate_name_dd.txt",
+            "reason": "not this run's authored work: it folded main forward mid-flight to measure against the current base, so its range spans the merges I landed this session. Its own two commits are the exemplar file, the round-trip test and the six re-captured goldens."
+          },
+          {
+            "path": "tests/standard_names/golden_edit_prompts/generate_name_dd_names.txt",
+            "reason": "not this run's authored work: it folded main forward mid-flight to measure against the current base, so its range spans the merges I landed this session. Its own two commits are the exemplar file, the round-trip test and the six re-captured goldens."
+          },
+          {
+            "path": "tests/standard_names/golden_edit_prompts/refine_docs_user.txt",
+            "reason": "not this run's authored work: it folded main forward mid-flight to measure against the current base, so its range spans the merges I landed this session. Its own two commits are the exemplar file, the round-trip test and the six re-captured goldens."
+          },
+          {
+            "path": "tests/standard_names/golden_edit_prompts/refine_name_user.txt",
+            "reason": "not this run's authored work: it folded main forward mid-flight to measure against the current base, so its range spans the merges I landed this session. Its own two commits are the exemplar file, the round-trip test and the six re-captured goldens."
+          },
+          {
+            "path": "tests/standard_names/golden_edit_prompts/review_docs_user.txt",
+            "reason": "not this run's authored work: it folded main forward mid-flight to measure against the current base, so its range spans the merges I landed this session. Its own two commits are the exemplar file, the round-trip test and the six re-captured goldens."
+          }
+        ],
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swct-the-prompt-examples-round-trip-again",
+          "session_id": "a1870210-c6f2-463e-948b-587570fbbf9d",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T09:26:24.943Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T085845013552-n-sli-the-shared-traversal-and-sibling-reconcile-hold",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a76",
+        "node": "n-sli-the-shared-traversal-and-sibling-reconcile-hold",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 4728,
+                "cached_input_tokens": 509142,
+                "input_tokens": 513872,
+                "output_tokens": 1861,
+                "reasoning_output_tokens": 196,
+                "total_tokens": 515733,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "The remaining tests/standard_names failures outside the tombstone, audit and prompt-render clusters all pass. THE CANDIDATE SET, measured by the coordinator at main head in a run reporting 43 failed, 7214 passed, 11 skipped, 323 deselected in 275.15s: five in tests/standard_names/test_docs_review_eligibility.py named test_winning_methods_are_derived_from_schema, test_export_gate_and_population_use_shared_traversal, test_export_reason_distinguishes_absence_from_unrecorded_resolution, test_pending_count_and_claim_use_the_same_atomic_predicate and test_stranded_promotion_uses_shared_traversal; plus tests/standard_names/test_catalog_status_reconcile.py::test_export_reader_withholds_valid_but_exhausted_names, tests/standard_names/test_derivation.py::test_time_averaged_of_maximum_of_temperature, tests/standard_names/test_error_siblings.py::TestReconcileErrorSiblings::test_reconcile_orphans_error_siblings, and tests/standard_names/test_parent_admission.py::TestFilterAdmissibleParentsShadowVeto::test_new_single_batch_projection_is_source_probed_and_preserved. MEASURE FIRST, because that reading predates a merge: commit 3687213a2 landed a docs-projection change afterwards whose own focused run showed the export_reason and catalog_status_reconcile tests passing, so some of these are already fixed. Pull main, run the suite once, and report which of the named ids actually still fail before changing anything \u2014 then fix only those. Do not fix a test that already passes. THE OTHER THREE CLUSTERS BELONG TO OTHER NODES AND MUST NOT BE TOUCHED: 23 tombstone failures in test_tombstone_supersede and test_supersede_into_tombstone, 8 in test_audits, and 3 prompt-render failures in test_compose_prompt_examples_round_trip and test_edit_prompt_injection. Leave those files alone entirely. WHAT THE REMAINING ONES ARE ABOUT, so you can judge them: several assert that two code paths share one traversal or one atomic predicate rather than each computing its own \u2014 an export gate against its population, a pending count against its claim, a stranded promotion against the same traversal. That shape exists because a count and a decision computed by different predicates drift apart silently, which this repository has been bitten by repeatedly today. So where such a test fails, prefer making the two paths genuinely share a predicate over adjusting the assertion, and say which you did. For the error-sibling reconcile and the parent-admission shadow veto, state the contract each asserts and whether the code or the expectation is wrong. NEVER delete a test or weaken an assertion to make a count fall. VERIFY by running the FULL tests/standard_names, quoting pytest's own counts line verbatim, and listing every id that remains alongside which cluster owns it. Run on all_debug with --export=ALL,TMPDIR=/tmp and --time 00:59:00, write the uv command without --no-sync, and do not pass -q because quiet mode is removed from addopts. Live graph work runs on the LOGIN NODE, bounded, ten seconds per query, declared in the manifest. DURABILITY: write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Clear the remaining lifecycle failures so the suite reaches zero",
+          "id": "n-sli-the-shared-traversal-and-sibling-reconcile-hold",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T085845013552-n-sli-the-shared-traversal-and-sibling-reconcile-hold/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requested_backend": "codex",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a76",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "tests/standard_names/test_docs_review_eligibility.py",
+            "tests/standard_names/test_derivation.py",
+            "tests/standard_names/test_error_siblings.py",
+            "tests/standard_names/test_parent_admission.py",
+            "imas_codex/standard_names/graph_ops.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "cx-guardmocks",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T08:58:59Z",
+        "completed_at": "2026-09-08T09:35:17Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 2178,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 2178,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "74b4bb5a1ff945e6393d907979f17e0338206cc5",
+        "commits": [
+          "f6f992df35c85f21278bfe4d531144e29eb30324",
+          "2bdd5e2ce845dba02deb53ee3afb2c90822b704a",
+          "ed888c19b4a4762077651651a7d4cf82b7d3ea6d",
+          "fe0894af8965167f36901af57d54e97caf1e03e2"
+        ],
+        "changed_lines": {
+          "added": 37,
+          "removed": 32,
+          "files": 4
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "focused docs-review, derivation, error-sibling and parent-admission gates, then the full tests/standard_names on all_debug",
+          "exit_status": 1,
+          "log_path": null,
+          "log_digest": "fetched-main baseline 41 failed 7216 passed; focused gates passed at 6 docs-review, 48 derivation, 17 error-sibling and 49 parent-admission; full after suite 34 failed 7223 passed with 0 added and the 7 assigned failures removed"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T085845013552-n-sli-the-shared-traversal-and-sibling-reconcile-hold/manifest.md",
+        "scope_changed": true,
+        "session_id": "01a07f80-ea0c-7502-9f1f-1ca799ebd33f",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 24096512,
+            "cached_input_tokens_cumulative": 28790400,
+            "input_tokens": 24302175,
+            "input_tokens_cumulative": 29084398,
+            "output_tokens": 16318,
+            "output_tokens_cumulative": 36444,
+            "reasoning_output_tokens": 2474,
+            "reasoning_output_tokens_cumulative": 7633
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T09:35:17Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 26.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T09:35:17Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 28790400,
+          "cumulative_input_tokens": 57874798,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 44077
+        },
+        "follow_on_paths": [
+          "audit\":[\"tests/standard_names/test_audits.py::TestOperatorUnitConsistency::test_equal_dimension_ratios_accept_dimensionless_unit[ratio_of_ion_average_temperature_to_volume_averaged_ion_average_temperature-1",
+          "tests/standard_names/test_audits.py::TestOperatorUnitConsistency::test_equal_dimension_ratios_accept_dimensionless_unit[ratio_of_ion_average_temperature_to_volume_averaged_ion_average_temperature--",
+          "tests/standard_names/test_audits.py::TestOperatorUnitConsistency::test_equal_dimension_ratios_accept_dimensionless_unit[ratio_of_ion_average_temperature_to_volume_averaged_ion_average_temperature-none",
+          "tests/standard_names/test_audits.py::TestCanonicalLocusCheck::test_every_registered_locus_is_never_flagged[reflectometer_cutoff_position",
+          "tests/standard_names/test_audits.py::TestCanonicalLocusCheck::test_every_registered_locus_is_never_flagged[charge_exchange_channel",
+          "tests/standard_names/test_audits.py::TestCanonicalLocusCheck::test_every_registered_locus_is_never_flagged[thomson_scattering_channel_position",
+          "tests/standard_names/test_audits.py::TestCanonicalLocusCheck::test_every_registered_locus_is_never_flagged[langmuir_probe_position",
+          "tests/standard_names/test_audits.py::TestCanonicalLocusCheck::test_every_registered_locus_is_never_flagged[calorimetry_component",
+          "prompt-render\":[\"tests/standard_names/test_compose_prompt_examples_round_trip.py::test_endorsed_prompt_name_round_trips[toroidal_surface_integrated_current_density",
+          "tests/standard_names/test_compose_prompt_examples_round_trip.py::test_operator_projection_forms_round_trip[toroidal_surface_integrated_current_density",
+          "tests/standard_names/test_edit_prompt_injection.py::test_no_edit_render_matches_golden",
+          "tombstone\":[\"tests/standard_names/test_supersede_into_tombstone.py::test_free_tombstone_target_is_occupied_by_the_fold",
+          "tests/standard_names/test_supersede_into_tombstone.py::test_tombstone_target_whose_only_successor_is_the_folded_name_is_admitted",
+          "tests/standard_names/test_supersede_into_tombstone.py::test_tombstone_target_whose_two_hop_chain_closes_onto_its_root_is_admitted",
+          "tests/standard_names/test_supersede_into_tombstone.py::test_fold_revives_a_tombstoned_target_at_its_predecessor_stage[accepted-reviewed",
+          "tests/standard_names/test_supersede_into_tombstone.py::test_fold_revives_a_tombstoned_target_at_its_predecessor_stage[reviewed-reviewed",
+          "tests/standard_names/test_supersede_into_tombstone.py::test_fold_revives_a_tombstoned_target_at_its_predecessor_stage[drafted-drafted",
+          "tests/standard_names/test_supersede_into_tombstone.py::test_fold_revives_a_tombstoned_target_at_its_predecessor_stage[exhausted-exhausted",
+          "tests/standard_names/test_supersede_into_tombstone.py::test_fold_revival_defaults_to_drafted_without_a_recorded_predecessor_stage",
+          "tests/standard_names/test_supersede_into_tombstone.py::test_fold_onto_a_tombstone_leaves_every_carried_source_on_a_live_name",
+          "tests/standard_names/test_tombstone_supersede.py::test_source_mutation_is_fenced_to_locked_target",
+          "tests/standard_names/test_tombstone_supersede.py::test_fold_preserves_actual_predecessor_stage[pending",
+          "tests/standard_names/test_tombstone_supersede.py::test_fold_preserves_actual_predecessor_stage[drafted",
+          "tests/standard_names/test_tombstone_supersede.py::test_fold_preserves_actual_predecessor_stage[reviewed",
+          "tests/standard_names/test_tombstone_supersede.py::test_fold_preserves_actual_predecessor_stage[accepted",
+          "tests/standard_names/test_tombstone_supersede.py::test_fold_preserves_actual_predecessor_stage[exhausted",
+          "tests/standard_names/test_tombstone_supersede.py::test_fold_migrates_scalars_edges_cache_and_lineage_exactly",
+          "tests/standard_names/test_tombstone_supersede.py::test_exact_preexisting_target_lineage_is_admitted_without_duplicate",
+          "tests/standard_names/test_tombstone_supersede.py::test_scalar_only_source_is_discovered_and_repaired",
+          "tests/standard_names/test_tombstone_supersede.py::test_third_historical_binding_and_projection_are_preserved",
+          "tests/standard_names/test_tombstone_supersede.py::test_facility_batch_backing_folds_like_any_other_path",
+          "tests/standard_names/test_tombstone_supersede.py::test_receipt_is_full_typed_and_preserves_audit_subgraphs",
+          "tests/standard_names/test_tombstone_supersede.py::test_exact_second_run_is_noop_and_all_partial_drift_is_refused",
+          "tests/standard_names/test_tombstone_supersede.py::test_self_missing_and_unrelated_state_are_safe"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "run the suite",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sli-the-shared-traversal-and-sibling-reconcile-hold",
+          "session_id": "01a07f80-ea0c-7502-9f1f-1ca799ebd33f",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T09:35:17Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -106316,8 +106879,22 @@
         "reason": "utilisation 98% with burn multiple 3.0x is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
         "closed_by_purpose": "dispatch",
         "resumption_fired": false
+      },
+      {
+        "hold_id": "hold-claude-opus-20260908091803",
+        "backend": "claude-opus",
+        "purpose": "dispatch",
+        "opened_at": "2026-09-08T09:18:03Z",
+        "closed_at": null,
+        "held_seconds": null,
+        "utilisation_pct": 98.0,
+        "resets_at": "2026-09-08T11:20:00Z",
+        "effective_ceiling_pct": 95.0,
+        "reason": "utilisation 98% with burn multiple unknown is at or above the 95.0% ceiling for a dispatch (ceiling 100.0% less reserve)",
+        "closed_by_purpose": null,
+        "resumption_fired": false
       }
     ],
-    "_version": 1973
+    "_version": 1977
   }
 }
