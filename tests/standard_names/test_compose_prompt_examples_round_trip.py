@@ -662,15 +662,18 @@ def test_locusless_unit_vector_is_a_semantic_negative_not_a_parser_failure() -> 
 
 
 # A prefix transformation may coexist with a projection, and change_in is a
-# bare-prefix operator. These forms MUST round-trip permanently — that
-# co-existence is the grammar invariant this guard locks in.
+# bare-prefix operator. A domain reduction (surface_integrated, volume_integrated,
+# ...) is a bare-prefix operator that leads its name and wraps the projection, so
+# the reduction is spelled before the projection axis and the projection stays
+# on the base. These forms MUST round-trip permanently — that co-existence is the
+# grammar invariant this guard locks in.
 _OPERATOR_PROJECTION_FORMS = [
     "tendency_of_toroidal_current_density",
     "time_derivative_of_radial_magnetic_field",
     "gradient_of_perpendicular_electron_pressure",
     "poloidal_change_in_ion_velocity",
     "change_in_electron_density",
-    "toroidal_surface_integrated_current_density",
+    "surface_integrated_toroidal_current_density",
 ]
 
 

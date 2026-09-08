@@ -89,25 +89,22 @@ bare `radial_outline` / `vertical_outline` as identities shared by different
 objects. Ordinal siblings of one wall outline may consolidate, but a wall
 outline and a plasma-boundary outline may not.
 
-## Name-Only Mode — Reduced Context
+## Name-Only Mode — Focused Output
 
-To keep the batch wide and cache-friendly, this prompt intentionally
-omits some deep per-item context (cluster siblings, cross-IDS equivalents,
-version history, reviewer feedback). Authoritative source fields and labels
-shown for each item remain binding. A subsequent
-review / enrichment pass will attach those details. Your job here is
-to produce **clean, grammar-compliant names** that correctly
-identify the physical quantity — documentation depth can be terse.
+This mode keeps the requested output focused on names, but the per-item context
+below remains authoritative: in particular, the rich enriched description,
+unit, semantic neighbours, identifiers, and reviewer history are not optional
+scaffolding. Your job here is to produce **clean, grammar-compliant names** that
+correctly identify the physical quantity; later review may improve prose, but it
+cannot recover a semantic axis omitted from the identity.
 
 ### What this means for your output
 
 - **Names** must still be fully grammar-compliant — the grammar
   check runs on every candidate, and failures trigger a retry.
-- **Descriptions** should be concise (1–2 sentences) and faithful
-  to the DD description. Do not invent detail you don't have.
-- **Documentation**: a single paragraph naming the physical
-  observable, its units, and its typical usage context is enough.
-  The enrichment pass will expand this later.
+- **Descriptions** should be concise (1–2 sentences) and grounded in the rich
+  enriched source description. Treat the terse DD clause as secondary evidence;
+  do not invent detail you do not have.
 
 ## Identify Natural Sub-Groups First
 
@@ -120,9 +117,9 @@ sub-groupings within a single `(physics_domain, unit)` batch:
 - process: flux vs source vs sink vs diffusivity
 - state: volumetric vs surface vs line-integrated
 
-Then emit **one** name per path, reusing the same base name when the
-sub-group identity is the same (e.g., `electron_particle_flux_parallel`
-and `ion_particle_flux_parallel` share a structure). Reuse existing
+Then emit **one** name per path, reusing the same base structure when the
+sub-group identity is the same (e.g., `parallel_electron_particle_flux`
+and `parallel_ion_particle_flux` share a structure). Reuse existing
 standard names from the "Existing Standard Names" list whenever the DD
 path measures the same quantity — do not invent a synonym.
 
@@ -134,7 +131,7 @@ path measures the same quantity — do not invent a synonym.
 | `electron_temperature_core` | `core_electron_temperature` | Zone prefix before the subject/base |
 | `Te` | `electron_temperature` | No symbol abbreviations |
 | `electron_temperature_in_eV` | `electron_temperature` | Unit is never part of the name |
-| `current_from_passive_loop` | `passive_loop_current` | No `_from_` causation |
+| `current_from_passive_loop` | `current_of_passive_loop` | No `_from_` causation; device association is a postfix locus |
 | `reconstructed_faraday_rotation_angle` | `faraday_polarization_angle` | Processing method is metadata |
 | `geometric_minor_radius` | `minor_radius` | DD section prefix leaking in |
 | `x_ray_crystal_spectrometer_pixel_photon_energy_lower_bound` | `lower_bound_photon_energy` | **Instrument-prefix carry-over** — drop instrument prefix for generic physics observables (keep only when the quantity is intrinsic to the hardware, e.g. `poloidal_plane_cross_sectional_area_of_rogowski_coil`) |
@@ -181,11 +178,17 @@ Before finalizing, verify across your entire output:
 
 ## DD Paths to Name
 
+A generic DD leaf is provenance, not permission to emit a generic Standard
+Name. The enriched source description is the primary grounding and usually
+contains the carrier, surface, subject, or process that makes the identity
+self-describing. Preserve that meaning or emit a `vocab_gap` when the closed
+grammar cannot express it.
+
 
 ### equilibrium/time_slice/profiles_1d/psi
 
 
-- **Description:** Poloidal flux
+- **Enriched source description (PRIMARY GROUNDING):** Poloidal flux
 - **Unit:** Wb *(authoritative — do NOT output)*
 - **Data type:** FLT_1D
 

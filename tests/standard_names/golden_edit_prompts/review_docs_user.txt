@@ -1,4 +1,6 @@
 Apply the rubric (provided in the system prompt) to the candidate below.
+The name has already passed name review. This prompt supplies no full grammar
+registry or parser error text; do not score the name's grammar here.
 
 ## Candidate
 
@@ -32,6 +34,10 @@ They are NOT to be re-reviewed. Compare the candidate's documentation
 
 
 
+
+For a derived parent, the dedicated parent-review path supplies the children as
+the primary context. This ordinary docs path does not: do not infer a parent
+obligation from comparison neighbours alone.
 
 
 *No accepted siblings found — score on physics correctness alone.*

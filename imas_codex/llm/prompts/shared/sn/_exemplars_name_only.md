@@ -52,10 +52,10 @@ FORBIDDEN: `at_` for a geometric coordinate (wrong preposition).
 - ✅ `normalized_poloidal_magnetic_flux`
 - ✅ `volume_averaged_electron_density`
 - ✅ `line_averaged_electron_density`
-- ✅ `toroidal_surface_integrated_current_density` (→ `toroidal_plasma_current`)
-  - *Why good:* a bare-prefix transformation (`surface_integrated`) folds into
-    the qualifier run, so the `toroidal` component stays outermost — canonical
-    order is `{component}_{transformation}_{base}`, not transformation-first.
+- ✅ `surface_integrated_toroidal_current_density` (→ `toroidal_plasma_current`)
+  - *Why good:* a domain reduction (`surface_integrated`) leads its name and
+    wraps the projection, so the reduction is spelled before the `toroidal`
+    axis — canonical order is `{transformation}_{component}_{base}`.
 
 #### Geometry of a structural entity
 
