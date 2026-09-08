@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T13:01:25",
+  "updated": "2026-09-08T14:11:11",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -107932,6 +107932,328 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T114546673680-n-sli-the-catalog-edit-origin-is-earned",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a76",
+        "node": "n-sli-the-catalog-edit-origin-is-earned",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1960,
+                "cached_input_tokens": 712549,
+                "input_tokens": 714511,
+                "output_tokens": 1604,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 716115,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A report naming what wrote origin='catalog_edit' onto StandardName identities, whether those rows were legitimately catalog-edited, and the repair, with the repair applied through a backing code path if the origin proves unearned. THE MEASUREMENT, taken by the coordinator against the live graph, which you should confirm rather than re-derive: 2096 identities carry origin='catalog_edit', while 0 carry a catalog_pr_number, 0 carry catalog_approved_at, and 0 carry name_stage='approved'. The lead states plainly that there are no catalog edits yet and there has never been a review. The full origin census is 2096 catalog_edit, 1478 pipeline, 1284 null, 270 derived. WHY IT MATTERS RATHER THAN BEING COSMETIC: cascade.py:793 refuses to rename any descendant whose origin is catalog_edit unless override_edits is passed, on the stated principle at cascade.py:36 that the catalog is the authoritative editor. So 2096 identities are protected on an origin nothing earned, every rename cascade touching one of them refuses, and a coordinator learns to pass --override-edits routinely \u2014 which will then override GENUINE catalog edits the first time they exist. The guard is being worn out before its first real use. That already happened once today: a rename cascade refused on total_power_due_to_ion_cyclotron_heating and I reported to a reviewer that it was a curated human wording, which was false. WHAT TO ESTABLISH FIRST. No code in the standard-names package currently writes that origin onto a StandardName: every reference reads it, and the three writers at edit.py lines 1197, 1463 and 2488 stamp origin on a StandardNameChange ledger event rather than on the identity. So either a writer exists outside that package, or a historical path wrote it and has since been removed, or an ingestion or migration set it. Find which, and quote the code or the change-ledger evidence. The StandardNameChange rows are your best witness: if those 2096 identities carry change events whose origin is catalog_edit, then an identity-level origin was probably copied from its event, and that conflation is the defect. THE REPAIR, once you know the cause: an identity's origin should record how that identity came to be, and catalog_edit must mean a catalog request actually edited it. Correct the unearned rows through a backing code path so the change is reproducible, not with ad-hoc Cypher, and state how many rows moved and to what. Do NOT widen or weaken the cascade guard \u2014 the guard is right and its data is wrong, and repairing data by relaxing the check that noticed it is the inversion this project keeps finding. Do NOT touch net_power_due_to_ion_cyclotron_heating or power_due_to_ion_cyclotron_heating, which a concurrent rename owns. If you conclude some of the 2096 ARE legitimately catalog-edited, say which and on what evidence rather than treating the whole set alike. The graph tunnel is login-node-local so live work runs on the LOGIN NODE, bounded, ten seconds per query, exception declared in the manifest. Gate: tests/standard_names, added failures against a base you take at your own head; the suite is GREEN at 7264 passed with zero failures. Do not pass -q; quiet mode is removed from addopts so a run emits its own totals line, and quote it. DURABILITY: write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Establish what stamped catalog_edit on 2096 identities that no catalog has ever edited",
+          "id": "n-sli-the-catalog-edit-origin-is-earned",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T114546673680-n-sli-the-catalog-edit-origin-is-earned/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requested_backend": "codex-luna",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a76",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "docs/evidence/sn-lifecycle-integrity/catalog-edit-origin.md",
+            "imas_codex/standard_names/graph_ops.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "codex-luna-b",
+        "backend": "codex-luna",
+        "local": false,
+        "agent": {
+          "alias": "luna5.6",
+          "backend": "codex-luna",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-luna",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T11:45:56Z",
+        "completed_at": "2026-09-08T12:05:59Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1203,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1203,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "e76aabdd4a410a5d041ad3f84b1ed1ec7934eca2",
+        "commits": [
+          "c201f4449ff0c8fb1eca416b634a38e8e0cca523",
+          "4297f28e61e5c3e91526e0603c4bad9a8fca9c01",
+          "b64a6a0136f21cf85409e6bad1a0066a085b8c42"
+        ],
+        "changed_lines": {
+          "added": 215,
+          "removed": 0,
+          "files": 2
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "focused test_provenance_ledger and test_graph_ops, then the full tests/standard_names on all_debug",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "focused 59 passed, 2 deselected in 6.65s; full suite 7267 passed, 11 skipped, 323 deselected, 34 warnings in 292.86s, exit 0; dry run eligible 2096 with pipeline 1179, derived 246, unset 671, apply changed 2096, second invocation all zeros"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T114546673680-n-sli-the-catalog-edit-origin-is-earned/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a080d6-ceef-7970-9ee4-a8850a65c6d1",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 10932992,
+            "cached_input_tokens_cumulative": 10932992,
+            "input_tokens": 11182149,
+            "input_tokens_cumulative": 11182149,
+            "output_tokens": 36308,
+            "output_tokens_cumulative": 36308,
+            "reasoning_output_tokens": 14016,
+            "reasoning_output_tokens_cumulative": 14016
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T12:05:59Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 33.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T12:05:59Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 10932992,
+          "cumulative_input_tokens": 22115141,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 50324
+        },
+        "follow_on_paths": [
+          "loop.py"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sli-the-catalog-edit-origin-is-earned",
+          "session_id": "01a080d6-ceef-7970-9ee4-a8850a65c6d1",
+          "session_source": "stream",
+          "retained_at": "2026-09-08T12:05:59Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T112445847551-n-crs-the-reviewer-question-lands-as-a-rename",
+        "plan": "catalog-review-surface",
+        "section": "s4b",
+        "node": "n-crs-the-reviewer-question-lands-as-a-rename",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 334,
+                "cached_input_tokens": 686347,
+                "input_tokens": 686683,
+                "output_tokens": 1554,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 688237,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "The graph identity power_due_to_ion_cyclotron_heating has been renamed to net_power_due_to_ion_cyclotron_heating through the ordinary rename cascade, carrying the reviewer's comment as its reason, and it is NOT marked approved. THE LEAD'S CONSTRAINT, which is the point of this node: the fork request is a review substrate and will be CLOSED rather than approved, so approval belongs to the upstream review. Use sn edit --rename, which enters review_name directly and carries PRODUCED_NAME provenance. Do NOT use sn approve, do not write status active, and do not promote anything. WHY THE RENAME IS RIGHT, already established so you need not re-derive it: the entry's own description reads 'Net ion-cyclotron radio-frequency power launched through a heating antenna into the vacuum vessel, equal to forward power minus reflected power at the antenna boundary', and its documentation states that P_net equals P_forward minus P_reflected. The word net governs the prose and is absent from the name, which fails the rule that a name be self-describing from the name string alone. Three neighbours in the same file make the unqualified form ambiguous: forward_power_of_ion_cyclotron_heating_antenna is incident power before reflection, reflected_power_of_ion_cyclotron_heating_antenna is power returned toward the source, and total_power_due_to_ion_cyclotron_heating is the system-level sum over antennas. The coordinator verified that net_power_due_to_ion_cyclotron_heating parses strictly against the grammar, so the qualifier is admissible. THE REASON YOU PASS must be grounded in that physics rather than in the review process: state that the quantity is the net boundary power, forward minus reflected, and that the unqualified name did not distinguish it from the forward, reflected and total variants beside it. DRY RUN FIRST and report the cascade it plans, naming every dependent identity, edge and source binding it would touch. Then apply it and read the resulting state back from the graph, reporting the identity before, the identity after, its name_stage, its validation_status and its catalog status, and confirming that catalog status is NOT active. If the planned cascade would touch anything beyond this identity and its own bindings, stop and report what it would touch rather than proceeding. A SECOND DEFECT IS IN SCOPE TO REPORT AND OUT OF SCOPE TO FIX: that entry's documentation links to launched_power_of_ion_cyclotron_heating_antenna as the antenna-oriented expression of the same net boundary power, and no such name exists \u2014 the only launched-power entry in the batch is launched_power_of_lower_hybrid_antenna, so the link resolves to nothing. State whether the ICRH launched-power name is genuinely missing from the cohort or whether the reference should now point at this renamed entry, and leave the repair to a later node. The graph tunnel is login-node-local so live work runs on the LOGIN NODE, bounded to this identity and its cascade, ten seconds per query, exception declared in the manifest. Gate: tests/standard_names, added failures against a base you take at your own head; the suite is GREEN at 7264 passed with zero failures. Do not pass -q; quiet mode is removed from addopts so a run emits its own totals line, and quote it. DURABILITY: write your manifest before any long output.",
+          "estimated_hours": null,
+          "goal": "Carry the reviewer's net-prefix question into the graph as a rename without approving it",
+          "id": "n-crs-the-reviewer-question-lands-as-a-rename",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T112445847551-n-crs-the-reviewer-question-lands-as-a-rename/manifest.md",
+          "plan": "catalog-review-surface",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "s4b",
+          "spec_level": "exact",
+          "time_budget": "40m",
+          "write_paths": [
+            "docs/evidence/catalog-review-surface/net-prefix-rename.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "codex-terra-b",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T11:24:56Z",
+        "completed_at": "2026-09-08T12:10:10Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 2714,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 2714,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "e76aabdd4a410a5d041ad3f84b1ed1ec7934eca2",
+        "commits": [
+          "19ea692d3cfc3651a9c50e326710d0e236b5acc3",
+          "36bcd234ca1a0a39cd52533748a0bfca8e9d6296"
+        ],
+        "changed_lines": {
+          "added": 57,
+          "removed": 19,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "passed",
+        "gate_check": {
+          "command": "sn edit --rename dry run and apply with --scope self, live read-back, then the full tests/standard_names on all_debug",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "full suite 7267 passed, 11 skipped, 323 deselected, 34 warnings in 297.53s, exit 0, added failures 0; the coordinator independently read back net_power_due_to_ion_cyclotron_heating at name_stage drafted, status draft, validation_status valid, REFINED_FROM power_due_to_ion_cyclotron_heating which is now superseded"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T112445847551-n-crs-the-reviewer-question-lands-as-a-rename/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a07fd2-64f0-7812-9739-574de8f4cefa",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 0,
+            "cached_input_tokens_cumulative": 13883520,
+            "input_tokens": 0,
+            "input_tokens_cumulative": 13929116,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 18540,
+            "reasoning_output_tokens": 0,
+            "reasoning_output_tokens_cumulative": 3966
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T12:10:10Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 33.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T12:10:10Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 13883520,
+          "cumulative_input_tokens": 27812636,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 22506
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "resume",
+        "attempt": 3,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-crs-the-reviewer-question-lands-as-a-rename",
+          "session_id": "01a07fd2-64f0-7812-9739-574de8f4cefa",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T12:10:10Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -108188,6 +108510,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1985
+    "_version": 1987
   }
 }
