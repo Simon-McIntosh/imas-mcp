@@ -501,8 +501,9 @@ def _fetch_candidates(
 
     - ``name_stage IN ['accepted', 'approved']`` — accepted RC candidates and
       PR-approved names are exportable; superseded/internal attempts are not.
-    - ``docs_stage = 'accepted'`` — excludes nodes whose documentation has
-      not yet passed the docs review loop (skipped when *names_only*).
+    - a reachable winning docs-axis review group with no docs quorum shortfall
+      — the review evidence is authoritative when it disagrees with the
+      scalar ``docs_stage`` projection (skipped when *names_only*).
     - ``validation_status = 'valid'`` — excludes quarantined nodes.
     - ``review_quorum_shortfall IS NULL`` — excludes a name accepted while its
       reviewer chain had not reached a verdict. A quorate review clears the
@@ -514,8 +515,8 @@ def _fetch_candidates(
       exports. Names-only export remains independent of docs state and docs
       review authority.
 
-    When *names_only* is True, the ``docs_stage`` gate is dropped so
-    names can be exported before documentation is generated.
+    When *names_only* is True, the docs-review gate is dropped so names can be
+    exported before documentation is generated.
 
     When *batch* is given (a review-batch export), the name gate becomes
     ``name_stage = 'approved' OR sn.id IN batch``: the already-approved catalog
@@ -551,7 +552,7 @@ def _fetch_candidates(
     if not names_only:
         params.update(docs_review_eligibility_params())
         cypher += (
-            "  AND sn.docs_stage = 'accepted'\n"
+            "  // sn.docs_stage = 'accepted' is an obsolete scalar gate; review evidence decides\n"
             f"  AND {docs_review_eligibility_where()}\n"
             "  AND sn.docs_review_quorum_shortfall IS NULL\n"
         )
@@ -753,6 +754,7 @@ def _classify_export_population(
         if "name_stage" not in candidate:
             eligible.append(candidate)
             continue
+        has_physics_domain = "physics_domain" in candidate
         candidate_domains = candidate.get("physics_domain") or []
         if isinstance(candidate_domains, str):
             candidate_domains = [candidate_domains]
@@ -764,7 +766,7 @@ def _classify_export_population(
 
         reason: str | None = None
         detail = ""
-        if not candidate_domains:
+        if not names_only and has_physics_domain and not candidate_domains:
             reason = "missing_physics_domain"
             detail = (
                 "physics_domain is empty; the entry cannot be assigned to a "
@@ -782,9 +784,6 @@ def _classify_export_population(
         elif candidate.get("review_quorum_shortfall") is not None:
             reason = "name_review_quorum_shortfall"
             detail = "name review quorum shortfall remains recorded"
-        elif not names_only and candidate.get("docs_stage") != "accepted":
-            reason = "documentation_not_accepted"
-            detail = f"docs_stage={candidate.get('docs_stage')!r}"
         elif not names_only and candidate.get("_has_docs_review", True) is False:
             reason = "never_reviewed"
             detail = "no docs-axis review is reachable"
@@ -793,6 +792,9 @@ def _classify_export_population(
         ):
             reason = "resolution_unrecorded"
             detail = "docs-axis reviews exist but no winning group records a method"
+        elif not names_only and candidate.get("docs_stage") != "accepted":
+            reason = "documentation_not_accepted"
+            detail = f"docs_stage={candidate.get('docs_stage')!r}"
         elif (
             not names_only and candidate.get("docs_review_quorum_shortfall") is not None
         ):
