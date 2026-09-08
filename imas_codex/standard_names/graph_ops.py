@@ -17799,7 +17799,41 @@ class RefinedNamePersistenceRefusal(RuntimeError):
         )
 
 
-def rename_preserves_meaning(old_name: str, new_name: str) -> bool:
+def _meaning_preservation_assertion(
+    *,
+    reason: str | None,
+    asserted_by: str | None,
+) -> tuple[str, str] | None:
+    """Validate an explicit assertion that a rename preserves meaning."""
+    if reason is None and asserted_by is None:
+        return None
+
+    normalized_reason = (reason or "").strip()
+    normalized_actor = (asserted_by or "").strip()
+    if not normalized_reason:
+        raise ValueError(
+            "a meaning-preservation assertion requires a substantive reason"
+        )
+    if not normalized_actor:
+        raise ValueError(
+            "a meaning-preservation assertion requires the asserting actor"
+        )
+    return normalized_reason, normalized_actor
+
+
+def _predecessor_document_identity(name: str, documentation: str) -> str:
+    """Return the content-addressed identity of one predecessor document."""
+    digest = hashlib.sha256(documentation.encode("utf-8")).hexdigest()
+    return f"standard-name-document:{name}:sha256:{digest}"
+
+
+def rename_preserves_meaning(
+    old_name: str,
+    new_name: str,
+    *,
+    assertion_reason: str | None = None,
+    asserted_by: str | None = None,
+) -> bool:
     """True when two spellings denote the same quantity.
 
     The grammar's intermediate representation is the meaning; the string is
@@ -17811,8 +17845,17 @@ def rename_preserves_meaning(old_name: str, new_name: str) -> bool:
     A spelling either side cannot parse yields no evidence of sameness, and
     absence of evidence answers False here: carrying an accepted document
     across a rename that might have changed the meaning would publish a
-    statement nobody wrote about the successor.
+    statement nobody wrote about the successor. A caller may instead provide
+    a reasoned, attributed assertion. That explicit authority is distinct from
+    grammar inference and must be recorded by the persistence operation.
     """
+    assertion = _meaning_preservation_assertion(
+        reason=assertion_reason,
+        asserted_by=asserted_by,
+    )
+    if assertion is not None:
+        return True
+
     from imas_standard_names.grammar import parser as isn_parser
 
     try:
@@ -17948,6 +17991,8 @@ def persist_refined_name(
     edit_include_accepted: bool | None = None,
     expected_old_stage: str | None = None,
     expected_claim_token: str | None = None,
+    meaning_preservation_reason: str | None = None,
+    meaning_preservation_asserted_by: str | None = None,
 ) -> dict[str, str]:
     """Persist a refined StandardName as a NEW node with source-edge migration.
 
@@ -17963,7 +18008,9 @@ def persist_refined_name(
        ``docs_generated_at``) — the description already carried across
        unchanged, and the two prose fields describe one meaning. Any other
        rename leaves the docs axis at ``pending`` with no text, because the
-       predecessor's document was written about a different meaning.
+       predecessor's document was written about a different meaning. A caller
+       may explicitly assert preserved meaning only with a substantive reason
+       and asserting actor; that route writes a separate provenance receipt.
     2. Require the full authoritative source set to pass the attachment guard.
     3. Create lineage, supersede the predecessor, and migrate every source
        edge, scalar, upstream projection, and source-path cache.
@@ -18008,7 +18055,18 @@ def persist_refined_name(
     inherit_open_edit = (
         edit_mode is None and edit_reason is None and edit_status is None
     )
+    meaning_assertion = _meaning_preservation_assertion(
+        reason=meaning_preservation_reason,
+        asserted_by=meaning_preservation_asserted_by,
+    )
     meaning_preserved = rename_preserves_meaning(old_name, new_name)
+    if meaning_assertion is not None:
+        meaning_preserved = rename_preserves_meaning(
+            old_name,
+            new_name,
+            assertion_reason=meaning_preservation_reason,
+            asserted_by=meaning_preservation_asserted_by,
+        )
 
     escalation_set = ""
     if escalated:
@@ -18218,6 +18276,7 @@ def persist_refined_name(
                                  AS source_edit_override_edits,
                                old.edit_include_accepted
                                  AS source_edit_include_accepted,
+                               old.documentation AS source_documentation,
                                successor_edit_mode AS effective_edit_mode,
                                successor_name_hint AS effective_name_hint,
                                successor_docs_hint AS effective_docs_hint,
@@ -18557,6 +18616,20 @@ def persist_refined_name(
                     origin=edit_origin,
                     run_id=run_id,
                 )
+                if meaning_assertion is not None:
+                    assertion_reason, asserted_by = meaning_assertion
+                    predecessor_document = str(
+                        preflight_row.get("source_documentation") or ""
+                    )
+                    record_standard_name_change(
+                        query_handle,
+                        _predecessor_document_identity(old_name, predecessor_document),
+                        new_name,
+                        operation="semantics_preserving_rename",
+                        reason=assertion_reason,
+                        origin=asserted_by,
+                        run_id=run_id,
+                    )
                 tx.commit()
             except BaseException:
                 with suppress(Exception):
@@ -18582,6 +18655,242 @@ def persist_refined_name(
         reason=RefinedNamePersistenceRefusalReason.SUCCESSOR_NOT_PERSISTED,
         existing_name=new_name,
     )
+
+
+@retry_on_deadlock()
+def carry_accepted_documentation_across_rename(
+    *,
+    predecessor_name: str,
+    successor_name: str,
+    reason: str,
+    asserted_by: str,
+) -> dict[str, Any]:
+    """Carry an accepted document after an explicitly equivalent rename.
+
+    This is the repair route for a rename that has already committed. It
+    requires the recorded ``REFINED_FROM`` lineage, a superseded predecessor
+    with non-empty accepted documentation, and either a pristine pending docs
+    axis or an exact prior carry. The assertion is written atomically as an
+    internal change whose source value is the predecessor document's
+    content-addressed identity.
+
+    The operation is idempotent for the same predecessor document and refuses
+    to overwrite any independently authored successor documentation.
+    """
+    assertion = _meaning_preservation_assertion(
+        reason=reason,
+        asserted_by=asserted_by,
+    )
+    if assertion is None:  # pragma: no cover - both arguments are required
+        raise ValueError("a meaning-preservation assertion is required")
+    assertion_reason, assertion_actor = assertion
+
+    with GraphClient() as gc:
+        with gc.session() as session:
+            tx = session.begin_transaction()
+            try:
+                rows = list(
+                    tx.run(
+                        """
+                        MATCH (new:StandardName {id: $successor_name})
+                              -[:REFINED_FROM]->
+                              (old:StandardName {id: $predecessor_name})
+                        RETURN old.name_stage AS predecessor_name_stage,
+                               old.docs_stage AS predecessor_docs_stage,
+                               old.documentation AS predecessor_documentation,
+                               old.docs_chain_length
+                                 AS predecessor_docs_chain_length,
+                               old.docs_model AS predecessor_docs_model,
+                               toString(old.docs_generated_at)
+                                 AS predecessor_docs_generated_at,
+                               new.docs_stage AS successor_docs_stage,
+                               new.documentation AS successor_documentation,
+                               new.docs_chain_length
+                                 AS successor_docs_chain_length,
+                               new.docs_model AS successor_docs_model,
+                               toString(new.docs_generated_at)
+                                 AS successor_docs_generated_at,
+                               new.name_stage AS successor_name_stage,
+                               new.status AS successor_status
+                        """,
+                        predecessor_name=predecessor_name,
+                        successor_name=successor_name,
+                    )
+                )
+                if len(rows) != 1:
+                    raise ValueError(
+                        "the requested identities are not one recorded rename: "
+                        f"{predecessor_name!r} -> {successor_name!r}"
+                    )
+
+                before = dict(rows[0])
+                documentation = str(before.get("predecessor_documentation") or "")
+                if before.get("predecessor_name_stage") != "superseded":
+                    raise ValueError("the predecessor is not superseded")
+                if (
+                    before.get("predecessor_docs_stage") != "accepted"
+                    or not documentation
+                ):
+                    raise ValueError(
+                        "the predecessor does not hold non-empty accepted documentation"
+                    )
+
+                predecessor_chain_length = int(
+                    before.get("predecessor_docs_chain_length") or 0
+                )
+                successor_chain_length = int(
+                    before.get("successor_docs_chain_length") or 0
+                )
+                already_carried = (
+                    before.get("successor_docs_stage")
+                    == before.get("predecessor_docs_stage")
+                    and str(before.get("successor_documentation") or "")
+                    == documentation
+                    and successor_chain_length == predecessor_chain_length
+                    and before.get("successor_docs_model")
+                    == before.get("predecessor_docs_model")
+                    and before.get("successor_docs_generated_at")
+                    == before.get("predecessor_docs_generated_at")
+                )
+                pristine_pending = (
+                    before.get("successor_docs_stage") == "pending"
+                    and not str(before.get("successor_documentation") or "")
+                    and successor_chain_length == 0
+                    and before.get("successor_docs_model") is None
+                    and before.get("successor_docs_generated_at") is None
+                )
+                if not already_carried and not pristine_pending:
+                    raise ValueError(
+                        "the successor documentation axis is not pristine and "
+                        "does not match the predecessor"
+                    )
+
+                document_identity = _predecessor_document_identity(
+                    predecessor_name,
+                    documentation,
+                )
+                document_sha256 = document_identity.rsplit(":", 1)[-1]
+                receipt_id = f"sn-change:{
+                    uuid.uuid5(
+                        uuid.NAMESPACE_URL,
+                        '|'.join(
+                            (
+                                'semantics_preserving_rename',
+                                document_identity,
+                                successor_name,
+                            )
+                        ),
+                    )
+                }"
+                mutation = list(
+                    tx.run(
+                        """
+                        MATCH (new:StandardName {id: $successor_name})
+                              -[:REFINED_FROM]->
+                              (old:StandardName {id: $predecessor_name})
+                        WHERE old.name_stage = 'superseded'
+                          AND old.docs_stage = 'accepted'
+                          AND old.documentation = $documentation
+                          AND coalesce(old.docs_chain_length, 0)
+                              = $docs_chain_length
+                          AND coalesce(old.docs_model, '')
+                              = coalesce($docs_model, '')
+                          AND coalesce(toString(old.docs_generated_at), '')
+                              = coalesce($docs_generated_at, '')
+                          AND (
+                            (new.docs_stage = 'pending'
+                             AND coalesce(new.documentation, '') = ''
+                             AND coalesce(new.docs_chain_length, 0) = 0
+                             AND new.docs_model IS NULL
+                             AND new.docs_generated_at IS NULL)
+                            OR
+                            (new.docs_stage = old.docs_stage
+                             AND new.documentation = old.documentation
+                             AND coalesce(new.docs_chain_length, 0)
+                                 = coalesce(old.docs_chain_length, 0)
+                             AND coalesce(new.docs_model, '')
+                                 = coalesce(old.docs_model, '')
+                             AND coalesce(toString(new.docs_generated_at), '')
+                                 = coalesce(toString(old.docs_generated_at), ''))
+                          )
+                        WITH old, new,
+                             new.docs_stage = old.docs_stage
+                             AND new.documentation = old.documentation
+                             AND coalesce(new.docs_chain_length, 0)
+                                 = coalesce(old.docs_chain_length, 0)
+                             AND coalesce(new.docs_model, '')
+                                 = coalesce(old.docs_model, '')
+                             AND coalesce(toString(new.docs_generated_at), '')
+                                 = coalesce(toString(old.docs_generated_at), '')
+                               AS already_carried
+                        FOREACH (_ IN CASE WHEN already_carried THEN [] ELSE [1] END |
+                          SET new.updated_at = datetime(),
+                              new.docs_stage = old.docs_stage,
+                              new.documentation = old.documentation,
+                              new.docs_chain_length = coalesce(
+                                old.docs_chain_length, 0),
+                              new.docs_model = old.docs_model,
+                              new.docs_generated_at = old.docs_generated_at)
+                        MERGE (change:StandardNameChange {id: $receipt_id})
+                        ON CREATE SET change.from_name = $document_identity,
+                                      change.to_name = $successor_name,
+                                      change.operation = $operation,
+                                      change.reason = $reason,
+                                      change.origin = $asserted_by,
+                                      change.changed_at = datetime(),
+                                      change.internal = true
+                        WITH new, change, already_carried
+                        WHERE change.from_name = $document_identity
+                          AND change.to_name = $successor_name
+                          AND change.operation = $operation
+                          AND change.reason = $reason
+                          AND change.origin = $asserted_by
+                        MERGE (new)-[:HAS_INTERNAL_CHANGE]->(change)
+                        RETURN NOT already_carried AS changed,
+                               new.name_stage AS name_stage,
+                               new.status AS status,
+                               new.docs_stage AS docs_stage,
+                               size(new.documentation) AS documentation_length,
+                               new.docs_model AS docs_model,
+                               toString(new.docs_generated_at)
+                                 AS docs_generated_at
+                        """,
+                        predecessor_name=predecessor_name,
+                        successor_name=successor_name,
+                        documentation=documentation,
+                        docs_chain_length=predecessor_chain_length,
+                        docs_model=before.get("predecessor_docs_model"),
+                        docs_generated_at=before.get("predecessor_docs_generated_at"),
+                        receipt_id=receipt_id,
+                        document_identity=document_identity,
+                        operation="semantics_preserving_rename",
+                        reason=assertion_reason,
+                        asserted_by=assertion_actor,
+                    )
+                )
+                if len(mutation) != 1:
+                    raise RuntimeError(
+                        "rename documentation or its assertion receipt changed "
+                        "during the transaction"
+                    )
+                tx.commit()
+                result = dict(mutation[0])
+                result.update(
+                    {
+                        "predecessor_name": predecessor_name,
+                        "successor_name": successor_name,
+                        "predecessor_document_identity": document_identity,
+                        "predecessor_document_sha256": document_sha256,
+                        "receipt_id": receipt_id,
+                        "reason": assertion_reason,
+                        "asserted_by": assertion_actor,
+                    }
+                )
+                return result
+            except BaseException:
+                with suppress(Exception):
+                    tx.rollback()
+                raise
 
 
 _GENERATED_SUPERSESSION_PREFLIGHT_QUERY = """
