@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-08">
-<meta name="plan-version" content="6">
+<meta name="plan-version" content="7">
 <meta name="plan-commits" content="ec9ffff58e52af06b454987705ee4f88bfa14358,33361a5354b03e1f3a56f0cb626157cb1139dca0,2e0c1b534ac98f490780f7d9b2de7e5d8a24eb7f,f11e43096b10f2a5f55466e3f82e03b1ff080688,b22d348610f58b624ef9b8448b9c721279600e54,057a04786654db8ce7a5b79b77d3b53d110fa9f6">
 <meta name="plan-artifacts" content="docs/evidence/sn-lifecycle-integrity/delete-path-protections.md,docs/evidence/sn-lifecycle-integrity/unshielded-identity-deletions.md,docs/evidence/sn-lifecycle-integrity/mirrored-state-review.md">
 <meta name="plan-impl" content="0.35">
@@ -362,6 +362,16 @@
       <button class="r-opt" data-value="all-491">All 491 still absent</button>
       </p>
     <p class="r-dec-rat">Restore the identities carrying recorded spend, from the pass of 2026-09-08 first. The zero-spend rows are the ones the cleanup had the best claim to remove and restoring them would reinstate scaffolding the admission gate legitimately rejects. Widening to the earlier deletions waits on the census that establishes whether any of them was ever published.</p>
+    </div>
+<div class="r-dec" data-key="restored-origin-value" data-choice="pipeline" data-by="Simon McIntosh" data-when="">
+    <p class="r-dec-q">What origin value does a restored standard name carry?</p>
+    <p class="r-dec-ctx">The store dump predates the origin correction, so a restore that replays archived properties reinstates the false catalog_edit residue the repair was right to remove. Each restored name therefore needs its origin written deliberately rather than replayed.</p>
+    <p class="r-dec-opts">
+      <button class="r-opt chosen" data-value="pipeline">pipeline</button>
+      <button class="r-opt" data-value="per-name-derivation">per-name-derivation</button>
+      <button class="r-opt" data-value="replay-archived">replay-archived</button>
+      </p>
+    <p class="r-dec-rat">Restored standard names carry origin=&#x27;pipeline&#x27;. WHAT THE EVIDENCE SUPPORTS AND WHERE IT STOPS, measured across the 67-name restore set after this was chosen: 46 carry generate_name, review_name or refine_name spend, so they were composed and reviewed by the pipeline and &#x27;pipeline&#x27; is their literal provenance. The remaining 21 carry documentation-phase spend only — generate_docs, review_docs, refine_docs — with no name-phase cost at all, which is the signature of a parent whose NAME was constructed deterministically from its children and then documented. They include density_at_pedestal_top, power_at_inner_divertor_target, power_at_outer_divertor_target, perturbed_pressure and spectral_etendue_of_spectrometer_channel — real physics quantities rather than scaffolding, but not LLM-composed ones. For those 21, &#x27;pipeline&#x27; asserts a composition that did not happen, and &#x27;derived&#x27; is their truthful provenance. &#x27;derived&#x27; was never itself the defect: the defect was that it doubled as a delete permission, and the guard in section 3 has removed that, so a name labelled derived is no longer at risk of deletion. The lead&#x27;s ruling stands as the default for the restore; the 21 documentation-only names are flagged for confirmation rather than silently written, because writing a provenance nothing established is the exact class of defect this plan exists to close.</p>
     </div>
 </section>
 

@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="docs-project"   content="imas-codex">
+  <meta name="reckon-type" content="plan">
+  <meta name="plan-slug" content="scalar-edge-authority">
+  <meta name="plan-title" content="Twenty-Four Scalars Mirror An Edge, And The Stale Copy Wins">
+  <meta name="plan-summary" content="A cached scalar gates publication while its authoritative relationship disagrees; derive twelve, give twelve a single writer, and keep five apart">
+  <meta name="plan-status" content="draft">
+  <meta name="plan-roi" content="high">
+  <meta name="plan-effort-hours" content="22.0">
+  <meta name="plan-capability-version" content="1.0">
+  <meta name="plan-capability-class" content="orchestrator">
+  <meta name="plan-capability-reasoning" content="deep">
+  <meta name="plan-capability-context" content="extended">
+  <meta name="plan-capability-verification" content="strict">
+  <meta name="plan-capability-risk" content="critical">
+  <meta name="plan-sprint" content="S10">
+  <meta name="plan-owner" content="Simon McIntosh">
+  <meta name="plan-tags" content="standard-names">
+  <meta name="plan-informs" content="sn-lifecycle-integrity">
+  <title>Twenty-Four Scalars Mirror An Edge, And The Stale Copy Wins | imas-codex</title>
+  <link rel="stylesheet" href="/_shared/foundation.css">
+  <link rel="stylesheet" href="/_shared/dashboard.css">
+<meta name="plan-modified" content="2026-09-08">
+<meta name="plan-version" content="1">
+</head>
+<body>
+  <main class="plan-doc">
+
+    <h2 id="s1">&sect;1 &mdash; One architectural pattern, twenty-four instances</h2>
+
+    <p>A standard name's state is stored twice: once as a relationship, which is authoritative,
+    and once as a scalar cached on the node. The scalar is what gates the work &mdash; the export
+    reads it, the lifecycle branches on it, the review pool selects on it &mdash; so when the two
+    disagree, <strong>the stale copy wins over the authoritative edge</strong>.</p>
+
+    <p>Seven separate defects were found on 2026-09-08 before anyone named the mechanism: a rename
+    emptied <code>source_paths</code> while the <code>PRODUCED_NAME</code> edge stood; 27 names read
+    <code>docs_stage='accepted'</code> with no winning docs review; 538 asserted
+    <code>validation_status='valid'</code> with no <code>validated_at</code>; 2,096 carried a false
+    <code>origin</code>; 328 asserted <code>link_status='resolved'</code> against an absent target.
+    Each was repaired individually. They are one pattern with seven symptoms, and a review of the
+    whole surface found <strong>twenty-four</strong> mirrored pairs, not seven.</p>
+
+    <p>Ranked by how many otherwise-publishable standard names each divergence touches. Note that
+    <code>validation_status</code>, the one that consumed a day, ranks seventh:</p>
+
+    <table>
+      <thead>
+        <tr><th>Scalar</th><th>Authoritative relationship</th><th>Divergent</th><th>Publishable</th><th>Verdict</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>links</code></td><td><code>REFERENCES</code></td><td>2,948</td><td><strong>1,985</strong></td><td>DERIVE</td></tr>
+        <tr><td><code>source_types</code></td><td>producer edges</td><td>3,549</td><td>1,750</td><td>DERIVE</td></tr>
+        <tr><td><code>docs_chain_length</code></td><td><code>DOCS_REVISION_OF</code></td><td>1,579</td><td>1,181</td><td>DERIVE</td></tr>
+        <tr><td><code>source_domains</code></td><td><code>HAS_PHYSICS_DOMAIN</code></td><td>1,654</td><td>582</td><td>DERIVE</td></tr>
+        <tr><td><code>chain_length</code></td><td><code>REFINED_FROM</code> lineage</td><td>735</td><td>180</td><td>DERIVE</td></tr>
+        <tr><td><code>primary_cluster_id</code></td><td><code>IN_CLUSTER</code></td><td>900</td><td>170</td><td>KEEP AND RECONCILE</td></tr>
+        <tr><td><code>validation_status</code></td><td><code>validated_at</code> stamp</td><td>538</td><td>169</td><td>KEEP AND RECONCILE</td></tr>
+        <tr><td><code>produced_sn_id</code></td><td><code>PRODUCED_NAME</code></td><td>117</td><td>&mdash;</td><td>DERIVE, after adjudication</td></tr>
+      </tbody>
+    </table>
+
+    <p>Full per-pair analysis, including the twelve KEEP AND RECONCILE pairs with the single writer
+    each must have and the five boundaries where the divergence is a real distinction that must
+    stay, is in
+    <a href="/imas-codex/evidence/sn-lifecycle-integrity/mirrored-state-review.html">the mirrored-state review</a>
+    (<code>docs/evidence/sn-lifecycle-integrity/mirrored-state-review.md</code>).</p>
+
+    <h2 id="s2">&sect;2 &mdash; Why the order matters more than the change</h2>
+
+    <p><strong>Deriving first would destroy data.</strong> Two measurements make this concrete and
+    they are the reason this plan exists as its own document rather than as a repair node.</p>
+
+    <p><code>REFERENCES</code> <strong>is not a declared relationship type in the graph &mdash;
+    there are zero such edges</strong> &mdash; while <strong>2,948 standard names carry a non-empty
+    <code>links</code> scalar</strong>. So a migration that executes the DERIVE verdict for
+    <code>links</code> today would read an empty relationship set and blank the links on 2,948
+    names. The scalar is currently the <em>only</em> copy. Its 6,682 edges must be
+    <strong>materialised from the scalar first</strong>, verified count-for-count, and only then may
+    the scalar be derived from them.</p>
+
+    <p>The same trap in a second form: <strong>100 <code>StandardNameSource</code> rows carry more
+    than one target edge</strong> among 117 divergences on the produced-name mirror. Removing
+    <code>produced_sn_id</code> before adjudicating those 100 discards the only record of which
+    target was intended.</p>
+
+    <p>So every pair follows the same three beats, and a node may not skip to the third:</p>
+
+    <ol>
+      <li><strong>Materialise</strong> the relationship from the scalar where the relationship does
+      not yet exist, and prove the count matches.</li>
+      <li><strong>Adjudicate</strong> every row where scalar and relationship disagree, or where the
+      relationship is ambiguous, before either is treated as authority.</li>
+      <li><strong>Derive</strong> the scalar from the relationship, or give it a single named writer,
+      per the review's verdict.</li>
+    </ol>
+
+    <h2 id="s3">&sect;3 &mdash; Sequence, one pair per node, largest exposure first</h2>
+
+    <p>One pair per node. Each node states which of the three beats it performs, and a node that
+    performs beat three cites the node that completed beats one and two for that pair. Ordering is
+    by publishable exposure, because a divergence that touches no publishable name is a hygiene
+    item and one touching 1,985 is a correctness risk in every release until it closes.</p>
+
+    <p>The five KEEP AS DISTINCT boundaries are <strong>deliverables of this plan too</strong>: each
+    retires a supposed defect, and recording why two values legitimately differ prevents the next
+    census from reporting it as damage. A plan that only fixes things leaves that knowledge nowhere.</p>
+
+    <h2 id="s4">&sect;4 &mdash; What closing this prevents</h2>
+
+    <p>Every defect this pattern produced was found by accident, one at a time, by someone looking
+    at something else. The rename that emptied <code>source_paths</code> was caught only because the
+    export refused an unsourced name; the 27 names claiming an accepted docs stage were caught by a
+    census aimed elsewhere; the 538 undated validations were caught while investigating a quarantine.
+    Each cost a day and each repair was correct and local.</p>
+
+    <p>The measure of this plan is not repaired rows. It is that a repeat census after a later
+    export, a later import and a later pipeline run returns the same numbers &mdash; because the
+    scalar can no longer drift from the edge that defines it.</p>
+
+    <section data-reckon="decisions" id="decisions" class="r-decisions">
+<h2><span class="sec">§</span> Decisions</h2>
+<div class="r-dec" data-key="derive-timing" data-choice="" data-by="" data-when="">
+    <p class="r-dec-q">May a DERIVE node run before its pair&#x27;s relationship is materialised and
+        count-verified?</p>
+    <p class="r-dec-opts">
+      <button class="r-opt" data-value="never">Never — materialise and verify first</button>
+      <button class="r-opt" data-value="case-by-case">Case by case</button>
+      </p>
+    <p class="r-dec-rat">Recommendation: never. The links pair shows why in one
+        measurement — zero REFERENCES edges against 2,948 populated scalars, so
+        deriving first is data loss rather than a migration. Making it an invariant costs nothing
+        where the relationship already exists and prevents the one irreversible mistake this plan
+        can make.</p>
+    </div>
+<div class="r-dec" data-key="scalar-retention" data-choice="" data-by="" data-when="">
+    <p class="r-dec-q">After a scalar is derived from its relationship, is the stored copy
+        removed or kept as a read cache?</p>
+    <p class="r-dec-opts">
+      <button class="r-opt" data-value="remove">Remove it</button>
+      <button class="r-opt" data-value="keep-as-cache">Keep as a cache with a single writer</button>
+      </p>
+    <p class="r-dec-rat">Recommendation: remove it where a query can read the relationship
+        directly, and keep it only where a measured query cost forces the cache — in which case
+        it becomes a KEEP AND RECONCILE pair with a named single writer, not a DERIVE. A cache with
+        two writers is the defect this plan closes, so a retained scalar needs its writer named in
+        the same commit that retains it.</p>
+    </div>
+</section>
+
+    <section data-reckon="followups" id="followups" class="r-followups">
+<h2><span class="sec">§</span> Followups</h2>
+<article class="r-fu" data-id="f-sea-001" data-status="open" data-capability-version="1.0" data-capability-class="orchestrator" data-capability-reasoning="deep" data-capability-context="extended" data-capability-verification="strict" data-capability-risk="critical" data-written-by="reckon-create" data-written-at="2026-09-08" data-recommends-skill="/reckon-ship scalar-edge-authority §3" data-resolved-at="" data-resolved-by="">
+    <h4 class="r-fu-title">Materialise the REFERENCES edges before deriving anything, or 2,948 names lose their links</h4>
+    <div class="r-fu-body"><p><strong>The first node materialises and verifies; it derives nothing.</strong> There are zero <code>REFERENCES</code> edges in the graph and 2,948 standard names carry a non-empty <code>links</code> scalar, so the scalar is currently the only copy of that information. A node that executes the DERIVE verdict first reads an empty relationship set and blanks all 2,948. Build the 6,682 edges from the scalar, prove the count matches per name, and stop there.</p><p><strong>The second trap has the same shape.</strong> 100 <code>StandardNameSource</code> rows carry more than one target edge, among 117 divergences on the produced-name mirror. Adjudicate those 100 before <code>produced_sn_id</code> is removed anywhere, because the scalar is the only record of which target was intended.</p><p><strong>One pair per node, three beats, in order: materialise, adjudicate, derive.</strong> A node performing the third beat must cite the node that completed the first two for that pair. Order the pairs by publishable exposure — <code>links</code> at 1,985 first, then <code>source_types</code> at 1,750, <code>docs_chain_length</code> at 1,181 — because a divergence touching no publishable name is hygiene and one touching 1,985 is a correctness risk in every release until it closes.</p><p>The five KEEP AS DISTINCT boundaries are deliverables too: each retires a supposed defect, and recording why two values legitimately differ is what stops the next census reporting it as damage.</p></div>
+    <pre class="r-fu-prompt">/reckon-ship scalar-edge-authority §3</pre>
+    </article>
+</section>
+
+  </main>
+</body>
+</html>

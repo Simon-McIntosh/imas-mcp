@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="docs-project"   content="imas-codex">
+  <meta name="reckon-type" content="plan">
+  <meta name="plan-slug" content="unbound-source-backlog">
+  <meta name="plan-title" content="Four Thousand Sources Produce No Standard Name">
+  <meta name="plan-summary" content="Of 9,900 extracted sources 4,459 bind to no name; 1,283 await composition and 1,413 were skipped, 398 of them with no recorded reason">
+  <meta name="plan-status" content="draft">
+  <meta name="plan-roi" content="mid">
+  <meta name="plan-effort-hours" content="10.0">
+  <meta name="plan-capability-version" content="1.0">
+  <meta name="plan-capability-class" content="general">
+  <meta name="plan-capability-reasoning" content="deep">
+  <meta name="plan-capability-verification" content="strict">
+  <meta name="plan-capability-risk" content="moderate">
+  <meta name="plan-sprint" content="S10">
+  <meta name="plan-owner" content="Simon McIntosh">
+  <meta name="plan-tags" content="standard-names">
+  <title>Four Thousand Sources Produce No Standard Name | imas-codex</title>
+  <link rel="stylesheet" href="/_shared/foundation.css">
+  <link rel="stylesheet" href="/_shared/dashboard.css">
+<meta name="plan-modified" content="2026-09-08">
+<meta name="plan-version" content="1">
+</head>
+<body>
+  <main class="plan-doc">
+
+    <h2 id="s1">&sect;1 &mdash; The census, and the two different things inside it</h2>
+
+    <p>A <code>StandardNameSource</code> is an extracted Data Dictionary quantity that should
+    produce a standard name. Of <strong>9,900</strong> such rows, <strong>5,441 are bound</strong> to
+    a name through a <code>PRODUCED_NAME</code> edge and <strong>4,459 are not</strong>. The
+    unbound population is not one thing:</p>
+
+    <table>
+      <thead><tr><th><code>status</code></th><th>Bound</th><th>Unbound</th><th>What it means</th></tr></thead>
+      <tbody>
+        <tr><td><code>composed</code></td><td>3,053</td><td>&mdash;</td><td>the working path</td></tr>
+        <tr><td><code>attached</code></td><td>2,249</td><td>&mdash;</td><td>bound to an existing name</td></tr>
+        <tr><td><code>stale</code></td><td>93</td><td>1,652</td><td>superseded binding; expected residue</td></tr>
+        <tr><td><code>extracted</code></td><td>44</td><td><strong>1,283</strong></td><td><strong>real work not done</strong></td></tr>
+        <tr><td><code>skipped</code></td><td>&mdash;</td><td><strong>1,413</strong></td><td><strong>refused; 398 with no reason</strong></td></tr>
+        <tr><td><code>failed</code></td><td>2</td><td>101</td><td>errored; some with no <code>last_error</code></td></tr>
+        <tr><td><code>not_physical_quantity</code></td><td>&mdash;</td><td>10</td><td>correctly excluded</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>The 1,652 <code>stale</code> rows are not a defect</strong> and this plan does not
+    touch them: a source rebinds when its name is superseded, so residue there is the mechanism
+    working. Naming that explicitly matters, because a census that reports 4,459 unbound sources as
+    a single backlog overstates the problem by more than a third.</p>
+
+    <h2 id="s2">&sect;2 &mdash; 1,283 extracted quantities that never became a name</h2>
+
+    <p>These carry <code>status = 'extracted'</code> and no producer edge: the pipeline pulled the
+    quantity out of the Data Dictionary and never composed a standard name for it. That is
+    throughput, not damage &mdash; but it is throughput nobody has counted, and it sets the ceiling
+    on Data Dictionary coverage. For scale, <strong>5,072 of 61,366 <code>IMASNode</code> paths
+    currently carry a standard name</strong>; most of that gap is program incompleteness rather
+    than defect, and this 1,283 is the part already extracted and therefore cheapest to close.</p>
+
+    <p>The work is a bounded <code>sn run</code> composition pass, not a repair. Before running it,
+    establish how many of the 1,283 are eligible under the current admission rules rather than
+    assuming all are &mdash; a source that was extracted before a rule tightened may now be
+    correctly inadmissible, and composing it would mint a name the review pool then rejects.</p>
+
+    <h2 id="s3">&sect;3 &mdash; 1,413 skipped, and 398 of them say nothing about why</h2>
+
+    <p>This is the half that is a defect. A skipped source is <strong>permanently excluded from
+    composition</strong>, so the reason is the only thing standing between a deliberate exclusion and
+    a silent one. <strong>398 rows carry no recorded reason at all.</strong></p>
+
+    <p>The mechanism is known and it is narrow:
+    <code>non_nameable_reason</code> is written only when <code>source_status == 'skipped'</code>
+    (<code>imas_codex/standard_names/graph_ops.py:12324</code>), and it never reads
+    <code>last_error</code> &mdash; so a source that failed with a diagnostic and was later marked
+    skipped loses the diagnostic. The same shape appears in the failed population: rows carrying
+    <code>failed</code> with an empty <code>last_error</code>.</p>
+
+    <p>Two deliverables, and the first is the one that lasts: make the write path unable to record a
+    skip without a reason, then reconstruct the missing 398 from whatever evidence survives and mark
+    as unknown the ones where nothing does. An honest unknown is a finding; a blank field is not.</p>
+
+    <h2 id="s4">&sect;4 &mdash; Why this is separate from the deletion recovery</h2>
+
+    <p>The deletion incident of 2026-09-08 left 67 standard names absent and their sources unbound,
+    and it would be easy to fold this backlog into that recovery because both surface as unbound
+    sources. They are different work and folding them would put a 1,283-name composition job behind
+    a recovery that must not wait for it. The recovery is owned by
+    <a href="/imas-codex/paid-identity-deletion-protection">the deletion-protection plan</a>; this
+    plan owns the sources that never had a name in the first place.</p>
+
+    <section data-reckon="decisions" id="decisions" class="r-decisions">
+<h2><span class="sec">§</span> Decisions</h2>
+<div class="r-dec" data-key="skip-reason-enforcement" data-choice="" data-by="" data-when="">
+    <p class="r-dec-q">Should a skip without a reason be refused at the write path, or reported
+        by an audit?</p>
+    <p class="r-dec-opts">
+      <button class="r-opt" data-value="refuse-at-write">Refuse at the write path</button>
+      <button class="r-opt" data-value="audit-only">Report it in an audit</button>
+      </p>
+    <p class="r-dec-rat">Recommendation: refuse at the write path. An audit finds the 399th
+        blank row after it exists; a refusal means there is never one. The 398 already present are a
+        one-time reconstruction either way, and this repository&#x27;s own pattern is to bind a rule to
+        the moment that always happens rather than to a check someone must remember to run.</p>
+    </div>
+</section>
+
+    <section data-reckon="followups" id="followups" class="r-followups">
+<h2><span class="sec">§</span> Followups</h2>
+<article class="r-fu" data-id="f-usb-001" data-status="open" data-capability-version="1.0" data-capability-class="general" data-capability-reasoning="deep" data-capability-verification="strict" data-capability-risk="moderate" data-written-by="reckon-create" data-written-at="2026-09-08" data-recommends-skill="/reckon-ship unbound-source-backlog §3" data-resolved-at="" data-resolved-by="">
+    <h4 class="r-fu-title">Close the reason-less skip write path first; the 1,283 composition backlog can wait</h4>
+    <div class="r-fu-body"><p><strong>Start with §3, not §2.</strong> The 398 reason-less skips are a defect that keeps growing, and the 1,283 uncomposed sources are throughput that does not. Make the write path unable to record a skip without a reason, then reconstruct what survives for the 398 and mark the rest as an honest unknown — a blank field is not a finding, an explicit unknown is.</p><p>The mechanism is narrow and already located: <code>non_nameable_reason</code> is written only when <code>source_status == 'skipped'</code> at <code>imas_codex/standard_names/graph_ops.py:12324</code>, and it never reads <code>last_error</code>, so a source that failed with a diagnostic and was later marked skipped loses it. Verify that line still says this before acting — it was read on 2026-09-08.</p><p><strong>Do not treat the 1,652 stale rows as backlog.</strong> A source rebinds when its name is superseded, so residue there is the mechanism working; counting them makes the problem look a third larger than it is.</p><p>For §2, establish eligibility before composing: a source extracted before an admission rule tightened may now be correctly inadmissible, and composing it mints a name the review pool then rejects, which costs money and produces churn. Report the eligible count first and size the <code>sn run</code> pass to it.</p></div>
+    <pre class="r-fu-prompt">/reckon-ship unbound-source-backlog §3</pre>
+    </article>
+</section>
+
+  </main>
+</body>
+</html>
