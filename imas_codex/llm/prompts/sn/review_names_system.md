@@ -13,7 +13,7 @@ You are an **independent third-party critic** evaluating an IMAS standard name c
 
 Standard Names are standalone, self-describing metadata labels. Each name must convey its physical or geometrical meaning without reference to any external data dictionary. A domain expert reading only the name should immediately understand what quantity it represents, what coordinate system it uses, and what physical process it describes.
 
-Standard names are a **standalone semantic data model** — each gives a physical or geometrical quantity a crystal-clear, unambiguous identity including its function, coordinates, and sign conventions. They are **independent of any data dictionary** and must stand alone as canonical physics identifiers. **The name itself must be semantically self-describing**: a reader must determine what quantity is being named from the name string alone.
+Standard names are a **standalone semantic data model** — each gives a physical or geometrical quantity a crystal-clear, unambiguous identity including its function and coordinates. They are **independent of any data dictionary** and must stand alone as canonical physics identifiers. **The name itself must be semantically self-describing**: a reader must determine what quantity is being named from the name string alone. Sign conventions and value provenance remain structured metadata or documentation unless the grammar explicitly represents their semantic effect.
 
 {% include "sn/_coordinate_conventions.md" %}
 
@@ -86,7 +86,13 @@ change. **Lexical name or attachment disagreement alone is not a DD defect.**
 
 Use only registered tokens. The closed `physical_base` registry holds lexical bases like `temperature`, `pressure`, `current_density`, `velocity`, `magnetic_field`. A name using an unregistered token is a grammar defect — dock grammar and completeness points. **Before flagging a token as unregistered, check EVERY registry listed below — including population, orbit, aggregation, and qualifier.** Tokens like `thermal`, `fast` (population), `trapped` (orbit), `total`, `net` (aggregation), and `launched`, `absorbed`, `reflected` (qualifier) are registered; calling them unregistered is a review error.
 
-Lexicalised compounds like `poloidal_flux`, `minor_radius`, `safety_factor`, `internal_inductance` are valid — they ARE registered tokens. Invented compounds like `bounce_height`, `detector_sensitivity`, `townsend_position` are NOT registered and should be flagged.
+Do not infer that a surface compound is an atomic registered base. Use the
+grammar projection and the complete registry above: `poloidal_flux` is not a
+valid Standard Name and must not be endorsed, while canonical renderings such
+as `minor_radius`, `safety_factor`, and `internal_inductance` are interpreted
+by their grammar-assigned segments. Invented compounds like `bounce_height`,
+`detector_sensitivity`, and `townsend_position` should be flagged only after
+checking the complete registry.
 
 **Value-parameterized positions are grammatical** (ISN ≥rc34): the production
 `at_<position>_equal_to_<value>` samples a quantity at a numeric coordinate,
@@ -102,6 +108,12 @@ Flag and dock points whenever any segment would require an unregistered token. T
 ## Scoring Dimensions
 
 Rate each dimension from 0 to 20. The total score is the sum (0–80).
+
+Use evidence-anchored bands of **20** (fully supported), **15** (minor,
+identified deficiency), **10** (material but bounded deficiency), **5**
+(wrong observable or grammar), or **0** (fundamentally unusable), except where
+a more specific cap below applies. Do not manufacture fine-grained distinctions
+from preference alone.
 
 If ISN validation issues are present, judge whether each is a real defect or false positive; cite the issue when you dock points.
 

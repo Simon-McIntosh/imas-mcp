@@ -32,6 +32,15 @@ The DD unit is authoritative, and COCOS is fixed DDv4 catalog metadata. Do not
 ask the model to choose, infer, or change a COCOS transformation label.
 `psi_like` and `ip_like` are downstream catalog labels, not review decisions.
 
+Review the observable rather than its acquisition metadata. `measured`,
+`reconstructed`, and `reference` are controlled value-provenance properties on
+the source binding, never Standard Name segments. Estimator facets therefore
+share the underlying base-quantity name unless the authoritative source defines
+another observable. Error quantities use the grammar's universal error modifier
+rather than a separate error-specific base. A generic DD path does not license
+a generic name: require the supplied source definition to identify the
+observable.
+
 For flux-surface area, DD `area` requires
 `poloidal_plane_cross_sectional_area_of_flux_surface`, while DD `surface` requires
 `surface_area_of_flux_surface`. These denote different observables. The bare
@@ -78,10 +87,10 @@ into `physical_base`** rather than placing them in their correct segment
 `physical_base=torque`). Apply the **Decomposition audit** below
 aggressively — this is the single highest-leverage check in the rubric.
 
-Compound `physical_base` tokens like `minor_radius`, `safety_factor`,
-`polarization_angle`, and `internal_inductance` are valid lexicalised atomic
-physics terms; treat them
-as single entries even if a substring resembles a registered token.
+Treat a compound only as the installed grammar projects it. A canonical surface
+spelling can contain several semantic segments; do not call it an atomic base
+merely because it contains underscores. In particular, a registered token in a
+compound remains in its grammar-assigned segment.
 
 Flag `vocab_gap` and dock points whenever any segment would require an
 unregistered token, and **never** allow such tokens to migrate into
@@ -89,7 +98,10 @@ unregistered token, and **never** allow such tokens to migrate into
 
 ## Scoring Dimensions
 
-Rate each dimension from 0 to 20. The total score is the sum (0-80).
+Rate each dimension from 0 to 20. The total score is the sum (0-80). Use
+evidence-anchored bands of **20**, **15**, **10**, **5**, and **0**, except for
+an explicit cap below. Do not use fine-grained points to express a preference
+that the grammar or authoritative source does not support.
 
 If ISN validation issues are present for an entry, assess whether they are
 genuine quality problems or false positives. Factor genuine issues into your
@@ -97,11 +109,13 @@ grammar and convention scores.
 
 ### 1. Grammar Correctness (0-20)
 **0**: Would fail ISN grammar validation, malformed `physical_base` token (mixed casing/digits/unparseable), prefix/postfix operator confusion, or uses a token NOT in any closed vocabulary segment.
-**20**: Perfect 5-group IR decomposition with correct operator form and all tokens from their respective closed vocabularies.
+**20**: A verified parse and round trip, with the installed grammar's
+decomposition and canonical operator form.
 
 - Is the `physical_base` token in the registry? **All vocabulary segments are closed — a novel token in ANY segment is a grammar defect.**
 - For all segments, is the token in its registry?
-- Are prefix operators written with explicit `_of_` scope marker?
+- Does each operator use the installed grammar's canonical join? Scoped prefix
+  operators use `_of_`; registered bare transformations remain bare.
 - Are postfix operators (`_magnitude`, `_real_part`, etc.) correctly appended (not prefix `_of_` form)?
 - Is locus correctly expressed with `_of_`/`_at_`/`_over_` prepositions?
 - Is mechanism expressed with `_due_to_`?

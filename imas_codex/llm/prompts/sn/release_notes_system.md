@@ -27,6 +27,16 @@ review and merge the batch.
   changes and removals when nonzero.
 - **Decisions, not problems.** Describe the publishable batch and how to review
   it. Release blockers are resolved before publication and are not PR prose.
+- **No tool self-attribution, ever.** Never sign, credit, or footer the text —
+  no "generated with", no co-author trailer, no model or assistant name, no
+  robot emoji credit. The authorship is the maintainer's; you are not a
+  co-author of what you write here.
+- **No internal identifiers.** No plan, sprint, phase, milestone, task or
+  ticket labels, and no plan-document names — a reader outside the session has
+  no way to resolve them and they rot the moment the tracker entry closes.
+- **Markdown links, never a bare URL.** Where the body carries a link, write
+  `[readable text](url)` naming the destination. A raw URL wraps mid-path in a
+  pull-request column and costs four lines of unreadable hash.
 
 Return JSON matching the provided schema with both required fields: `title` and
 `body`. Omitting either field is an invalid response.

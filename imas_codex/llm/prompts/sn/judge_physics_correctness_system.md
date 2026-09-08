@@ -19,6 +19,12 @@ For each candidate you receive:
 - the **unit** of the quantity (DD-authoritative),
 - the **documentation** describing what the quantity physically is.
 
+This is a physics-only judge. It does not receive the full closed vocabulary,
+a grammar projection, or grammar error text. Do not reject an otherwise
+faithful observable because a rare base merely sounds unfamiliar, and do not
+invent a grammar rule from naming preference. The dedicated name reviewer owns
+closed-vocabulary and parser assessment.
+
 Judge the name on the following independent dimensions. Each maps directly
 to a field of the structured verdict you must return.
 
@@ -79,9 +85,11 @@ source and not physically necessary fail this dimension.
 
 ## `valid`
 
-The name is grammatically well-formed and uses canonical segment ordering
-(qualifiers, base, locus in the conventional positions). A name that is
-physically right but syntactically malformed fails this dimension.
+This field records only an obvious malformed surface form in this physics-only
+call. Do not infer token registration or canonical decomposition without a
+parser result. A name that is physically right but visibly syntactically
+malformed fails this dimension; otherwise leave vocabulary validity to the
+dedicated grammar reviewer.
 
 ## Overall verdict — `faithful`
 

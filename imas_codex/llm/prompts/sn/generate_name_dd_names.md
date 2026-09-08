@@ -116,25 +116,22 @@ bare `radial_outline` / `vertical_outline` as identities shared by different
 objects. Ordinal siblings of one wall outline may consolidate, but a wall
 outline and a plasma-boundary outline may not.
 
-## Name-Only Mode — Reduced Context
+## Name-Only Mode — Focused Output
 
-To keep the batch wide and cache-friendly, this prompt intentionally
-omits some deep per-item context (cluster siblings, cross-IDS equivalents,
-version history, reviewer feedback). Authoritative source fields and labels
-shown for each item remain binding. A subsequent
-review / enrichment pass will attach those details. Your job here is
-to produce **clean, grammar-compliant names** that correctly
-identify the physical quantity — documentation depth can be terse.
+This mode keeps the requested output focused on names, but the per-item context
+below remains authoritative: in particular, the rich enriched description,
+unit, semantic neighbours, identifiers, and reviewer history are not optional
+scaffolding. Your job here is to produce **clean, grammar-compliant names** that
+correctly identify the physical quantity; later review may improve prose, but it
+cannot recover a semantic axis omitted from the identity.
 
 ### What this means for your output
 
 - **Names** must still be fully grammar-compliant — the grammar
   check runs on every candidate, and failures trigger a retry.
-- **Descriptions** should be concise (1–2 sentences) and faithful
-  to the DD description. Do not invent detail you don't have.
-- **Documentation**: a single paragraph naming the physical
-  observable, its units, and its typical usage context is enough.
-  The enrichment pass will expand this later.
+- **Descriptions** should be concise (1–2 sentences) and grounded in the rich
+  enriched source description. Treat the terse DD clause as secondary evidence;
+  do not invent detail you do not have.
 
 ## Identify Natural Sub-Groups First
 
@@ -147,9 +144,9 @@ sub-groupings within a single `(physics_domain, unit)` batch:
 - process: flux vs source vs sink vs diffusivity
 - state: volumetric vs surface vs line-integrated
 
-Then emit **one** name per path, reusing the same base name when the
-sub-group identity is the same (e.g., `electron_particle_flux_parallel`
-and `ion_particle_flux_parallel` share a structure). Reuse existing
+Then emit **one** name per path, reusing the same base structure when the
+sub-group identity is the same (e.g., `parallel_electron_particle_flux`
+and `parallel_ion_particle_flux` share a structure). Reuse existing
 standard names from the "Existing Standard Names" list whenever the DD
 path measures the same quantity — do not invent a synonym.
 
@@ -161,7 +158,7 @@ path measures the same quantity — do not invent a synonym.
 | `electron_temperature_core` | `core_electron_temperature` | Zone prefix before the subject/base |
 | `Te` | `electron_temperature` | No symbol abbreviations |
 | `electron_temperature_in_eV` | `electron_temperature` | Unit is never part of the name |
-| `current_from_passive_loop` | `passive_loop_current` | No `_from_` causation |
+| `current_from_passive_loop` | `current_of_passive_loop` | No `_from_` causation; device association is a postfix locus |
 | `reconstructed_faraday_rotation_angle` | `faraday_polarization_angle` | Processing method is metadata |
 | `geometric_minor_radius` | `minor_radius` | DD section prefix leaking in |
 | `x_ray_crystal_spectrometer_pixel_photon_energy_lower_bound` | `lower_bound_photon_energy` | **Instrument-prefix carry-over** — drop instrument prefix for generic physics observables (keep only when the quantity is intrinsic to the hardware, e.g. `poloidal_plane_cross_sectional_area_of_rogowski_coil`) |
@@ -238,11 +235,18 @@ Use them as quality benchmarks for naming style and field usage:
 
 ## DD Paths to Name
 
+A generic DD leaf is provenance, not permission to emit a generic Standard
+Name. The enriched source description is the primary grounding and usually
+contains the carrier, surface, subject, or process that makes the identity
+self-describing. Preserve that meaning or emit a `vocab_gap` when the closed
+grammar cannot express it.
+
 {% for item in items %}
 ### {{ item.path }}
 {% if item.rate_hint %}
 > ⚠️ **RATE QUANTITY:** DD documentation indicates a rate / time-derivative.
-> Name MUST start with `tendency_of_`, `change_in_`, or `rate_of_change_of_`.
+> Use the registered `tendency`, `time_derivative`, or `change_in` operator
+> that matches the source. Never emit the unregistered `rate_of_change_of_` form.
 > Description must be consistent with the rate-marker prefix.
 > Orientation tokens wrap the rate phrase:
 >   ✅ `parallel_change_in_fast_electron_pressure`
@@ -269,7 +273,7 @@ Use them as quality benchmarks for naming style and field usage:
 >   ✅ `plasma_current`   ❌ `measured_plasma_current`   ❌ `plasma_current_constraint`
 >   ✅ `poloidal_magnetic_field`   ❌ `poloidal_magnetic_field_at_constraint_position`
 {% endif %}
-- **Description:** {{ item.description }}
+- **Enriched source description (PRIMARY GROUNDING):** {{ item.description }}
 - **Unit:** {{ item.unit or 'dimensionless' }} *(authoritative — do NOT output)*
 {% if item.data_type %}- **Data type:** {{ item.data_type }}{% endif %}
 {% if item.node_type %}- **Node type:** {{ item.node_type }} *(dynamic=time-varying quantity; static=machine-fixed parameter, e.g. wall geometry; constant=single scalar value; none=unclassified — use other context)*{% endif %}
@@ -309,7 +313,7 @@ Use them as quality benchmarks for naming style and field usage:
 {% if item.error_fields %}
 - **DD error companions:**
 {% for ef in item.error_fields %}  - `{{ ef }}`
-{% endfor %}  → Error companions are minted deterministically — do NOT produce `*_uncertainty` variants. SKIP if this path IS an error field (`_error_upper`/`_error_lower`/`_error_index`).
+{% endfor %}  → Error companions are minted deterministically by applying the registered `upper_uncertainty`, `lower_uncertainty`, or `uncertainty_index` operator to the parent base identity. Do NOT invent per-error base names. SKIP if this path IS an error field (`_error_upper`/`_error_lower`/`_error_index`).
 {% endif %}
 {% if item.sibling_fields %}
 - **Sibling fields** (same parent — for cross-reference):

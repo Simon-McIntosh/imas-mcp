@@ -13,14 +13,16 @@ All commands use `uv run` — never bare `python` or `pytest`.
 
 ```bash
 uv run pytest                                        # Default (excludes slow/graph)
-uv run pytest tests/standard_names/ -q               # SN tests (~3300, ~90s)
+uv run pytest tests/standard_names/                  # SN tests (~3300, ~90s)
 uv run pytest tests/path/to/test.py::test_func -v    # Specific test
 uv run pytest --cov=imas_codex --cov-report=term     # With coverage
 uv run pytest -m graph                               # Graph tests (needs Neo4j)
 ```
 
-**Never pipe pytest output** — it prevents auto-approval in agentic workflows. Default `addopts`
-produces compact output (`-q --tb=short --no-header`). See AGENTS.md "Testing" for full guidance.
+**Never pipe pytest output** — it prevents auto-approval in agentic workflows. Do not add
+`-q`: quiet flags accumulate across configuration, wrappers, and command lines, and a second
+level suppresses the final totals line. Default `addopts` keeps tracebacks short, omits the
+header, and reports slow durations. See AGENTS.md "Testing" for full guidance.
 
 ### Linting & Formatting
 

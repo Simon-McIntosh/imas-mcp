@@ -115,7 +115,7 @@ defect.**
 | `electron_temperature_in_eV` | `electron_temperature` | Unit is never part of the name |
 | `safety_factor_q` | `safety_factor` | No symbol suffixes |
 | `plasma_current_IP` | `plasma_current` | No symbol suffixes |
-| `current_from_passive_loop` | `passive_loop_current` | `_from_` implies causation — use device prefix for signals |
+| `current_from_passive_loop` | `current_of_passive_loop` | `_from_` implies causation; intrinsic device association uses the canonical postfix locus |
 | `poloidal_flux` | `poloidal_magnetic_flux` | Use controlled vocabulary term; no synonymous short forms |
 | `area_of_flux_surface` for DD area or DD surface | `poloidal_plane_cross_sectional_area_of_flux_surface` for DD area; `surface_area_of_flux_surface` for DD surface | Surface kind is load-bearing: poloidal enclosed cross-section and swept toroidal surface are different observables |
 | `reconstructed_faraday_rotation_angle` | `faraday_polarization_angle` | Drop provenance; use the registered Faraday-polarization quantity |
@@ -314,7 +314,7 @@ Study this table before composing — it eliminates the most common vocab-gap re
 | `perturbed_*_field`, `electrostatic_potential` | process | physical_base | These are quantities, not mechanisms |
 | `<registered_locus>_average` (an averaged path at a registered locus) | position + **transformation** | — | Preserve the exact registered locus supported by the DD. Apply `flux_surface_averaged` IFF the base is NOT constant on a flux surface: surface-varying bases require the operator so the average does not collide with the local value; a base marked `constant_on_flux_surface` in the injected grammar rejects the no-op operator and shares one name across local and averaged sources. |
 | a bare registered locus in a local-value path | position | — | Preserve that exact registered locus and use no averaging transformation. Registered loci are distinct concepts; never collapse one into another unless the injected grammar explicitly publishes an advisory alias. |
-| `measurement_position` | position (as token) | — | Already exists in position vocab — use it correctly as a locus |
+| generic `measurement_position` | position (as token) | exact carrier or locus | A generic path leaf never licenses a generic Standard Name; use the enriched description to retain the specific carrier, or emit a vocabulary gap |
 | `derivative_with_respect_to_*` | operators | transformation | Use transformation segment for derivatives |
 | `diffusion_coefficient`, `convection_velocity` | process | physical_base | Transport coefficients are quantities, not processes |
 | `parallel_viscosity`, `heat_viscosity` | process | physical_base | Viscosity is a quantity — process would be `viscous_diffusion` |
@@ -342,7 +342,7 @@ their owning segments.
 
 The `process` segment is for mechanisms that MODIFY a quantity — they appear via `_due_to_<process>`.
 
-- **Process (via `due_to_`):** conduction, convection, diffusion, neoclassical, turbulent, ohmic, radiation, recombination
+- **Process (via `due_to_`):** use the full registered mechanism noun, such as `conduction`, `convection`, `diffusion`, `neoclassical_transport`, `turbulent_transport`, `ohmic_heating`, `impurity_radiation`, or `recombination`
 - **Physical_base (the quantity itself):** temperature, pressure, flux, field, potential, coefficient, viscosity, diffusivity
 
 **Test:** Can you say "X due_to Y"? If Y is a mechanism causing X, then Y is a process.
@@ -362,7 +362,7 @@ locus into a zone prefix or force a bare feature token where the registry
 defines a more specific locus.
 
 ✅ `energy_due_to_recombination` — recombination is a mechanism → process
-✅ `current_due_to_ohmic` — ohmic heating is a mechanism → process  
+✅ `current_density_due_to_ohmic_current_drive` — ohmic current drive is a mechanism → process
 ❌ `energy_due_to_diffusion_coefficient` — a coefficient is not a mechanism
 ❌ `temperature_due_to_magnetic_field` — magnetic field is a quantity, not a mechanism
 
@@ -430,14 +430,22 @@ These names already exist in the catalog. Reuse them if they match your source, 
 
 ## DD Paths to Name
 
+A generic DD leaf or path is only provenance; it never licenses a generic
+Standard Name. Ground the identity first in the enriched source description —
+which usually states the missing carrier, surface, subject, or process — then
+use the unit, terse DD clause, and ancestor context as constraints. If that
+complete identity cannot be expressed by the registered grammar, emit a
+`vocab_gap` instead of dropping the distinguishing meaning.
+
 {% for item in items %}
 ### {{ item.path }}
 {% if item.rate_hint %}
 > ⚠️ **HARD CONSTRAINT — RATE QUANTITY:** The DD documentation for this path
 > indicates a rate / time-derivative quantity (phrases like "instantaneous
 > change", "signed change", "rate of change", "time derivative",
-> "per unit time"). Your name MUST begin with `tendency_of_` (preferred),
-> `change_in_`, or `rate_of_change_of_`. NEVER use `instant_change_*` or
+> "per unit time"). Use the registered `tendency`, `time_derivative`, or
+> `change_in` operator that matches the source semantics. NEVER use
+> `rate_of_change_of_`, `instant_change_*`, or
 > `instantaneous_change_*` as a prefix. The description MUST be consistent
 > with the rate-marker prefix (e.g. if the name is `tendency_of_X`, the
 > description should read "Instantaneous signed change in X" or
@@ -446,8 +454,8 @@ These names already exist in the catalog. Reuse them if they match your source, 
 > drift error that quarantines the entry.
 >
 > **CRITICAL — rate + component ordering:** If the quantity is a rate of a
-> vector component, the orientation token (`parallel`, `perpendicular`,
-> `poloidal`, `toroidal`, `radial`, `diamagnetic`) MUST be placed OUTSIDE
+> vector component, the projection axis (`parallel`, `perpendicular`,
+> `poloidal`, `toroidal`, `radial`, `vertical`, `x`, `y`, or `z`) MUST be placed OUTSIDE
 > the rate marker, wrapping the rate phrase:
 >   ✅ `parallel_change_in_fast_electron_pressure`
 >   ✅ `tendency_of_poloidal_electron_velocity`
@@ -477,8 +485,8 @@ These names already exist in the catalog. Reuse them if they match your source, 
 >   ✅ `poloidal_magnetic_field`   ❌ `poloidal_magnetic_field_at_constraint_position`
 {% endif %}
 {% if item.species_context %}- **⚠️ Species context:** `{{ item.species_context }}` — this quantity is specific to **{{ item.species_context }}** species. The standard name MUST include the species in the `subject` segment (e.g., `{{ item.species_context }}_temperature`, not just `temperature`).
-{% endif %}- **Description:** {{ item.description }}
-{% if item.documentation and item.documentation != item.description %}- **Source documentation:** {{ item.documentation }}{% endif %}
+{% endif %}- **Enriched source description (PRIMARY GROUNDING):** {{ item.description }}
+{% if item.documentation and item.documentation != item.description %}- **Terse DD documentation (secondary authority; never override the enriched physical meaning):** {{ item.documentation }}{% endif %}
 - **Unit:** {{ item.unit or 'dimensionless' }} *(authoritative from DD — use for naming context only, do NOT output)*
 - **Data type:** {{ item.data_type or 'unspecified' }}
 {% if item.node_type %}- **Node type:** {{ item.node_type }} *(dynamic=time-varying quantity; static=machine-fixed parameter, e.g. wall geometry; constant=single scalar value; none=unclassified — use other context)*{% endif %}
@@ -535,7 +543,7 @@ These names already exist in the catalog. Reuse them if they match your source, 
 {% if item.error_fields %}
 - **DD error companions:**
 {% for ef in item.error_fields %}  - `{{ ef }}`
-{% endfor %}  → Error/uncertainty companions are minted deterministically — do NOT produce `*_uncertainty` variants. Skip this path entirely if it IS an error field (`_error_upper`, `_error_lower`, `_error_index`).
+{% endfor %}  → Error companions are minted deterministically by wrapping the parent base name with the registered `upper_uncertainty`, `lower_uncertainty`, or `uncertainty_index` operator. Do NOT invent per-error base names; skip this path entirely if it IS an error field (`_error_upper`, `_error_lower`, `_error_index`).
 {% endif %}
 {% if item.version_history %}
 - **Version history:**
@@ -623,7 +631,9 @@ These names already exist in the catalog. Reuse them if they match your source, 
 
 For **every** candidate, include a `description` field: a single-line
 plain-English summary of the physical quantity (≤120 characters). This
-description is used for embedding, search, and human review. Examples:
+description is used for embedding, search, and human review. Derive it from the
+enriched source description; the terse DD documentation is supporting evidence,
+not a replacement for the richer physical meaning. Examples:
 
 - `"Electron temperature measured in the plasma core"`
 - `"Toroidal component of the magnetic field"`
@@ -658,7 +668,7 @@ This is not optional — it is how downstream tooling assembles and validates th
 - `radial_magnetic_field` →
   `segments: {base_token: "magnetic_field", base_kind: "quantity", projection_axis: "radial"}`
 - `minor_radius_of_plasma_boundary` →
-  `segments: {base_token: "minor_radius", base_kind: "geometry", locus_token: "plasma_boundary", locus_relation: "of", locus_type: "geometry"}`
+  `segments: {base_token: "radius", base_kind: "geometry", qualifiers: ["minor"], locus_token: "plasma_boundary", locus_relation: "of", locus_type: "geometry"}`
 - `time_derivative_of_electron_density` →
   `segments: {base_token: "density", base_kind: "quantity", qualifiers: ["electron"], operators: [{token: "time_derivative"}]}`
 

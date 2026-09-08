@@ -341,10 +341,12 @@ class ExportReport:
     exported_count: int = 0
     excluded_below_score: int = 0
     excluded_unreviewed: int = 0
-    # Domain filtering happens in the _fetch_candidates Cypher query, so a
-    # candidate excluded by domain never reaches this report; this counter is
-    # therefore always 0 and retained only for output-shape stability.
+    # The export population query deliberately omits the domain predicate so
+    # identities rejected by a scoped export can be recorded here.
     excluded_by_domain: int = 0
+    # A missing domain is distinct from being outside a requested domain: the
+    # former identifies an incomplete graph record that cannot be serialized.
+    excluded_missing_domain: int = 0
     # Candidates dropped because their description is still the deterministic
     # parent placeholder — tracked separately from excluded_below_score, which
     # they are not (no GENERATE_DOCS run, not a low score).
@@ -360,6 +362,7 @@ class ExportReport:
     role_entry_count: int = 0
     role_counts: dict[str, int] = field(default_factory=dict)
     exclusion_records: list[ExclusionRecord] = field(default_factory=list)
+    exclusion_counts: dict[str, int] = field(default_factory=dict)
     source_disposition_records: list[SourceDispositionRecord] = field(
         default_factory=list
     )
@@ -368,12 +371,16 @@ class ExportReport:
         """Append identity-bearing exclusions and refresh compatibility counts."""
         self.exclusion_records.extend(records)
         reasons = [record.reason for record in self.exclusion_records]
+        self.exclusion_counts = {
+            reason: reasons.count(reason) for reason in sorted(set(reasons))
+        }
         self.excluded_below_score = sum(
             reason in {"below_name_score", "below_description_score", "bound_adjacent"}
             for reason in reasons
         )
         self.excluded_unreviewed = reasons.count("unreviewed_name")
         self.excluded_by_domain = reasons.count("outside_requested_domain")
+        self.excluded_missing_domain = reasons.count("missing_physics_domain")
         self.excluded_placeholder = reasons.count(
             "deterministic_parent_description_placeholder"
         )
@@ -437,11 +444,19 @@ class ExportReport:
                 "excluded_below_score": self.excluded_below_score,
                 "excluded_unreviewed": self.excluded_unreviewed,
                 "excluded_by_domain": self.excluded_by_domain,
+                "excluded_missing_domain": self.excluded_missing_domain,
                 "excluded_placeholder": self.excluded_placeholder,
                 "parse_failures": self.parse_failures,
                 "pruned_links": self.pruned_links,
                 "gate_failures": self.gate_failures,
                 "validation_failures": self.validation_failures,
+                "exclusion_by_reason": dict(self.exclusion_counts),
+                "accounted_exclusions": len(self.exclusion_records),
+                "accounting_residue": (
+                    self.total_candidates
+                    - self.exported_count
+                    - len(self.exclusion_records)
+                ),
             },
             "all_gates_passed": self.all_gates_passed,
         }
@@ -720,10 +735,21 @@ def _classify_export_population(
         candidate_domains = candidate.get("physics_domain") or []
         if isinstance(candidate_domains, str):
             candidate_domains = [candidate_domains]
+        candidate_domains = [
+            value.strip()
+            for value in candidate_domains
+            if isinstance(value, str) and value.strip()
+        ]
 
         reason: str | None = None
         detail = ""
-        if domain is not None and domain not in candidate_domains:
+        if not candidate_domains:
+            reason = "missing_physics_domain"
+            detail = (
+                "physics_domain is empty; the entry cannot be assigned to a "
+                "catalog domain"
+            )
+        elif domain is not None and domain not in candidate_domains:
             reason = "outside_requested_domain"
             detail = f"physics_domain does not contain {domain!r}"
         elif candidate.get("validation_status") != "valid":

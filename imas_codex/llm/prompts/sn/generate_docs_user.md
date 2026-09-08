@@ -133,6 +133,8 @@ to understand what the name represents and how reviewers refined it.
 ## Draft description (untrusted scaffolding — do not inherit)
 
 Rewrite the description from the Physics Reference Material and the name itself; do not carry over any claim you cannot verify from the reference material.
+A deterministic-parent placeholder is a lifecycle marker, not physics content;
+never paraphrase it into the result.
 
 {{ item.description }}
 {% endif %}
@@ -217,14 +219,19 @@ Related derivatives (same denominator):
 These source paths are provided for physics context ONLY. They help you understand
 what this quantity represents. NEVER mention these paths, IDS names, or DD references
 in the description or documentation — source provenance is tracked externally.
+A generic leaf or parent label does not make the accepted identity generic; use
+the enriched source meaning and the accepted name's explicit segments.
 
 {% for p in item.source_paths %}- `{{ p }}`
 {% endfor %}{% endif %}
 
 {% if item.dd_source_docs %}
-## Physics Reference Material (PRIVATE — do NOT cite in output)
+## Enriched Source Descriptions (PRIMARY GROUNDING — PRIVATE, do NOT cite)
 
-Use these physics definitions to ground your documentation in correct physics.
+These entries are rich-first: each `documentation` value is the enriched source
+description, with terse DD documentation used only when no enriched description
+exists. Use this material to ground your documentation in correct physics; never
+replace it with a generic interpretation of the path.
 Extract the PHYSICS MEANING, not the source identity. NEVER copy path identifiers,
 IDS names, or DD-specific language into the output text.
 
@@ -312,7 +319,7 @@ Return a JSON object with exactly these two fields:
 
 ```json
 {
-  "description": "1-3 sentences, ≤500 chars, no LaTeX, American spelling",
+  "description": "1 sentence preferred, 2 maximum, ≤250 chars, no LaTeX, American spelling",
   "documentation": "Strict normative markdown with defining $LaTeX$, scope, exclusions, and essential cross-references"
 }
 ```

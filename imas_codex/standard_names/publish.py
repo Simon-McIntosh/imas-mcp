@@ -405,6 +405,8 @@ def run_publish(
                 list(staged_sn_dir.glob("*.yml")) if staged_sn_dir.is_dir() else []
             )
             report.files_copied = len(yml_files) + 1
+            if (staging / ".export_report.json").is_file():
+                report.files_copied += 1
             logger.info(
                 "[dry-run] Would copy %d files to %s", report.files_copied, isnc
             )
@@ -430,8 +432,19 @@ def run_publish(
         # Copy manifest
         shutil.copy2(staging / "catalog.yml", isnc / "catalog.yml")
 
+        # Copy the export report so the per-reason exclusion accounting that
+        # closes candidate_count - published_count (see ExportReport.to_dict)
+        # rides the published commit instead of being discarded with the
+        # staging directory. The exporter writes it on every export path;
+        # a legacy staging dir without it still publishes — the report is
+        # additive, never a publish gate.
+        if (staging / ".export_report.json").is_file():
+            shutil.copy2(staging / ".export_report.json", isnc / ".export_report.json")
+
         yml_files = list(isnc_sn_dir.glob("*.yml")) if isnc_sn_dir.is_dir() else []
         report.files_copied = len(yml_files) + 1
+        if (isnc / ".export_report.json").is_file():
+            report.files_copied += 1
         logger.info("Copied %d files to %s", report.files_copied, isnc)
 
         # ── Post-copy validation ───────────────────────────────
@@ -454,8 +467,11 @@ def run_publish(
         commit_msg = f"sn: update {domain_list} ({entry_count} entries)"
 
         try:
+            add_paths = ["standard_names/", "catalog.yml"]
+            if (isnc / ".export_report.json").is_file():
+                add_paths.append(".export_report.json")
             subprocess.run(
-                ["git", "add", "standard_names/", "catalog.yml"],
+                ["git", "add", *add_paths],
                 cwd=isnc,
                 check=True,
                 capture_output=True,

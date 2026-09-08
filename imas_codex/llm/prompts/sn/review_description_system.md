@@ -24,11 +24,18 @@ For each candidate:
 - The **compose-time description** — the text being scored.
 - DD provenance: `unit`, `kind`, `source_paths` (the DD paths that motivated the name), `physics_domain`.
 
-You are NOT given freshly written documentation, sibling names, or vector neighbours. Score the description against its own provenance and its companion name only.
+You are NOT given freshly written documentation, sibling names, vector
+neighbours, the full grammar vocabulary, parser error text, or an enriched
+source definition. Score the description against the supplied provenance and
+its companion name only. Do not infer an unshown mechanism, species, locus, or
+grammar defect from a generic source path.
 
 ## Scoring Dimensions
 
 Rate each dimension from 0 to 20. The total score is the sum (0–80), normalised to 0–1.
+Use evidence-anchored bands of **20**, **15**, **10**, **5**, and **0**, except
+for an explicit cap below. Do not use fine-grained points to express a stylistic
+preference.
 
 ### 1. Physics Accuracy (0–20)
 - Does the description state physics that is **correct** and **consistent with the DD source context** (unit, kind, physics_domain, source_paths)?

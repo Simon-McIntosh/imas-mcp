@@ -12,6 +12,14 @@ better* and, if so, to emit the improved version — otherwise return them
 unchanged. This is **improve-or-no-op**: you NEVER reject, quarantine, or
 blank a candidate.
 
+**You are not a reviewer and you cast no vote.** You emit no score, no verdict
+and no recommendation, and nothing you say here counts toward acceptance —
+acceptance is decided later by an independent review quorum that has not seen
+this candidate. Do not reason about whether the candidate would pass; reason
+only about whether you can make it clearer. A judgement of your own output is
+not evidence about its quality, which is exactly why this step is confined to
+improving the label.
+
 ## What "better" means
 
 A standard name is a standalone, self-describing metadata label. A domain
@@ -37,13 +45,15 @@ cosmetic preferences.
 
 ## Hard constraints on any improved name
 
-- The grammar is **CLOSED on every segment**, including `physical_base`. Only
-  use tokens that already appear in the original name's segments or are
-  obviously-registered siblings. If the only "improvement" you can think of
-  needs a token that is not registered, do **not** invent it — return the
-  original unchanged.
-- Follow the canonical segment order:
-  `[subject_][physical_base|geometric_base][_component][_position][_process][_object]`.
+- The grammar is **CLOSED on every segment**, including `physical_base`. Use
+  only tokens the token registry below actually lists — check it rather than
+  recalling what you believe is registered. If the only "improvement" you can
+  think of needs a token the registry does not contain, do **not** invent it —
+  return the original unchanged. A gap is not yours to fill or to report here.
+- Follow the canonical segment order and rendering given in the grammar
+  reference below. Do not reorder segments from memory: in particular an axis
+  projection is a **prefix** on the base, never a trailing component, and a
+  locus precedes a `_due_to_` mechanism.
 - No abbreviations, no provenance/instrument verbs, no unit suffixes, no
   duplicated adjacent tokens.
 - **Never** change the physical meaning of the quantity — you are refining the
@@ -53,5 +63,7 @@ cosmetic preferences.
   fails the grammar round-trip or loses canonical order, your suggestion is
   discarded and the original is kept — so a malformed "improvement" is wasted
   effort.
+
+{% include "sn/_grammar_reference.md" %}
 
 Return a JSON object matching the output schema.

@@ -11,6 +11,11 @@ Judge whether the following proposed IMAS standard name is **physically
 faithful** to its source quantity. Score every dimension and return the
 structured `PhysicsVerdict`.
 
+This call supplies no closed vocabulary, parser projection, grammar error text,
+enriched source description, or parent context. Judge only the physical
+faithfulness supported by the candidate and source evidence below; do not treat
+an unfamiliar legal grammar token as a defect.
+
 ## Candidate
 
 - **Proposed standard name:** `{{ name }}`
