@@ -565,6 +565,10 @@ def test_pending_single_child_shadow_is_retired_with_deletion_ledger() -> None:
     gc = MagicMock()
 
     def query(cypher: str, **_kwargs):
+        if "MATCH (cost:LLMCost)" in cypher:
+            return [{"linked": 0}]
+        if "OPTIONAL MATCH (cost:LLMCost)-[:FOR_STANDARD_NAME]->(sn)" in cypher:
+            return []
         if "DETACH DELETE sn" in cypher:
             return [{"deleted": 1}]
         if "MATCH (p:StandardName {origin: 'derived'})" in cypher:
@@ -603,6 +607,9 @@ def test_pending_single_child_shadow_is_retired_with_deletion_ledger() -> None:
         item for item in gc.query.call_args_list if "DETACH DELETE sn" in item.args[0]
     )
     assert "CREATE (change:StandardNameChange" in delete_call.args[0]
+    assert "WHERE sn.needs_composition = true" in delete_call.args[0]
+    assert "CREATE (snapshot:StandardNameDeletionSnapshot)" in delete_call.args[0]
+    assert "CREATE (edge_snapshot:StandardNameDeletedEdge)" in delete_call.args[0]
     assert delete_call.kwargs["deletion_operation"] == "remove_derived_parent"
     assert not any(
         "SET parent.name_stage" in item.args[0] for item in gc.query.call_args_list

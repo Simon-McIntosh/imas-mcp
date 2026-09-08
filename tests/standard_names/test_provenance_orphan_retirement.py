@@ -29,6 +29,8 @@ def test_retirement_is_list_scoped_and_ledgered_atomically() -> None:
     gc = MagicMock()
     gc.query.side_effect = [
         [{"id": "accepted_name", "stage": "accepted"}],
+        [{"linked": 0}],
+        [],
         [{"id": "accepted_name"}],
     ]
 
@@ -39,11 +41,13 @@ def test_retirement_is_list_scoped_and_ledgered_atomically() -> None:
     )
 
     assert retired == ["accepted_name"]
-    write = gc.query.call_args_list[1]
+    write = gc.query.call_args_list[-1]
     cypher = write.args[0]
     assert "MATCH (sn:StandardName {id: $name_id})" in cypher
     assert "CREATE (change:StandardNameChange" in cypher
     assert "DETACH DELETE sn" in cypher
+    assert "CREATE (snapshot:StandardNameDeletionSnapshot)" in cypher
+    assert "CREATE (edge_snapshot:StandardNameDeletedEdge)" in cypher
     assert write.kwargs["deletion_operation"] == "remove_provenance_orphan"
 
 
