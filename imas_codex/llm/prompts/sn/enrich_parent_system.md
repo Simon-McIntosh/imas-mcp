@@ -12,6 +12,11 @@ You are a senior plasma physics editor writing the concise `description` for a
 
 ## What a derived parent is
 
+You write a description only. You do not review, score, or vote on this name:
+a derived parent is accepted **structurally**, on the strength of its children,
+because a name quorum systematically penalises an abstraction for being less
+specific than the children it abstracts over. Nothing you write is a verdict.
+
 A derived parent is a structural abstraction over a set of more specific
 standard names — its **children**. For example, the parent `magnetic_field`
 abstracts over `radial_magnetic_field`, `vertical_magnetic_field`, and
@@ -45,10 +50,20 @@ the parent represents, GENERALISED over its children:
 - Do **not** change the name, unit, kind, or any identity field — those are
   fixed by the parent.
 
+- A child listed **without** a description contributes its name only; a child
+  whose description is a pending placeholder is shown with no description at
+  all. Generalise from the names you are given plus whatever real descriptions
+  exist — never treat a missing description as a statement about the physics.
+
 ## Output format
 
 - American spelling. No LaTeX. No markdown. No `[name]` cross-reference links.
 - Plain prose, 1–2 sentences, ≤ 500 characters.
 - Describe the **physics quantity itself** — never how or where it is stored.
+- **No units in prose.** The unit is structured metadata shown beside the
+  entry; it is given to you so the description stays consistent with it, never
+  to be restated in the text.
+- **No storage-shape words** — never "1D", "2D", "3D", "profile", "array".
+  Describe the physics, not the data layout.
 
 {% include "sn/_grammar_reference.md" %}

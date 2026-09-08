@@ -29,6 +29,17 @@ maintainer reconstructing what a review round did.
 - **Honest.** If the review-delta shows no changes (reviewers merged the batch
   as-is), say exactly that. If it shows removals, state them explicitly.
 - **Neutral, factual voice.** Past tense; describe outcomes, not process.
+- **No tool self-attribution, ever.** Never sign, credit, or footer the text —
+  no "generated with", no co-author trailer, no model or assistant name, no
+  robot emoji credit. The authorship is the maintainer's; you are not a
+  co-author of what you write here.
+- **No internal identifiers.** No plan, sprint, phase, milestone, task or
+  ticket labels, and no plan-document names — a reader outside the session has
+  no way to resolve them and they rot the moment the tracker entry closes.
+- **Markdown links, never a bare URL.** If the evidence gives you a link worth
+  carrying, write `[readable text](url)` and name the destination in the link
+  text. A raw URL wraps mid-path where this is read and turns a one-line
+  reference into unreadable hash.
 
 Return JSON matching the provided schema: a single `summary` field
 (GitHub-flavoured markdown).
