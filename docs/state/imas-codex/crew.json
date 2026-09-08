@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T09:39:35",
+  "updated": "2026-09-08T09:47:56",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -104574,6 +104574,160 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T070210875779-n-swct-every-unnamed-row-states-its-cause",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a79",
+        "node": "n-swct-every-unnamed-row-states-its-cause",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2437,
+                "cached_input_tokens": 296121,
+                "input_tokens": 298560,
+                "output_tokens": 2434,
+                "reasoning_output_tokens": 98,
+                "total_tokens": 300994,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "Every unnamed row in the WEST roster carries a cause describing why no name was produced, and the four specific defects below are corrected. THE MEASURED STATE: 31 rows are unnamed. 18 record NO cause at all. Four fit-constraint weights carry two different verdicts for one concept, so the roster contradicts itself. Three time axes report a compose skip when the real reason is the coordinate rule, which is a true statement standing in for the required one. One row marked failed records nothing whatsoever. THE RULE: a row must end with a name or a stated cause. An empty reason field is not a neutral absence \u2014 it is indistinguishable from an unprocessed row, so it hides work rather than recording its outcome. WHAT TO DELIVER: the 18 causeless rows each given their actual cause, derived from recorded pipeline state rather than guessed; the four fit-constraint weights reconciled to ONE verdict for the one concept, or, if you conclude after looking that they are genuinely two concepts, the semantic distinction stated in plain language beside both spellings; the three time axes recording the coordinate rule rather than a compose skip; and the one failed row given its cause. Report before and after for every row you touch, by identity. WHERE CAUSES COME FROM: read them out of the graph and the pipeline's own recorded state \u2014 name_stage, docs_stage, validation_status, status, origin, and any recorded error or skip reason on the source. Do NOT invent a plausible cause for a row whose state does not support one. If a row's state genuinely does not say why it was not named, record that the state is silent and name the field that would have carried it: that is a real finding about the instrument, not a gap in your effort, and it is more useful than a guess. DISCIPLINE: a missing property returns zero rows rather than an error, so dump a row's full property set before asserting a field is absent. Live graph work runs on the LOGIN NODE because the graph tunnel is login-node-local, and carries that burden: bound the row set to this roster, ten seconds per query ceiling, no heavy local compute alongside, and declare the exception in your manifest. This is a read-and-report node: change no Python. DURABILITY: write your manifest before any long output and append rows as you resolve them, because a partial table is recoverable and a deferred one is not.",
+          "estimated_hours": null,
+          "goal": "Give every unnamed roster row a stated cause, so each row ends with a name or a reason",
+          "id": "n-swct-every-unnamed-row-states-its-cause",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T070210875779-n-swct-every-unnamed-row-states-its-cause/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requested_backend": "clive",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "docs/evidence/sn-west-cohort-treatment/unnamed-row-causes.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "clive-units",
+        "backend": "clive",
+        "local": false,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-08T07:02:49Z",
+        "completed_at": "2026-09-08T07:47:00.263Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 2593,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 2651,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "66ce45d8fd0db8905ee6720207ac6cdfd156d3d9",
+        "commits": [
+          "41bcefc4e2fb2db1b1c63b0ee91cdf262c4b5cbe"
+        ],
+        "changed_lines": {
+          "added": 218,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": null,
+        "gate": "not-run",
+        "gate_check": null,
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T070210875779-n-swct-every-unnamed-row-states-its-cause/manifest.md",
+        "scope_changed": false,
+        "session_id": "fe5c0362-c092-4b6a-b59c-ce60b11f24e6",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 7062582,
+            "input_tokens_cumulative": 7062582,
+            "output_tokens": 63978,
+            "output_tokens_cumulative": 63978,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 0,
+          "cumulative_input_tokens": 7062582,
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 2646.098,
+          "generated_tokens": 63978,
+          "generation_seconds": 2471.037,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 16.9,
+          "machine_seconds": 175.061,
+          "peak_input_tokens": 171479,
+          "tokens_per_second": 25.89,
+          "wall_tokens_per_second": 24.18
+        },
+        "follow_on_paths": [
+          "summary/disruption/time/value"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swct-every-unnamed-row-states-its-cause",
+          "session_id": "fe5c0362-c092-4b6a-b59c-ce60b11f24e6",
+          "session_source": "stream",
+          "retained_at": "2026-09-08T07:47:00.263Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -104816,6 +104970,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1963
+    "_version": 1964
   }
 }
