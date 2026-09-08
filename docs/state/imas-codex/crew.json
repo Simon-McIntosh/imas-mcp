@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T22:08:55",
+  "updated": "2026-09-08T22:36:27",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -4595,6 +4595,17 @@
         "created": "2026-09-08"
       },
       {
+        "id": "s10b-relabel",
+        "harness": "codex-terra",
+        "role": "implement",
+        "session_id": "01a082a7-d5f8-7141-95d6-0717ec558fbc",
+        "session_model": "gpt-5.6-terra",
+        "sessions": {
+          "{\"alias\":\"terra5.6\",\"backend\":\"codex-terra\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-terra\",\"sandbox\":\"worktree-full\"}": "01a082a7-d5f8-7141-95d6-0717ec558fbc"
+        },
+        "created": "2026-09-08"
+      },
+      {
         "id": "s10b-restore",
         "harness": "codex",
         "role": "implement",
@@ -4606,6 +4617,15 @@
       {
         "id": "s10b-spare",
         "harness": "codex",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-08"
+      },
+      {
+        "id": "s10b-westtail",
+        "harness": "clive",
         "role": "implement",
         "session_id": null,
         "session_model": null,
@@ -111246,6 +111266,173 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T201322275268-n-pidp-relabel-false-origins",
+        "plan": "paid-identity-deletion-protection",
+        "section": "\u00a77",
+        "node": "n-pidp-relabel-false-origins",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1254,
+                "cached_input_tokens": 401176,
+                "input_tokens": 402432,
+                "output_tokens": 683,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 403115,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/paid-identity-deletion-protection/false-origin-relabel.md records per identity the signed manifest receipt with the before and after origin for every name the audit verdicts FALSE, re-running the audit's own reproduction query afterwards returns zero rows that carry a direct dd producer while at origin='derived', and the four names in the 208-name published cut appear among the corrected rows",
+          "estimated_hours": null,
+          "goal": "Correct the forty falsely-labelled origin values to pipeline through a signed per-name mutation",
+          "id": "n-pidp-relabel-false-origins",
+          "lane_declaration": {
+            "backend": "codex-terra",
+            "headroom": "unknown",
+            "metered": true,
+            "observed_at": "2026-09-08T19:47:16Z",
+            "read_at": "2026-09-08T20:13:42Z",
+            "resolved_backend": "codex-terra",
+            "utilisation_pct": null
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T201322275268-n-pidp-relabel-false-origins/manifest.md",
+          "plan": "paid-identity-deletion-protection",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a77",
+          "spec_level": "guided",
+          "time_budget": "45m",
+          "write_paths": [
+            "docs/evidence/paid-identity-deletion-protection/false-origin-relabel.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-relabel",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T20:13:52Z",
+        "completed_at": "2026-09-08T20:34:43Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1251,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1251,
+        "stalled": false,
+        "time_budget": "45m",
+        "base_sha": "7aed63c4705614eda98a948450f7ccd8e54830eb",
+        "commits": [
+          "07b06c04c68a2470f36e5176dbc5995949c345dc"
+        ],
+        "changed_lines": {
+          "added": 75,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "live reproduction query after apply: corrected_count=40, receipt_count=40, remaining_direct_dd_derived=0, four published-cut names corrected",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T201322275268-n-pidp-relabel-false-origins/origin-relabel-authority.json",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T201322275268-n-pidp-relabel-false-origins/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a082a7-d5f8-7141-95d6-0717ec558fbc",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 9979392,
+            "cached_input_tokens_cumulative": 9979392,
+            "input_tokens": 10407474,
+            "input_tokens_cumulative": 10407474,
+            "output_tokens": 22938,
+            "output_tokens_cumulative": 22938,
+            "reasoning_output_tokens": 9127,
+            "reasoning_output_tokens_cumulative": 9127
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T20:34:43Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 54.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T20:34:43Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 9979392,
+          "cumulative_input_tokens": 20386866,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 32065
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-relabel-false-origins",
+          "session_id": "01a082a7-d5f8-7141-95d6-0717ec558fbc",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T20:34:43Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -111502,6 +111689,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2025
+    "_version": 2029
   }
 }
