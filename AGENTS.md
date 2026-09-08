@@ -65,6 +65,15 @@ lets a worktree's `build-models --force` write through into the main checkout an
 replace every peer's models — the `uv sync`-from-a-worktree hazard in a new
 costume.
 
+**Dispatch places the two links and none of the copies, so place them yourself
+right after every dispatch.** Measured 2026-09-08 across four worktrees: `.venv`
+and `.env` resolved correctly and all five generated files were absent, which
+fails as an import error inside the worker rather than as a provisioning
+message. They are `imas_codex/graph/models.py`, `imas_codex/graph/dd_models.py`,
+`imas_codex/config/models.py`, `imas_codex/graph/schema_context_data.py` and
+`agents/schema-reference.md` — the same set the never-stage rule below names.
+Copy each one (`cp -n`), never symlink, for the write-through reason above.
+
 **Checkpointing:** one verified checkpoint protects a body of work, taken from the
 main checkout; there is no recurring backup discipline. It stops the database, so
 every graph-touching worker must be at rest. A bare export lands in `EXPORTS_DIR`;
