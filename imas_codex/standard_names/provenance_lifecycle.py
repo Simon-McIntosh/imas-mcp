@@ -20,6 +20,9 @@ from urllib.parse import quote
 from uuid import uuid4
 
 from imas_codex.standard_names.defaults import DEFAULT_MIN_SCORE
+from imas_codex.standard_names.protection import (
+    refuse_protected_automatic_deletion,
+)
 from imas_codex.standard_names.signed_manifest import (
     StaleSourceDetachConflict as StaleSourceDetachConflict,
     _load_signed_stale_source_rows as _load_signed_stale_source_rows,
@@ -84,10 +87,20 @@ def _guard_comparison_binding_cypher(binding_alias: str) -> str:
 
 
 def deletion_change_cypher(name_alias: str) -> str:
-    """Return a Cypher clause that records a name deletion in its transaction."""
+    """Return an atomic deletion receipt containing its complete graph state."""
     if not name_alias.isidentifier():
         raise ValueError(f"invalid Cypher name alias: {name_alias!r}")
     return f"""
+        CALL ({name_alias}) {{
+          OPTIONAL MATCH ({name_alias})-[edge]-(neighbor)
+          RETURN collect(DISTINCT {{
+            relationship_type: type(edge),
+            direction: CASE WHEN startNode(edge) = {name_alias}
+                            THEN 'outgoing' ELSE 'incoming' END,
+            neighbor_id: coalesce(neighbor.id, elementId(neighbor)),
+            relationship_properties: properties(edge)
+          }}) AS deleted_edge_inventory
+        }}
         CREATE (change:StandardNameChange {{
           id: 'sn-change:' + randomUUID(),
           from_name: {name_alias}.id,
@@ -97,7 +110,9 @@ def deletion_change_cypher(name_alias: str) -> str:
           origin: $deletion_origin,
           run_id: $deletion_run_id,
           changed_at: datetime(),
-          internal: true
+          internal: true,
+          deleted_node_properties: toString(properties({name_alias})),
+          deleted_edge_inventory: toString(deleted_edge_inventory)
         }})
     """
 
@@ -1750,6 +1765,10 @@ def retire_unrecoverable_provenance_orphans(
             "accepted provenance orphans require include_accepted=True: "
             + ", ".join(accepted)
         )
+
+    refuse_protected_automatic_deletion(
+        gc, sorted(found), operation="provenance-orphan retirement"
+    )
 
     deletion_clause = deletion_change_cypher("sn")
     deletion_params = deletion_change_params(

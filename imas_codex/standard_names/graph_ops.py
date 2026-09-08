@@ -35,13 +35,13 @@ from imas_codex.standard_names.defaults import (
 )
 from imas_codex.standard_names.doc_links import find_name_references
 from imas_codex.standard_names.ledger import reattach_produced_name_edges
+from imas_codex.standard_names.protection import (
+    ProtectedDeletionError,
+    refuse_protected_automatic_deletion,
+)
 from imas_codex.standard_names.provenance_lifecycle import (
     deletion_change_cypher,
     deletion_change_params,
-)
-from imas_codex.standard_names.protection import (
-    derived_parent_deletion_protections,
-    filter_protected,
 )
 from imas_codex.standard_names.signed_manifest import apply_signed_manifest
 
@@ -3668,20 +3668,12 @@ def _delete_derived_parent_nodes(
             f"{DERIVED_PARENT_CLEANUP_DELETION_LIMIT}-identity ceiling"
         )
 
-    protected_reasons = derived_parent_deletion_protections(gc, parent_ids)
-    _filtered, protected_ids = filter_protected(
-        [{"id": parent_id, "status": "delete"} for parent_id in parent_ids],
-        protected_names=set(protected_reasons),
-    )
-    if protected_ids:
-        details = ", ".join(
-            f"{parent_id} ({protected_reasons[parent_id]})"
-            for parent_id in protected_ids
+    try:
+        refuse_protected_automatic_deletion(
+            gc, parent_ids, operation="structural derived-parent cleanup"
         )
-        raise DerivedParentCleanupRefusal(
-            "Refused structural derived-parent cleanup for protected identity: "
-            + details
-        )
+    except ProtectedDeletionError as exc:
+        raise DerivedParentCleanupRefusal(str(exc)) from exc
 
     deleted = 0
     deletion_clause = deletion_change_cypher("sn")
@@ -3728,20 +3720,8 @@ def _delete_derived_parent_nodes(
                                WHERE id IN $expected_producer_ids)
                        AND all(id IN $expected_producer_ids
                                WHERE id IN current_producer_ids))
-                CALL (sn) {{
-                  OPTIONAL MATCH (sn)-[edge]-(neighbor)
-                  RETURN collect(DISTINCT {{
-                    relationship_type: type(edge),
-                    direction: CASE WHEN startNode(edge) = sn
-                                    THEN 'outgoing' ELSE 'incoming' END,
-                    neighbor_id: coalesce(neighbor.id, elementId(neighbor)),
-                    relationship_properties: properties(edge)
-                  }}) AS edge_inventory
-                }}
                 {deletion_clause}
                 SET change.manifest_sha256 = $stub_manifest_sha256
-                SET change.deleted_node_properties = toString(properties(sn)),
-                    change.deleted_edge_inventory = toString(edge_inventory)
                 FOREACH (source IN mirror_sources |
                   SET source.produced_sn_id = null)
                 FOREACH (source IN derived_sources | DETACH DELETE source)
@@ -5742,6 +5722,11 @@ def write_standard_names(
     swept_count = 0
     if skeleton_candidate_ids:
         with nullcontext(gc) if gc is not None else GraphClient() as sweep_gc:
+            refuse_protected_automatic_deletion(
+                sweep_gc,
+                sorted(skeleton_candidate_ids),
+                operation="skeleton placeholder cleanup",
+            )
             deletion_clause = deletion_change_cypher("sn")
             swept = sweep_gc.query(
                 f"""
