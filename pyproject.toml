@@ -941,7 +941,6 @@ addopts = [
     "--strict-config",
     "--tb=short",
     "--no-header",
-    "-q",
     "--durations=10",
     "-m", "not slow and not graph",
 ]
