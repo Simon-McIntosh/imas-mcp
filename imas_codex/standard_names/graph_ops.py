@@ -16448,6 +16448,7 @@ def persist_reviewed_name(
     # Lightweight stage-decision fixtures written before the durable counter
     # may omit this projection. Real Neo4j rows always carry it, including
     # ``False`` for a missing property.
+    attempt_state_known = "refine_attempts_recorded" in rows[0]
     refine_attempts_recorded = bool(rows[0].get("refine_attempts_recorded", True))
     has_refine_attempt = refine_attempts_recorded and refine_attempts > 0
     edit_status_before: str | None = rows[0].get("edit_status")
@@ -16546,7 +16547,11 @@ def persist_reviewed_name(
         except Exception as exc:
             grammar_valid = False
             grammar_issue = f"[strict_grammar] {str(exc)[:240]}"
-            target_stage = "exhausted" if has_refine_attempt else "reviewed"
+            target_stage = (
+                "exhausted"
+                if has_refine_attempt or not attempt_state_known
+                else "reviewed"
+            )
             logger.warning(
                 "persist_reviewed_name: quarantining grammar-invalid name %s: %s",
                 sn_id,
