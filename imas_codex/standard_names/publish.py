@@ -56,6 +56,7 @@ class PublishReport:
     commit_sha: str | None = None
     pushed: bool = False
     dry_run: bool = False
+    graph_receipt_count: int = 0
     errors: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
 
@@ -67,6 +68,7 @@ class PublishReport:
             "commit_sha": self.commit_sha,
             "pushed": self.pushed,
             "dry_run": self.dry_run,
+            "graph_receipt_count": self.graph_receipt_count,
             "errors": self.errors,
             "warnings": self.warnings,
         }
@@ -248,6 +250,53 @@ def _get_codex_commit_sha() -> str:
         return "unknown"
 
 
+def _record_export_receipt(
+    manifest: dict[str, Any],
+    *,
+    graph_client: Any | None = None,
+) -> int:
+    """Record the export timestamp on every name in a published tree.
+
+    Approval provenance is written by ``mark_catalog_name_approved`` before
+    export. The export manifest is the timestamp authority for this receipt;
+    applying it only after the catalog commit succeeds keeps a graph row from
+    claiming an export that never reached the catalog checkout.
+    """
+    names_block = manifest.get("names")
+    exported_at = manifest.get("exported_at")
+    if not isinstance(names_block, dict) or not names_block:
+        return 0
+    if not isinstance(exported_at, str) or not exported_at:
+        raise ValueError("published staging manifest has no exported_at timestamp")
+
+    names = sorted(str(name) for name in names_block)
+    owns_client = graph_client is None
+    if owns_client:
+        from imas_codex.graph.client import GraphClient
+
+        graph_client = GraphClient()
+    try:
+        rows = graph_client.query(
+            """
+            UNWIND $names AS name
+            MATCH (sn:StandardName {id: name})
+            SET sn.exported_at = datetime($exported_at)
+            RETURN count(sn) AS updated
+            """,
+            names=names,
+            exported_at=exported_at,
+        )
+        updated = int(rows[0].get("updated", 0)) if rows else 0
+        if updated != len(names):
+            raise ValueError(
+                f"export receipt matched {updated} of {len(names)} published names"
+            )
+        return updated
+    finally:
+        if owns_client:
+            graph_client.close()
+
+
 # =============================================================================
 # Main publish function
 # =============================================================================
@@ -260,6 +309,7 @@ def run_publish(
     push: bool = False,
     dry_run: bool = False,
     allow_dirty: bool = False,
+    graph_client: Any | None = None,
 ) -> PublishReport:
     """Transport a staging directory to an ISNC checkout.
 
@@ -279,6 +329,10 @@ def run_publish(
         (``catalog_release._check_clean_tree(strict=not is_rc)``): an RC publish
         the release path already admits with a dirty tree must not then be
         blocked here. A final (non-RC) publish keeps the strict clean-tree gate.
+    graph_client:
+        Optional open graph client used for the post-commit export receipt.
+        When omitted, a client is opened only for a staging manifest carrying
+        per-name metadata.
 
     Returns
     -------
@@ -508,6 +562,15 @@ def run_publish(
                 timeout=10,
             )
             report.commit_sha = sha_result.stdout.strip()
+
+            try:
+                report.graph_receipt_count = _record_export_receipt(
+                    manifest,
+                    graph_client=graph_client,
+                )
+            except Exception as exc:
+                report.errors.append(f"Cannot record graph export receipt: {exc}")
+                logger.error("Graph export receipt failed: %s", exc)
 
         except subprocess.CalledProcessError as exc:
             # Rollback on commit failure
