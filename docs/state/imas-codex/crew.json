@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T03:33:59",
+  "updated": "2026-09-08T03:43:52",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -101251,6 +101251,143 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260907T185952281962-n-sli-which-section-rows-are-still-open",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a76",
+        "node": "n-sli-which-section-rows-are-still-open",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2661,
+                "cached_input_tokens": 250521,
+                "input_tokens": 253184,
+                "output_tokens": 1141,
+                "reasoning_output_tokens": 316,
+                "total_tokens": 254325,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A report at the write path carrying one row per section of docs/plans/sn-lifecycle-integrity.html (s1, s2, s3, s4, s5 including each of its six named footguns, s5a, s6), each verdicted closed or open against the code at HEAD and against the live graph, with the file and line or the query that settles it. A prior closure audit verdicted 9 rows as 4 closed and 5 open, which is where the plan's impl of 0.44 comes from; name which 5 those were and whether each is still open now. Three rows are already known closed and must be re-verified rather than assumed: the exporter reads status from the graph (the literal active mapping should grep 0), the import editorial-axis guard exists (commit d606bf09), and updated_at is declared and stamped at 118 write sites behind a static checker. Report only \u2014 change no source file.",
+          "estimated_hours": null,
+          "goal": "Verdict every section row of the lifecycle-integrity plan against the code and the live graph at HEAD and name the ones still open",
+          "id": "n-sli-which-section-rows-are-still-open",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T185952281962-n-sli-which-section-rows-are-still-open/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a76",
+          "spec_level": "guided",
+          "time_budget": "40m",
+          "write_paths": [
+            "docs/evidence/sn-lifecycle-integrity/section-currency.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "clive-sectionaudit",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-07T19:00:02Z",
+        "completed_at": "2026-09-08T01:40:53.633Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 23876,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 24051,
+        "stalled": true,
+        "time_budget": "40m",
+        "base_sha": "69f24046b143dce1048f82f02fd25878b2849126",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": null,
+        "gate": "failed",
+        "gate_check": null,
+        "suite_delta": null,
+        "failure_classification": "infrastructure-failure",
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T185952281962-n-sli-which-section-rows-are-still-open/manifest.md",
+        "scope_changed": false,
+        "session_id": "3fd8898d-17fc-421a-a914-fac27829a7c5",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 10271467,
+            "input_tokens_cumulative": 10271467,
+            "output_tokens": 46596,
+            "output_tokens_cumulative": 46596,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 24048.252,
+          "generated_tokens": 46596,
+          "generation_seconds": 23521.942,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 17.8,
+          "machine_seconds": 526.31,
+          "peak_input_tokens": 181041,
+          "tokens_per_second": 1.98,
+          "wall_tokens_per_second": 1.94
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-sli-which-section-rows-are-still-open",
+          "session_id": "3fd8898d-17fc-421a-a914-fac27829a7c5",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T01:40:53.633Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -101493,6 +101630,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1924
+    "_version": 1925
   }
 }
