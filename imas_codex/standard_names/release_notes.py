@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import logging
 import re
+import subprocess
 from collections import Counter
 from collections.abc import Mapping
 from pathlib import Path
@@ -380,15 +381,82 @@ def _validate_pr_notes(
     return validate_pr_text(title, body)
 
 
+class ReviewingGuideLinkError(RuntimeError):
+    """Raised when the catalog reviewing-guide address cannot be derived."""
+
+
+def _run_git(*args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
+    """Run a git command in a checkout."""
+    return subprocess.run(
+        ["git", *args],
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+
+def _github_slug(root: Path) -> tuple[str, str] | None:
+    """Parse a github ``owner/repo`` pair from the root's origin remote.
+
+    Handles both SSH (``git@github.com:owner/repo.git``) and HTTPS forms.
+    Returns None when the remote is missing or not a github URL — the caller
+    decides whether that is an error.
+    """
+    result = _run_git("remote", "get-url", "origin", cwd=root)
+    if result.returncode != 0:
+        return None
+    m = re.search(
+        r"github\.com[:/]([\w.-]+)/([\w.-]+?)(?:\.git)?/?$", result.stdout.strip()
+    )
+    return (m[1], m[2]) if m else None
+
+
+def reviewing_guide_url(*, checkout: str | Path | None = None) -> str:
+    """Derive the catalog reviewing-guide blob address from the catalog checkout.
+
+    The owner and repository come from the catalog checkout's github 'origin'
+    remote, resolved through the same checkout discovery the release CLI
+    applies, so the address follows the real release target the way the
+    exclusion-ledger address does. REVIEWING.md is a stable root document, so
+    the address pins the default branch rather than a per-commit revision (the
+    file a reviewer must be able to open, not the local working-tree bytes).
+    Raises instead of composing a link that would 404 when the remote cannot
+    be resolved.
+    """
+    if checkout is None:
+        from imas_codex.settings import get_sn_isnc_dir
+
+        checkout = get_sn_isnc_dir()
+        if checkout is None:
+            raise ReviewingGuideLinkError(
+                "no catalog checkout is resolved, so the reviewing guide has "
+                "no reviewable address"
+            )
+    root = Path(checkout).resolve()
+    toplevel = _run_git("rev-parse", "--show-toplevel", cwd=root)
+    if toplevel.returncode != 0:
+        raise ReviewingGuideLinkError(
+            f"{root} is not inside a git checkout, so the catalog reviewing "
+            "guide cannot be addressed"
+        )
+    root = Path(toplevel.stdout.strip())
+    slug = _github_slug(root)
+    if slug is None:
+        raise ReviewingGuideLinkError(
+            f"{root} has no github 'origin' remote, so the catalog reviewing "
+            "guide has no reviewable address"
+        )
+    return f"https://github.com/{slug[0]}/{slug[1]}/blob/main/REVIEWING.md"
+
+
 # The catalog's stable reviewing-guide document (root REVIEWING.md on the
 # catalog's main branch, which the release targets for every review PR),
 # addressed as a github blob URL — the same URL shape the exclusion ledger
 # link composes in catalog_release.py, so this body never falls back to a
-# bare URL that wraps mid-path in the review column.
-REVIEWING_GUIDE_URL = (
-    "https://github.com/Simon-McIntosh/imas-standard-names-catalog/blob/main/"
-    "REVIEWING.md"
-)
+# bare URL that wraps mid-path in the review column. The address is derived
+# by :func:`reviewing_guide_url` rather than spelled as a literal, so it
+# follows the release target and raises instead of 404ing.
 
 
 def _static_pr_body(
@@ -414,7 +482,7 @@ def _static_pr_body(
         "Review the fixed batch view and check each entry's wording, units, and "
         "physics meaning before approving. "
         "See the [catalog reviewing guide "
-        f"(REVIEWING.md)]({REVIEWING_GUIDE_URL}) for the fields you may edit."
+        f"(REVIEWING.md)]({reviewing_guide_url()}) for the fields you may edit."
     )
 
 
