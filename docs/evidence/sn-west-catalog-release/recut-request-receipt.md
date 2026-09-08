@@ -152,3 +152,57 @@ concurrency protection the function provides. No edge, scalar, or
 The recut remains stopped. A separate rename-path repair must prevent this data
 loss, and a governed orphan-recovery path must establish authority for rebinding
 these two null/null sources before this release node can resume.
+
+## Source attachment recovery
+
+The compare-and-set refusal identified the sources as wholly unbound, so the
+correct backing path was `sn attach`, not retargeting. Each source was dry-run
+separately before it was applied. The launcher path planned only this change:
+
+```text
+would attach ic_antennas/antenna/power_launched to
+net_power_due_to_ion_cyclotron_heating
+  source dd:ic_antennas/antenna/power_launched -> 'attached'
+  target at name_stage 'accepted'
+```
+
+It was attached because it is the total ICRF power over one antenna's straps
+launched into the vacuum vessel, which is the net antenna-boundary power after
+reflection rather than a system-level total. The word "Total" in its source
+documentation aggregates straps within that antenna.
+
+The summary path independently produced the same one-source dry run:
+
+```text
+would attach summary/heating_current_drive/ic/power/value to
+net_power_due_to_ion_cyclotron_heating
+  source dd:summary/heating_current_drive/ic/power/value -> 'attached'
+  target at name_stage 'accepted'
+```
+
+The Data Dictionary defines that value as IC resonance-heating power coupled
+to the plasma from a specific launcher. In this context, "coupled" is not a
+second quantity: it is the net forward-minus-reflected power accepted across
+the launcher/plasma load boundary. The name's documentation draws the same
+boundary by excluding the power ultimately absorbed by plasma particles.
+Both sources are therefore launcher-resolved realizations of the same net
+boundary power; neither realizes the system-level total.
+
+The mechanical dimensionality, locus, and vector-family guard accepted both
+pairings. After applying the two guarded attachments, a bounded read returned:
+
+| Source | source status | scalar `produced_sn_id` | producer-edge targets |
+|---|---|---|---|
+| `dd:ic_antennas/antenna/power_launched` | `attached` | `net_power_due_to_ion_cyclotron_heating` | exactly the net identity |
+| `dd:summary/heating_current_drive/ic/power/value` | `attached` | `net_power_due_to_ion_cyclotron_heating` | exactly the net identity |
+
+Both DD nodes also carry the matching `HAS_STANDARD_NAME` projection. The net
+identity now has exactly two producers and these two `source_paths`. The
+superseded `power_due_to_ion_cyclotron_heating` has zero producers and an empty
+`source_paths` list, so the recovery introduced no co-binding. Its successor
+reads `name_stage=accepted`, `validation_status=valid`, catalog `status=draft`,
+and `docs_stage=pending` immediately after attachment.
+
+The rename operation dropping both bindings remains a defect in the rename
+path. `sn attach` repaired the affected live state through the ordinary
+composition-equivalent writer; it does not fix that underlying path.
