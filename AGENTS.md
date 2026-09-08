@@ -67,8 +67,9 @@ costume.
 
 **Checkpointing:** one verified checkpoint protects a body of work, taken from the
 main checkout; there is no recurring backup discipline. It stops the database, so
-every graph-touching worker must be at rest, and it needs `-o` into `BACKUPS_DIR`
-or the currency instrument never sees it. Detail in the graph file.
+every graph-touching worker must be at rest. A bare export lands in `EXPORTS_DIR`;
+`-o` can place it in `BACKUPS_DIR`, and the currency instrument scans both. Detail
+in the graph file.
 
 ## Project Philosophy
 
@@ -203,10 +204,15 @@ Multiple agents may edit this repo simultaneously on `main`. Assume another agen
 
 ```bash
 uv run pytest                 # Default markers: excludes slow, graph
-uv run pytest tests/standard_names/ -q  # SN tests (~3300 tests, ~90s)
+uv run pytest tests/standard_names/  # SN tests (~3300 tests, ~90s)
 uv run pytest tests/path/to/test.py::test_function  # Specific test
 uv run pytest --cov=imas_codex  # With coverage
 ```
+
+Project `addopts` intentionally leaves quiet mode unset so every test run emits
+its completion totals. Do not add `-q` to documented commands: quiet flags
+accumulate across configuration, wrappers, and command lines, and a second level
+suppresses the final totals line that proves the result is complete.
 
 ### Use the repo's one `.venv` — sync it, never duplicate it
 
@@ -226,7 +232,7 @@ in `~/.agents/AGENTS.md`. The repo-specific facts:
 
   ```bash
   UV_PROJECT_ENVIRONMENT=/home/ITER/mcintos/Code/imas-codex/.venv \
-    PYTHONPATH="$PWD" uv run --no-sync pytest tests/standard_names/ -q
+    PYTHONPATH="$PWD" uv run --no-sync pytest tests/standard_names/
   ```
 
 - A detached worktree also needs the main checkout's gitignored `.env` before
@@ -288,7 +294,8 @@ uv run pytest -m "slow or graph"     # Run slow + graph tests
 
 Test execution follows `~/.agents/AGENTS.md` Test Execution Protocol (no piping pytest, decision tree for direct/file/task-agent). Repo-specific facts:
 
-- Default `addopts`: `-q --tb=short --no-header` — full SN suite (~3300 tests, ~90s) is ~200-300 lines, manageable in one direct run.
+- Default `addopts`: `--tb=short --no-header --durations=10` — tracebacks and
+  headers stay compact while every run retains its final totals line.
 - Per-test timeout: 30s default (`@pytest.mark.timeout(60)` to override). `faulthandler_timeout = 60` dumps thread stacks on hangs.
 - `_start_exit_watchdog()` in `imas_codex/cli/shutdown.py` is only used in the signal-handler path (second Ctrl-C), not during normal `safe_asyncio_run()` completion — so `CliRunner.invoke()` test environments are safe.
 

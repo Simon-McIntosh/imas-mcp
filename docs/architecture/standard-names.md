@@ -1110,7 +1110,7 @@ uv run standard-names release -m "feat: ..."    # increment RC (NEVER tag manual
 
 cd ~/Code/imas-codex                            # bump the dep (appears twice)
 sed -i 's|@v0\.8\.0rc[0-9]\+|@v0.8.0rc<NN>|g' pyproject.toml
-uv sync && uv run pytest tests/standard_names/ -x -q
+uv sync && uv run pytest tests/standard_names/ -x
 git commit -am "deps: bump imas-standard-names to v0.8.0rc<NN>" && git push origin main
 ```
 
