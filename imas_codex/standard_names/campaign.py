@@ -722,7 +722,24 @@ def default_revalidate(
             """
             UNWIND $ids AS sid
             MATCH (sn:StandardName {id: sid})
-            WHERE coalesce(sn.validation_status, '') <> 'quarantined'
+            WHERE coalesce(sn.validation_status, '') = 'quarantined'
+            RETURN collect(sn.id) AS quarantined_ids
+            """,
+            ids=list(clean_ids),
+        )
+        quarantined_ids = sorted(
+            str(sid) for sid in (rows[0].get("quarantined_ids", []) if rows else [])
+        )
+        if quarantined_ids:
+            identities = ", ".join(quarantined_ids)
+            raise ValueError(
+                "cannot confirm quarantined standard-name identities as valid: "
+                f"{identities}"
+            )
+        rows = gc.query(
+            """
+            UNWIND $ids AS sid
+            MATCH (sn:StandardName {id: sid})
             SET sn.validation_status = 'valid',
                 sn.updated_at = datetime()
             RETURN count(sn) AS n
