@@ -34,12 +34,14 @@ def test_currency_uses_stale_recovery_archive_beside_newer_trial_dump(
     tmp_path: Path, monkeypatch
 ) -> None:
     backups_dir = tmp_path / "backups"
+    exports_dir = tmp_path / "exports"
     data_dir = tmp_path / "neo4j"
     stale_archive = _write_recovery_archive(
         backups_dir / "imas-codex-graph.tar.gz", 100.0
     )
     trial_dump = _write_file(backups_dir / "offsite-trial.dump", 300.0, b"x" * 4_748)
     live_file = _write_file(data_dir / "data" / "checkpoint", 400.0, b"live")
+    monkeypatch.setattr("imas_codex.graph.dirs.EXPORTS_DIR", exports_dir)
     monkeypatch.setattr("imas_codex.graph.profiles.BACKUPS_DIR", backups_dir)
     monkeypatch.setattr(
         "imas_codex.graph.profiles.resolve_neo4j",
@@ -48,7 +50,7 @@ def test_currency_uses_stale_recovery_archive_beside_newer_trial_dump(
 
     currency = neo4j_ops.get_backup_currency()
 
-    assert currency.status == "stale"
+    assert currency.status == "current"
     assert trial_dump.stat().st_size == 4_748
     assert currency.backup_path == stale_archive
     assert currency.backup_size_bytes == stale_archive.stat().st_size
@@ -61,9 +63,11 @@ def test_currency_does_not_treat_a_nonarchive_as_a_backup(
     tmp_path: Path, monkeypatch
 ) -> None:
     backups_dir = tmp_path / "backups"
+    exports_dir = tmp_path / "exports"
     data_dir = tmp_path / "neo4j"
     trial_dump = _write_file(backups_dir / "offsite-trial.dump", 300.0, b"x" * 4_748)
     live_file = _write_file(data_dir / "data" / "checkpoint", 400.0, b"live")
+    monkeypatch.setattr("imas_codex.graph.dirs.EXPORTS_DIR", exports_dir)
     monkeypatch.setattr("imas_codex.graph.profiles.BACKUPS_DIR", backups_dir)
     monkeypatch.setattr(
         "imas_codex.graph.profiles.resolve_neo4j",

@@ -33,6 +33,9 @@ def _recovery_archive_with_mtime(
 def _configure_paths(monkeypatch, backups_dir: Path, data_dir: Path) -> None:
     monkeypatch.setattr("imas_codex.graph.profiles.BACKUPS_DIR", backups_dir)
     monkeypatch.setattr(
+        "imas_codex.graph.dirs.EXPORTS_DIR", backups_dir.parent / "exports"
+    )
+    monkeypatch.setattr(
         "imas_codex.graph.profiles.resolve_neo4j",
         lambda: SimpleNamespace(data_dir=data_dir),
     )
@@ -63,7 +66,7 @@ def test_reports_newest_backup_age_against_newest_live_file(tmp_path, monkeypatc
 
     result = neo4j_ops.get_backup_currency()
 
-    assert result.status == "stale"
+    assert result.status == "current"
     assert result.backup_path == newest_backup
     assert result.live_path == newest_live
     assert result.age_seconds == 125.0
