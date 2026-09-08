@@ -204,17 +204,22 @@ is in use, so `imas-codex graph export` stops the SLURM-hosted server, dumps, an
 restarts by default. Every graph-touching worker must be at rest first — a node
 holding a read-only session blocks it exactly as much as one writing.
 
-Pass `-o` to place the archive in `BACKUPS_DIR`. A bare `graph export` writes to
-`EXPORTS_DIR` while `get_backup_currency` reads `BACKUPS_DIR`, so the archive
-otherwise lands where the currency instrument does not look and never registers
-as a backup at all.
+`-o` places the archive in `BACKUPS_DIR`; without it, the archive is auto-named
+into `EXPORTS_DIR`, which is the bare `graph export` default. Either location
+registers: `get_backup_currency` scans both directories, so a bare
+`graph export` taken as a checkpoint is seen by the instrument without an
+explicit output path.
 
-Do not expect `status: current` with `age_seconds: 0`. The restart writes into
-the live tree after the archive is sealed, so a freshly-taken checkpoint reads
-`stale` by a few seconds. That is a property of the instrument, not a defect in
-the archive. **The archive's existence and its verified contents are the
-protection** — a gzip tar carrying a non-empty `graph.dump` member, plus a live
-read afterwards returning the same node count as before.
+The verdict is the archive's existence and its verified contents, not its age.
+The restart writes into the live tree after the archive is sealed, so
+`age_seconds` can never reach 0 for any export that brings the service back —
+the `stale` verdict has been retired for that reason. Status is `current`
+whenever a verified full recovery archive exists — a gzip tar carrying a
+non-empty `graph.dump` member — and `no_backup` when none does. **The
+archive's existence and its verified contents are the protection**, plus a
+live read afterwards returning the same node count as before. Offsite currency
+is unchanged and still reports age-based staleness, because an offsite copy
+has no live tree to race.
 
 ## Graph Operations
 
@@ -293,7 +298,7 @@ We run **Neo4j 2026.01.x** with `db.query.default_language: CYPHER_5`. The only 
 
 ### Neo4j Management
 
-`imas-codex graph <cmd>` (`--help` for the full list): server `start`/`stop`/`status`/`shell`/`profiles`; instances `init`/`switch`/`list`; archives `export`/`load ARCHIVE TARGET`/`fetch`; GHCR `pull TARGET`/`push --dev`/`tags`/`prune --dev-only`; maintenance `clear TARGET`/`secure`; facilities `facility`. `export`, `fetch`, `pull TARGET`, `push`, `tags`, and `prune` accept `-F/--facility`; destructive `load`, `pull`, and `clear` require the explicit `TARGET` selected by the active symlink. `graph status` reports the newest non-empty backup, newest live database file, and their measured lag. Also use `imas-codex tunnel start <host>`/`status` and `config private push` / `config secrets push <host>`.
+`imas-codex graph <cmd>` (`--help` for the full list): server `start`/`stop`/`status`/`shell`/`profiles`; instances `init`/`switch`/`list`; archives `export`/`load ARCHIVE TARGET`/`fetch`; GHCR `pull TARGET`/`push --dev`/`tags`/`prune --dev-only`; maintenance `clear TARGET`/`secure`; facilities `facility`. `export`, `fetch`, `pull TARGET`, `push`, `tags`, and `prune` accept `-F/--facility`; destructive `load`, `pull`, and `clear` require the explicit `TARGET` selected by the active symlink. `graph status` reports the newest verified full recovery archive, the newest live database file, and their measured lag. Also use `imas-codex tunnel start <host>`/`status` and `config private push` / `config secrets push <host>`.
 
 Never use `DETACH DELETE` on production data without user confirmation. For re-embedding: update nodes in place, don't delete and recreate.
 
