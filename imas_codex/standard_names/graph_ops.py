@@ -16345,8 +16345,9 @@ def persist_reviewed_name(
     1. Verify ``claim_token`` matches the stored token.
     2. Compute target stage:
        - ``'accepted'`` if ``score >= min_score`` (score-canonical)
-       - ``'exhausted'`` if ``refine_attempts >= rotation_cap`` and score below
-         min_score (every rotation spent, including the escalated final one)
+       - ``'exhausted'`` if a positive ``refine_attempts`` count has reached
+         ``rotation_cap`` and the score is below min_score (every rotation
+         spent, including the escalated final one)
        - ``'reviewed'`` otherwise (eligible for refine_name pickup; the last
          remaining rotation routes through the escalation seat in
          process_refine_name_batch)
@@ -16420,6 +16421,7 @@ def persist_reviewed_name(
             RETURN coalesce(sn.chain_length, 0) AS chain_length,
                    coalesce(sn.refine_attempts, coalesce(sn.chain_length, 0))
                        AS refine_attempts,
+                   sn.refine_attempts IS NOT NULL AS refine_attempts_recorded,
                    sn.validation_status AS validation_status,
                    sn.edit_status AS edit_status,
                    sn.edit_scope AS edit_scope,
@@ -16443,6 +16445,12 @@ def persist_reviewed_name(
 
     chain_length: int = int(rows[0]["chain_length"])
     refine_attempts: int = int(rows[0].get("refine_attempts") or chain_length)
+    # Lightweight stage-decision fixtures written before the durable counter
+    # may omit this projection. Real Neo4j rows always carry it, including
+    # ``False`` for a missing property.
+    attempt_state_known = "refine_attempts_recorded" in rows[0]
+    refine_attempts_recorded = bool(rows[0].get("refine_attempts_recorded", True))
+    has_refine_attempt = refine_attempts_recorded and refine_attempts > 0
     edit_status_before: str | None = rows[0].get("edit_status")
     edit_scope_before: str | None = rows[0].get("edit_scope")
     edit_mode_before: str | None = rows[0].get("edit_mode")
@@ -16472,12 +16480,14 @@ def persist_reviewed_name(
     # persisted chain: rotations charged on attempts that never produced a
     # successor are exactly the ones a lineage-depth test cannot see, and a
     # name below threshold with no rotations left is terminal — leaving it at
-    # 'reviewed' would advertise a refinement that can never be claimed.  A
-    # name still holding budget stays 'reviewed'; its last rotation routes
-    # through the escalation seat in process_refine_name_batch.
+    # 'reviewed' would advertise a refinement that can never be claimed. A
+    # missing or zero attempt counter proves no refinement has yet been spent,
+    # so it cannot establish exhaustion even when a caller supplies a zero
+    # cap. A name still holding budget stays 'reviewed'; its last rotation
+    # routes through the escalation seat in process_refine_name_batch.
     if score >= min_score:
         target_stage = "accepted"
-    elif refine_attempts >= rotation_cap:
+    elif has_refine_attempt and refine_attempts >= rotation_cap:
         target_stage = "exhausted"
     else:
         target_stage = "reviewed"
@@ -16537,7 +16547,11 @@ def persist_reviewed_name(
         except Exception as exc:
             grammar_valid = False
             grammar_issue = f"[strict_grammar] {str(exc)[:240]}"
-            target_stage = "exhausted"
+            target_stage = (
+                "exhausted"
+                if has_refine_attempt or not attempt_state_known
+                else "reviewed"
+            )
             logger.warning(
                 "persist_reviewed_name: quarantining grammar-invalid name %s: %s",
                 sn_id,
@@ -23644,10 +23658,11 @@ def stop_refine_name_attempt(
     report what the last one hit and a parked name can be enumerated by cause.
 
     The resulting stage is decided from committed state inside the write:
-    ``'exhausted'`` when the reason proves no further attempt can succeed or
-    when the charged budget is spent, otherwise ``'reviewed'`` so the remaining
-    rotations stay available. Exhaustion closes an open name-steering edit,
-    mirroring the acceptance path.
+    ``'exhausted'`` when at least one attempt was charged and either the reason
+    proves no further attempt can succeed or the charged budget is spent;
+    otherwise ``'reviewed'`` so the first or remaining rotation stays
+    available. Exhaustion closes an open name-steering edit, mirroring the
+    acceptance path.
 
     Fenced on the claim token and the ``'refining'`` stage. Returns the stage
     written, or ``''`` when the fence did not match (an orphan sweep or another
@@ -23661,8 +23676,9 @@ def stop_refine_name_attempt(
             WHERE sn.claim_token = $token
               AND sn.name_stage = 'refining'
             WITH sn, CASE
-                   WHEN $terminal
-                     OR coalesce(sn.refine_attempts, 0) >= $rotation_cap
+                   WHEN coalesce(sn.refine_attempts, 0) > 0
+                    AND ($terminal
+                     OR coalesce(sn.refine_attempts, 0) >= $rotation_cap)
                    THEN 'exhausted' ELSE 'reviewed' END AS target_stage
             SET sn.updated_at = datetime(), sn.name_stage = target_stage,
                 sn.validation_status = CASE
