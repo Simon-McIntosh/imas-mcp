@@ -83,6 +83,11 @@ warmup.start()
 
 logger = logging.getLogger(__name__)
 
+# One million characters remains below the client's 16 MB transport guard even
+# when every non-BMP character expands to a 12-byte JSON surrogate pair.
+# This cap protects the transport; it is not a readability limit.
+_REPL_OUTPUT_MAX_CHARS = 1_000_000
+
 # Configure ruamel.yaml for comment-preserving round-trips
 _yaml = YAML()
 _yaml.preserve_quotes = True
@@ -99,6 +104,26 @@ _GOVERNED_STANDARD_NAME_SCHEMA_IDS = frozenset(
         "https://imas.iter.org/schemas/standard_name",
     }
 )
+
+
+def _bound_repl_output(output: str) -> str:
+    """Return REPL text within the transport budget, with exact loss counts."""
+    produced_chars = len(output)
+    if produced_chars <= _REPL_OUTPUT_MAX_CHARS:
+        return output
+
+    dropped_chars = produced_chars
+    while True:
+        notice = (
+            "\n\n[repl output truncated: "
+            f"produced {produced_chars} characters; "
+            f"dropped {dropped_chars} characters]"
+        )
+        retained_chars = _REPL_OUTPUT_MAX_CHARS - len(notice)
+        exact_dropped_chars = produced_chars - retained_chars
+        if exact_dropped_chars == dropped_chars:
+            return output[:retained_chars] + notice
+        dropped_chars = exact_dropped_chars
 
 
 def _refuse_governed_standard_name_write(schema: Any, node_type: str) -> None:
@@ -1980,13 +2005,13 @@ class AgentsServer:
                     output = stdout_capture.getvalue()
                     if not output:
                         output = "(no output)"
-                    return output
+                    return _bound_repl_output(output)
 
                 except Exception as e:
                     import traceback
 
                     tb = traceback.format_exc()
-                    return f"Error: {e}\n\n{tb}"
+                    return _bound_repl_output(f"Error: {e}\n\n{tb}")
 
         # =====================================================================
         # Tool 2: get_graph_schema - Schema introspection (REPL companion)
