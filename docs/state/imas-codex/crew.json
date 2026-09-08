@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T21:46:47",
+  "updated": "2026-09-08T22:08:55",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -4534,9 +4534,11 @@
         "id": "s10b-export",
         "harness": "codex-terra",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "01a08287-cd7b-7372-8865-9d5263ecb100",
+        "session_model": "gpt-5.6-terra",
+        "sessions": {
+          "{\"alias\":\"terra5.6\",\"backend\":\"codex-terra\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-terra\",\"sandbox\":\"worktree-full\"}": "01a08287-cd7b-7372-8865-9d5263ecb100"
+        },
         "created": "2026-09-08"
       },
       {
@@ -4554,9 +4556,11 @@
         "id": "s10b-importguard",
         "harness": "codex",
         "role": "test",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "01a08288-87ed-73d1-98d3-bc41603f870f",
+        "session_model": "gpt-5.6-sol",
+        "sessions": {
+          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a08288-87ed-73d1-98d3-bc41603f870f"
+        },
         "created": "2026-09-08"
       },
       {
@@ -110931,6 +110935,317 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T193845843676-n-sli-export-refuses-null-status",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a72",
+        "node": "n-sli-export-refuses-null-status",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1208,
+                "cached_input_tokens": 320595,
+                "input_tokens": 321805,
+                "output_tokens": 1137,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 322942,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "a test in tests/standard_names/test_export_sidecar_surface.py fails when the refusal is removed from export.py, the refusal names every offending standard name in its message, and pytest tests/standard_names/test_export_sidecar_surface.py tests/standard_names/test_export_divergence_report.py reports zero failures added against the same command at the base revision",
+          "estimated_hours": null,
+          "goal": "Make the sidecar export refuse a candidate carrying a name whose graph status is absent, instead of substituting active for it",
+          "id": "n-sli-export-refuses-null-status",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T193845843676-n-sli-export-refuses-null-status/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a72",
+          "spec_level": "guided",
+          "time_budget": "40m",
+          "write_paths": [
+            "imas_codex/standard_names/export.py",
+            "tests/standard_names/test_export_sidecar_surface.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-export",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T19:38:52Z",
+        "completed_at": "2026-09-08T19:47:16Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 504,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 504,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "4a4a62a1cd0b6277d0d7f274f55dd5d2525d61e1",
+        "commits": [
+          "ef03d71a7714f61d02bb0d448aeb3677b5a88ec6"
+        ],
+        "changed_lines": {
+          "added": 86,
+          "removed": 3,
+          "files": 2
+        },
+        "tests_added": 1,
+        "gate": "passed",
+        "gate_check": {
+          "command": "uv run --no-sync pytest tests/standard_names/test_export_sidecar_surface.py tests/standard_names/test_export_divergence_report.py -p no:cacheprovider",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T193845843676-n-sli-export-refuses-null-status/after-suite.xml",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T193845843676-n-sli-export-refuses-null-status/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a08287-cd7b-7372-8865-9d5263ecb100",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 4313856,
+            "cached_input_tokens_cumulative": 4313856,
+            "input_tokens": 4481817,
+            "input_tokens_cumulative": 4481817,
+            "output_tokens": 17391,
+            "output_tokens_cumulative": 17391,
+            "reasoning_output_tokens": 6405,
+            "reasoning_output_tokens_cumulative": 6405
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T19:47:16Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 53.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T19:47:16Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 4313856,
+          "cumulative_input_tokens": 8795673,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 23796
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names/test_export_sidecar_surface.py",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-sli-export-refuses-null-status",
+          "session_id": "01a08287-cd7b-7372-8865-9d5263ecb100",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T19:47:16Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T193933403018-n-sli-import-guard-counterfactual",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a74",
+        "node": "n-sli-import-guard-counterfactual",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1416,
+                "cached_input_tokens": 325416,
+                "input_tokens": 326834,
+                "output_tokens": 398,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 327232,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "/home/ITER/mcintos/.config/reckon/crew/reports/imas-codex-import-guard-counterfactual.md records the baseline run of pytest tests/standard_names/test_import_write_authority.py with its pass and fail counts, the same command run with the guard removed from the import write path, and the named tests that fail in that second run; a second run in which no test fails is recorded as the guard being absent rather than as a pass",
+          "estimated_hours": null,
+          "goal": "Establish by counterfactual whether the existing import write-authority test actually fails when the guard is removed",
+          "id": "n-sli-import-guard-counterfactual",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T193933403018-n-sli-import-guard-counterfactual/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requested_backend": "codex",
+          "requires_decisions": [],
+          "role": "test",
+          "section": "\u00a74",
+          "spec_level": "exact",
+          "time_budget": "20m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/imas-codex-import-guard-counterfactual.md"
+          ]
+        },
+        "role": "test",
+        "spec_level": "exact",
+        "member": "s10b-importguard",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T19:39:40Z",
+        "completed_at": "2026-09-08T19:50:03Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 623,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 623,
+        "stalled": false,
+        "time_budget": "20m",
+        "base_sha": "4a4a62a1cd0b6277d0d7f274f55dd5d2525d61e1",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "env -u VIRTUAL_ENV uv run --no-sync pytest -p no:cacheprovider tests/standard_names/test_import_write_authority.py, then the same test with the allow-list removed in memory",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T193933403018-n-sli-import-guard-counterfactual/counterfactual.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T193933403018-n-sli-import-guard-counterfactual/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a08288-87ed-73d1-98d3-bc41603f870f",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 2296448,
+            "cached_input_tokens_cumulative": 2296448,
+            "input_tokens": 2416191,
+            "input_tokens_cumulative": 2416191,
+            "output_tokens": 15382,
+            "output_tokens_cumulative": 15382,
+            "reasoning_output_tokens": 7332,
+            "reasoning_output_tokens_cumulative": 7332
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-08T19:50:03Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 53.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-08T19:50:03Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 2296448,
+          "cumulative_input_tokens": 4712639,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 22714
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names/test_import_write_authority.py",
+          "override": false,
+          "role": "test",
+          "status": "compatible"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": "a counterfactual verification whose whole deliverable is the report outside the repository; the guard and its test already existed at d606bf092 and were deliberately not modified",
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-sli-import-guard-counterfactual",
+          "session_id": "01a08288-87ed-73d1-98d3-bc41603f870f",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T19:50:03Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -111187,6 +111502,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2021
+    "_version": 2025
   }
 }
