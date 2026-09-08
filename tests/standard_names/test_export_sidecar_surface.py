@@ -9,6 +9,7 @@ compatibility gate moves off the first manifest shape stamp in step.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock, patch
@@ -20,8 +21,10 @@ from imas_codex.standard_names.export import (
     _ENTRY_REVIEW_FIELDS,
     _SIDECAR_NAME_FIELDS,
     CATALOG_EDGE_MODEL_VERSION,
+    GATE_CATALOG_STATUS,
     _write_domain_yaml,
     _write_manifest,
+    run_export,
 )
 from imas_codex.standard_names.publish import run_publish
 
@@ -72,6 +75,19 @@ _COHORT: list[dict[str, Any]] = [
 ]
 
 
+class _EmptyGraphClient:
+    """Graph double for the post-gate export path."""
+
+    def __enter__(self) -> _EmptyGraphClient:
+        return self
+
+    def __exit__(self, *exc: object) -> bool:
+        return False
+
+    def query(self, cypher: str, **params: Any) -> list[dict[str, Any]]:
+        return []
+
+
 def _export(tmp_path: Path) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Write one domain file plus the manifest and return both, parsed."""
     metadata: dict[str, dict[str, Any]] = {}
@@ -97,6 +113,75 @@ def _export(tmp_path: Path) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     entries = yaml.safe_load(written.read_text(encoding="utf-8"))
     manifest = yaml.safe_load((tmp_path / "catalog.yml").read_text(encoding="utf-8"))
     return entries, manifest
+
+
+def test_missing_graph_status_refuses_sidecar_export(tmp_path: Path) -> None:
+    """An incomplete graph projection cannot become an active sidecar entry."""
+    population = [
+        {
+            **entry,
+            "id": entry["name"],
+            "name_stage": "accepted",
+            "validation_status": "valid",
+            "review_quorum_shortfall": None,
+            "docs_stage": "accepted",
+            "docs_review_quorum_shortfall": None,
+            "_has_docs_review": True,
+            "_has_winning_docs_review": True,
+            "reviewer_score_name": 0.95,
+        }
+        for entry in (
+            {**_COHORT[0]},
+            {**_COHORT[1]},
+            {**_COHORT[1], "name": "plasma_density"},
+        )
+    ]
+    population[1].pop("status")
+    population[2].pop("status")
+
+    with (
+        patch(
+            "imas_codex.standard_names.export._fetch_export_population",
+            return_value=population,
+        ),
+        patch(
+            "imas_codex.graph.client.GraphClient",
+            return_value=_EmptyGraphClient(),
+        ),
+        patch(
+            "imas_codex.standard_names.export._fetch_ordering_edges_for_domain",
+            return_value=([], set()),
+        ),
+        patch(
+            "imas_codex.standard_names.export._get_codex_commit_sha",
+            return_value="a" * 40,
+        ),
+        patch(
+            "imas_codex.standard_names.export._manifest_iso_timestamp",
+            return_value="2026-09-08T00:00:00Z",
+        ),
+    ):
+        report = run_export(
+            tmp_path,
+            skip_gate=True,
+            force=True,
+            include_sources=False,
+        )
+
+    persisted = json.loads(
+        (tmp_path / ".export_report.json").read_text(encoding="utf-8")
+    )
+    status_gate = next(
+        gate for gate in persisted["gates"] if gate["gate"] == GATE_CATALOG_STATUS
+    )
+
+    assert not report.all_gates_passed
+    assert [issue["name"] for issue in status_gate["issues"]] == [
+        "ion_temperature",
+        "plasma_density",
+    ]
+    assert not (tmp_path / "catalog.yml").exists()
+    assert not (tmp_path / "standard_names").exists()
 
 
 class TestEntryKeepsOnlyTheReviewableFields:
