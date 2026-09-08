@@ -40,7 +40,9 @@ def _tombstone_state(
 class _RevivingTransaction(_Transaction):
     """Mirrors the production ``ATOMIC_FOLD_MUTATE_NAMES`` write exactly,
     including the ``target_revived_stage`` parameter the shared stateful
-    mock in :mod:`test_tombstone_supersede` predates and does not apply."""
+    mock in :mod:`test_tombstone_supersede` predates and does not apply. The
+    participant timestamps remain part of the exact postflight receipt even
+    when the target returns from a tombstone."""
 
     def run(self, cypher: str, **params: Any) -> list[dict[str, Any]]:
         if "ATOMIC_FOLD_MUTATE_NAMES" in cypher:
@@ -55,12 +57,14 @@ class _RevivingTransaction(_Transaction):
                 return []
             old["superseded_from_stage"] = params["predecessor_stage"]
             old["name_stage"] = "superseded"
+            old["updated_at"] = params["changed_at"]
             old.pop("claim_token", None)
             old.pop("claimed_at", None)
             old["source_paths"] = []
             if old.get("edit_status") == "open":
                 old["edit_status"] = "applied"
             target["source_paths"] = list(params["target_paths"])
+            target["updated_at"] = params["changed_at"]
             if params.get("target_revived_stage") is not None:
                 target["name_stage"] = params["target_revived_stage"]
             lineage = (params["into_id"], params["old_id"])
