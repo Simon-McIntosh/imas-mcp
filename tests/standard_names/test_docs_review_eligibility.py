@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+import yaml
 
 from imas_codex.cli.sn import _compute_pool_progress
 from imas_codex.standard_names import graph_ops
@@ -34,29 +36,25 @@ class _Graph:
 def _assert_shared_eligibility(cypher: str, params: dict) -> None:
     assert graph_ops.docs_review_eligibility_where() in cypher
     assert "docs_review_resolution_method IS NOT NULL" not in cypher
-    assert params["docs_review_winning_methods"] == [
-        "authoritative_escalation",
-        "quorum_consensus",
-        "single_review",
-    ]
-    assert params["docs_review_non_winning_methods"] == [
-        "max_cycles_reached",
-        "retry_item",
-    ]
+    expected = graph_ops.docs_review_eligibility_params()
+    assert {key: params[key] for key in expected} == expected
+    assert "semantic_similarity_gate" in params["docs_review_non_winning_methods"]
+
+
+def _schema_resolution_methods() -> set[str]:
+    schema_path = Path(graph_ops.__file__).parents[1] / "schemas" / "standard_name.yaml"
+    schema = yaml.safe_load(schema_path.read_text(encoding="utf-8"))
+    return set(schema["enums"]["ReviewResolutionMethod"]["permissible_values"])
 
 
 def test_winning_methods_are_derived_from_schema() -> None:
     params = graph_ops.docs_review_eligibility_params()
 
-    assert set(params["docs_review_winning_methods"]) | set(
-        params["docs_review_non_winning_methods"]
-    ) == {
-        "authoritative_escalation",
-        "max_cycles_reached",
-        "quorum_consensus",
-        "retry_item",
-        "single_review",
-    }
+    assert (
+        set(params["docs_review_winning_methods"])
+        | set(params["docs_review_non_winning_methods"])
+        == _schema_resolution_methods()
+    )
     assert set(params["docs_review_winning_methods"]).isdisjoint(
         params["docs_review_non_winning_methods"]
     )
