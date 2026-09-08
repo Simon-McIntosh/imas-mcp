@@ -487,9 +487,16 @@ def check_graph_exists(data_dir: Path | None = None) -> bool:
 
 @dataclass(frozen=True, slots=True)
 class BackupCurrency:
-    """Measured lag between the newest restorable backup and live graph data."""
+    """Whether a verified full recovery archive exists beside live graph data.
 
-    status: Literal["current", "stale", "no_backup"]
+    The status is the archive's existence and verified contents, not a
+    measured age: an export that brings the service back is sealed before the
+    restart writes into the live tree, so an age comparison can never reach
+    zero and would report every real checkpoint stale. ``age_seconds`` is
+    carried for information only.
+    """
+
+    status: Literal["current", "no_backup"]
     backup_path: Path | None
     backup_modified_at: datetime | None
     live_path: Path | None
@@ -528,11 +535,13 @@ def _is_full_recovery_archive(path: Path) -> bool:
 
 
 def _newest_recovery_archive(
-    backup_dir: Path,
+    search_dirs: tuple[Path, ...],
 ) -> tuple[Path | None, int | None, datetime | None]:
     candidates: list[tuple[float, Path, int]] = []
-    if backup_dir.exists():
-        for path in backup_dir.rglob("*"):
+    for search_dir in search_dirs:
+        if not search_dir.exists():
+            continue
+        for path in search_dir.rglob("*"):
             if not path.is_file() or not _is_full_recovery_archive(path):
                 continue
             try:
@@ -592,11 +601,19 @@ def _newest_live_file() -> tuple[Path | None, datetime | None]:
 
 
 def get_backup_currency() -> BackupCurrency:
-    """Measure how far the newest full recovery archive trails live graph data."""
+    """Report whether a verified full recovery archive exists.
+
+    A recovery archive is a gzip tar carrying a non-empty ``graph.dump``
+    member, located beneath the explicit backup directory or the directory a
+    bare ``graph export`` writes into. Scanning both means an archive taken
+    without an explicit ``-o`` still registers. The verdict is the archive's
+    existence and verified contents, not its age.
+    """
+    from imas_codex.graph.dirs import EXPORTS_DIR
     from imas_codex.graph.profiles import BACKUPS_DIR
 
     backup_path, backup_size_bytes, backup_modified_at = _newest_recovery_archive(
-        BACKUPS_DIR
+        (BACKUPS_DIR, EXPORTS_DIR)
     )
     live_path, live_modified_at = _newest_live_file()
 
@@ -617,7 +634,7 @@ def get_backup_currency() -> BackupCurrency:
         else 0.0
     )
     return BackupCurrency(
-        status="stale" if age_seconds > 0 else "current",
+        status="current",
         backup_path=backup_path,
         backup_modified_at=backup_modified_at,
         live_path=live_path,
