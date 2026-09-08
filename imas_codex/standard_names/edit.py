@@ -813,7 +813,9 @@ def _fetch_target(gc: GraphClient, sn_id: str) -> dict[str, Any] | None:
                  MATCH (src:StandardNameSource)-[:PRODUCED_NAME]->(sn)
                  WHERE coalesce(src.source_type, '') <> 'derived'
                    AND coalesce(src.status, '') IN $live_source_statuses
-               } AS has_live_source
+               } AS has_live_source,
+               [(src:StandardNameSource)-[:PRODUCED_NAME]->(sn) | src.id]
+                 AS producing_source_ids
         """,
         live_source_statuses=sorted(_LIVE_SOURCE_STATUSES),
         id=sn_id,
@@ -1822,6 +1824,134 @@ def _derive_rename_unit(
             f"unit authority: {units}"
         )
     return authorities[0][1]
+
+
+def _producing_source_ids(target_row: dict[str, Any]) -> list[str]:
+    """The source ids ``PRODUCED_NAME`` binds to a fetched target.
+
+    The cohort travels on the target fetch rather than on a read of its own,
+    because that fetch is the one observation taken before any write — the
+    rename empties the predecessor's side, so a later read cannot recover what
+    it held. The edge is the source of truth for what produced a standard
+    name; the ``produced_sn_id`` scalar mirrors it and is not consulted, since
+    a mirror that has drifted is part of what the comparison exists to expose.
+    """
+    return sorted(
+        {
+            str(source_id)
+            for source_id in target_row.get("producing_source_ids") or ()
+            if source_id
+        }
+    )
+
+
+#: Marked readback of what ``PRODUCED_NAME`` binds to one name right now.
+#: Used only after the rename has written, to compare the successor's holdings
+#: against the cohort the target fetch recorded.
+_BOUND_SOURCES_QUERY = """
+// EDIT_FETCH_BOUND_SOURCE_IDS
+MATCH (source:StandardNameSource)-[:PRODUCED_NAME]->(sn:StandardName {id: $id})
+RETURN source.id AS source_id
+"""
+
+
+def _bound_source_ids(gc: GraphClient, sn_id: str) -> list[str]:
+    """The source ids bound to ``sn_id`` by ``PRODUCED_NAME`` at read time."""
+    rows = gc.query(_BOUND_SOURCES_QUERY, id=sn_id)
+    return sorted({row["source_id"] for row in rows if row.get("source_id")})
+
+
+def _carry_rename_sources(
+    gc: GraphClient,
+    *,
+    old_name: str,
+    new_name: str,
+    expected_source_ids: list[str],
+    reason: str,
+    origin: str,
+    run_id: str,
+) -> str:
+    """Prove the successor of a rename holds the predecessor's producers.
+
+    A rename moves an identity, and the sources that produced the old
+    spelling produce the new one — the quantity did not change, only what it
+    is called. When that carriage does not happen the failure is silent in
+    the worst possible way: the export excludes an unsourced name at the
+    population boundary, so the data-dictionary paths it backs resolve to no
+    standard name while the batch accounting still closes at zero residue.
+    Nothing in the receipt says the quantity left the batch.
+
+    So the rename asserts the postcondition instead of assuming it. Any
+    predecessor binding the successor does not hold is carried with
+    :func:`retarget_standard_name_sources` — the one sanctioned mechanism,
+    which moves the edge, its scalar mirror, the upstream
+    ``HAS_STANDARD_NAME`` projection and both names' ``source_paths`` under a
+    compare-and-set. A binding is never written by hand: the edge is the
+    source of truth and the scalar is derived from it, which is how the
+    mirror rotted the last time the two were written independently.
+
+    A shortfall that survives the carry raises, because a rename that
+    reports success while a data-dictionary path produces no standard name is
+    worse than one that refuses: the refusal is repairable and the silent
+    success is only found by an export weeks later. Dual binding raises for
+    the same reason in the other direction — one source feeding two live
+    names is its own defect, so the predecessor must claim none of them.
+
+    Returns the receipt line describing what was carried.
+    """
+    if not expected_source_ids:
+        return f"no producing source bound to {old_name!r} — nothing to carry"
+
+    held = set(_bound_source_ids(gc, new_name))
+    stranded = [source_id for source_id in expected_source_ids if source_id not in held]
+    carried = 0
+    if stranded:
+        from imas_codex.standard_names.provenance_lifecycle import (
+            retarget_standard_name_sources,
+        )
+
+        still_on_predecessor = set(_bound_source_ids(gc, old_name))
+        movable = sorted(
+            source_id for source_id in stranded if source_id in still_on_predecessor
+        )
+        if movable:
+            carried = retarget_standard_name_sources(
+                gc,
+                old_name,
+                new_name,
+                operation="human_edit",
+                reason=reason,
+                origin=origin,
+                run_id=run_id,
+                record_change=False,
+                source_ids=movable,
+                expected_current_bindings=dict.fromkeys(movable, old_name),
+            )
+
+    held = set(_bound_source_ids(gc, new_name))
+    missing = [source_id for source_id in expected_source_ids if source_id not in held]
+    if missing:
+        raise RuntimeError(
+            f"rename left {len(missing)} of {len(expected_source_ids)} producing "
+            f"source(s) off {new_name!r}: {', '.join(missing)} — the "
+            "data-dictionary path(s) they back now produce no standard name"
+        )
+    retained = [
+        source_id
+        for source_id in _bound_source_ids(gc, old_name)
+        if source_id in set(expected_source_ids)
+    ]
+    if retained:
+        raise RuntimeError(
+            f"rename left {len(retained)} source(s) bound to both {old_name!r} "
+            f"and {new_name!r}: {', '.join(retained)}"
+        )
+    if carried:
+        return (
+            f"carried {len(expected_source_ids)} producing source(s) to "
+            f"{new_name!r} ({carried} by explicit migration)"
+        )
+    return f"verified {len(expected_source_ids)} producing source(s) on {new_name!r}"
 
 
 def _fold_target_paths(
@@ -3087,7 +3217,16 @@ def _apply_rename(
 
     successor_unit = _derive_rename_unit(gc, refine_root_old, root_row.get("unit"))
 
+    # The cohort comes from the target fetch, taken before any write: the
+    # rename empties the predecessor's side, so that fetch is the only
+    # observation from which the expectation can be established.
+    producing_source_ids = _producing_source_ids(root_row)
+
     if dry_run:
+        actions.append(
+            f"[dry-run] would carry {len(producing_source_ids)} producing "
+            f"source(s) to {refine_root_new!r}"
+        )
         actions.append(
             f"[dry-run] would rename {refine_root_old!r} → {refine_root_new!r}"
             f" ({len(cascade_deferred)} descendant(s) would then await "
@@ -3155,6 +3294,18 @@ def _apply_rename(
     # persists a 0.0 review for quarantined names). No privileged path.
     successor_row = {**root_row, "unit": successor_unit}
     _stamp_successor_validation(gc, successor, successor_row)
+
+    actions.append(
+        _carry_rename_sources(
+            gc,
+            old_name=refine_root_old,
+            new_name=successor,
+            expected_source_ids=producing_source_ids,
+            reason=reason,
+            origin=origin,
+            run_id=run_id,
+        )
+    )
 
     actions.append(
         f"renamed {refine_root_old!r} → {successor!r}, entering name review "
