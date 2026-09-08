@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T03:43:52",
+  "updated": "2026-09-08T03:53:48",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -101388,6 +101388,158 @@
           "role": "implement",
           "status": "no-execution-measure"
         }
+      },
+      {
+        "run_id": "r-20260907T191046612205-n-swcr-the-cascade-reports-only-what-it-does",
+        "plan": "sn-west-catalog-release",
+        "section": "release-run-residues",
+        "node": "n-swcr-the-cascade-reports-only-what-it-does",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 669,
+                "cached_input_tokens": 306609,
+                "input_tokens": 307280,
+                "output_tokens": 1369,
+                "reasoning_output_tokens": 1051,
+                "total_tokens": 308649,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "00e23ab0-9843-4cbd-ac02-884e9e22e668",
+            "session_id": "ship-s10-20260907"
+          },
+          "done_when": "A subtree rename whose root does not reach accepted reports its descendants as awaiting the root's acceptance rather than as planned work, and a rename whose root does reach accepted still reports and persists them exactly as it does today. cascade.py holds the surface: rename_cascade at imas_codex/standard_names/cascade.py:865, _walk_and_resolve_cascade at :518, _apply_descendant_cascade_atomically at :462. The measured case: emissivity_due_to_fusion sat exhausted at 0.825, so deuterium_deuterium_emissivity_due_to_fusion and deuterium_tritium_emissivity_due_to_fusion were reported as planned and were never changed. Do NOT make the cascade persist descendants of an unaccepted root \u2014 the fix is that the report matches what happens, not that more happens. Proven by tests in tests/standard_names/test_cascade_descendant_reporting.py covering both an unaccepted and an accepted root, failing by name when reverted. Leave the unreachable-in-cascade plan-construction bug at :853 alone; it is a separate node. Report added failures against a stated base for tests/standard_names.",
+          "estimated_hours": null,
+          "goal": "Stop the rename cascade reporting a descendant rename as planned when it will not persist it",
+          "id": "n-swcr-the-cascade-reports-only-what-it-does",
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T191046612205-n-swcr-the-cascade-reports-only-what-it-does/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "release-run-residues",
+          "spec_level": "guided",
+          "time_budget": "45m",
+          "write_paths": [
+            "imas_codex/standard_names/cascade.py",
+            "tests/standard_names/test_cascade_descendant_reporting.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "clive-vocab",
+        "backend": "clive",
+        "local": true,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "local": true,
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-07T19:10:53Z",
+        "completed_at": "2026-09-08T01:50:41.450Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 23851,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 23988,
+        "stalled": true,
+        "time_budget": "45m",
+        "base_sha": "f98033b3be5365b29a1cd99800c4e4d6ff601f98",
+        "commits": [
+          "9bb07675258096496bf638f3489f84cea36efb5e"
+        ],
+        "changed_lines": {
+          "added": 268,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 8,
+        "gate": "passed",
+        "gate_check": {
+          "command": "uv run --no-sync pytest -p no:cacheprovider over six existing cascade/edit modules plus the new test_cascade_descendant_reporting.py",
+          "exit_status": 0,
+          "log_path": "docs/evidence/sn-west-catalog-release/cascade-contract-gate.md",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260907T191046612205-n-swcr-the-cascade-reports-only-what-it-does/manifest.md",
+        "scope_changed": true,
+        "session_id": "9ffab023-6ad1-4472-885f-8c28a521b547",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 9549554,
+            "input_tokens_cumulative": 9549554,
+            "output_tokens": 64173,
+            "output_tokens_cumulative": 64173,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 23985.087,
+          "generated_tokens": 64173,
+          "generation_seconds": 23270.681,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 18.0,
+          "machine_seconds": 714.406,
+          "peak_input_tokens": 183026,
+          "tokens_per_second": 2.76,
+          "wall_tokens_per_second": 2.68
+        },
+        "follow_on_paths": [
+          "cascade.py",
+          "tests/standard_names/test_rename_cascade.py::TestOldRootCascadeRecovery::test_records_change_and_refreshes_mirrors"
+        ],
+        "dispute_count": 0,
+        "attempt": 1,
+        "attempt_kind": "dispatch",
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260907/n-swcr-the-cascade-reports-only-what-it-does",
+          "session_id": "9ffab023-6ad1-4472-885f-8c28a521b547",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T01:50:41.450Z"
+        },
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        }
       }
     ],
     "holds": [
@@ -101630,6 +101782,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 1925
+    "_version": 1926
   }
 }
