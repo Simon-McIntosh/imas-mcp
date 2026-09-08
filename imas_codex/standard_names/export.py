@@ -532,7 +532,7 @@ def _fetch_candidates(
     if not names_only:
         params.update(docs_review_eligibility_params())
         cypher += (
-            "  // docs_stage is a projection and intentionally does not gate review evidence\n"
+            "  // sn.docs_stage = 'accepted' is an obsolete scalar gate; review evidence decides\n"
             f"  AND {docs_review_eligibility_where()}\n"
             "  AND sn.docs_review_quorum_shortfall IS NULL\n"
         )
