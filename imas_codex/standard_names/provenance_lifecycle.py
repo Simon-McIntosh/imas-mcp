@@ -93,13 +93,14 @@ def deletion_change_cypher(name_alias: str) -> str:
     return f"""
         CALL ({name_alias}) {{
           OPTIONAL MATCH ({name_alias})-[edge]-(neighbor)
-          RETURN collect(DISTINCT {{
-            relationship_type: type(edge),
-            direction: CASE WHEN startNode(edge) = {name_alias}
-                            THEN 'outgoing' ELSE 'incoming' END,
-            neighbor_id: coalesce(neighbor.id, elementId(neighbor)),
-            relationship_properties: properties(edge)
-          }}) AS deleted_edge_inventory
+          RETURN collect(DISTINCT CASE WHEN edge IS NULL THEN null ELSE {{
+              relationship_type: type(edge),
+              direction: CASE WHEN startNode(edge) = {name_alias}
+                              THEN 'outgoing' ELSE 'incoming' END,
+              neighbor_id: coalesce(neighbor.id, elementId(neighbor)),
+              neighbor_labels: labels(neighbor),
+              relationship_properties: properties(edge)
+            }} END) AS deleted_edge_inventory
         }}
         CREATE (change:StandardNameChange {{
           id: 'sn-change:' + randomUUID(),
@@ -110,10 +111,24 @@ def deletion_change_cypher(name_alias: str) -> str:
           origin: $deletion_origin,
           run_id: $deletion_run_id,
           changed_at: datetime(),
-          internal: true,
-          deleted_node_properties: toString(properties({name_alias})),
-          deleted_edge_inventory: toString(deleted_edge_inventory)
+          internal: true
         }})
+        CREATE (snapshot:StandardNameDeletionSnapshot)
+        SET snapshot = properties({name_alias}),
+            snapshot.original_id = {name_alias}.id,
+            snapshot.id = change.id + ':node',
+            snapshot.captured_at = datetime()
+        CREATE (change)-[:HAS_DELETION_SNAPSHOT]->(snapshot)
+        FOREACH (item IN deleted_edge_inventory |
+          CREATE (edge_snapshot:StandardNameDeletedEdge)
+          SET edge_snapshot = item.relationship_properties,
+              edge_snapshot.id = change.id + ':edge:' + randomUUID(),
+              edge_snapshot.relationship_type = item.relationship_type,
+              edge_snapshot.direction = item.direction,
+              edge_snapshot.neighbor_id = item.neighbor_id,
+              edge_snapshot.neighbor_labels = item.neighbor_labels
+          CREATE (snapshot)-[:HAS_EDGE_SNAPSHOT]->(edge_snapshot)
+        )
     """
 
 

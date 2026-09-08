@@ -60,8 +60,8 @@ def test_structural_delete_requires_placeholder_and_keeps_recovery_material() ->
 
     statement = gc.query.call_args_list[-1].args[0]
     assert "WHERE sn.needs_composition = true" in statement
-    assert "deleted_node_properties" in statement
-    assert "deleted_edge_inventory" in statement
+    assert "StandardNameDeletionSnapshot" in statement
+    assert "StandardNameDeletedEdge" in statement
     assert "relationship_type: type(edge)" in statement
 
 
@@ -77,6 +77,7 @@ def test_every_automatic_deletion_route_calls_the_common_refusal() -> None:
 def test_all_ledgered_deletions_snapshot_node_and_edges() -> None:
     clause = provenance_lifecycle.deletion_change_cypher("sn")
 
-    assert "deleted_node_properties: toString(properties(sn))" in clause
-    assert "deleted_edge_inventory: toString(deleted_edge_inventory)" in clause
+    assert "SET snapshot = properties(sn)" in clause
+    assert "HAS_DELETION_SNAPSHOT" in clause
+    assert "HAS_EDGE_SNAPSHOT" in clause
     assert "OPTIONAL MATCH (sn)-[edge]-(neighbor)" in clause
