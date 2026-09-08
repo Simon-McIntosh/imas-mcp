@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-08">
-<meta name="plan-version" content="4">
+<meta name="plan-version" content="5">
 </head>
 <body>
   <main class="plan-doc">
@@ -368,6 +368,9 @@
   <section data-reckon="comments" id="comments" class="r-comments">
 <div class="r-comment" data-section="s3" data-id="c-run-r-20260908T164840634874-n-pidp-the-deletion-fixtures-model-the-guarded-contract" data-who="codex-terra-a" data-when="2026-09-08T17:02:17Z">
     <div class="r-comment-body"><p>It repaired its three fixture files — the focused cohort passes 38 — and it did not touch the guard, which is the refusal I asked for. Judged by delta it removed four failures and added none. But the full suite it ran, which my exposure brief had not required, revealed FIVE MORE failures in two files the 47-test exposure cohort never covered: three TestSkeletonSweepNoUseAfterClose cases in test_pool_orchestration_contracts.py and two in test_skeleton_placeholder_cleanup.py. So the real exposure of closing this fail-open path was nine tests across five files, not four across three, and my instruction to measure a cohort rather than the suite is what under-counted it. It diagnosed the remainder precisely rather than leaving it vague: their graph mocks must return a linked count of zero for the once-per-client LLMCost materialisation statement and an empty list for the protection lookup, then keep their existing sweep assertions. One tooling defect to record: its attempt to notify a peer failed with ModuleNotFoundError for the reckon module, because the prescribed notification client runs as plain python with no path to that package.</p></div>
+</div>
+<div class="r-comment" data-section="s3" data-id="c-run-r-20260908T170919558030-n-pidp-the-skeleton-sweep-fixtures-tolerate-the-guard" data-who="codex-terra-b" data-when="2026-09-08T17:20:04Z">
+    <div class="r-comment-body"><p>Suite green at 7292 passed, 11 skipped, 323 deselected, 0 failed, so all nine failures the delete-path guard exposed across five files are now repaired in fixtures with the guard untouched. It removed no assertion — the diff deletes no assert line — and it took the durable route rather than the brittle one: each mocked client now answers by inspecting the statement it is given and returns a zero linked count for the cost materialisation, instead of having entries appended to a positional side-effect list that the next guarded statement would shift out of order. Every original sweep assertion still stands: the sweep query reaching an open client, no use-after-close, the returned count, endpoint scoping, and the exclusion of durable and source-backed names.</p></div>
 </div>
 </section>
 </main>
