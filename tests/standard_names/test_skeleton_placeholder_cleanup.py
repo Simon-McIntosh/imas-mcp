@@ -27,7 +27,17 @@ def _write_with_candidates(candidate_ids: set[str]):
     sweep = MagicMock()
     sweep.__enter__.return_value = sweep
     sweep.__exit__.return_value = None
-    sweep.query.return_value = [{"swept": len(candidate_ids)}]
+
+    def sweep_query(query: str, **_kwargs):
+        if "MATCH (cost:LLMCost)" in query:
+            return [{"linked": 0}]
+        if "UNWIND $names AS name" in query:
+            return []
+        if "DETACH DELETE sn" in query:
+            return [{"swept": len(candidate_ids)}]
+        raise AssertionError(f"unexpected sweep query: {query}")
+
+    sweep.query.side_effect = sweep_query
 
     graph_clients = [main, sweep] if candidate_ids else [main]
     with (
