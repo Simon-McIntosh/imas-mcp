@@ -7,8 +7,9 @@ The remaining routine global-maintenance failure reaches
 `imas_codex/standard_names/graph_ops.py:3675`, inside
 `_delete_derived_parent_nodes`. The guard is still the correct deletion-time
 backstop. The defect is the childless-derived-parent selector feeding it at
-`graph_ops.py:4627-4639`: that selector sends every childless derived identity
-to the deleter, including identities carrying durable authority.
+`graph_ops.py:4624-4640`: before the change, that selector sent every childless
+derived identity to the deleter, including identities carrying durable
+authority.
 
 The earlier selector correction did reach the same deleter, but through a
 different feed. `_query_derived_parents_for_admission_cleanup` filters its
@@ -31,8 +32,8 @@ run_sn_pools global maintenance
 
 | Guard call | Candidate origin | Global-maintenance disposition |
 |---|---|---|
-| `graph_ops.py:3675`, `_delete_derived_parent_nodes` | Admission-recheck candidates and childless derived parents | **Offending site.** Admission-recheck candidates are already filtered, but the childless query at `graph_ops.py:4627-4639` bypasses that exclusion and reaches this shared deleter. |
-| `graph_ops.py:5774`, `write_standard_names` skeleton cleanup | Relationship endpoints narrowed by `_query_skeleton_placeholders_for_cleanup` and the positive id-only placeholder predicate | Exempt from this routine maintenance failure. This site is reached by composition, not the maintenance-only path, and the narrowed set contains actual placeholders rather than every relationship endpoint. Its immediate refusal remains the required backstop for a protected placeholder. |
+| `graph_ops.py:3675`, `_delete_derived_parent_nodes` | Admission-recheck candidates and childless derived parents | **Offending site.** Admission-recheck candidates are already filtered, but the childless query at `graph_ops.py:4624-4640` previously bypassed that exclusion and reached this shared deleter. |
+| `graph_ops.py:5775`, `write_standard_names` skeleton cleanup | Relationship endpoints narrowed by `_query_skeleton_placeholders_for_cleanup` and the positive id-only placeholder predicate | Exempt from this routine maintenance failure. This site is reached by composition, not the maintenance-only path, and the narrowed set contains actual placeholders rather than every relationship endpoint. Its immediate refusal remains the required backstop for a protected placeholder. |
 | `provenance_lifecycle.py:1784`, `retire_unrecoverable_provenance_orphans` | Explicit, reviewed list of source-less identities | Exempt from routine global maintenance. Production reaches it only from `rebuild_provenance` when the operator opts into `retire_unresolved=True`; that flag defaults to false, and `run_sn_pools` does not call `rebuild_provenance`. The list-scoped refusal must remain. |
 
 The third site was the initial expectation, but the reproduction does not
@@ -85,6 +86,22 @@ selector is wrong for proposing these identities for deletion at all.
 
 ## Post-change reproduction
 
-Pending implementation. Acceptance requires the same maintenance-only command
-to exit zero while the deletion-time refusal remains demonstrably active when
-a protected identity is handed to `_delete_derived_parent_nodes` directly.
+Implementation revision: `3588c19c1c2cf3f3fc0bfffcfb49fe51f192f802`
+
+The same maintenance-only command exited **0**. The durable application log at
+`/home/ITER/mcintos/.local/share/imas-codex/logs/sn_sn-compose.log` records this
+run from lines 81276-81685. In particular, line 81683 records
+`reconciliation and structural maintenance complete`; the former protected
+deletion refusal is absent. Routine maintenance continued normally, repairing
+one derived-parent lifecycle node, structurally accepting 16 parents, and
+seeding eight missing parent provenance sources.
+
+The childless selector now passes its candidates through
+`filter_automatic_deletion_candidates` at `graph_ops.py:4636` before the list
+can reach `_delete_derived_parent_nodes`. The deleter still calls
+`refuse_protected_automatic_deletion` at `graph_ops.py:3675` immediately before
+mutation. The focused counterfactual demonstrates both halves independently:
+removing only the selector filter makes
+`test_childless_selector_excludes_protected_before_structural_delete` fail,
+while `test_direct_structural_delete_still_refuses_protected_identity` keeps
+passing. No statement under `imas_codex/` deletes an `LLMCost` node.
