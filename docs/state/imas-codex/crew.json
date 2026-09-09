@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T13:50:45",
+  "updated": "2026-09-09T13:56:54",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -115934,6 +115934,502 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T105952356284-n-pidp-name-the-site-that-still-refuses-maintenance",
+        "plan": "paid-identity-deletion-protection",
+        "section": "\u00a73a",
+        "node": "n-pidp-name-the-site-that-still-refuses-maintenance",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1031,
+                "cached_input_tokens": 815626,
+                "input_tokens": 816659,
+                "output_tokens": 1140,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 817799,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/paid-identity-deletion-protection/remaining-refusal-site.md names the offending call site by file:line, records which of the three refuse_protected_automatic_deletion call sites it is with why the other two are already exempt, carries a reproduction showing a global maintenance pass exiting non-zero before the change and zero after, a test fails when that site's selector-side exclusion is removed, a second test still proves the refusal raises when a protected identity reaches the deleter directly, and a run of pytest -p no:cacheprovider tests/standard_names/ on the all_debug partition using /home/ITER/mcintos/.local/bin/uv run --no-sync reports zero failures added against the same command at the base revision",
+          "estimated_hours": null,
+          "goal": "Stop the remaining guard call site converting a routine global-maintenance no-op into a fatal refusal",
+          "id": "n-pidp-name-the-site-that-still-refuses-maintenance",
+          "lane_declaration": {
+            "backend": "codex",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T10:59:53Z",
+            "read_at": "2026-09-09T10:59:54Z",
+            "resolved_backend": "codex",
+            "utilisation_pct": 75.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T105952356284-n-pidp-name-the-site-that-still-refuses-maintenance/manifest.md",
+          "plan": "paid-identity-deletion-protection",
+          "requested_backend": "codex",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a73a",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/provenance_lifecycle.py",
+            "imas_codex/standard_names/graph_ops.py",
+            "tests/standard_names/test_protected_identity_exclusion.py",
+            "tests/standard_names/test_skeleton_placeholder_cleanup.py",
+            "tests/standard_names/test_pool_orchestration_contracts.py",
+            "tests/standard_names/test_deletion_provenance_integrity.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-quarantine",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T11:00:08Z",
+        "completed_at": "2026-09-09T11:52:52Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 3164,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 3164,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "d26e6f2f2afb923792125a31d1ba2140999d2915",
+        "commits": [
+          "18db87889d34c66a67f0fd1e8a0b486decad531a",
+          "3588c19c1a084a6a814463d72beca1bb38a3b4dc",
+          "409fed164f1546a5e928eccd86950f5b1d811df6",
+          "8bc648ff515e403e54c8ea3c51852e4b527fc2ef"
+        ],
+        "changed_lines": {
+          "added": 177,
+          "removed": 2,
+          "files": 4
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "two driving fixture files, then all five granted fixtures, then a counterfactual over the selector regression and the direct-deleter backstop, then a live sn run --only reconcile before and after, then the full suite on all_debug at both revisions",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "29 passed / 76 passed; counterfactual 1 failed 1 passed as required; reconcile exit 1 to exit 0; suite 7311->7312 passed, 0 failed, 0 added; LLMCost deletion statements 0"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T105952356284-n-pidp-name-the-site-that-still-refuses-maintenance/manifest.md",
+        "scope_changed": true,
+        "session_id": "01a08278-ca2e-70b0-a6f3-c9c918ed3580",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 0,
+            "cached_input_tokens_cumulative": 6274304,
+            "input_tokens": 0,
+            "input_tokens_cumulative": 6337427,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 22099,
+            "reasoning_output_tokens": 0,
+            "reasoning_output_tokens_cumulative": 3753
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T11:52:52Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 78.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T11:52:52Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2700,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: \"Two authorized exact-cohort applies could not yield a commit receipt: the first explicitly raised SignedManifestConflict after concurrent closure drift; and the second produced no receipt while the post-attempt census still found all 10 producer-backed null origins. A third retry would be contention thrashing rather than evidence.\"",
+              "elapsed_seconds": 718,
+              "external_wait": null,
+              "lifting_condition": null,
+              "liveness_proven": true,
+              "log_age_seconds": 1008,
+              "log_fresh": false,
+              "manifest_commits": [
+                "3d751cd8566c94a565786632a8a344ef70e634a8"
+              ],
+              "manifest_derived": false,
+              "manifest_digest": "f55359fa3849184e3d8d204024877bb5fcda8c3df6e5278c0817435630f5cd26",
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T103104976349-n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T103104976349-n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin",
+              "phase": "starting",
+              "plan": "paid-identity-deletion-protection",
+              "process_alive": false,
+              "project": "imas-codex",
+              "recovery": "decide",
+              "recovery_classification": "blocked",
+              "resets_at": null,
+              "review_error": null,
+              "review_present": false,
+              "review_status": null,
+              "run_id": "r-20260909T103104976349-n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin",
+              "session": "ship-s10-20260908",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260909T103104976349-n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin",
+                "session_id": "01a08287-cd7b-7372-8865-9d5263ecb100",
+                "source": "pointer"
+              },
+              "terminal_age_seconds": 1033,
+              "terminal_at": "2026-09-09T10:42:49Z",
+              "wait_age_seconds": null,
+              "wait_condition_state": null,
+              "wait_observed": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin"
+            }
+          ]
+        },
+        "throughput": {
+          "cumulative_cached_input_tokens": 6274304,
+          "cumulative_input_tokens": 12611731,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 25852
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest -p",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "resume",
+        "attempt": 3,
+        "scope_acceptances": [
+          {
+            "path": "docs/evidence/paid-identity-deletion-protection/remaining-refusal-site.md",
+            "reason": "its own evidence document, which my done-when required and my write fence omitted - a coordinator fencing miss, not a worker overreach"
+          },
+          {
+            "path": "tests/standard_names/test_derived_parent_lifecycle_repair.py",
+            "reason": "the fifth affected fixture file; the worker stopped and named it rather than write out of scope, and I granted it mid-flight by resume advice"
+          }
+        ],
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-name-the-site-that-still-refuses-maintenance",
+          "session_id": "01a08278-ca2e-70b0-a6f3-c9c918ed3580",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T11:52:52Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T072310390297-n-pidp-restore-pedestal-density-family",
+        "plan": "paid-identity-deletion-protection",
+        "section": "\u00a74",
+        "node": "n-pidp-restore-pedestal-density-family",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 731,
+                "cached_input_tokens": 542857,
+                "input_tokens": 543590,
+                "output_tokens": 41,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 543631,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/paid-identity-deletion-protection/pedestal-family-restore.md records each of the nineteen children live with its own DD producer and origin=pipeline and status=draft, density_at_pedestal_top live carrying nineteen incoming HAS_PARENT edges, the origin value written on the parent stated with the producer evidence that makes it truthful, a per-relationship-type comparison of live against archive for the parent and every child with archive-absent types named, and actual LLM spend beside the authorised 100 USD ceiling",
+          "estimated_hours": null,
+          "goal": "Restore the nineteen DD-backed pedestal-top density children and let the structural tail derive their parent from them",
+          "id": "n-pidp-restore-pedestal-density-family",
+          "lane_declaration": {
+            "backend": "codex",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T07:23:11Z",
+            "read_at": "2026-09-09T07:23:12Z",
+            "resolved_backend": "codex",
+            "utilisation_pct": 58.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072310390297-n-pidp-restore-pedestal-density-family/manifest.md",
+          "plan": "paid-identity-deletion-protection",
+          "requested_backend": "codex",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a74",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "docs/evidence/paid-identity-deletion-protection/pedestal-family-restore.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-restore",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T07:23:21Z",
+        "completed_at": "2026-09-09T11:03:29Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": null,
+        "worker_seconds_source": "stalled",
+        "wall_seconds": 13208,
+        "stalled": true,
+        "time_budget": "55m",
+        "base_sha": "c3009010c9ec4d9f0d92437b53914dd3c9f05fcd",
+        "commits": [
+          "9cbb91cb8677ff1a87c7abcf23ea82b6ae4c4e48",
+          "7f56f37868932e7b97e3f586f6a831812f29cdb1",
+          "e73cd2389788d78fc636cf19c36dd28098ea1bd1"
+        ],
+        "changed_lines": {
+          "added": 4015,
+          "removed": 61,
+          "files": 18
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "exact 21-path preflight, dry-run, gap-only drains with sn retry for three attempt-capped sources, bounded live gate, isolated all_debug archive comparison",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "19/19 children, 19/19 pipeline, 19/19 draft, 21/21 DD bindings, parent 19/19 HAS_PARENT; archive 20/20"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072310390297-n-pidp-restore-pedestal-density-family/manifest.md",
+        "scope_changed": true,
+        "session_id": "01a0850c-c677-79b1-883a-79fcde8ae49c",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 28085504,
+            "cached_input_tokens_cumulative": 28085504,
+            "input_tokens": 28451888,
+            "input_tokens_cumulative": 28451888,
+            "output_tokens": 50589,
+            "output_tokens_cumulative": 50589,
+            "reasoning_output_tokens": 9223,
+            "reasoning_output_tokens_cumulative": 9223
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T11:03:29Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 75.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T11:03:29Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 28085504,
+          "cumulative_input_tokens": 56537392,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 59812
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "resume",
+        "attempt": 3,
+        "scope_acceptances": [
+          {
+            "path": "docs/evidence/paid-identity-deletion-protection/earlier-deletions-census.md",
+            "reason": "arrived through the coordinator-instructed merge that brought the predicate-narrowing correction into this worktree; its content is already on main and the worker authored only its own evidence document"
+          },
+          {
+            "path": "docs/evidence/paid-identity-deletion-protection/spectral-child-restore.md",
+            "reason": "arrived through the coordinator-instructed merge that brought the predicate-narrowing correction into this worktree; its content is already on main and the worker authored only its own evidence document"
+          },
+          {
+            "path": "docs/evidence/scalar-edge-authority/reference-edge-materialisation.md",
+            "reason": "arrived through the coordinator-instructed merge that brought the predicate-narrowing correction into this worktree; its content is already on main and the worker authored only its own evidence document"
+          },
+          {
+            "path": "docs/evidence/sn-west-cohort-treatment/tail-drain.md",
+            "reason": "arrived through the coordinator-instructed merge that brought the predicate-narrowing correction into this worktree; its content is already on main and the worker authored only its own evidence document"
+          },
+          {
+            "path": "docs/plans/paid-identity-deletion-protection.html",
+            "reason": "arrived through the coordinator-instructed merge that brought the predicate-narrowing correction into this worktree; its content is already on main and the worker authored only its own evidence document"
+          },
+          {
+            "path": "docs/plans/scalar-edge-authority.html",
+            "reason": "arrived through the coordinator-instructed merge that brought the predicate-narrowing correction into this worktree; its content is already on main and the worker authored only its own evidence document"
+          },
+          {
+            "path": "docs/plans/sn-west-cohort-treatment.html",
+            "reason": "arrived through the coordinator-instructed merge that brought the predicate-narrowing correction into this worktree; its content is already on main and the worker authored only its own evidence document"
+          },
+          {
+            "path": "docs/state/imas-codex/crew.json",
+            "reason": "arrived through the coordinator-instructed merge that brought the predicate-narrowing correction into this worktree; its content is already on main and the worker authored only its own evidence document"
+          },
+          {
+            "path": "imas_codex/standard_names/graph_ops.py",
+            "reason": "arrived through the coordinator-instructed merge that brought the predicate-narrowing correction into this worktree; its content is already on main and the worker authored only its own evidence document"
+          },
+          {
+            "path": "imas_codex/standard_names/protection.py",
+            "reason": "arrived through the coordinator-instructed merge that brought the predicate-narrowing correction into this worktree; its content is already on main and the worker authored only its own evidence document"
+          },
+          {
+            "path": "imas_codex/standard_names/signed_manifest.py",
+            "reason": "arrived through the coordinator-instructed merge that brought the predicate-narrowing correction into this worktree; its content is already on main and the worker authored only its own evidence document"
+          },
+          {
+            "path": "tests/standard_names/test_archive_reconstruction.py",
+            "reason": "arrived through the coordinator-instructed merge that brought the predicate-narrowing correction into this worktree; its content is already on main and the worker authored only its own evidence document"
+          },
+          {
+            "path": "tests/standard_names/test_deletion_provenance_integrity.py",
+            "reason": "arrived through the coordinator-instructed merge that brought the predicate-narrowing correction into this worktree; its content is already on main and the worker authored only its own evidence document"
+          },
+          {
+            "path": "tests/standard_names/test_derived_parent_lifecycle_repair.py",
+            "reason": "arrived through the coordinator-instructed merge that brought the predicate-narrowing correction into this worktree; its content is already on main and the worker authored only its own evidence document"
+          },
+          {
+            "path": "tests/standard_names/test_pool_orchestration_contracts.py",
+            "reason": "arrived through the coordinator-instructed merge that brought the predicate-narrowing correction into this worktree; its content is already on main and the worker authored only its own evidence document"
+          },
+          {
+            "path": "tests/standard_names/test_protected_identity_exclusion.py",
+            "reason": "arrived through the coordinator-instructed merge that brought the predicate-narrowing correction into this worktree; its content is already on main and the worker authored only its own evidence document"
+          },
+          {
+            "path": "tests/standard_names/test_skeleton_placeholder_cleanup.py",
+            "reason": "arrived through the coordinator-instructed merge that brought the predicate-narrowing correction into this worktree; its content is already on main and the worker authored only its own evidence document"
+          }
+        ],
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-restore-pedestal-density-family",
+          "session_id": "01a0850c-c677-79b1-883a-79fcde8ae49c",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T11:03:29Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null,
+        "commit_list_shortfall": {
+          "kind": "presented_commits_subset_of_manifest",
+          "presented": 3,
+          "declared": 5,
+          "missing": [
+            "55e8420c7cff29c0fd9a728baf91a4856a1d8dad",
+            "9284f2138226e4ac937602e6f1f691c7e84d7627"
+          ],
+          "message": "run 'r-20260909T072310390297-n-pidp-restore-pedestal-density-family' has a passing gate presenting 3 commit(s) of the 5 its manifest declares; missing: 55e8420c7cff29c0fd9a728baf91a4856a1d8dad, 9284f2138226e4ac937602e6f1f691c7e84d7627. The out-of-scope boundary check runs against the presented commits, so an incomplete presentation narrows it. This is a report, not a refusal \u2014 present the full list, or the boundary check may not cover the node's work"
+        }
       }
     ],
     "holds": [
@@ -116190,6 +116686,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2062
+    "_version": 2064
   }
 }
