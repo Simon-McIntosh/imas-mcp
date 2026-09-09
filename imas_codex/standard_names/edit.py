@@ -3980,6 +3980,7 @@ _ACCEPTED_REVIEW_BINDING_TYPES = (
     "HAS_UNIT",
     "HAS_COCOS",
 )
+_ACCEPTED_REVIEW_UPDATED_AT_SENTINEL = "__accepted_review_updated_at__"
 
 
 def _accepted_review_run_id(name_ids: list[str]) -> str:
@@ -4067,7 +4068,28 @@ def _accepted_review_expected_post(
         properties = expected[name_id]["matches"][0]["properties"]
         properties["name_stage"] = "drafted"
         properties["run_id"] = run_id
+        properties["updated_at"] = _ACCEPTED_REVIEW_UPDATED_AT_SENTINEL
     return _fold_normalize(expected)
+
+
+def _accepted_review_post_state_matches(
+    before: dict[str, dict[str, Any]],
+    after: dict[str, dict[str, Any]],
+    expected_after: dict[str, dict[str, Any]],
+    staged_ids: set[str],
+) -> bool:
+    """Compare a restage result while proving its server timestamp advanced."""
+    normalized_after = _fold_normalize(deepcopy(after))
+    for name_id in staged_ids:
+        before_properties = before[name_id]["matches"][0]["properties"]
+        after_properties = normalized_after[name_id]["matches"][0]["properties"]
+        expected_properties = expected_after[name_id]["matches"][0]["properties"]
+        if after_properties.get("updated_at") is None or after_properties.get(
+            "updated_at"
+        ) == _fold_normalize(before_properties.get("updated_at")):
+            return False
+        after_properties["updated_at"] = expected_properties["updated_at"]
+    return normalized_after == expected_after
 
 
 @retry_on_deadlock()
@@ -4290,7 +4312,9 @@ def restage_accepted_names_for_review(
                 expected_after = _accepted_review_expected_post(
                     before, eligible_ids, resolved_run_id
                 )
-                if _fold_normalize(after) != expected_after:
+                if not _accepted_review_post_state_matches(
+                    before, after, expected_after, eligible_ids
+                ):
                     raise RuntimeError("accepted restage post-state proof failed")
                 relationship_state_after = _accepted_review_relationship_state(after)
                 binding_counts_after = _accepted_review_relationship_counts(after)
