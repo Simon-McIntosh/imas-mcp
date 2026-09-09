@@ -28,7 +28,7 @@
 <meta name="plan-capability-verification" content="strict">
 <meta name="plan-capability-risk" content="critical">
 <meta name="plan-impl" content="0.95">
-<meta name="plan-version" content="218">
+<meta name="plan-version" content="219">
 <meta name="plan-commits" content="72b7760c60ac307f641e7e8490b7f15e532d2104">
 <meta name="plan-artifacts" content="docs/evidence/sn-west-catalog-release/residue-currency.md,tests/standard_names/test_review_body_ledger_link.py">
 </head>
@@ -950,6 +950,9 @@ rows: 20   foldable-remaining: 0   unreconciled-runs: 0</pre><p><strong>Live poi
 </div>
 <div class="r-comment" data-section="cut-predates-its-problems" data-id="c-run-r-20260909T121947694256-n-swcr-record-the-withheld-docs-recovery" data-who="s10b-fixtures" data-when="2026-09-09T12:27:06Z">
     <div class="r-comment-body"><p>The record is written and the node corrected me on the mechanism. I had inferred from a grep that the predecessor used reconcile_reviewable_name_stage because its stream cites that name 31 times; the node established those are textual references with no invocation, that the repair was actually a bounded ad-hoc GraphClient transaction in /tmp/docs_reaccept_apply.py updating 31 rows, and that NO reusable named docs-axis reconciliation function exists. It said so plainly rather than naming a function to satisfy the done-when, which is exactly what I asked for and is the third time today a worker refuted a hypothesis of mine by measurement. The recovery itself is confirmed sound and free: 31 of 31 accepted with non-null docs scores, 285 retained docs-axis review edges with the newest dated 2026-09-07 and zero created today, 0.00 USD spent, and the copied figure's SHA-256 matched its source. I independently checked whether the patched values are faithful rather than a false acceptance projection: every one of the 31 scalar values appears among that row's own docs-axis review scores, so nothing was fabricated - though no single rule reproduces the selection, with 20 of 31 matching the latest review and 14 the canonical one. So the rows are publishable on real evidence while the repair is not reproducible, and the missing reconciliation function is the standing gap</p></div>
+</div>
+<div class="r-comment" data-section="cut-predates-its-problems" data-id="c-run-r-20260909T124418223732-n-swcr-supply-the-genuinely-missing-reviews" data-who="s10b-fixtures" data-when="2026-09-09T12:57:49Z">
+    <div class="r-comment-body"><p>One of the two halves is fully closed and the other found a code defect. net_power_due_to_ion_cyclotron_heating no longer carries a false-acceptance projection: it now reads docs_stage=accepted with reviewer_score_docs=1.0 AND 3 docs-axis HAS_REVIEME edges where it previously had zero, for 0.280291 USD - so the accepted state is backed by real evidence rather than merely set, which is what the done-when demanded and what a pipeline exit code alone would not have proved. The four name rows are blocked by a genuine defect rather than by missing work: they carry name_stage=accepted with a null reviewer_score_name, which is the name-axis twin of the projection just fixed on the docs axis, and the only sanctioned exact-cohort transition that would make them reviewable - accepted-name restage - dry-runs cleanly at 4 of 4 with no relationship changes but its LIVE apply exits 1 with RuntimeError: accepted restage post-state proof failed and rolls back. The node declined the one available workaround, sn review --unreviewed, because that surface is global and would have touched identities far outside a five-row scope; that refusal is correct and is why the four rows are still unchanged on a final bounded re-read</p></div>
 </div>
 </section>
 </main>

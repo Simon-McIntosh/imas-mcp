@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T14:43:11",
+  "updated": "2026-09-09T14:59:38",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -117577,6 +117577,179 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T124418223732-n-swcr-supply-the-genuinely-missing-reviews",
+        "plan": "sn-west-catalog-release",
+        "section": "cut-predates-its-problems",
+        "node": "n-swcr-supply-the-genuinely-missing-reviews",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 409,
+                "cached_input_tokens": 374975,
+                "input_tokens": 375386,
+                "output_tokens": 2195,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 377581,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/sn-west-catalog-release/missing-reviews.md handles five named rows and no others. FIRST, for each one, read and quote the live scalar state beside the actual review-edge count on the relevant axis, because the whole point of this node is rows whose scalars claim more than their evidence supports. net_power_due_to_ion_cyclotron_heating carries docs_stage='accepted' with ZERO docs-axis HAS_REVIEW edges - that scalar is a false-acceptance projection and you must NOT treat it as evidence the row is reviewed; the row needs its docs-axis review genuinely run so the accepted state ends up backed by a real review edge. atomic_mass, gas_flow, plasma_pressure and wave_phase_of_ion_cyclotron_heating_antenna each lack reviewer_score_name and need the name axis reviewed. Run the pipeline scoped to exactly these five identities and no others, gap-only: never pass --reseed and never pass --force, and pass --skip-global-maintenance because global structural maintenance refuses on protected identities outside this cohort and would abort your run. Cap paid work at 8 USD and stop and report rather than exceed it. Finish by re-reading all five and reporting, per row, the resulting stage scalar, the resulting reviewer score, AND the review-edge count on that axis, so the record proves the scalar is now backed rather than merely set - a row that ends accepted with zero review edges is a failure of this node even if the pipeline exits zero. Report total USD spent. A signed manifest apply just completed on this graph, so do not run one and do not touch any identity outside the five. Live graph work runs on the login node because the Neo4j tunnel is login-node-local; keep every read bounded and under ten seconds and say so in the manifest. Never pipe, tee or redirect imas-codex CLI output - it auto-logs to ~/.local/share/imas-codex/logs and a filtered tail has swallowed real errors twice in this session; run the command directly and read the log. Write the manifest with what you have BEFORE starting any pipeline rotation, because your process ends with its turn and a deferred manifest is indistinguishable from a crash.",
+          "estimated_hours": null,
+          "goal": "Supply the genuinely missing reviews for the five WEST rows withheld because a review axis has no evidence behind it",
+          "id": "n-swcr-supply-the-genuinely-missing-reviews",
+          "lane_declaration": {
+            "backend": "codex-terra",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T12:44:18Z",
+            "read_at": "2026-09-09T12:44:19Z",
+            "resolved_backend": "codex-terra",
+            "utilisation_pct": 80.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T124418223732-n-swcr-supply-the-genuinely-missing-reviews/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "cut-predates-its-problems",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "docs/evidence/sn-west-catalog-release/missing-reviews.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-fixtures",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T12:44:30Z",
+        "completed_at": "2026-09-09T12:57:49Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 799,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 799,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "88af188bce8257c8865802ef77115f5ec6f425a9",
+        "commits": [
+          "672046cbf98cbd5f6825992fe285f4bdf9cde4fc"
+        ],
+        "changed_lines": {
+          "added": 106,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "failed",
+        "gate_check": {
+          "command": "bounded live reads, docs lifecycle dry run then live reset, an exact docs-only flush scoped to one identity, then an exact four-name restage dry run followed by its live apply",
+          "exit_status": 1,
+          "log_path": null,
+          "log_digest": "net_power: docs_stage=accepted, score 1.0, 3 docs-axis edges, 0.280291 USD; restage dry run 4/4 clean, live apply exit 1 RuntimeError post-state proof failed, rolled back; four rows unchanged"
+        },
+        "suite_delta": null,
+        "failure_classification": "correct-refusal",
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T124418223732-n-swcr-supply-the-genuinely-missing-reviews/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a084b6-f8a5-7551-bfc5-a2dfe794dc4b",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 9277184,
+            "cached_input_tokens_cumulative": 13463296,
+            "input_tokens": 9339491,
+            "input_tokens_cumulative": 13699667,
+            "output_tokens": 6994,
+            "output_tokens_cumulative": 22200,
+            "reasoning_output_tokens": 3720,
+            "reasoning_output_tokens_cumulative": 7404
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T12:57:49Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 81.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T12:57:49Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 13463296,
+          "cumulative_input_tokens": 27162963,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 29604
+        },
+        "follow_on_paths": [
+          "imas_codex/standard_names/edit.py"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-swcr-supply-the-genuinely-missing-reviews",
+          "session_id": "01a084b6-f8a5-7551-bfc5-a2dfe794dc4b",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T12:57:49Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": {
+          "session_id": "01a084b6-f8a5-7551-bfc5-a2dfe794dc4b",
+          "source": "pointer",
+          "reason": "the remaining work is a code defect in the accepted-name restage path, which is outside this node's evidence-only write fence; its session cannot progress without exceeding scope"
+        },
+        "watch_override": null
       }
     ],
     "holds": [
@@ -117833,6 +118006,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2069
+    "_version": 2070
   }
 }
