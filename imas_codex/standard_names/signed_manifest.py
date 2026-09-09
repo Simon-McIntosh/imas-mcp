@@ -175,6 +175,51 @@ _LIFECYCLELESS_STUB_PROGRAMS = (
     "refused",
 )
 
+_ARCHIVE_RECONSTRUCTION_ADAPTER = "archive-reconstruction"
+_ARCHIVE_RECONSTRUCTION_MUTATION = "reconstruct-archived-standard-names"
+_ARCHIVE_RECONSTRUCTION_GUARDS = (
+    "signed-exact-identity-manifest",
+    "allowlisted-archive-relationships",
+    "archive-live-edge-count-parity",
+)
+_ARCHIVE_RECONSTRUCTION_SCHEMA = "imas-codex.archive-reconstruction.v1"
+_ARCHIVE_EDGE_COUNTERPARTS: dict[str, dict[str, str]] = {
+    "PRODUCED_NAME": {"incoming": "StandardNameSource"},
+    "HAS_STANDARD_NAME": {"incoming": "IMASNode"},
+    "HAS_REVIEW": {"outgoing": "StandardNameReview"},
+    "DOCS_REVISION_OF": {"outgoing": "DocsRevision"},
+    "HAS_INTERNAL_CHANGE": {"outgoing": "StandardNameChange"},
+    "HAS_UNIT": {"outgoing": "Unit"},
+    "HAS_COCOS": {"outgoing": "COCOS"},
+    "HAS_PHYSICS_DOMAIN": {"outgoing": "PhysicsDomain"},
+    "IN_CLUSTER": {"outgoing": "IMASSemanticCluster"},
+    "HAS_SEGMENT": {"outgoing": "GrammarToken"},
+    "HAS_PHYSICAL_BASE": {"outgoing": "GrammarToken"},
+    "HAS_SUBJECT": {"outgoing": "GrammarToken"},
+    "HAS_TRANSFORMATION": {"outgoing": "GrammarToken"},
+    "HAS_COMPONENT": {"outgoing": "GrammarToken"},
+    "HAS_COORDINATE": {"outgoing": "GrammarToken"},
+    "HAS_PROCESS": {"outgoing": "GrammarToken"},
+    "HAS_POSITION": {"outgoing": "GrammarToken"},
+    "HAS_REGION": {"outgoing": "GrammarToken"},
+    "HAS_DEVICE": {"outgoing": "GrammarToken"},
+    "HAS_GEOMETRIC_BASE": {"outgoing": "GrammarToken"},
+    "HAS_AGGREGATION": {"outgoing": "GrammarToken"},
+    "HAS_ORBIT": {"outgoing": "GrammarToken"},
+    "HAS_POPULATION": {"outgoing": "GrammarToken"},
+    "HAS_LOCUS": {"outgoing": "Locus"},
+    "HAS_STRUCTURAL_AUTHORITY": {"outgoing": "StructuralNameAuthority"},
+    "ENTAILED_FROM_CHILD": {"incoming": "StructuralNameAuthority"},
+    "HAS_PARENT": {"incoming": "StandardName", "outgoing": "StandardName"},
+    "REFINED_FROM": {"incoming": "StandardName", "outgoing": "StandardName"},
+    "REFERENCES": {"incoming": "StandardName", "outgoing": "StandardName"},
+    "MAGNITUDE_OF": {"incoming": "StandardName", "outgoing": "StandardName"},
+    "HAS_ERROR": {"incoming": "StandardName", "outgoing": "StandardName"},
+    "HAS_PREDECESSOR": {"incoming": "StandardName", "outgoing": "StandardName"},
+    "HAS_SUCCESSOR": {"incoming": "StandardName", "outgoing": "StandardName"},
+    "HAS_DOCS_REVIEW_ADMISSION": {"outgoing": "DocsReviewAdmission"},
+}
+
 _DD_RESIDUE_RELEASE_OPERATION = "release_legacy_dd_source_lifecycle"
 _DD_RESIDUE_SOURCE_IDS = frozenset(
     {
@@ -248,6 +293,15 @@ class _Authority:
     operation_id: str
     rows: tuple[_LoadedRow, ...]
     receipt_policy: dict[str, Any]
+    file_sha256: str
+    payload_sha256: str
+
+
+@dataclass(frozen=True)
+class _ArchiveReconstructionAuthority:
+    operation_id: str
+    nodes: tuple[dict[str, Any], ...]
+    edges: tuple[dict[str, Any], ...]
     file_sha256: str
     payload_sha256: str
 
@@ -6817,6 +6871,332 @@ def _apply_lifecycleless_stub_reconcile(
             client.close()
 
 
+def _load_archive_reconstruction_authority(
+    path: str | Path,
+    *,
+    expected_file_sha256: str,
+    expected_payload_sha256: str,
+) -> _ArchiveReconstructionAuthority:
+    """Load one closed archive-reconstruction authority artifact."""
+    _require_sha256(expected_file_sha256, "authority_file_sha256")
+    _require_sha256(expected_payload_sha256, "authority_payload_sha256")
+    raw = Path(path).read_bytes()
+    file_sha256 = hashlib.sha256(raw).hexdigest()
+    if file_sha256 != expected_file_sha256:
+        raise SignedManifestAuthorityError("authority file SHA-256 mismatch")
+    try:
+        data = json.loads(raw)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise SignedManifestAuthorityError(
+            "authority file is not canonical JSON"
+        ) from exc
+    if (
+        not isinstance(data, dict)
+        or data.get("schema") != _ARCHIVE_RECONSTRUCTION_SCHEMA
+    ):
+        raise SignedManifestAuthorityError("archive reconstruction requires its schema")
+    payload_sha256 = signed_payload_sha256(data)
+    if payload_sha256 != expected_payload_sha256:
+        raise SignedManifestAuthorityError("canonical signed-payload SHA-256 mismatch")
+    signature = data.get("signature")
+    if not isinstance(signature, dict) or signature.get("sha256") != payload_sha256:
+        raise SignedManifestAuthorityError(
+            "authority signature does not match canonical signed payload"
+        )
+    identities = data.get("identities")
+    nodes = data.get("nodes")
+    edges = data.get("edges")
+    if (
+        not isinstance(identities, list)
+        or not isinstance(nodes, list)
+        or not isinstance(edges, list)
+    ):
+        raise SignedManifestAuthorityError(
+            "archive reconstruction requires identities, nodes, and edges"
+        )
+    node_ids = [str(node.get("id") or "") for node in nodes if isinstance(node, dict)]
+    if (
+        not node_ids
+        or len(node_ids) != len(nodes)
+        or sorted(identities) != sorted(node_ids)
+    ):
+        raise SignedManifestAuthorityError(
+            "archive identities must exactly match reconstruction nodes"
+        )
+    if len(set(node_ids)) != len(node_ids):
+        raise SignedManifestAuthorityError(
+            "archive reconstruction node ids must be unique"
+        )
+    normalized_nodes: list[dict[str, Any]] = []
+    for node in nodes:
+        if not isinstance(node, dict) or not isinstance(node.get("properties"), dict):
+            raise SignedManifestAuthorityError(
+                "archive reconstruction node needs properties"
+            )
+        node_id = str(node["id"])
+        properties = dict(node["properties"])
+        if properties.get("id") != node_id:
+            raise SignedManifestAuthorityError(
+                "archive node property id must match identity"
+            )
+        properties["origin"] = "pipeline"
+        normalized_nodes.append({"id": node_id, "properties": properties})
+    normalized_edges: list[dict[str, Any]] = []
+    for edge in edges:
+        if not isinstance(edge, dict):
+            raise SignedManifestAuthorityError("archive edge must be an object")
+        owner_id = str(edge.get("owner_id") or "")
+        relationship_type = str(edge.get("relationship_type") or "")
+        direction = str(edge.get("direction") or "")
+        counterpart_id = str(edge.get("counterpart_id") or "")
+        if owner_id not in node_ids or not counterpart_id:
+            raise SignedManifestAuthorityError(
+                "archive edge must name an exact owner and counterpart"
+            )
+        counterpart_label = _ARCHIVE_EDGE_COUNTERPARTS.get(relationship_type, {}).get(
+            direction
+        )
+        if counterpart_label is None:
+            raise SignedManifestAuthorityError(
+                f"archive relationship is outside the reconstruction registry: {relationship_type}/{direction}"
+            )
+        properties = edge.get("properties") or {}
+        if not isinstance(properties, dict):
+            raise SignedManifestAuthorityError(
+                "archive edge properties must be an object"
+            )
+        normalized_edges.append(
+            {
+                "owner_id": owner_id,
+                "relationship_type": relationship_type,
+                "direction": direction,
+                "counterpart_id": counterpart_id,
+                "counterpart_label": counterpart_label,
+                "properties": dict(properties),
+            }
+        )
+    operation_id = str(data.get("operation_id") or "")
+    if not operation_id:
+        raise SignedManifestAuthorityError(
+            "archive reconstruction operation_id must be non-empty"
+        )
+    return _ArchiveReconstructionAuthority(
+        operation_id=operation_id,
+        nodes=tuple(sorted(normalized_nodes, key=lambda node: node["id"])),
+        edges=tuple(sorted(normalized_edges, key=_canonical_bytes)),
+        file_sha256=file_sha256,
+        payload_sha256=payload_sha256,
+    )
+
+
+def _archive_reconstruction_preview(
+    query: _Query, authority: _ArchiveReconstructionAuthority, reason: str
+) -> tuple[dict[str, Any], list[dict[str, str]]]:
+    included = {node["id"] for node in authority.nodes}
+    state: dict[str, Any] = {"nodes": {}, "counterparts": {}}
+    refusals: list[dict[str, str]] = []
+    for node in authority.nodes:
+        rows = query.query(
+            """// archive-reconstruction-node-state
+            MATCH (node:StandardName {id: $id}) RETURN properties(node) AS properties""",
+            id=node["id"],
+        )
+        properties = dict(rows[0]["properties"]) if rows else None
+        state["nodes"][node["id"]] = properties
+        if properties is not None and properties != node["properties"]:
+            refusals.append(
+                {
+                    "row_id": node["id"],
+                    "reason": "existing node differs from signed reconstruction state",
+                }
+            )
+    for edge in authority.edges:
+        counterpart_id = edge["counterpart_id"]
+        if counterpart_id in included and edge["counterpart_label"] == "StandardName":
+            continue
+        key = f"{edge['counterpart_label']}:{counterpart_id}"
+        if key in state["counterparts"]:
+            continue
+        rows = query.query(
+            f"""// archive-reconstruction-counterpart-state
+            MATCH (counterpart:{edge["counterpart_label"]} {{id: $id}})
+            RETURN count(counterpart) AS count""",
+            id=counterpart_id,
+        )
+        exists = bool(rows and int(rows[0]["count"]) == 1)
+        state["counterparts"][key] = exists
+        if not exists:
+            refusals.append(
+                {
+                    "row_id": edge["owner_id"],
+                    "reason": f"archived counterpart is neither live nor included: {counterpart_id}",
+                }
+            )
+    manifest = {
+        "schema": SIGNED_MANIFEST_SCHEMA,
+        "operation_id": authority.operation_id,
+        "reason": reason,
+        "authority_payload_sha256": authority.payload_sha256,
+        "state": state,
+    }
+    return manifest, sorted(refusals, key=lambda item: (item["row_id"], item["reason"]))
+
+
+def _archive_edge_counts(query: _Query, node_id: str) -> dict[str, int]:
+    types = sorted(_ARCHIVE_EDGE_COUNTERPARTS)
+    rows = query.query(
+        """// archive-reconstruction-edge-counts
+        UNWIND $types AS relationship_type
+        MATCH (node:StandardName {id: $id})
+        OPTIONAL MATCH (node)-[relationship]-()
+        WHERE type(relationship) = relationship_type
+        RETURN relationship_type, count(relationship) AS count""",
+        id=node_id,
+        types=types,
+    )
+    return {str(row["relationship_type"]): int(row["count"]) for row in rows}
+
+
+def _apply_archive_reconstruction(
+    authority_path: str | Path,
+    *,
+    authority_file_sha256: str | None,
+    authority_payload_sha256: str | None,
+    mutation_kind: str | None,
+    guard_set: tuple[str, ...] | None,
+    reason: str,
+    apply: bool,
+    manifest_sha256: str | None,
+    gc: Any | None,
+    client_factory: Callable[[], Any] | None,
+) -> dict[str, Any]:
+    if (
+        mutation_kind != _ARCHIVE_RECONSTRUCTION_MUTATION
+        or guard_set != _ARCHIVE_RECONSTRUCTION_GUARDS
+    ):
+        raise SignedManifestAuthorityError(
+            "archive reconstruction requires its exact closed mutation and guard set"
+        )
+    if authority_file_sha256 is None or authority_payload_sha256 is None:
+        raise SignedManifestAuthorityError(
+            "archive reconstruction requires file and payload digests"
+        )
+    authority = _load_archive_reconstruction_authority(
+        authority_path,
+        expected_file_sha256=authority_file_sha256,
+        expected_payload_sha256=authority_payload_sha256,
+    )
+    if apply and manifest_sha256 is None:
+        raise ValueError("archive reconstruction apply requires manifest_sha256")
+    client = (
+        client_factory()
+        if client_factory is not None
+        else gc
+        if gc is not None
+        else GraphClient()
+    )
+    own_client = gc is None and client_factory is None
+    try:
+        with client.session() as session:
+            transaction = session.begin_transaction()
+            query = _TransactionQuery(transaction)
+            try:
+                manifest, refusals = _archive_reconstruction_preview(
+                    query, authority, reason
+                )
+                digest = _digest(manifest)
+                counts = {
+                    "authority_rows": len(authority.nodes),
+                    "admitted": len(authority.nodes)
+                    - len({item["row_id"] for item in refusals}),
+                    "refused": len(refusals),
+                }
+                if not apply or refusals:
+                    transaction.rollback()
+                    return {
+                        "schema": SIGNED_MANIFEST_RECEIPT_SCHEMA,
+                        "outcome": "refused" if refusals else "would_apply",
+                        "changed": 0,
+                        "would_change": 0 if refusals else len(authority.nodes),
+                        "counts": counts,
+                        "refusals": refusals,
+                        "manifest": manifest,
+                        "manifest_sha256": digest,
+                    }
+                if digest != manifest_sha256:
+                    raise SignedManifestConflict(
+                        "fresh archive reconstruction closure does not match authorized SHA-256"
+                    )
+                for node in authority.nodes:
+                    result = query.query(
+                        """// archive-reconstruction-create-node
+                        MERGE (node:StandardName {id: $id})
+                        ON CREATE SET node = $properties
+                        WITH node WHERE properties(node) = $properties
+                        RETURN count(node) AS count""",
+                        id=node["id"],
+                        properties=node["properties"],
+                    )
+                    if not result or int(result[0]["count"]) != 1:
+                        raise SignedManifestConflict(
+                            "archive node changed before reconstruction"
+                        )
+                for edge in authority.edges:
+                    if edge["direction"] == "outgoing":
+                        start_label, start_id = "StandardName", edge["owner_id"]
+                        end_label, end_id = (
+                            edge["counterpart_label"],
+                            edge["counterpart_id"],
+                        )
+                    else:
+                        start_label, start_id = (
+                            edge["counterpart_label"],
+                            edge["counterpart_id"],
+                        )
+                        end_label, end_id = "StandardName", edge["owner_id"]
+                    result = query.query(
+                        f"""// archive-reconstruction-create-edge
+                        MATCH (start:{start_label} {{id: $start_id}})
+                        MATCH (end:{end_label} {{id: $end_id}})
+                        MERGE (start)-[relationship:{edge["relationship_type"]}]->(end)
+                        SET relationship = $properties
+                        RETURN count(relationship) AS count""",
+                        start_id=start_id,
+                        end_id=end_id,
+                        properties=edge["properties"],
+                    )
+                    if not result or int(result[0]["count"]) != 1:
+                        raise SignedManifestConflict(
+                            "archive relationship counterpart changed before reconstruction"
+                        )
+                for node in authority.nodes:
+                    expected = dict.fromkeys(_ARCHIVE_EDGE_COUNTERPARTS, 0)
+                    for edge in authority.edges:
+                        if edge["owner_id"] == node["id"]:
+                            expected[edge["relationship_type"]] += 1
+                    if _archive_edge_counts(query, node["id"]) != expected:
+                        raise SignedManifestConflict(
+                            "archive-versus-live relationship counts differ"
+                        )
+                transaction.commit()
+                return {
+                    "schema": SIGNED_MANIFEST_RECEIPT_SCHEMA,
+                    "outcome": "applied",
+                    "changed": len(authority.nodes),
+                    "mutations": len(authority.nodes) + len(authority.edges),
+                    "counts": counts,
+                    "refusals": [],
+                    "manifest_sha256": digest,
+                }
+            except BaseException:
+                if not transaction.closed:
+                    transaction.rollback()
+                raise
+    finally:
+        if own_client:
+            client.close()
+
+
 @retry_on_deadlock()
 def apply_signed_manifest(
     authority_path: str | Path | dict[str, Any],
@@ -6845,6 +7225,27 @@ def apply_signed_manifest(
     authorizes only the hash: participant closure, collateral rows, and counter
     baselines are always read again inside this invocation.
     """
+    if authority_adapter == _ARCHIVE_RECONSTRUCTION_ADAPTER:
+        if legacy_args:
+            raise SignedManifestAuthorityError(
+                "archive reconstruction does not accept positional adapter arguments"
+            )
+        if not isinstance(authority_path, str | Path):
+            raise SignedManifestAuthorityError(
+                "archive reconstruction requires a signed authority file"
+            )
+        return _apply_archive_reconstruction(
+            authority_path,
+            authority_file_sha256=authority_file_sha256,
+            authority_payload_sha256=authority_payload_sha256,
+            mutation_kind=mutation_kind,
+            guard_set=guard_set,
+            reason=reason,
+            apply=apply,
+            manifest_sha256=manifest_sha256,
+            gc=gc,
+            client_factory=client_factory,
+        )
     if authority_adapter == _STRUCTURAL_EDGE_ADAPTER:
         if authority_path != {} or len(legacy_args) != 2:
             raise SignedManifestAuthorityError(
