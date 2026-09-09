@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T12:27:41",
+  "updated": "2026-09-09T12:58:46",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -114530,6 +114530,248 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T101331599016-n-pidp-the-cost-ledger-only-augments",
+        "plan": "paid-identity-deletion-protection",
+        "section": "\u00a72b",
+        "node": "n-pidp-the-cost-ledger-only-augments",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 766,
+                "cached_input_tokens": 742310,
+                "input_tokens": 743078,
+                "output_tokens": 1367,
+                "reasoning_output_tokens": 399,
+                "total_tokens": 744445,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "no statement under imas_codex/ deletes a LLMCost node, a test in tests/standard_names/test_cost_ledger_augments_only.py fails when either of the two deletion statements is reinstated, a test proves an unscoped clear leaves both the LLMCost row count and the summed all-time spend unchanged while still resetting the state it is entitled to reset, and a run of pytest -p no:cacheprovider tests/standard_names/ on the all_debug partition using /home/ITER/mcintos/.local/bin/uv run --no-sync reports zero failures added against the same command at the base revision",
+          "estimated_hours": null,
+          "goal": "Remove every code path that deletes an LLMCost node so the cost ledger only ever augments",
+          "id": "n-pidp-the-cost-ledger-only-augments",
+          "lane_declaration": {
+            "backend": "codex",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T10:13:32Z",
+            "read_at": "2026-09-09T10:13:33Z",
+            "resolved_backend": "codex",
+            "utilisation_pct": 70.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T101331599016-n-pidp-the-cost-ledger-only-augments/manifest.md",
+          "plan": "paid-identity-deletion-protection",
+          "requested_backend": "codex",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a72b",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/graph_ops.py",
+            "tests/standard_names/test_cost_ledger_augments_only.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-quarantine",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T10:13:42Z",
+        "completed_at": "2026-09-09T10:56:49Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 2587,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 2587,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "247432a9d94f5bde6af1cdfb4b9913874771ddaa",
+        "commits": [
+          "98d9d57ad778fc7bccc57b9cb5213c6ecea83dea",
+          "dc70f54b57230e7d4739db771d1c4415cb2cf574"
+        ],
+        "changed_lines": {
+          "added": 218,
+          "removed": 52,
+          "files": 4
+        },
+        "tests_added": 39,
+        "gate": "passed",
+        "gate_check": {
+          "command": "srun --partition=all_debug /home/ITER/mcintos/.local/bin/uv run --no-sync pytest -p no:cacheprovider tests/standard_names/",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "final 7308 passed, 11 skipped, 323 deselected, 0 failed; zero added against base 7305"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T101331599016-n-pidp-the-cost-ledger-only-augments/manifest.md",
+        "scope_changed": true,
+        "session_id": "01a08278-ca2e-70b0-a6f3-c9c918ed3580",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 1855104,
+            "cached_input_tokens_cumulative": 11961216,
+            "input_tokens": 1886711,
+            "input_tokens_cumulative": 12027597,
+            "output_tokens": 17130,
+            "output_tokens_cumulative": 33837,
+            "reasoning_output_tokens": 6533,
+            "reasoning_output_tokens_cumulative": 8139
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T10:56:49Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 74.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T10:56:49Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3300,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: the current signed archive-reconstruction adapter cannot represent plasma_beta's archived HAS_COCOS counterpart id 17 as its live numeric identity; and the exact archive parity gate forbids omitting that edge.",
+              "elapsed_seconds": 640,
+              "external_wait": null,
+              "lifting_condition": null,
+              "liveness_proven": true,
+              "log_age_seconds": 406,
+              "log_fresh": true,
+              "manifest_commits": [
+                "none; changed_paths: []"
+              ],
+              "manifest_derived": false,
+              "manifest_digest": "dace378fee7e7cecc4018e44446492aff95f24be065e3fe62c536f28abe2b6b0",
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T095558811143-n-pidp-restore-the-three-ratified-identities/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T095558811143-n-pidp-restore-the-three-ratified-identities/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-pidp-restore-the-three-ratified-identities",
+              "phase": "starting",
+              "plan": "paid-identity-deletion-protection",
+              "process_alive": false,
+              "project": "imas-codex",
+              "recovery": "decide",
+              "recovery_classification": "blocked",
+              "resets_at": null,
+              "review_error": null,
+              "review_present": false,
+              "review_status": null,
+              "run_id": "r-20260909T095558811143-n-pidp-restore-the-three-ratified-identities",
+              "session": "ship-s10-20260908",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260909T095558811143-n-pidp-restore-the-three-ratified-identities",
+                "session_id": "01a082a7-d5f8-7141-95d6-0717ec558fbc",
+                "source": "pointer"
+              },
+              "terminal_age_seconds": 425,
+              "terminal_at": "2026-09-09T10:06:31Z",
+              "wait_age_seconds": null,
+              "wait_condition_state": null,
+              "wait_observed": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-restore-the-three-ratified-identities"
+            }
+          ]
+        },
+        "throughput": {
+          "cumulative_cached_input_tokens": 11961216,
+          "cumulative_input_tokens": 23988813,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 41976
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest -p",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "resume",
+        "attempt": 2,
+        "scope_acceptances": [
+          {
+            "path": "tests/standard_names/test_sn_clear.py",
+            "reason": "coordinator-granted scope extension: these two tests ASSERTED the wipe, so they encoded the contract the lead ruling reverses; their assertions were inverted to ledger-preservation rather than deleted"
+          },
+          {
+            "path": "tests/standard_names/test_sn_clear_redesign.py",
+            "reason": "coordinator-granted scope extension: these two tests ASSERTED the wipe, so they encoded the contract the lead ruling reverses; their assertions were inverted to ledger-preservation rather than deleted"
+          }
+        ],
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-the-cost-ledger-only-augments",
+          "session_id": "01a08278-ca2e-70b0-a6f3-c9c918ed3580",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T10:56:49Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -114786,6 +115028,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2056
+    "_version": 2057
   }
 }
