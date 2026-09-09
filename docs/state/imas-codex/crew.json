@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T10:38:20",
+  "updated": "2026-09-09T10:41:16",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -113512,6 +113512,186 @@
           ],
           "message": "run 'r-20260909T074045931481-n-pidp-restore-ratified-spectral-child' has a passing gate presenting 2 commit(s) of the 3 its manifest declares; missing: 75800a95f9c3960ed50524bf338b9324203edfda. The out-of-scope boundary check runs against the presented commits, so an incomplete presentation narrows it. This is a report, not a refusal \u2014 present the full list, or the boundary check may not cover the node's work"
         }
+      },
+      {
+        "run_id": "r-20260909T074140893253-n-pidp-earlier-deletions-census",
+        "plan": "paid-identity-deletion-protection",
+        "section": "\u00a75",
+        "node": "n-pidp-earlier-deletions-census",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1697,
+                "cached_input_tokens": 579887,
+                "input_tokens": 581586,
+                "output_tokens": 217,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 581803,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/paid-identity-deletion-protection/earlier-deletions-census.md records the count of identities this delete path removed before 2026-09-08 that remain absent, their apportioned LLMCost spend to six decimal places summing to a stated total against the 100.47 USD all-time figure, and for each one a PUBLISHED or RATIFIED or NEITHER verdict whose values vary, established from catalog cut membership and unchanged_ratification records rather than from provenance",
+          "estimated_hours": null,
+          "goal": "Establish what the deletions before 2026-09-08 cost and whether any of them was ever published or ratified",
+          "id": "n-pidp-earlier-deletions-census",
+          "lane_declaration": {
+            "backend": "clive",
+            "headroom": null,
+            "metered": false,
+            "observed_at": null,
+            "read_at": "2026-09-09T07:41:41Z",
+            "resolved_backend": "clive",
+            "utilisation_pct": null
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T074140893253-n-pidp-earlier-deletions-census/manifest.md",
+          "plan": "paid-identity-deletion-protection",
+          "requested_backend": "clive",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "guided",
+          "time_budget": "40m",
+          "write_paths": [
+            "docs/evidence/paid-identity-deletion-protection/earlier-deletions-census.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-blastradius",
+        "backend": "clive",
+        "local": false,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-09T07:41:47Z",
+        "completed_at": "2026-09-09T08:38:37.270Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 3395,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 3410,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "0a25131ea57e11676d871ac69fb5c99061268ebc",
+        "commits": [
+          "624da5ce297c2c9f73de2c04f54ee16cb429f7cd",
+          "5010cbbcefa79529687f77d7dd55c9059a3507d1"
+        ],
+        "changed_lines": {
+          "added": 604,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "bounded live census over the pre-2026-09-08 delete cohort with per-identity apportioned LLMCost and verdicts from catalog cut membership and unchanged_ratification records",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "399 still absent; 57.392665 USD over 1115 attributions; PUBLISHED 0 / RATIFIED 3 / NEITHER 396"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T074140893253-n-pidp-earlier-deletions-census/manifest.md",
+        "scope_changed": false,
+        "session_id": "cb3befbe-0e59-476b-993f-f9828774c58f",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 9476437,
+            "input_tokens_cumulative": 9476437,
+            "output_tokens": 76593,
+            "output_tokens_cumulative": 76593,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lane_receipt": {
+          "quota_state": "unmeasured",
+          "observed_at": "2026-09-09T08:38:37.270Z",
+          "effective_context_window": "unmeasured",
+          "quota_windows": [],
+          "unmeasured": {
+            "effective_context_window": "missing_rollout",
+            "quota_windows": "unmetered"
+          }
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 0,
+          "cumulative_input_tokens": 9476437,
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 3406.803,
+          "generated_tokens": 76593,
+          "generation_seconds": 3126.524,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 20.0,
+          "machine_seconds": 280.279,
+          "peak_input_tokens": 203320,
+          "tokens_per_second": 24.5,
+          "wall_tokens_per_second": 22.48
+        },
+        "follow_on_paths": [
+          "19.8s",
+          "57.392665"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-earlier-deletions-census",
+          "session_id": "cb3befbe-0e59-476b-993f-f9828774c58f",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T08:38:37.270Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -113768,6 +113948,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2051
+    "_version": 2052
   }
 }
