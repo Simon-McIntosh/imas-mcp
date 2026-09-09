@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T07:17:09",
+  "updated": "2026-09-09T07:19:30",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -111808,6 +111808,174 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T201432005643-n-pidp-restore-etendue-parent",
+        "plan": "paid-identity-deletion-protection",
+        "section": "\u00a74",
+        "node": "n-pidp-restore-etendue-parent",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 635,
+                "cached_input_tokens": 403494,
+                "input_tokens": 404131,
+                "output_tokens": 97,
+                "reasoning_output_tokens": 56,
+                "total_tokens": 404228,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/paid-identity-deletion-protection/etendue-restore.md records the identity present in the graph at name_stage=accepted with status still draft, carrying a PRODUCED_NAME producer bound to soft_x_rays/channel/etendue, its incident edge count per relationship type beside the archive count for the same name with every type absent from the archive named explicitly, and the actual LLM spend beside the authorised 100 USD ceiling",
+          "estimated_hours": null,
+          "goal": "Restore the etendue_of_spectrometer_channel parent identity by resetting and recomposing its surviving DD source",
+          "id": "n-pidp-restore-etendue-parent",
+          "lane_declaration": {
+            "backend": "codex-luna",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-08T20:14:32Z",
+            "read_at": "2026-09-08T20:14:33Z",
+            "resolved_backend": "codex-luna",
+            "utilisation_pct": 54.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T201432005643-n-pidp-restore-etendue-parent/manifest.md",
+          "plan": "paid-identity-deletion-protection",
+          "requested_backend": "codex-luna",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a74",
+          "spec_level": "exact",
+          "time_budget": "50m",
+          "write_paths": [
+            "docs/evidence/paid-identity-deletion-protection/etendue-restore.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "s10b-etendue",
+        "backend": "codex-luna",
+        "local": false,
+        "agent": {
+          "alias": "luna5.6",
+          "backend": "codex-luna",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-luna",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-08T20:14:43Z",
+        "completed_at": "2026-09-09T05:17:37Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": null,
+        "worker_seconds_source": "stalled",
+        "wall_seconds": 32574,
+        "stalled": true,
+        "time_budget": "50m",
+        "base_sha": "7aed63c4705614eda98a948450f7ccd8e54830eb",
+        "commits": [
+          "e0f9227b2b04de0c2831e159630f8b3a4bf433b7",
+          "f389ee80a69d10a63940b0ecd580a4ab8dd876ff"
+        ],
+        "changed_lines": {
+          "added": 193,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "governed rename dry-run then apply, bounded post-rename producer query, signed set_properties apply with receipt, bounded postcondition query, docs-only run capped at -c 99.79, final bounded live census",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T201432005643-n-pidp-restore-etendue-parent/final-live-census.json",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T201432005643-n-pidp-restore-etendue-parent/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a082a8-9f8e-75e0-8be1-231612083d8f",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 7220352,
+            "cached_input_tokens_cumulative": 7220352,
+            "input_tokens": 7741387,
+            "input_tokens_cumulative": 7741387,
+            "output_tokens": 34022,
+            "output_tokens_cumulative": 34022,
+            "reasoning_output_tokens": 8181,
+            "reasoning_output_tokens_cumulative": 8181
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T05:17:37Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 57.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T05:17:37Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 7220352,
+          "cumulative_input_tokens": 14961739,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 42203
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "resume",
+        "attempt": 2,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-restore-etendue-parent",
+          "session_id": "01a082a8-9f8e-75e0-8be1-231612083d8f",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T05:17:37Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -112064,6 +112232,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2035
+    "_version": 2036
   }
 }
