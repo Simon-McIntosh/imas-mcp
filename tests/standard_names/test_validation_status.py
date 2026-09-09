@@ -271,6 +271,77 @@ class TestWriteStandardNamesValidationStatus:
         else:
             pytest.fail("No MERGE StandardName query found")
 
+    def test_pooled_inline_validation_status_sets_observation(self) -> None:
+        """An incoming inline-audit verdict is stamped in the same write."""
+        mock_gc = MagicMock()
+        mock_gc.query = MagicMock(return_value=[])
+
+        with patch("imas_codex.standard_names.graph_ops.GraphClient") as MockGC:
+            MockGC.return_value.__enter__ = MagicMock(return_value=mock_gc)
+            MockGC.return_value.__exit__ = MagicMock(return_value=False)
+            from imas_codex.standard_names.graph_ops import write_standard_names
+
+            write_standard_names(
+                [
+                    {
+                        "id": "electron_temperature",
+                        "source_types": ["dd"],
+                        "source_id": "test",
+                        "validation_status": "valid",
+                    }
+                ]
+            )
+
+        for call_args in mock_gc.query.call_args_list:
+            cypher = call_args[0][0]
+            if "MERGE (sn:StandardName" not in cypher:
+                continue
+            flat_cypher = " ".join(cypher.split())
+            assert (
+                "sn.validated_at = CASE WHEN b.validation_status IS NOT NULL "
+                "THEN datetime() ELSE sn.validated_at END"
+            ) in flat_cypher
+            assert call_args[1]["batch"][0]["validation_status"] == "valid"
+            break
+        else:
+            pytest.fail("No MERGE StandardName query found")
+
+    def test_persist_without_incoming_validation_status_preserves_observation(
+        self,
+    ) -> None:
+        """A property-only persist cannot invent a validation observation."""
+        mock_gc = MagicMock()
+        mock_gc.query = MagicMock(return_value=[])
+
+        with patch("imas_codex.standard_names.graph_ops.GraphClient") as MockGC:
+            MockGC.return_value.__enter__ = MagicMock(return_value=mock_gc)
+            MockGC.return_value.__exit__ = MagicMock(return_value=False)
+            from imas_codex.standard_names.graph_ops import write_standard_names
+
+            write_standard_names(
+                [
+                    {
+                        "id": "electron_temperature",
+                        "source_types": ["dd"],
+                        "source_id": "test",
+                    }
+                ]
+            )
+
+        for call_args in mock_gc.query.call_args_list:
+            cypher = call_args[0][0]
+            if "MERGE (sn:StandardName" not in cypher:
+                continue
+            flat_cypher = " ".join(cypher.split())
+            assert (
+                "sn.validated_at = CASE WHEN b.validation_status IS NOT NULL "
+                "THEN datetime() ELSE sn.validated_at END"
+            ) in flat_cypher
+            assert call_args[1]["batch"][0]["validation_status"] is None
+            break
+        else:
+            pytest.fail("No MERGE StandardName query found")
+
 
 # =============================================================================
 # Downstream query filters

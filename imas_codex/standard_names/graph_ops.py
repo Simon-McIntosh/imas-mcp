@@ -5398,6 +5398,9 @@ def write_standard_names(
                 sn.validation_issues = coalesce(b.validation_issues, sn.validation_issues),
                 sn.validation_layer_summary = coalesce(b.validation_layer_summary, sn.validation_layer_summary),
                 sn.validation_status = coalesce(b.validation_status, sn.validation_status),
+                sn.validated_at = CASE WHEN b.validation_status IS NOT NULL
+                                  THEN datetime()
+                                  ELSE sn.validated_at END,
                 sn.link_status = coalesce(b.link_status, sn.link_status),
                 sn.review_input_hash = b.review_input_hash,
                 sn.embedding = coalesce(b.embedding, sn.embedding),
