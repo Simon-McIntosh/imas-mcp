@@ -972,7 +972,11 @@ def test_cleanup_query_rechecks_pending_and_accepted_parents() -> None:
     captured: dict[str, str] = {}
 
     class _Probe:
-        def query(self, cypher: str, **kwargs):
+        def query(self, cypher: str, **_kwargs):
+            if "MERGE (cost)-[:FOR_STANDARD_NAME]->(sn)" in cypher:
+                return [{"linked": 0}]
+            if "OPTIONAL MATCH (cost:LLMCost)-[:FOR_STANDARD_NAME]->(sn)" in cypher:
+                return []
             captured["cypher"] = cypher
             return [{"parent_id": "radius_of_magnetic_axis"}]
 

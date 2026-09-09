@@ -135,6 +135,19 @@ def automatic_deletion_protections(gc: Any, name_ids: list[str]) -> dict[str, st
     }
 
 
+def filter_automatic_deletion_candidates(gc: Any, name_ids: list[str]) -> list[str]:
+    """Return deletion candidates that carry no durable authority evidence.
+
+    Candidate selection is the routine path: protected identities are not
+    proposed for deletion.  Direct deleters must still call
+    :func:`refuse_protected_automatic_deletion` so authority added between
+    selection and mutation remains a whole-batch refusal.
+    """
+    candidates = sorted({name_id for name_id in name_ids if name_id})
+    protected_ids = set(automatic_deletion_protections(gc, candidates))
+    return [name_id for name_id in candidates if name_id not in protected_ids]
+
+
 def refuse_protected_automatic_deletion(
     gc: Any, name_ids: list[str], *, operation: str
 ) -> None:

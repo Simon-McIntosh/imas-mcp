@@ -24,10 +24,10 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-09">
-<meta name="plan-version" content="22">
+<meta name="plan-version" content="25">
 <meta name="plan-commits" content="ec9ffff58e52af06b454987705ee4f88bfa14358,33361a5354b03e1f3a56f0cb626157cb1139dca0,2e0c1b534ac98f490780f7d9b2de7e5d8a24eb7f,f11e43096b10f2a5f55466e3f82e03b1ff080688,b22d348610f58b624ef9b8448b9c721279600e54,057a04786654db8ce7a5b79b77d3b53d110fa9f6,7a89fca35428cd1e2cd4fb9524bb991ff632209f,992f0a09a3beb0bc1c12f75df0e5581a6d542055,a7dc412751a84950bc06badb6d0cbf2b5db86457,07b06c04c68a2470f36e5176dbc5995949c345dc">
 <meta name="plan-artifacts" content="docs/evidence/sn-lifecycle-integrity/delete-path-protections.md,docs/evidence/sn-lifecycle-integrity/unshielded-identity-deletions.md,docs/evidence/sn-lifecycle-integrity/mirrored-state-review.md,docs/evidence/paid-identity-deletion-protection/removed-cohort.md,docs/evidence/paid-identity-deletion-protection/restore-reuse-map.md,docs/evidence/paid-identity-deletion-protection/undispositioned-deletions.md,docs/evidence/paid-identity-deletion-protection/origin-label-audit.md,docs/evidence/paid-identity-deletion-protection/false-origin-relabel.md">
-<meta name="plan-impl" content="0.58">
+<meta name="plan-impl" content="0.64">
 </head>
 <body>
   <main class="plan-doc">
@@ -251,6 +251,42 @@
     converts whatever was passing <em>because</em> it was open into failures, all at once. Flip it in
     a scratch copy and count first; the number belongs in the brief rather than being discovered by
     the worker. Expect the exposed failures to be legitimate.</p>
+
+    <h3 id="s3a">&sect;3a &mdash; The guard is the primary filter where it should be the backstop, and it has stopped the pipeline</h3>
+
+    <p>Observed in the wild 2026-09-09, by a node doing unrelated work: a broad
+    <code>sn run</code> reached global maintenance and <strong>exited 1</strong> on structural
+    derived-parent cleanup, refusing over four protected identities &mdash;
+    <code>electron_power_density_due_to_collisions</code>, <code>ion_charge_state_power</code>,
+    <code>ion_power_density</code> and <code>pressure_at_pedestal_top</code>. The guard did
+    exactly what &sect;3 specified. The consequence is that <strong>global maintenance now fails
+    every time it runs</strong>, because those identities carry recorded spend, are therefore
+    permanently protected, and keep failing placeholder admission &mdash; so they sit permanently
+    in the candidate set.</p>
+
+    <p><strong>The defect is placement, not policy.</strong>
+    <code>refuse_protected_automatic_deletion</code> is called at
+    <code>graph_ops.py:3672</code>, <em>after</em> the candidate set is assembled, and its
+    docstring is accurate: <em>&ldquo;Refuse a whole automatic batch when any identity is
+    protected.&rdquo;</em> Whole-batch refusal is right &mdash; &sect;3 ruled partial execution
+    unacceptable and that ruling stands. But refusing at deletion time makes the guard the
+    <strong>primary filter</strong>, so a routine &ldquo;nothing here to reap&rdquo; is raised as a
+    fatal error and takes every other legitimate maintenance task down with it.</p>
+
+    <p><strong>Exclude protected identities from candidate selection; keep the refusal as the
+    backstop.</strong> A pass that never proposes to delete a protected identity has nothing to
+    refuse, and the guard then fires only on a genuine surprise &mdash; which is what a backstop
+    is for. This weakens nothing: the selector gains an exclusion, the refusal keeps its
+    whole-batch semantics, and the ceiling is untouched. Note the distinction from &sect;3's
+    partial-execution ban, because the two are easy to conflate: <em>not selecting</em> a
+    protected row is not the same as <em>executing part of</em> a batch that contains one.</p>
+
+    <p>Done when a broad <code>sn run</code> completes global maintenance without refusing over a
+    protected identity, a test fails if the selector's exclusion is removed, and a second test
+    still proves the deletion-time refusal fires when a protected identity is handed to the
+    deleter directly. The pipeline being unrunnable without
+    <code>--skip-global-maintenance</code> is the cost of leaving this, and that flag is a
+    workaround a caller has to know rather than a fix.</p>
 
     <h2 id="s4">§4 &mdash; The restore, and the reclassification it cannot avoid</h2>
 
@@ -660,7 +696,13 @@
     <div class="r-comment-body"><p>the WEST blocker is resolved under the lead-ruled name: etendue_of_soft_xray_detector is live at origin=pipeline, status=draft, name_stage=accepted, docs_stage=accepted at score 0.9875, validation valid, one PRODUCED_NAME producer bound to dd:soft_x_rays/channel/etendue, and the archived spelling is gone. Coordinator verified every property and the 16 incident edges independently. Total provider spend 0.305296 USD against the authorised 100. The 16-versus-20 archive gap is recorded per relationship type and is owned by the reconstruction adapter, as is the spectral child under its corrected spelling</p></div>
 </div>
 <div class="r-comment" data-section="s4" data-id="c-20260909T0720-first-identity-restored" data-who="reckon-ship" data-when="2026-09-09T07:20:00Z">
-    <div class="r-comment-body"><p><strong>The first identity is back, and the recovery has stopped being entirely prospective.</strong> <code>etendue_of_soft_xray_detector</code> is live at <code>origin='pipeline'</code>, <code>status='draft'</code>, <code>name_stage='accepted'</code>, <code>docs_stage='accepted'</code> at score 0.9875, <code>validation_status='valid'</code>, carrying exactly one <code>PRODUCED_NAME</code> producer bound to <code>dd:soft_x_rays/channel/etendue</code>. Every property and the 16 incident edges were <strong>verified independently by the coordinator</strong>, and the archived spelling is absent. Commits e0f9227b2 and f389ee80a. <strong>Actual provider spend $0.305296 against the authorised $100.00</strong> &mdash; $0.207 on name composition and review, $0.099 on documentation.</p><p><strong>All four routes of the restore are now proven end to end on one name, which was the point of starting here.</strong> The governed reset cleared the attempt-capped source, the exact focus run composed and reviewed, the signed <code>set_properties</code> boundary wrote the two properties with a receipt, and the capped docs-only run finished the documentation axis. None of it needed new machinery.</p><p><strong>Two things this node deliberately did not do, and both are correct.</strong> It recorded the <strong>16-versus-20</strong> incident-edge comparison per relationship type rather than reaching for equality: the archived derived producer, four reviews, two docs revisions, four internal changes, the physics-domain edge, the structural authority and the child edge all need the narrowly typed reconstruction adapter, which is the only new machinery the reuse map judged justified. And it left the spectral child alone &mdash; that identity must return as <code>spectral_etendue_of_soft_xray_detector</code>, and its three <code>unchanged_ratification</code> rows make the respelling catalog-visible.</p><p><strong>The rename was the substance of this node, not a detail of it.</strong> The composer, reading the DD definition cold, proposed the detector spelling; the first attempt renamed it away to satisfy an archival criterion and the worker blocked rather than let that stand. It was right to: the hard and soft etendue documentation strings are byte-identical, so nothing in the source distinguished them and the archived spelling was simply an error. After the corrected rename the producer count was re-read explicitly rather than inferred from the rename succeeding, because a rename on this surface has previously left both identities with zero producers while the accounting still closed at zero residue.</p></div>
+    <div class="r-comment-body"><p><strong>The first identity is back, and the recovery has stopped being entirely prospective.</strong> <code>etendue_of_soft_xray_detector</code> is live at <code>origin='pipeline'</code>, <code>status='draft'</code>, <code>name_stage='accepted'</code>, <code>docs_stage='accepted'</code> at score 0.9875, <code>validation_status='valid'</code>, carrying exactly one <code>PRODUCED_NAME</code> producer bound to <code>dd:soft_x_rays/channel/etendue</code>. Every property and the 16 incident edges were <strong>verified independently by the coordinator</strong>, and the archived spelling is absent. Commits e0f9227b2 and f389ee80a. <strong>Actual provider spend $0.305296 against the authorised $100.00</strong> — $0.207 on name composition and review, $0.099 on documentation.</p><p><strong>All four routes of the restore are now proven end to end on one name, which was the point of starting here.</strong> The governed reset cleared the attempt-capped source, the exact focus run composed and reviewed, the signed <code>set_properties</code> boundary wrote the two properties with a receipt, and the capped docs-only run finished the documentation axis. None of it needed new machinery.</p><p><strong>Two things this node deliberately did not do, and both are correct.</strong> It recorded the <strong>16-versus-20</strong> incident-edge comparison per relationship type rather than reaching for equality: the archived derived producer, four reviews, two docs revisions, four internal changes, the physics-domain edge, the structural authority and the child edge all need the narrowly typed reconstruction adapter, which is the only new machinery the reuse map judged justified. And it left the spectral child alone — that identity must return as <code>spectral_etendue_of_soft_xray_detector</code>, and its three <code>unchanged_ratification</code> rows make the respelling catalog-visible.</p><p><strong>The rename was the substance of this node, not a detail of it.</strong> The composer, reading the DD definition cold, proposed the detector spelling; the first attempt renamed it away to satisfy an archival criterion and the worker blocked rather than let that stand. It was right to: the hard and soft etendue documentation strings are byte-identical, so nothing in the source distinguished them and the archived spelling was simply an error. After the corrected rename the producer count was re-read explicitly rather than inferred from the rename succeeding, because a rename on this surface has previously left both identities with zero producers while the accounting still closed at zero residue.</p></div>
+</div>
+<div class="r-comment" data-section="s4" data-id="c-run-r-20260909T072200532479-n-pidp-archive-reconstruction-adapter" data-who="s10b-export" data-when="2026-09-09T07:37:55Z">
+    <div class="r-comment-body"><p>the one justified piece of new machinery exists and is narrow: 674 insertions and zero deletions, 5 tests covering creation plus each of the four named refusals (type outside the registry, counterpart neither live nor included, existing node with non-identical state, per-type archive-versus-live count mismatch), refusals short-circuit the apply. Full suite 7294 to 7299 passed, 0 failed, zero added. Coordinator audit found no arbitrary-Cypher or arbitrary-label authority added and no assertion or raise deleted</p></div>
+</div>
+<div class="r-comment" data-section="s4" data-id="c-20260909T0740-the-adapter-exists-and-is-narrow" data-who="reckon-ship" data-when="2026-09-09T07:40:00Z">
+    <div class="r-comment-body"><p><strong>The one piece of new machinery the reuse map judged justified now exists, and it is narrow.</strong> Commit f65d82e75: <strong>674 insertions, zero deletions</strong> — 401 lines in <code>signed_manifest.py</code> and 273 of tests. Five tests: one proving it creates an absent <code>StandardName</code> with its allowlisted archived edges under a signed exact-identity manifest, and one for each of the four refusals the plan required — a relationship type outside the registry, an archived edge whose counterpart is neither live nor included, a node already present with non-identical state, and a per-type archive-versus-live count mismatch. Refusals short-circuit the apply, so a partial reconstruction cannot commit.</p><p><strong>The gate was the full suite, not a cohort, and that was deliberate.</strong> 7294 passed at the base to 7299 after, zero failed, the five new being its own tests. This node touches a shared transaction boundary, so the lesson from the export gate earlier in the session was applied here rather than only written down: derive the gate from what the change can reach.</p><p><strong>The audit that mattered was the negative one.</strong> The risk in adding a reconstruction mutation is that it quietly becomes general authority. Coordinator check found <strong>zero</strong> additions of arbitrary Cypher, arbitrary label handling, or an allow-all path, and <strong>zero</strong> deleted assertions or raises. So the adapter can create the identities the restore needs and nothing wider, which is the property that made it worth building rather than extending an existing writer.</p><p>It is not yet proven against the live graph. The next node applies it to a single ratified identity — the spectral child, under its corrected spelling — before the source-less cohort fans out behind it, on the same reasoning that put one name in front of the other sixty-six.</p></div>
 </div>
 <div class="r-comment" data-section="s6" data-id="c-run-r-20260908T192134671323-n-pidp-undispositioned-fifteen" data-who="s10b-fifteen" data-when="2026-09-08T19:41:10Z">
     <div class="r-comment-body"><p>15 rows dispositioned: 11 RESTORE, 4 CORRECTLY REMOVED, 0 without verdict; reconciles 78+15=93 on the whole-minute bound; 2.269733 USD apportioned; found only 3 of the 15 present in the archive, so 8 RESTORE identities have no archive material</p></div>
