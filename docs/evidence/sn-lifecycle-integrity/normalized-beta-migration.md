@@ -454,7 +454,7 @@ The two thermal review rotations spent USD 0.218410 and USD 0.714115. Added to
 the USD 0.796979 already spent on the total identity, cumulative spend is USD
 1.729504 of the USD 15.00 ceiling.
 
-## Remaining work
+## Review-first blocked state
 
 The thermal identity is now `name_stage='exhausted'` because an identity with
 zero producers cannot persist its proposed refined spelling. A sanctioned
@@ -472,3 +472,61 @@ thermal identity still has zero producers and no docs review. Both
 `REFINED_FROM` directions between `normalized_toroidal_beta` and
 `normalized_toroidal_plasma_beta` also remain present; no lineage mutation was
 attempted.
+
+## Source-first recovery reaches a cyclic admission guard
+
+The ordering was explicitly reversed: restore the exhausted name stage,
+atomically migrate the thermal source, and only then review. A third narrow
+authority changed only `name_stage` from `exhausted` to `drafted`. Its preview
+admitted 1/1 with zero refusals. The exact apply returned `applied`, changed
+one row, made two persistent writes, and created one receipt.
+
+- Authority file SHA-256:
+  `ae7ba1b93e822e3505644b93b56afed0732bdb4839b7d4f4eef4216d91aab110`
+- Authority payload SHA-256:
+  `47b05811e6f4724cd514553db95141071f1342bf747d04054b61b7f4a0df043d`
+- Manifest SHA-256:
+  `f04ab04b9a3762b4593f0163bcdb53f4fbb2873f1a9b03f3763af3376e2f8b18`
+- Receipt:
+  `sn-change:signed-manifest:f04ab04b9a3762b4593f0163bcdb53f4fbb2873f1a9b03f3763af3376e2f8b18:20e31bba4fbc788ae7194f4f`
+
+The independent post-read showed `status='draft'`, `name_stage='drafted'`, the
+existing 0.6875 name score preserved, `docs_stage='pending'`, zero producers,
+and no claim.
+
+The repository does provide an atomic ordinary-source migration adapter. In
+one transaction it deletes the incumbent `PRODUCED_NAME`, creates the new
+one, retargets `produced_sn_id`, moves the DD node's `HAS_STANDARD_NAME`
+projection, and recomputes `source_paths` on both identities. The authority
+bound the live incumbent relationship
+`5:64c142ee-5782-46f9-a287-8df126a67943:1788058` and all three nodes.
+
+Its live preview wrote nothing and returned:
+
+```text
+outcome: refused
+authority rows: 1
+admitted: 0
+refused: 1
+row: dd:summary/global_quantities/beta_tor_thermal_norm/value
+reason: signed ordinary source lifecycle does not match migration authority
+```
+
+The refusal is the adapter's hard destination guard: an ordinary source may
+move only to a target whose `name_stage='accepted'`, `validation_status='valid'`,
+and catalog status is not terminal. The thermal target is valid and draft, but
+its name stage is only drafted. The preconditions are therefore cyclic:
+refinement refuses without a producer, while atomic producer migration refuses
+until refinement has already accepted the target.
+
+No migration apply, detach, attach, docs rotation, or lineage change followed
+the refusal. Both DD paths remain on `normalized_toroidal_beta`; its producer
+count remains eight, the thermal identity has zero, and both `REFINED_FROM`
+directions remain. Signed operations spent no provider money, so cumulative
+spend remains USD 1.729504 of USD 15.00.
+
+Breaking this cycle requires a sanctioned adapter that can atomically move an
+ordinary source to a nonterminal drafted target specifically so its review can
+become source-backed, or another authority that resolves both preconditions
+without creating an unbound source interval. Repeating either existing command
+against the unchanged guard would reproduce the same refusal.
