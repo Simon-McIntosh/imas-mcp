@@ -43,6 +43,7 @@ def _match(name_id: str, **overrides: object) -> dict[str, object]:
         "drain_scope_claimed_at": None,
         "drain_claim_scope_id": None,
         "run_id": None,
+        "updated_at": "2026-09-09T13:00:00Z",
         "unit": "T",
         "physics_domain": "magnetics",
     }
@@ -92,6 +93,7 @@ class _Transaction:
                 ):
                     properties["name_stage"] = "drafted"
                     properties["run_id"] = params["run_id"]
+                    properties["updated_at"] = "2026-09-09T13:00:01Z"
                     staged_ids.append(name_id)
             return [{"staged_ids": staged_ids}]
         raise AssertionError(f"unexpected query: {query}")
@@ -124,6 +126,22 @@ class _Client:
 
     def session(self) -> _Session:
         transaction = _Transaction(self.state)
+        self.transactions.append(transaction)
+        return _Session(transaction)
+
+
+class _UnexpectedMutationTransaction(_Transaction):
+    def run(self, query: str, **params: object) -> list[dict[str, object]]:
+        result = super().run(query, **params)
+        if "ACCEPTED_REVIEW_RESTAGE_MUTATION" in query:
+            for target in params["targets"]:
+                self.state[str(target["id"])][0]["properties"]["unexpected"] = True
+        return result
+
+
+class _UnexpectedMutationClient(_Client):
+    def session(self) -> _Session:
+        transaction = _UnexpectedMutationTransaction(self.state)
         self.transactions.append(transaction)
         return _Session(transaction)
 
@@ -226,6 +244,44 @@ def test_atomic_apply_preserves_identity_bindings_and_writes_no_score() -> None:
         assert state[name_id][0]["outgoing"] == before[name_id][0]["outgoing"]
         assert state[name_id][0]["incoming"] == before[name_id][0]["incoming"]
     assert client.transactions[0].committed is True
+
+
+def test_null_score_accepted_row_requires_a_new_timestamp() -> None:
+    state = {"plasma_current": [_match("plasma_current")]}
+    client = _Client(state)
+
+    receipt = restage_accepted_names_for_review(
+        ["plasma_current"],
+        include_accepted=True,
+        dry_run=False,
+        gc=client,
+    )
+
+    assert receipt["outcome"] == "applied"
+    assert state["plasma_current"][0]["properties"]["reviewer_score_name"] is None
+    assert state["plasma_current"][0]["properties"]["updated_at"] == (
+        "2026-09-09T13:00:01Z"
+    )
+
+
+def test_post_state_proof_rejects_an_unexpected_mutation() -> None:
+    state = {"plasma_current": [_match("plasma_current")]}
+    client = _UnexpectedMutationClient(state)
+
+    try:
+        restage_accepted_names_for_review(
+            ["plasma_current"],
+            include_accepted=True,
+            dry_run=False,
+            gc=client,
+        )
+    except RuntimeError as exc:
+        assert str(exc) == "accepted restage post-state proof failed"
+    else:
+        raise AssertionError("unexpected mutation must fail the post-state proof")
+
+    assert client.transactions[0].committed is False
+    assert client.transactions[0].rolled_back is True
 
 
 def test_replay_of_the_same_cohort_is_idempotent() -> None:
