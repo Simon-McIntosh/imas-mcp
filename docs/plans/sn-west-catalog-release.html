@@ -28,7 +28,7 @@
 <meta name="plan-capability-verification" content="strict">
 <meta name="plan-capability-risk" content="critical">
 <meta name="plan-impl" content="0.95">
-<meta name="plan-version" content="228">
+<meta name="plan-version" content="229">
 <meta name="plan-commits" content="72b7760c60ac307f641e7e8490b7f15e532d2104">
 <meta name="plan-artifacts" content="docs/evidence/sn-west-catalog-release/residue-currency.md,tests/standard_names/test_review_body_ledger_link.py">
 </head>
@@ -985,6 +985,9 @@ rows: 20   foldable-remaining: 0   unreconciled-runs: 0</pre><p><strong>Live poi
 </div>
 <div class="r-comment" data-section="cut-predates-its-problems" data-id="c-run-r-20260909T153452502947-n-swcr-clear-the-pending-and-drafted-rows" data-who="s10b-quarantine" data-when="2026-09-09T16:18:03Z">
     <div class="r-comment-body"><p>All 13 rows now carry an observed valid verdict where 8 had none, and 6 reached name-accepted. The drain cleared 8 of 8 pending-unobserved rows with 0 quarantined. The worker also caught a fence violation in flight and stopped it: its first gap-only command was interrupted when the DEFAULT refine pool claimed 2 below-threshold rows, which the brief had explicitly forbidden - it persisted no refined successor, let the canonical worker-failure cleanup release all 6 interrupted claims, then re-ran the axes explicitly as review_name-only and review_docs-only so no refinement could activate. That is the difference between a node that follows a fence and one that reports a green exit code. Final state across the 13: 13 observed valid verdicts, 0 live claims, 6 name-accepted, 5 name-reviewed, 2 name-exhausted, 7 docs-accepted, 1 docs-reviewed, 5 docs-pending. The 5 reviewed and 2 exhausted are honest below-threshold naming results rather than missing evidence, and exhausted is terminal - those need semantic refinement, not another rotation. Spend 2.270857 USD of the authorised 25</p></div>
+</div>
+<div class="r-comment" data-section="cut-predates-its-problems" data-id="c-run-r-20260909T201441105502-n-swcr-clear-the-false-outline-quarantines" data-who="s10b-westtail" data-when="2026-09-09T20:14:50.845Z">
+    <div class="r-comment-body"><p>Dispatched to a member whose captured session had read a PNG earlier today, and the clive lane is not multimodal - so the run returned API Error 400 deepseek-v4-flash is not a multimodal model in 6 seconds with no turn taken. This sharpens a finding from earlier: the hazard is NOT limited to crew resume. A FRESH dispatch to a member reuses that member&#x27;s session, so once any run on a member reads an image, every later dispatch to that member on a non-multimodal lane fails identically. The remedy is a member with a clean session, registered as s10c-local. Nothing was written and no graph row was touched</p></div>
 </div>
 </section>
 </main>
