@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-09">
-<meta name="plan-version" content="25">
+<meta name="plan-version" content="26">
 <meta name="plan-commits" content="ec9ffff58e52af06b454987705ee4f88bfa14358,33361a5354b03e1f3a56f0cb626157cb1139dca0,2e0c1b534ac98f490780f7d9b2de7e5d8a24eb7f,f11e43096b10f2a5f55466e3f82e03b1ff080688,b22d348610f58b624ef9b8448b9c721279600e54,057a04786654db8ce7a5b79b77d3b53d110fa9f6,7a89fca35428cd1e2cd4fb9524bb991ff632209f,992f0a09a3beb0bc1c12f75df0e5581a6d542055,a7dc412751a84950bc06badb6d0cbf2b5db86457,07b06c04c68a2470f36e5176dbc5995949c345dc">
 <meta name="plan-artifacts" content="docs/evidence/sn-lifecycle-integrity/delete-path-protections.md,docs/evidence/sn-lifecycle-integrity/unshielded-identity-deletions.md,docs/evidence/sn-lifecycle-integrity/mirrored-state-review.md,docs/evidence/paid-identity-deletion-protection/removed-cohort.md,docs/evidence/paid-identity-deletion-protection/restore-reuse-map.md,docs/evidence/paid-identity-deletion-protection/undispositioned-deletions.md,docs/evidence/paid-identity-deletion-protection/origin-label-audit.md,docs/evidence/paid-identity-deletion-protection/false-origin-relabel.md">
 <meta name="plan-impl" content="0.64">
@@ -281,12 +281,40 @@
     partial-execution ban, because the two are easy to conflate: <em>not selecting</em> a
     protected row is not the same as <em>executing part of</em> a batch that contains one.</p>
 
-    <p>Done when a broad <code>sn run</code> completes global maintenance without refusing over a
-    protected identity, a test fails if the selector's exclusion is removed, and a second test
-    still proves the deletion-time refusal fires when a protected identity is handed to the
-    deleter directly. The pipeline being unrunnable without
-    <code>--skip-global-maintenance</code> is the cost of leaving this, and that flag is a
-    workaround a caller has to know rather than a fix.</p>
+    <p><strong>The scope is far wider than global maintenance, and this section under-stated it
+    when first written.</strong> Measured 2026-09-09 by the pedestal-family restore, which the
+    defect blocked outright: <code>write_standard_names</code> hands the <em>relationship-side</em>
+    <code>skeleton_candidate_ids</code> to <code>refuse_protected_automatic_deletion</code>
+    <strong>before</strong> its deletion query applies the positive placeholder predicates. So the
+    guard is evaluated against the broad relationship candidate set rather than against the
+    query-proven deletable skeleton set, and <strong>ordinary composition of any paid family
+    identity raises <code>ProtectedDeletionError</code> before a single <code>StandardName</code>
+    can commit</strong>. The exact 21-source gap-only run produced 9 pool errors, 0 names
+    composed, 0 of 19 children, and 0 of 21 producer edges &mdash; at $0.000000, so the failure
+    was free but total.</p>
+
+    <p><strong>The guard built to protect the restore is what prevents the restore.</strong> That
+    is not an argument for weakening it; it is the strongest available argument for moving the
+    evaluation to where the deletable set is actually known. A guard asked whether a
+    <em>relationship candidate</em> is protected can only answer yes, because every paid identity
+    is; the question it was designed to answer is whether a <em>placeholder proposed for
+    deletion</em> is protected, and that set is not known until the positive predicates run.</p>
+
+    <p><strong>Why no gate caught it.</strong> &sect;3 was verified against
+    <code>tests/standard_names</code>, and the default markers exclude <code>graph</code>, so
+    live composition was never exercised. The repository's own guidance names this exactly &mdash;
+    <em>the default markers exclude graph, so Cypher you edit is never executed</em> &mdash; and it
+    bit the guard itself. A protection whose whole subject is a live graph write cannot be proven
+    by a suite that never reaches the graph.</p>
+
+    <p>Done when the exact 21-source gap-only pedestal run composes without raising, a test fails
+    if the positive-predicate ordering is reverted so the guard again sees the broad candidate
+    set, a second test still proves <code>refuse_protected_automatic_deletion</code> raises when a
+    protected identity is handed to the deleter directly, and a broad <code>sn run</code>
+    completes global maintenance without refusing over a protected identity.
+    <code>--skip-global-maintenance</code> conceals the maintenance half and does nothing for the
+    composition half, so it is not a workaround for this &mdash; it is what hid the wider scope
+    until a restore tried to run.</p>
 
     <h2 id="s4">§4 &mdash; The restore, and the reclassification it cannot avoid</h2>
 
