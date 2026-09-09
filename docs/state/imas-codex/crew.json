@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T22:18:03",
+  "updated": "2026-09-09T22:30:47",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -119678,6 +119678,194 @@
         "watch_override": null,
         "tool_steps": 0.0,
         "orientation_input_tokens": null
+      },
+      {
+        "run_id": "r-20260909T201855202216-n-swcr-clear-the-false-outline-quarantines",
+        "plan": "sn-west-catalog-release",
+        "section": "cut-predates-its-problems",
+        "node": "n-swcr-clear-the-false-outline-quarantines",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1246,
+                "cached_input_tokens": 645031,
+                "input_tokens": 646279,
+                "output_tokens": 1309,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 647588,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/sn-west-catalog-release/outline-quarantine-clearance.md reports the live count of StandardName rows carrying the semantic issue text about an outline needing to specify what entity path or boundary is described - measured at 9 before the grammar fix - then re-validates exactly those rows and reports the count afterwards, naming any row that still carries it and why. For each of the three WEST batch members radial_outline_of_plasma_boundary, radial_outline_of_wall and vertical_outline_of_plasma_boundary, report before and after values for validation_status, validated_at, validation_issues, name_stage and docs_stage, and state whether a fresh export would now admit it. imas-standard-names v0.9.2 is released and pinned and the corrected rule is confirmed live in this checkout: a fresh interpreter shows the three qualified outlines CLEAN while bare outline and bare trajectory still error, so the fix is in place and this node only needs to make the graph observe it. Re-validate through the sanctioned drain_validation_for_ids path rather than by writing validation_status or validated_at directly, because a hand-set verdict asserts an observation that never happened. vertical_outline_of_plasma_boundary carries a SECOND advisory issue - unit_dimension_check wants a metre description to name a coordinate - so report whether it still fires and treat it as a description-wording matter; do not edit the description in this node, only report it. Touch no row outside the measured cohort, attempt no signed manifest apply, and run no broad pipeline. Live graph work runs on the login node because the Neo4j tunnel is login-node-local; keep every query bounded and under ten seconds and say so. Never pipe imas-codex CLI output; read its log afterwards. Produce no figure and read no image file: this lane is not multimodal and any image in the session makes the run unrecoverable. Write the manifest before any long step because your process ends with its turn.",
+          "estimated_hours": null,
+          "goal": "Make the graph observe the corrected grammar so the falsely quarantined outline rows clear",
+          "id": "n-swcr-clear-the-false-outline-quarantines",
+          "lane_declaration": {
+            "backend": "clive",
+            "headroom": null,
+            "metered": false,
+            "observed_at": null,
+            "read_at": "2026-09-09T20:18:56Z",
+            "resolved_backend": "clive",
+            "utilisation_pct": null
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T201855202216-n-swcr-clear-the-false-outline-quarantines/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requested_backend": "clive",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "cut-predates-its-problems",
+          "spec_level": "guided",
+          "time_budget": "50m",
+          "token_budget": null,
+          "write_paths": [
+            "docs/evidence/sn-west-catalog-release/outline-quarantine-clearance.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10c-local",
+        "backend": "clive",
+        "local": false,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-09T20:19:04Z",
+        "completed_at": "2026-09-09T20:29:09.255Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 596,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 605,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "67589ad8491e5449badf20c3b2fef8c1ea1d9000",
+        "commits": [
+          "7c6a27619dd971cfe13a424981ccd548f9bf397a"
+        ],
+        "changed_lines": {
+          "added": 381,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "pre-census of the issue phrase, corrected-rule interpreter probe, cohort-only drain_validation_for_ids, post-census, then export admission through _fetch_export_population and _classify_export_population",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "9 to 3 rows, the 3 remaining all bare outlines; drain cleared 9 validated 9, 5 valid 4 quarantined; 2 of 3 WEST members admitted, the third excluded as name_not_accepted"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T201855202216-n-swcr-clear-the-false-outline-quarantines/manifest.md",
+        "scope_changed": false,
+        "session_id": "d6ad12ba-f851-4c71-9127-13e408775276",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 7595472,
+            "input_tokens_cumulative": 7595472,
+            "output_tokens": 36082,
+            "output_tokens_cumulative": 36082,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lane_receipt": {
+          "quota_state": "unmeasured",
+          "observed_at": "2026-09-09T20:29:09.255Z",
+          "effective_context_window": "unmeasured",
+          "quota_windows": [],
+          "notional_cost_usd": "unmeasured",
+          "rate_basis": "unmeasured",
+          "unmeasured": {
+            "effective_context_window": "missing_rollout",
+            "notional_cost_usd": "missing_rollout",
+            "rate_basis": "missing_rollout",
+            "quota_windows": "unmetered"
+          }
+        },
+        "lineage": {
+          "attempt": 2,
+          "kind": "redispatch",
+          "previous_run_id": "r-20260909T201441105502-n-swcr-clear-the-false-outline-quarantines",
+          "root_run_id": "r-20260909T201441105502-n-swcr-clear-the-false-outline-quarantines"
+        },
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 0,
+          "cumulative_input_tokens": 7595472,
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 602.119,
+          "generated_tokens": 36082,
+          "generation_seconds": 542.43,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 13.8,
+          "machine_seconds": 59.689,
+          "peak_input_tokens": 140170,
+          "tokens_per_second": 66.52,
+          "wall_tokens_per_second": 59.93
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "redispatch",
+        "attempt": 2,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-swcr-clear-the-false-outline-quarantines",
+          "session_id": "d6ad12ba-f851-4c71-9127-13e408775276",
+          "session_source": "stream",
+          "retained_at": "2026-09-09T20:29:09.255Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null,
+        "tool_steps": 75.0,
+        "orientation_input_tokens": 5827482.0
       }
     ],
     "holds": [
@@ -119948,6 +120136,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2084
+    "_version": 2085
   }
 }
