@@ -15,8 +15,8 @@ The graph postcondition remains:
 - `density_at_pedestal_top` is absent and has **0 of 19** required incoming
   `HAS_PARENT` edges;
 - no `origin` value was written on the parent; and
-- **$0.000000** was spent in 9 recorded `generate_name` calls against the
-  authorised **$100.00** restore ceiling.
+- **$0.000000** was spent in 20 recorded `generate_name` calls across both
+  attempts against the authorised **$100.00** restore ceiling.
 
 This is a hard implementation blocker, not a provider, credential, source-data,
 or budget failure.
@@ -115,13 +115,58 @@ deletion refusal and deletion statement in the same transaction. Focused tests
 must prove both halves: a paid real identity may be composed without entering
 the delete candidate set, while a paid id-only placeholder remains undeletable.
 
+## Resumption after the merged candidate-filter repair
+
+The requested corrective history was merged into this worktree at
+`9284f2138226e4ac937602e6f1f691c7e84d7627`. Verification read the content of
+that `HEAD`, not merely commit ancestry:
+
+- `protection.py` still defines `refuse_protected_automatic_deletion` and raises
+  `ProtectedDeletionError`, preserving the deletion-time backstop; and
+- `graph_ops.py` now sends the candidates returned by
+  `_query_derived_parents_for_admission_cleanup` through
+  `filter_automatic_deletion_candidates`.
+
+That exclusion is real, but it is on a different path from the failure above.
+The failing `write_standard_names` path still obtains
+`skeleton_candidate_ids` from `_write_standard_name_edges`, passes the entire
+set directly to `refuse_protected_automatic_deletion`, and only afterward puts
+the positive placeholder predicates in its deletion statement. The merge did
+not change that call boundary.
+
+The worktree-bound resumption proved the distinction. Its imports resolved
+from this detached worktree, its preflight again found 21 sources, all 21
+`extracted`, none claimed or bound, and its dry run again reported 21 focused
+paths with zero writes. The live run used scope
+`ab862cd7-2e3c-4b06-9bec-6903f6337fa3` and accounting run
+`da581695-fe36-4326-ae05-5f7bd8bae52f`. It again raised
+`ProtectedDeletionError` from `write_standard_names`'s **skeleton placeholder
+cleanup**, first on `helium_3_density_at_pedestal_top` and then on other paid
+family members including `tritium_density_at_pedestal_top`,
+`carbon_density_at_pedestal_top`, and
+`deuterium_tritium_density_at_pedestal_top`. One concurrent persistence
+attempt also reported a Neo4j transaction deadlock during shutdown grace; it
+committed no identity.
+
+After 11 pool errors the live census still returned 0 children, 0 DD producer
+edges, and no parent. The run was interrupted under the repeated-failure fence:
+the same exact command had now failed twice with a distinct repair attempted.
+Its 11 completed `generate_name` cost rows sum to **$0.000000**.
+
+The parent-origin judgement is nevertheless settled for the successful resume.
+Each child must carry `origin='pipeline'` because it has a direct DD producer.
+`density_at_pedestal_top` has no direct producer; it is materialised from the
+nineteen child edges and its structural `derived:` producer. Therefore
+`origin='derived'` is the truthful parent value, and no later property rewrite
+should replace it with `pipeline`.
+
 ## Post-run graph state and relationship comparison
 
-The interrupted run left all 21 sources `extracted`, unclaimed and unbound. It
-stamped their exact ephemeral scope id, but created no target node and no
-producer edge. The authoritative accounting row reports `stop_reason=interrupted`,
-`names_composed=0`, `names_reviewed=0`, `cost_limit=99.69`, and
-`cost_spent=0.0`. The nine `LLMCost` rows for this scope are all
+Both interrupted runs left all 21 sources `extracted`, unclaimed and unbound.
+They stamped exact ephemeral scope ids, but created no target node and no
+producer edge. Both authoritative accounting rows report
+`stop_reason=interrupted`, `names_composed=0`, `cost_limit=99.69`, and
+`cost_spent=0.0`. Their 20 completed `LLMCost` rows are all
 `phase='generate_name'`, model `hosted_vllm/deepseek-v4-flash`, and sum to
 **$0.000000**.
 
@@ -155,6 +200,6 @@ repaired and tested, re-run the same gap-only exact-source command: the 21
 sources are still `extracted` and unbound, so they remain the correct substrate.
 The restore node must then verify all nineteen children at `origin='pipeline'`,
 `status='draft'`, each with its own DD producer, before accepting the structural
-tail's parent; it must state the parent origin actually written together with
-the producer topology that supports that value. Only then can the exact
-archive/live per-relationship-type comparison be completed.
+tail's parent at `origin='derived'`, supported by nineteen incoming child edges
+and the structural `derived:` producer. Only then can the exact archive/live
+per-relationship-type comparison be completed.
