@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T14:29:35",
+  "updated": "2026-09-09T14:43:11",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -117405,6 +117405,178 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T103104976349-n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin",
+        "plan": "paid-identity-deletion-protection",
+        "section": "\u00a77",
+        "node": "n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 3243,
+                "cached_input_tokens": 762525,
+                "input_tokens": 765770,
+                "output_tokens": 1001,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 766771,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/paid-identity-deletion-protection/manifest-origin-repair.md records one row per identity in the west review manifest name list that is not among the export report's emitted identities and carries a null origin at run time, each with its PRODUCED_NAME producers, the value written and its signed receipt, and a stated verdict rather than a written value for any identity with no producer; and a re-run of the census afterwards returns zero producer-backed null-origin identities across that whole manifest name list",
+          "estimated_hours": null,
+          "goal": "Give a truthful provenance to the manifest identities outside the emitted cut that still carry a null origin",
+          "id": "n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin",
+          "lane_declaration": {
+            "backend": "codex-terra",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T10:31:05Z",
+            "read_at": "2026-09-09T10:31:06Z",
+            "resolved_backend": "codex-terra",
+            "utilisation_pct": 72.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T103104976349-n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin/manifest.md",
+          "plan": "paid-identity-deletion-protection",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a77",
+          "spec_level": "guided",
+          "time_budget": "45m",
+          "write_paths": [
+            "docs/evidence/paid-identity-deletion-protection/manifest-origin-repair.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-export",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T10:31:16Z",
+        "completed_at": "2026-09-09T12:41:37Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": null,
+        "worker_seconds_source": "stalled",
+        "wall_seconds": 7821,
+        "stalled": true,
+        "time_budget": "45m",
+        "base_sha": "8f072b9acd29ce56e63139399923fc7c3074fb6c",
+        "commits": [
+          "3d751cd8566c94a565786632a8a344ef70e634a8",
+          "4d9acc09b39d5ea4d91b4f5646234da3f2131bd7"
+        ],
+        "changed_lines": {
+          "added": 90,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "bounded pre-census, quiet-graph signed preview, one authorised atomic apply with receipt verification, a receipt replay to prove idempotency, then a full 227-name post-census",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "preview would_apply admitted=10 refused=0; apply 10 writes + 10 receipt rows; replay already_applied changed=0; post-census 0 producer-backed nulls, 225 pipeline, 19/19 outside-cut pipeline"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T103104976349-n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a08287-cd7b-7372-8865-9d5263ecb100",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 10594176,
+            "cached_input_tokens_cumulative": 16442624,
+            "input_tokens": 10854072,
+            "input_tokens_cumulative": 16765267,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 30270,
+            "reasoning_output_tokens": 0,
+            "reasoning_output_tokens_cumulative": 6283
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T12:41:37Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 80.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T12:41:37Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": []
+        },
+        "throughput": {
+          "cumulative_cached_input_tokens": 16442624,
+          "cumulative_input_tokens": 33207891,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 36553
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "resume",
+        "attempt": 2,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin",
+          "session_id": "01a08287-cd7b-7372-8865-9d5263ecb100",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T12:41:37Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -117661,6 +117833,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2068
+    "_version": 2069
   }
 }
