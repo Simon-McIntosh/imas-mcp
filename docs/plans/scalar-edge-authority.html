@@ -24,8 +24,8 @@
   <title>Twenty-Four Scalars Mirror An Edge, And The Stale Copy Wins | imas-codex</title>
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
-<meta name="plan-modified" content="2026-09-08">
-<meta name="plan-version" content="1">
+<meta name="plan-modified" content="2026-09-09">
+<meta name="plan-version" content="2">
 </head>
 <body>
   <main class="plan-doc">
@@ -98,6 +98,38 @@
       <li><strong>Derive</strong> the scalar from the relationship, or give it a single named writer,
       per the review's verdict.</li>
     </ol>
+
+    <h2 id="s2a">&sect;2a &mdash; The census figures are a prior reading, not an authority, and 127 targets are absent</h2>
+
+    <p>Measured live 2026-09-09 while materialising the first pair: the population is
+    <strong>2,949</strong> non-empty <code>links</code> scalars and <strong>6,684</strong> entries,
+    not the 2,948 and 6,682 &sect;1 records. Nothing drifted mysteriously &mdash; the difference is
+    this repository's own work on the same day, one restored identity and forty relabelled
+    origins. The lesson is procedural and it cost a node: <strong>a figure measured on one date
+    must not be written into a gate as a required equality.</strong> Measure the cohort at run
+    time, record what was measured with its timestamp, and read &sect;1's table as the prior
+    reading it is.</p>
+
+    <p>The substantive finding is larger than the drift. Of the 6,684 link entries,
+    <strong>6,557 resolve and 127 name a target id with no <code>StandardName</code> node at
+    all</strong>. So an all-or-none materialisation of this pair is impossible today, and the
+    plan's own &sect;2 wording is what resolves it: the edges are materialised first and verified
+    count-for-count, and <em>only then</em> may the scalar be derived. <strong>Count-for-count
+    parity is a precondition for the DERIVE beat, not for the materialise beat.</strong></p>
+
+    <p>So the first pair materialises its 6,557 resolvable edges and carries the 127 as a
+    <strong>named exclusion ledger</strong> &mdash; one row each with the source name, the absent
+    target id and the cause. This is not the partial-closure failure the archive restore correctly
+    refused an hour earlier, and the distinction is worth keeping because the two look alike: a
+    partial archive closure asserts a restored identity carrying a fraction of its evidence, which
+    is a false claim about a thing. Materialising every resolvable edge asserts nothing false
+    &mdash; each edge that exists is correct, the scalar remains the only record of the 127, and
+    the ledger names them. Nothing is destroyed and nothing is over-claimed.</p>
+
+    <p><strong>The DERIVE beat for this pair stays shut until parity reaches 6,684.</strong> The
+    127 are expected to shrink without separate adjudication: several are likely among the
+    identities the deletion-recovery plan is still restoring, so a later re-materialisation picks
+    them up. They are named and left, not chased.</p>
 
     <h2 id="s3">&sect;3 &mdash; Sequence, one pair per node, largest exposure first</h2>
 
