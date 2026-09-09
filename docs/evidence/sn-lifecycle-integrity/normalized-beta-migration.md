@@ -2,17 +2,17 @@
 
 ## Result
 
-`normalized_toroidal_beta` is no longer an orphaned terminal identity. A
-one-row signed transaction changed only its catalog `status`, from
-`superseded` to `draft`, and wrote one persistent receipt. Its name axis then
-passed ordinary quorum review at score 1.0, backed by 12 name-axis review edges.
-An independent live read found all eight producers unchanged and no worker
-claim. The document migration is blocked by the docs-edit precondition because
-the target has no prior document and is therefore still `docs_stage='pending'`.
-The preferred docs hint is now attached with `edit_status='open'`, but its inline
-review was halted when `sn edit` entered global maintenance outside the
-four-identity fence. The thermal-only split and inverse-lineage removal have
-not run.
+`normalized_toroidal_beta` is now a live, reviewed total-pressure identity. It
+ends at `status='draft'` with both review axes accepted, scores 1.0 and
+0.9375, 12 name reviews, seven docs reviews, the recovered 1,468-character
+document, four links to `toroidal_beta`, zero old self-links, and all eight
+producers intact. The defining $\beta_N$ relation is explicit.
+
+The thermal identity's authorized status transition also applied, but exposed
+a separate terminal-stage trap: `normalized_toroidal_thermal_plasma_beta` is
+now `status='draft'` while `name_stage='superseded'`. The ordinary exact review
+still refuses it as terminal. The thermal source therefore remains safely on
+the total identity, and the inverse-lineage removal has not run.
 
 The two redesign routes documented for superseded names were both tested first
 and both refused because the target spelling already exists. The signed
@@ -266,19 +266,124 @@ recorded. Whether the global startup maintenance committed collateral changes
 before interruption is unverified because this node is not authorized to scan
 or mutate identities outside the named cohort.
 
+This is not an isolated observation. The same inline-scope escalation was
+recorded earlier the same day by the beta global-definition worker at
+`run_id=sn-edit-20260909T104321Z`. The present observation at
+`run_id=sn-edit-20260909T181732Z` makes two occurrences in one day. Until the
+inline wrapper forwards the maintenance-skip control, `sn edit` cannot safely
+complete an inline review inside an exclusive graph fence; the edit must be
+attached without review and followed by a manually scoped `sn run`.
+
+## Documentation completion
+
+The attached hint was resumed exactly once with:
+
+```text
+sn run --scope-run-id sn-edit-20260909T181732Z \
+  --docs-only --skip-global-maintenance
+```
+
+The runner reported that it was bypassing global maintenance, generated one
+document, wrote two docs reviews, and accepted it at score 0.9375. That
+generated text carried the defining relation but only two links to
+`toroidal_beta`, so it failed the four-link content gate and activated the
+authorized exact fallback.
+
+The settled axis then admitted the prepared 1,468-character redesign:
+
+```text
+DRY RUN sn edit: normalized_toroidal_beta  mode=docs axis=docs scope=only_self
+entry=review_docs
+
+Actions:
+  - docs replacement queued for 'normalized_toroidal_beta'
+  -  no writes performed
+```
+
+The exact document was attached with `--stage-only` to avoid the inline-scope
+defect and reviewed with an exact scope run plus `--skip-global-maintenance`.
+An intermediate attachment carried a malformed predecessor-score token in its
+reason; it was not hand-edited. After that exact text settled, the identical
+text was reattached through `sn edit --docs --stage-only` with the correct
+provenance and reviewed again. The surviving applied edit reason states the
+predecessor score as 0.93125 across seven docs reviews.
+
+The final total-pressure identity reads:
+
+| Field | Final value |
+|---|---|
+| `status` | `draft` |
+| `name_stage` / score / review edges | `accepted` / 1.0 / 12 |
+| `docs_stage` / score / review edges | `accepted` / 0.9375 / 7 |
+| Documentation length | 1,468 characters |
+| `edit_status` / run | `applied` / `sn-edit-20260909T184657Z` |
+| Producers | 8 |
+| Claims | none |
+
+The four source-to-final link corrections are:
+
+| Occurrence | Before on predecessor | After on live total identity |
+|---:|---|---|
+| 1 | `[beta](name:normalized_toroidal_plasma_beta)` | `[toroidal_beta](name:toroidal_beta)` |
+| 2 | `[beta](name:normalized_toroidal_plasma_beta)` | `[toroidal_beta](name:toroidal_beta)` |
+| 3 | `[beta](name:normalized_toroidal_plasma_beta)` | `[toroidal_beta](name:toroidal_beta)` |
+| 4 | `[beta](name:normalized_toroidal_plasma_beta)` | `[toroidal_beta](name:toroidal_beta)` |
+
+The live text contains zero links to `normalized_toroidal_plasma_beta` and
+retains the separate `[poloidal_beta](name:poloidal_beta)` reference. Total
+provider spend through this point is USD 0.796979 of the USD 15.00 ceiling.
+
+## Thermal status transition and terminal-stage refusal
+
+The thermal authority contained one participant and one property mutation:
+
+```text
+normalized_toroidal_thermal_plasma_beta: {status: draft}
+```
+
+Its preview admitted one of one rows, refused zero, and reported
+`would_change=1`. The exact apply returned `outcome='applied'`, `changed=1`,
+one receipt row, and two persistent writes.
+
+- Authority file SHA-256:
+  `ac23e513fd10919a25551f3e3a38385ceada4085877dcc0420aa73f3d0a39db9`
+- Authority payload SHA-256:
+  `8ff55ce963f82cfa03f7c4a723d0b2275e787e646c6e3353ef56ff865365693f`
+- Previewed and applied manifest SHA-256:
+  `f279a370599d8618a2fab02deef9985d7fe0c57127bbc0b99f992e88849075e8`
+
+The independent post-read found `status='draft'`, but the status-only mutation
+correctly left `name_stage='superseded'`, its historical score 0.5875, zero
+producers, `docs_stage='pending'`, and no claim. The ordinary review dry-run
+then refused:
+
+```text
+Error: normalized_toroidal_thermal_plasma_beta: terminal StandardName lifecycle
+```
+
+No detach was attempted. The thermal path remains among the total identity's
+eight producers, as does the MHD estimator path.
+
 ## Remaining work
 
-Do not attach the hint again: it is already open. The narrow continuation is a
-docs-only `sn run` using `--scope-run-id sn-edit-20260909T181732Z` and
-`--skip-global-maintenance`, which can drain the attached hint without revisiting
-global maintenance. The durable code follow-on is to add the same skip control
-to `sn edit` inline review so the sanctioned one-command edit path can obey an
-exact graph scope. Directly setting `docs_stage='accepted'` would create the
-false-acceptance projection this work is meant to remove and remains forbidden.
+The thermal identity needs a sanctioned transition of its independent
+name-axis state from `superseded` to a reviewable state. The authorized status
+transition alone cannot supply it: exact review rejects the terminal name
+condition, `sn attach` only permits stable binding lifecycle values, and a name hint has no
+producer to regenerate from, and the redesign-to-self route has already been
+shown to collide with an existing identity. Moving the source before this is
+resolved would create an avoidable unbound interval and cannot complete the
+attach.
 
-After the corrected document has its own accepted docs review, move only
-`dd:summary/global_quantities/beta_tor_thermal_norm/value` to
-`normalized_toroidal_thermal_plasma_beta`, review that distinct thermal-only
-quantity on both axes, leave the MHD estimator on the total identity, and
-remove the obsolete inverse `REFINED_FROM` edge. The two lineage directions
-remain present now; no lineage mutation was attempted.
+After the name axis can be reviewed, move only
+`dd:summary/global_quantities/beta_tor_thermal_norm/value` from the total
+identity to `normalized_toroidal_thermal_plasma_beta`, review its name and docs
+axes independently, and prove both scores have nonzero review-edge counts.
+Leave `dd:summary/global_quantities/beta_tor_norm_mhd/value` on
+`normalized_toroidal_beta`.
+
+Only after that source split should the obsolete
+`normalized_toroidal_plasma_beta REFINED_FROM normalized_toroidal_beta`
+direction be removed. The intended historical direction,
+`normalized_toroidal_beta REFINED_FROM normalized_toroidal_plasma_beta`, stays.
+Both directions remain present now; no lineage mutation was attempted.
