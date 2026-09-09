@@ -2,204 +2,248 @@
 
 ## Outcome
 
-**Blocked with zero identities restored.** The exact 21-source pipeline scope
-was valid, but its first persistence step repeatedly refused its own
-skeleton-placeholder cleanup because the candidate identities carry recorded
-LLM spend. The run was stopped after the same deterministic refusal recurred;
-continuing would only repeat free composition calls without committing a name.
+**Complete.** The ordinary gap-only pipeline restored all nineteen intended
+pedestal-top density children from the exact twenty-one DD source paths. The
+structural materializer derived `density_at_pedestal_top` from that family.
+The final bounded live-graph gate measured:
 
-The graph postcondition remains:
+- **19 of 19** intended child identities live;
+- **21 of 21** exact DD sources joined by `PRODUCED_NAME` to their intended
+  child;
+- every child at `origin=pipeline`, `status=draft`, and
+  `name_stage=accepted`;
+- `density_at_pedestal_top` live at `origin=derived`, `status=draft`, and
+  `name_stage=accepted`;
+- **19 of 19** incoming `HAS_PARENT` edges on the parent; and
+- the parent's only producer is
+  `derived:density_at_pedestal_top` (`source_type=derived`), with no direct DD
+  producer.
 
-- **0 of 19** intended DD-backed children are live;
-- **0 of 21** intended DD producer edges are live;
-- `density_at_pedestal_top` is absent and has **0 of 19** required incoming
-  `HAS_PARENT` edges;
-- no `origin` value was written on the parent; and
-- **$0.000000** was spent in 20 recorded `generate_name` calls across both
-  attempts against the authorised **$100.00** restore ceiling.
+The successful restore spent **$3.284246** against the authorised **$100.00**
+ceiling: $2.976525 in the first clean drain and $0.307721 in the final drain.
+The two pre-fix attempts and two intervening no-work/failure runs spent
+$0.000000. Total attributable spend is therefore **3.284246%** of the ceiling,
+leaving **$96.715754** unused. More of the ceiling was unnecessary because all
+twenty-one sources converged without regeneration.
 
-This is a hard implementation blocker, not a provider, credential, source-data,
-or budget failure.
+Eighteen children are also at `docs_stage=accepted`. A concurrent run stamped
+`electron_density_at_pedestal_top` with its separate run id and left that one
+row at `docs_stage=pending` after this node's successful drain. Documentation
+stage is outside this restore's acceptance measure; the concurrent residue is
+reported under follow-ons rather than attributed to this run.
 
-## Authority and exact cohort
+## Exact child and producer evidence
 
-The live `paid-identity-deletion-protection` plan was read at version 22 before
-execution. Its archive census identifies exactly nineteen direct children of
-`density_at_pedestal_top`. The apparent twenty-name discrepancy in prose is
-resolved by the archive topology: `total_ion_density_at_pedestal_top` is a
-direct-DD identity in the broader incident set, but it is not one of these
-nineteen archived incoming `HAS_PARENT` children.
+The archive topology fixes the family at nineteen direct children. The broader
+incident cohort also contains `total_ion_density_at_pedestal_top`, but that
+identity is not an archived incoming child of `density_at_pedestal_top` and is
+not part of this restore.
 
-The nineteen children map to twenty-one surviving DD sources because
-`electron_density_at_pedestal_top` has three direct DD bindings:
+The final gate read each relationship from the live graph. Each row below is a
+distinct live child with the stated direct DD producer evidence; the electron
+identity deliberately has three producers. The `origin=pipeline` value was
+written only after this positive producer query returned at least one
+`StandardNameSource {source_type: 'dd'}-[:PRODUCED_NAME]->(child)` row. All
+nineteen rows also returned `status=draft` and one outgoing `HAS_PARENT` edge
+to the intended parent.
 
-| Intended child | Exact DD producer path | Archive name stage | Pre-run live source |
-|---|---|---|---|
-| `argon_density_at_pedestal_top` | `summary/local/pedestal/n_i/argon/value` | accepted | extracted, unbound |
-| `beryllium_density_at_pedestal_top` | `summary/local/pedestal/n_i/beryllium/value` | accepted | extracted, unbound |
-| `boron_density_at_pedestal_top` | `summary/local/pedestal/n_i/boron/value` | accepted | extracted, unbound |
-| `carbon_density_at_pedestal_top` | `summary/local/pedestal/n_i/carbon/value` | accepted | extracted, unbound |
-| `deuterium_density_at_pedestal_top` | `summary/local/pedestal/n_i/deuterium/value` | accepted | extracted, unbound |
-| `deuterium_tritium_density_at_pedestal_top` | `summary/local/pedestal/n_i/deuterium_tritium/value` | accepted | extracted, unbound |
-| `electron_density_at_pedestal_top` | `summary/local/pedestal/n_e/value` | reviewed | extracted, unbound |
-| `electron_density_at_pedestal_top` | `summary/pedestal_fits/linear/n_e/pedestal_height/value` | reviewed | extracted, unbound |
-| `electron_density_at_pedestal_top` | `summary/pedestal_fits/mtanh/n_e/pedestal_height/value` | reviewed | extracted, unbound |
-| `helium_3_density_at_pedestal_top` | `summary/local/pedestal/n_i/helium_3/value` | accepted | extracted, unbound |
-| `helium_4_density_at_pedestal_top` | `summary/local/pedestal/n_i/helium_4/value` | accepted | extracted, unbound |
-| `hydrogen_density_at_pedestal_top` | `summary/local/pedestal/n_i/hydrogen/value` | accepted | extracted, unbound |
-| `iron_density_at_pedestal_top` | `summary/local/pedestal/n_i/iron/value` | accepted | extracted, unbound |
-| `krypton_density_at_pedestal_top` | `summary/local/pedestal/n_i/krypton/value` | accepted | extracted, unbound |
-| `lithium_density_at_pedestal_top` | `summary/local/pedestal/n_i/lithium/value` | accepted | extracted, unbound |
-| `neon_density_at_pedestal_top` | `summary/local/pedestal/n_i/neon/value` | accepted | extracted, unbound |
-| `nitrogen_density_at_pedestal_top` | `summary/local/pedestal/n_i/nitrogen/value` | accepted | extracted, unbound |
-| `oxygen_density_at_pedestal_top` | `summary/local/pedestal/n_i/oxygen/value` | accepted | extracted, unbound |
-| `tritium_density_at_pedestal_top` | `summary/local/pedestal/n_i/tritium/value` | accepted | extracted, unbound |
-| `tungsten_density_at_pedestal_top` | `summary/local/pedestal/n_i/tungsten/value` | accepted | extracted, unbound |
-| `xenon_density_at_pedestal_top` | `summary/local/pedestal/n_i/xenon/value` | accepted | extracted, unbound |
+| Child | Direct live DD producer path(s) | DD producers | Origin | Status |
+|---|---|---:|---|---|
+| `argon_density_at_pedestal_top` | `summary/local/pedestal/n_i/argon/value` | 1 | pipeline | draft |
+| `beryllium_density_at_pedestal_top` | `summary/local/pedestal/n_i/beryllium/value` | 1 | pipeline | draft |
+| `boron_density_at_pedestal_top` | `summary/local/pedestal/n_i/boron/value` | 1 | pipeline | draft |
+| `carbon_density_at_pedestal_top` | `summary/local/pedestal/n_i/carbon/value` | 1 | pipeline | draft |
+| `deuterium_density_at_pedestal_top` | `summary/local/pedestal/n_i/deuterium/value` | 1 | pipeline | draft |
+| `deuterium_tritium_density_at_pedestal_top` | `summary/local/pedestal/n_i/deuterium_tritium/value` | 1 | pipeline | draft |
+| `electron_density_at_pedestal_top` | `summary/local/pedestal/n_e/value`; `summary/pedestal_fits/linear/n_e/pedestal_height/value`; `summary/pedestal_fits/mtanh/n_e/pedestal_height/value` | 3 | pipeline | draft |
+| `helium_3_density_at_pedestal_top` | `summary/local/pedestal/n_i/helium_3/value` | 1 | pipeline | draft |
+| `helium_4_density_at_pedestal_top` | `summary/local/pedestal/n_i/helium_4/value` | 1 | pipeline | draft |
+| `hydrogen_density_at_pedestal_top` | `summary/local/pedestal/n_i/hydrogen/value` | 1 | pipeline | draft |
+| `iron_density_at_pedestal_top` | `summary/local/pedestal/n_i/iron/value` | 1 | pipeline | draft |
+| `krypton_density_at_pedestal_top` | `summary/local/pedestal/n_i/krypton/value` | 1 | pipeline | draft |
+| `lithium_density_at_pedestal_top` | `summary/local/pedestal/n_i/lithium/value` | 1 | pipeline | draft |
+| `neon_density_at_pedestal_top` | `summary/local/pedestal/n_i/neon/value` | 1 | pipeline | draft |
+| `nitrogen_density_at_pedestal_top` | `summary/local/pedestal/n_i/nitrogen/value` | 1 | pipeline | draft |
+| `oxygen_density_at_pedestal_top` | `summary/local/pedestal/n_i/oxygen/value` | 1 | pipeline | draft |
+| `tritium_density_at_pedestal_top` | `summary/local/pedestal/n_i/tritium/value` | 1 | pipeline | draft |
+| `tungsten_density_at_pedestal_top` | `summary/local/pedestal/n_i/tungsten/value` | 1 | pipeline | draft |
+| `xenon_density_at_pedestal_top` | `summary/local/pedestal/n_i/xenon/value` | 1 | pipeline | draft |
 
-All 21 source nodes were found under their schema-owned `id='dd:' + path` key.
-Each was `status='extracted'`, had no active claim, had no live
-`PRODUCED_NAME` target, and retained its `FROM_DD_PATH` edge to the identically
-keyed `IMASNode`. All nineteen child identities and the parent were absent.
+Representative restored definitions and review evidence are:
 
-## Preflight and bounded live attempt
+- `argon_density_at_pedestal_top` — “Charge-state-summed local number density
+  of argon ions at the H-mode edge pedestal top, excluding neutral argon.”
+  Name and documentation review scores are both 1.000.
+- `electron_density_at_pedestal_top` — “Electron number density at the top of
+  the H-mode edge pedestal is the local concentration of free electrons at the
+  transport-barrier shoulder.” Its name review score is 1.000 and the three
+  source bindings above converge on the same identity.
+- `helium_4_density_at_pedestal_top` — “Helium-4 ion number density at the top
+  of the H-mode edge pedestal is the local concentration of helium-4 ions
+  summed over all ionization states.” Name and documentation review scores are
+  both 1.000.
+- `tungsten_density_at_pedestal_top` — “Tungsten ion number density at the top
+  of the H-mode edge pedestal is the local concentration of ionized tungsten,
+  summed over all tungsten charge states.” Name and documentation review scores
+  are both 1.000.
 
-The gap-only dry run used the exact 21 paths with
-`--skip-global-maintenance`; it exited 0 and reported 21 focused paths with no
-graph writes. Neither `--reseed` nor `--force` was used.
+## Parent origin judgement
 
-The live command used the same exact focus set with a 30-minute wall-clock
-limit and a $99.69 command budget, preserving headroom under the authorised
-$100 restore ceiling after the earlier etendue work. It created scope id
-`72a13df1-c940-4f4b-90fe-09a5c85c3c37` and accounting run
-`0c979912-b685-4057-b254-057ecbd1a142`.
+`density_at_pedestal_top` was not relabelled as pipeline. Its producer topology
+is qualitatively different from every child:
 
-The first persistence attempts failed in
-`write_standard_names` before any name was committed. Representative refusals
-were:
+| Identity | Direct DD producers | Structural producers | Incoming family edges | Truthful origin |
+|---|---:|---:|---:|---|
+| nineteen children | 21 in total | 0 required for the restored live rows | 0 | pipeline |
+| `density_at_pedestal_top` | 0 | 1: `derived:density_at_pedestal_top` | 19 | derived |
 
-- `helium_4_density_at_pedestal_top`, whose recorded prior spend is
-  $0.255943;
-- `tungsten_density_at_pedestal_top`, whose recorded prior spend is
-  $0.383553; and
-- the remaining 17 children plus the absent parent in the final batch, each
-  refused for the same positive-spend protection.
+The parent materializer had already written `origin=derived`. The final
+origin-setting write was bounded to the nineteen named children and required a
+positive DD producer edge, so it could not touch the producer-less parent. The
+result records what the live producer graph makes true rather than copying the
+archive's historical `catalog_edit` label or minting a false pipeline label.
 
-The final batch refusal names every intended child except the two already
-refused separately and also names `density_at_pedestal_top`. The pool recorded
-9 errors, processed 0 names, and stabilized at 19 pending source rows. After a
-bounded positive check still returned zero live target identities, the run was
-interrupted rather than allowed to retry until its 30-minute deadline.
+## Execution and recovery record
 
-## Root cause and required repair
+The worktree first merged the corrective history at
+`55e8420c7cff29c0fd9a728baf91a4856a1d8dad`. Content inspection at that exact
+`HEAD` established both halves of the protection boundary:
 
-`write_standard_names` obtains `skeleton_candidate_ids` from relationship-side
-materialisation. It passes that whole set to
-`refuse_protected_automatic_deletion` before its deletion query applies the
-positive skeleton predicates. Those predicates require, among other things,
-that a deletable node have no creation or generation timestamp, no validated
-identity fields, no DD binding, no `PRODUCED_NAME` edge, and no incoming
-structural edge.
-
-The guard therefore evaluates **relationship candidates**, not the narrower
-set the following query can actually delete. A paid, fully composed identity is
-correctly protected by the guard but is not a deletable skeleton. Passing it to
-the guard anyway turns the protection into a refusal of ordinary composition.
-That is exactly what happened here: the protection fired, but it was aimed one
-selection boundary too early.
-
-The required repair is outside this node's exclusive write scope. A corrective
-node must first select the exact rows satisfying the existing skeleton deletion
-predicate, then pass only those positively proven placeholder ids to the paid
-deletion refusal and deletion statement in the same transaction. Focused tests
-must prove both halves: a paid real identity may be composed without entering
-the delete candidate set, while a paid id-only placeholder remains undeletable.
-
-## Resumption after the merged candidate-filter repair
-
-The requested corrective history was merged into this worktree at
-`9284f2138226e4ac937602e6f1f691c7e84d7627`. Verification read the content of
-that `HEAD`, not merely commit ancestry:
-
+- `graph_ops.py` defines `_SKELETON_PLACEHOLDER_PREDICATE`, uses it to query the
+  positively proven placeholder subset, and passes only that subset to
+  `refuse_protected_automatic_deletion`; and
 - `protection.py` still defines `refuse_protected_automatic_deletion` and raises
-  `ProtectedDeletionError`, preserving the deletion-time backstop; and
-- `graph_ops.py` now sends the candidates returned by
-  `_query_derived_parents_for_admission_cleanup` through
-  `filter_automatic_deletion_candidates`.
+  `ProtectedDeletionError` for a protected candidate immediately before a real
+  deletion.
 
-That exclusion is real, but it is on a different path from the failure above.
-The failing `write_standard_names` path still obtains
-`skeleton_candidate_ids` from `_write_standard_name_edges`, passes the entire
-set directly to `refuse_protected_automatic_deletion`, and only afterward puts
-the positive placeholder predicates in its deletion statement. The merge did
-not change that call boundary.
+The preflight found all twenty-one sources extracted, unclaimed, DD-linked,
+and unbound, with all twenty target identities absent. The exact twenty-one
+focus paths then passed a dry run with zero writes. No execution used
+`--reseed` or `--force`.
 
-The worktree-bound resumption proved the distinction. Its imports resolved
-from this detached worktree, its preflight again found 21 sources, all 21
-`extracted`, none claimed or bound, and its dry run again reported 21 focused
-paths with zero writes. The live run used scope
-`ab862cd7-2e3c-4b06-9bec-6903f6337fa3` and accounting run
-`da581695-fe36-4326-ae05-5f7bd8bae52f`. It again raised
-`ProtectedDeletionError` from `write_standard_names`'s **skeleton placeholder
-cleanup**, first on `helium_3_density_at_pedestal_top` and then on other paid
-family members including `tritium_density_at_pedestal_top`,
-`carbon_density_at_pedestal_top`, and
-`deuterium_tritium_density_at_pedestal_top`. One concurrent persistence
-attempt also reported a Neo4j transaction deadlock during shutdown grace; it
-committed no identity.
+The first clean live drain used scope
+`4a1bd026-05cf-4241-b1c6-f16bc2276435` and accounting run
+`7536348c-8390-4980-919e-040631419f50`. It exited 0 with
+`stop_reason=no_eligible_work`, 18 source compositions, 99 LLM events, and
+$2.976525 spend. That drain created seventeen distinct children; two children
+and the electron linear-fit binding remained. This was not a provider or
+deletion failure: the three residual source rows were still `extracted` but
+carried `attempt_count=5` consumed by the two pre-fix refusals, so the normal
+gap-only selector could seed them but the workers could not claim them.
 
-After 11 pool errors the live census still returned 0 children, 0 DD producer
-edges, and no parent. The run was interrupted under the repeated-failure fence:
-the same exact command had now failed twice with a distinct repair attempted.
-Its 11 completed `generate_name` cost rows sum to **$0.000000**.
+The exact recovery command `sn retry --failed` previewed and released 3 of 3
+named sources. It wrote the repository's durable retry events before resetting
+only those counters; this was not a reseed or force operation. The same complete
+twenty-one-path gap-only focus command then ran with scope
+`719c7a7c-e008-4826-84ea-5963b4983563` and accounting run
+`d2636d4e-a2bb-42ba-ba59-0119b249ca8e`. It exited 0 with
+`stop_reason=no_eligible_work`, three source compositions, thirteen LLM events,
+and $0.307721 spend. The three compositions were the two missing children plus
+the third source binding on the existing electron identity.
 
-The parent-origin judgement is nevertheless settled for the successful resume.
-Each child must carry `origin='pipeline'` because it has a direct DD producer.
-`density_at_pedestal_top` has no direct producer; it is materialised from the
-nineteen child edges and its structural `derived:` producer. Therefore
-`origin='derived'` is the truthful parent value, and no later property rewrite
-should replace it with `pipeline`.
+An intervening run without `--skip-global-maintenance` set the restored rows'
+catalog status to draft and re-derived all seventeen then-live child edges. It
+subsequently failed outside this family while global childless-parent cleanup
+refused six other protected identities. That out-of-scope failure spent zero,
+did not claim the three residual sources, and is recorded under follow-ons; the
+scoped final drain completed the assigned cohort.
 
-## Post-run graph state and relationship comparison
+The two earlier blocked attempts are retained as negative evidence. Scope
+`72a13df1-c940-4f4b-90fe-09a5c85c3c37` / accounting run
+`0c979912-b685-4057-b254-057ecbd1a142` recorded nine errors, while scope
+`ab862cd7-2e3c-4b06-9bec-6903f6337fa3` / accounting run
+`da581695-fe36-4326-ae05-5f7bd8bae52f` recorded eleven. Both stopped with zero
+names and zero spend because relationship-side skeleton candidates reached the
+paid-deletion refusal before positive placeholder selection. Their exact
+diagnosis is the boundary corrected in the merged content above.
 
-Both interrupted runs left all 21 sources `extracted`, unclaimed and unbound.
-They stamped exact ephemeral scope ids, but created no target node and no
-producer edge. Both authoritative accounting rows report
-`stop_reason=interrupted`, `names_composed=0`, `cost_limit=99.69`, and
-`cost_spent=0.0`. Their 20 completed `LLMCost` rows are all
-`phase='generate_name'`, model `hosted_vllm/deepseek-v4-flash`, and sum to
-**$0.000000**.
+## Live versus archive relationship inventory
 
-Because none of the twenty target identities exists live, every live incident
-relationship count is zero and the requested successful live-versus-archive
-comparison cannot be produced. The lineage artifact already establishes these
-archive-side positive controls:
+The named archive
+`imas-codex-graph-dev-002bf65-20260906T220012Z.tar.gz` was loaded into a
+temporary Neo4j instance on `all_debug` job 1267661. A single exact-name query
+found all 20 of 20 family identities and counted every incident relationship by
+direction and type. A separate bounded live query counted the same 20
+identities. In the tables below, each number is **archive/live**, and direction
+is relative to the `StandardName` row.
 
-| Identity scope | Archive relationship type | Archive count | Live count after attempt | Result |
-|---|---|---:|---:|---|
-| parent | incoming `HAS_PARENT` from the intended children | 19 | 0 | restore absent |
-| parent | outgoing `HAS_PARENT` | 1 | 0 | restore absent |
-| parent | `PRODUCED_NAME` from `derived:density_at_pedestal_top` | 1 | 0 | restore absent |
-| parent | `HAS_REVIEW` | 30 | 0 | restore absent |
-| each non-electron child | `PRODUCED_NAME` from its direct DD source | 1 | 0 | restore absent |
-| electron child | `PRODUCED_NAME` from its direct DD sources | 3 | 0 | restore absent |
-| each child | `PRODUCED_NAME` from its archived structural `derived:` source | 1 | 0 | restore absent |
-| each child | outgoing `HAS_PARENT` to `density_at_pedestal_top` | 1 | 0 | restore absent |
+The parent comparison is:
 
-The prior lineage artifact is not a full incident-edge export: it does not
-enumerate every archived grammar, unit, COCOS, domain, cluster, docs-revision,
-change-history or structural-authority relationship. Therefore naming
-archive-absent relationship types or claiming per-type equality would be false.
-That comparison remains gated behind a successful restore and the isolated
-archive inventory required by the live plan.
+| Identity | Complete directional relationship counts, archive/live | Archive types absent live | Live-only types |
+|---|---|---|---|
+| `density_at_pedestal_top` | `in:HAS_PARENT` 19/19; `in:PRODUCED_NAME` 1/1; `out:DOCS_REVISION_OF` 7/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 3/1; `out:HAS_LOCUS` 2/1; `out:HAS_PHYSICS_DOMAIN` 1/0; `out:HAS_REVIEW` 30/0; `out:HAS_STRUCTURAL_AUTHORITY` 1/0; `out:HAS_UNIT` 1/1; `in:FOR_STANDARD_NAME` 0/23 | `DOCS_REVISION_OF`, `HAS_PHYSICS_DOMAIN`, `HAS_REVIEW`, `HAS_STRUCTURAL_AUTHORITY` | incoming `FOR_STANDARD_NAME` |
 
-## Recovery point
+The child comparisons are complete per identity and type:
 
-No name or edge needs undoing. After the skeleton-candidate boundary is
-repaired and tested, re-run the same gap-only exact-source command: the 21
-sources are still `extracted` and unbound, so they remain the correct substrate.
-The restore node must then verify all nineteen children at `origin='pipeline'`,
-`status='draft'`, each with its own DD producer, before accepting the structural
-tail's parent at `origin='derived'`, supported by nineteen incoming child edges
-and the structural `derived:` producer. Only then can the exact archive/live
-per-relationship-type comparison be completed.
+| Child | Complete directional relationship counts, archive/live | Archive types absent live | Live-only types |
+|---|---|---|---|
+| `argon_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/27; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 2/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 3/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 2/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 14/4; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 1/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE` |
+| `beryllium_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/15; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 1/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 1/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 2/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 6/5; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 1/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE` |
+| `boron_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/18; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 1/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 1/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 1/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 9/4; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 0/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE`, `IN_CLUSTER` |
+| `carbon_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/17; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 1/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 2/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 2/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 8/4; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 1/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE` |
+| `deuterium_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/17; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 1/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 1/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 2/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 8/4; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 1/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE` |
+| `deuterium_tritium_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/36; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 3/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 3/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 2/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 20/5; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 1/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE` |
+| `electron_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/18; `in:HAS_STANDARD_NAME` 3/3; `in:PRODUCED_NAME` 4/3; `out:DOCS_REVISION_OF` 1/1; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 1/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 2/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 7/4; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 1/0 | `ENTAILED_FROM_CHILD`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN`, `IN_CLUSTER` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE` |
+| `helium_3_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/14; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 1/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 1/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 1/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 6/4; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 0/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE`, `IN_CLUSTER` |
+| `helium_4_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/15; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 1/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 1/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 2/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 6/4; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 1/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE` |
+| `hydrogen_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/14; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 1/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 1/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 1/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 6/4; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 0/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE`, `IN_CLUSTER` |
+| `iron_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/19; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 1/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 2/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 2/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 8/5; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 1/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE` |
+| `krypton_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/23; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 1/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 1/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 2/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 10/4; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 1/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE` |
+| `lithium_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/14; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 1/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 1/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 1/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 6/4; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 0/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE`, `IN_CLUSTER` |
+| `neon_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/15; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 1/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 1/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 1/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 7/4; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 0/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE`, `IN_CLUSTER` |
+| `nitrogen_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/30; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 3/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 3/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 2/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 17/4; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 1/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE` |
+| `oxygen_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/24; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 2/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 1/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 2/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 13/4; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 1/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE` |
+| `tritium_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/27; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 2/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 2/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 2/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 14/5; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 1/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE` |
+| `tungsten_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/17; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 1/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 2/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 2/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 8/4; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 1/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE` |
+| `xenon_density_at_pedestal_top` | `in:ENTAILED_FROM_CHILD` 1/0; `in:FOR_STANDARD_NAME` 0/21; `in:HAS_STANDARD_NAME` 1/1; `in:PRODUCED_NAME` 2/1; `out:DOCS_REVISION_OF` 2/0; `out:HAS_COCOS` 1/1; `out:HAS_INTERNAL_CHANGE` 2/0; `out:HAS_LOCUS` 2/1; `out:HAS_PARENT` 1/1; `out:HAS_PHYSICAL_BASE` 0/1; `out:HAS_PHYSICS_DOMAIN` 2/0; `out:HAS_POSITION` 1/1; `out:HAS_REVIEW` 11/4; `out:HAS_SEGMENT` 2/3; `out:HAS_SUBJECT` 1/1; `out:HAS_UNIT` 1/1; `out:IN_CLUSTER` 1/1 | `ENTAILED_FROM_CHILD`, `DOCS_REVISION_OF`, `HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN` | incoming `FOR_STANDARD_NAME`, `HAS_PHYSICAL_BASE` |
+
+Across the whole family, the archive relationship types that are present in at
+least one archive row but absent from the corresponding live row are explicitly:
+incoming `ENTAILED_FROM_CHILD`; outgoing `DOCS_REVISION_OF`,
+`HAS_INTERNAL_CHANGE`, `HAS_PHYSICS_DOMAIN`, `HAS_REVIEW`,
+`HAS_STRUCTURAL_AUTHORITY`, and `IN_CLUSTER`. The live-only types are incoming
+`FOR_STANDARD_NAME`, outgoing `HAS_PHYSICAL_BASE`, and, for the five children
+whose archive row lacked it, outgoing `IN_CLUSTER`.
+
+The differences are expected for a pipeline reconstruction rather than an
+archive replay. The live graph preserves the required DD bindings, catalog
+status, COCOS, unit, grammar, locus, subject, and family-parent topology while
+starting fresh review and history populations. Archive `PRODUCED_NAME` exceeds
+live by one per child because every archived child also carried a historical
+`derived:` producer; the restored live children truthfully use their DD
+producers, while only the producer-less parent carries a structural producer.
+
+## Evidence artifacts
+
+- `/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072310390297-n-pidp-restore-pedestal-density-family/archive-pedestal-relationship-counts.json`
+  — all 20 archive identities and every directional relationship count.
+- `/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072310390297-n-pidp-restore-pedestal-density-family/pedestal-live-archive-relationship-comparison.json`
+  — exact per-identity union of archive and live relationship types, counts,
+  deltas, archive-absent types, and live-only types.
+- `/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072310390297-n-pidp-restore-pedestal-density-family/archive-relationship-extract.log`
+  — the bounded `all_debug` archive load log for job 1267661.
+- `/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T153422670447-n-sli-the-origin-repair-unshielded-seventy-eight-identities/archive-identity-lineage.json`
+  — the prior isolated-archive lineage census that fixed the nineteen-child and
+  twenty-one-source cohort.
+
+Live graph work ran on the login node because `NEO4J_URI` resolves through the
+login-local tunnel. Every query named only these twenty identities or their
+twenty-one exact sources and completed under ten seconds. Archive loading and
+its relationship census ran on `all_debug`; no archive scan ran on the login
+node.
+
+## Follow-on outside this node
+
+The unskipped maintenance attempt exposed a separate structural derived-parent
+cleanup refusal for `flux_at_first_wall`, `flux_at_wall_due_to_eddy_current`,
+`flux_at_wall_due_to_pumping`, `ion_diffusivity`,
+`permeability_of_ferritic_element`, and `width_of_spectrometer_channel`. That
+failure is outside this node's declared family and write scope. It did not
+alter the successful 19-child acceptance gate and is returned for its owning
+cleanup node rather than triaged here.
+
+A separate concurrent accounting run
+`1c51710c-e97c-49af-84f6-17393025e0e8` subsequently left
+`electron_density_at_pedestal_top` at `docs_stage=pending`. Its identity,
+origin, status, three DD producers, and parent edge remain correct; the owning
+documentation run must drain or release that residual docs state.
