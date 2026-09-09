@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T09:39:31",
+  "updated": "2026-09-09T09:40:45",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -4520,6 +4520,15 @@
           "gpt-5.6-sol": "01a03e39-4e09-74e1-8b13-b615b5bd7637"
         },
         "created": "2026-08-26"
+      },
+      {
+        "id": "s10b-blastradius",
+        "harness": "clive",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-09"
       },
       {
         "id": "s10b-etendue",
@@ -112752,6 +112761,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2042
+    "_version": 2043
   }
 }
