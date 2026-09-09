@@ -69,7 +69,12 @@ def test_skeleton_delete_records_change_atomically() -> None:
     sweep = MagicMock()
     sweep.__enter__.return_value = sweep
 
-    def sweep_query(cypher: str, **_kwargs):
+    def sweep_query(cypher: str, **kwargs):
+        if "STANDARD_NAME_SKELETON_PLACEHOLDER_SELECTION" in cypher:
+            return [
+                {"candidate_id": candidate_id}
+                for candidate_id in kwargs["candidate_ids"]
+            ]
         if "MATCH (cost:LLMCost)" in cypher:
             return [{"linked": 0}]
         if "OPTIONAL MATCH (cost:LLMCost)-[:FOR_STANDARD_NAME]->(sn)" in cypher:
