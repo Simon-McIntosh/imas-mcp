@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T07:19:30",
+  "updated": "2026-09-09T07:47:43",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -4558,9 +4558,11 @@
         "id": "s10b-headattr",
         "harness": "codex",
         "role": "test",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "01a0849a-0b26-72d1-91e0-d18dc7311ab2",
+        "session_model": "gpt-5.6-sol",
+        "sessions": {
+          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a0849a-0b26-72d1-91e0-d18dc7311ab2"
+        },
         "created": "2026-09-09"
       },
       {
@@ -111976,6 +111978,169 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T051753351059-n-sli-main-head-suite-attribution",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a76",
+        "node": "n-sli-main-head-suite-attribution",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 896,
+                "cached_input_tokens": 485524,
+                "input_tokens": 486422,
+                "output_tokens": 257,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 486679,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "/home/ITER/mcintos/.config/reckon/crew/reports/imas-codex-main-head-attribution.md records the exact command, the SLURM partition, the exit status, the verbatim final totals line and every failure id for a run of tests/standard_names against /home/ITER/mcintos/Code/imas-codex at main HEAD; and where that HEAD is not green, the same figures for commit 057a04786 so each failure is attributable to the range between them or to neither",
+          "estimated_hours": null,
+          "goal": "Establish the authoritative standard-names suite failure set at main HEAD measured from the main checkout rather than from a worktree",
+          "id": "n-sli-main-head-suite-attribution",
+          "lane_declaration": {
+            "backend": "codex",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T05:17:53Z",
+            "read_at": "2026-09-09T05:17:55Z",
+            "resolved_backend": "codex",
+            "utilisation_pct": 57.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T051753351059-n-sli-main-head-suite-attribution/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requested_backend": "codex",
+          "requires_decisions": [],
+          "role": "test",
+          "section": "\u00a76",
+          "spec_level": "exact",
+          "time_budget": "55m",
+          "write_paths": [
+            "/home/ITER/mcintos/.config/reckon/crew/reports/imas-codex-main-head-attribution.md"
+          ]
+        },
+        "role": "test",
+        "spec_level": "exact",
+        "member": "s10b-headattr",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T05:18:02Z",
+        "completed_at": "2026-09-09T05:46:12Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1690,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1690,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "b6bdbd7bd1ceacceb3c496cc05471775aa2d4e4f",
+        "commits": [],
+        "changed_lines": null,
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "srun --partition=all_debug ... /home/ITER/mcintos/.local/bin/uv run --no-sync pytest -p no:cacheprovider tests/standard_names/ at main HEAD from the main checkout, and the same at 057a04786",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T051753351059-n-sli-main-head-suite-attribution/main-head-standard-names-direct-uv.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T051753351059-n-sli-main-head-suite-attribution/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a0849a-0b26-72d1-91e0-d18dc7311ab2",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 3279488,
+            "cached_input_tokens_cumulative": 3279488,
+            "input_tokens": 3323507,
+            "input_tokens_cumulative": 3323507,
+            "output_tokens": 17310,
+            "output_tokens_cumulative": 17310,
+            "reasoning_output_tokens": 2999,
+            "reasoning_output_tokens_cumulative": 2999
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T05:46:12Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 57.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T05:46:12Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 3279488,
+          "cumulative_input_tokens": 6602995,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 20309
+        },
+        "follow_on_paths": [
+          "source/test"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "test",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "resume",
+        "attempt": 2,
+        "scope_acceptances": null,
+        "no_commit": "a verification node whose whole deliverable is the attribution report outside the repository; it changed no source by design",
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-sli-main-head-suite-attribution",
+          "session_id": "01a0849a-0b26-72d1-91e0-d18dc7311ab2",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T05:46:12Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -112232,6 +112397,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2036
+    "_version": 2038
   }
 }
