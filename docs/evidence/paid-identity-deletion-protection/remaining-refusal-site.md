@@ -86,7 +86,7 @@ selector is wrong for proposing these identities for deletion at all.
 
 ## Post-change reproduction
 
-Implementation revision: `3588c19c1c2cf3f3fc0bfffcfb49fe51f192f802`
+Implementation revision: `3588c19c1a084a6a814463d72beca1bb38a3b4dc`
 
 The same maintenance-only command exited **0**. The durable application log at
 `/home/ITER/mcintos/.local/share/imas-codex/logs/sn_sn-compose.log` records this
