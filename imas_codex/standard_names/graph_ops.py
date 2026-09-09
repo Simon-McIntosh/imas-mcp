@@ -5165,6 +5165,48 @@ del _lifecycleless_stub_reconcile_signature
 del _lifecycleless_stub_reconcile_parameters
 
 
+_SKELETON_PLACEHOLDER_PREDICATE = """
+sn.created_at IS NULL
+  AND sn.generated_at IS NULL
+  AND sn.validation_status IS NULL
+  AND sn.unit IS NULL
+  AND sn.kind IS NULL
+  AND sn.needs_composition IS NULL
+  AND coalesce(sn.name_stage, '') IN ['', 'pending']
+  AND NOT EXISTS { ()-[:HAS_PARENT]->(sn) }
+  AND NOT EXISTS { ()-[:HAS_ERROR]->(sn) }
+  AND NOT EXISTS { ()-[:HAS_STANDARD_NAME]->(sn) }
+  AND NOT EXISTS {
+      (:StandardNameSource)-[:PRODUCED_NAME]->(sn)
+  }
+  AND NOT EXISTS {
+      MATCH (source:StandardNameSource)
+      WHERE source.produced_sn_id = sn.id
+  }
+"""
+
+
+def _query_skeleton_placeholders_for_cleanup(
+    gc: Any, candidate_ids: set[str]
+) -> list[str]:
+    """Return relationship endpoints that positively match placeholder state."""
+    if not candidate_ids:
+        return []
+    rows = gc.query(
+        f"""
+        // STANDARD_NAME_SKELETON_PLACEHOLDER_SELECTION
+        MATCH (sn:StandardName)
+        WHERE sn.id IN $candidate_ids
+          AND {_SKELETON_PLACEHOLDER_PREDICATE}
+        RETURN sn.id AS candidate_id
+        """,
+        candidate_ids=sorted(candidate_ids),
+    )
+    return sorted(
+        {str(row["candidate_id"]) for row in rows or [] if row.get("candidate_id")}
+    )
+
+
 def write_standard_names(
     names: list[dict[str, Any]],
     *,
@@ -5725,44 +5767,32 @@ def write_standard_names(
     swept_count = 0
     if skeleton_candidate_ids:
         with nullcontext(gc) if gc is not None else GraphClient() as sweep_gc:
-            refuse_protected_automatic_deletion(
-                sweep_gc,
-                sorted(skeleton_candidate_ids),
-                operation="skeleton placeholder cleanup",
+            skeleton_placeholder_ids = _query_skeleton_placeholders_for_cleanup(
+                sweep_gc, skeleton_candidate_ids
             )
-            deletion_clause = deletion_change_cypher("sn")
-            swept = sweep_gc.query(
-                f"""
-                MATCH (sn:StandardName)
-                WHERE sn.id IN $candidate_ids
-                  AND sn.created_at IS NULL
-                  AND sn.generated_at IS NULL
-                  AND sn.validation_status IS NULL
-                  AND sn.unit IS NULL
-                  AND sn.kind IS NULL
-                  AND sn.needs_composition IS NULL
-                  AND coalesce(sn.name_stage, '') IN ['', 'pending']
-                  AND NOT EXISTS {{ ()-[:HAS_PARENT]->(sn) }}
-                  AND NOT EXISTS {{ ()-[:HAS_ERROR]->(sn) }}
-                  AND NOT EXISTS {{ ()-[:HAS_STANDARD_NAME]->(sn) }}
-                  AND NOT EXISTS {{
-                      (:StandardNameSource)-[:PRODUCED_NAME]->(sn)
-                  }}
-                  AND NOT EXISTS {{
-                      MATCH (source:StandardNameSource)
-                      WHERE source.produced_sn_id = sn.id
-                  }}
-                {deletion_clause}
-                DETACH DELETE sn
-                RETURN count(sn) AS swept
-                """,
-                candidate_ids=sorted(skeleton_candidate_ids),
-                **deletion_change_params(
-                    "remove_skeleton_placeholder",
-                    reason="relationship placeholder never became a composed name",
-                ),
-            )
-        swept_count = int(swept[0]["swept"]) if swept else 0
+            if skeleton_placeholder_ids:
+                refuse_protected_automatic_deletion(
+                    sweep_gc,
+                    skeleton_placeholder_ids,
+                    operation="skeleton placeholder cleanup",
+                )
+                deletion_clause = deletion_change_cypher("sn")
+                swept = sweep_gc.query(
+                    f"""
+                    MATCH (sn:StandardName)
+                    WHERE sn.id IN $candidate_ids
+                      AND {_SKELETON_PLACEHOLDER_PREDICATE}
+                    {deletion_clause}
+                    DETACH DELETE sn
+                    RETURN count(sn) AS swept
+                    """,
+                    candidate_ids=skeleton_placeholder_ids,
+                    **deletion_change_params(
+                        "remove_skeleton_placeholder",
+                        reason="relationship placeholder never became a composed name",
+                    ),
+                )
+                swept_count = int(swept[0]["swept"]) if swept else 0
     if swept_count:
         logger.info("Swept %d skeleton StandardName placeholder(s)", swept_count)
 
