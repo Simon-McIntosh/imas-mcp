@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T10:41:16",
+  "updated": "2026-09-09T11:07:18",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -113692,6 +113692,188 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T082945610322-n-pidp-delete-path-protection-inventory",
+        "plan": "paid-identity-deletion-protection",
+        "section": "\u00a75",
+        "node": "n-pidp-delete-path-protection-inventory",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 514,
+                "cached_input_tokens": 668980,
+                "input_tokens": 669496,
+                "output_tokens": 311,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 669807,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/paid-identity-deletion-protection/delete-path-inventory.md carries one row per call site of the deletion_change_cypher helper and per DETACH DELETE statement in graph_ops.py and provenance_lifecycle.py, each with its file:line, an AUTOMATIC or OPERATOR-INVOKED classification, and a separate present-or-absent verdict for the spend check, the publication-state check and the volume ceiling; the classification column's values vary; the row count is reconciled against the total statements found; and every automatic path lacking any of the three protections is listed together in a closing table",
+          "estimated_hours": null,
+          "goal": "Establish for every recorded delete path whether it consults recorded spend, publication state, and a volume ceiling before removing an identity",
+          "id": "n-pidp-delete-path-protection-inventory",
+          "lane_declaration": {
+            "backend": "clive",
+            "headroom": null,
+            "metered": false,
+            "observed_at": null,
+            "read_at": "2026-09-09T08:29:46Z",
+            "resolved_backend": "clive",
+            "utilisation_pct": null
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T082945610322-n-pidp-delete-path-protection-inventory/manifest.md",
+          "plan": "paid-identity-deletion-protection",
+          "requested_backend": "clive",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a75",
+          "spec_level": "guided",
+          "time_budget": "40m",
+          "write_paths": [
+            "docs/evidence/paid-identity-deletion-protection/delete-path-inventory.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-westtail",
+        "backend": "clive",
+        "local": false,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-09T08:29:59Z",
+        "completed_at": "2026-09-09T09:05:08.252Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 2085,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 2109,
+        "stalled": false,
+        "time_budget": "40m",
+        "base_sha": "da96aa1d4ab8371afd4d9bbdef7fc6f23388ece4",
+        "commits": [
+          "4538ef828ae783d3cfe640011f7f8e127ccc7a8c"
+        ],
+        "changed_lines": {
+          "added": 284,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "static inventory over graph_ops.py and provenance_lifecycle.py: every DETACH DELETE literal and every deletion_change_cypher call site, classified per path by reading the enclosing function",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "42 rows; 34 executable statements + 8 call sites; 1 automatic identity path lacking a ceiling; 3 non-identity automatic paths lacking protections"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T082945610322-n-pidp-delete-path-protection-inventory/manifest.md",
+        "scope_changed": false,
+        "session_id": "bfc17788-07e7-44a5-9692-ddddf9ee7e61",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 0,
+            "input_tokens_cumulative": 10602753,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 36778,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lane_receipt": {
+          "quota_state": "unmeasured",
+          "observed_at": "2026-09-09T09:05:08.252Z",
+          "effective_context_window": "unmeasured",
+          "quota_windows": [],
+          "unmeasured": {
+            "effective_context_window": "missing_rollout",
+            "quota_windows": "unmetered"
+          }
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": []
+        },
+        "throughput": {
+          "cumulative_cached_input_tokens": 0,
+          "cumulative_input_tokens": 10602753,
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 2104.954,
+          "generated_tokens": 36778,
+          "generation_seconds": 2096.231,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 25.4,
+          "machine_seconds": 8.723,
+          "peak_input_tokens": 258315,
+          "tokens_per_second": 17.54,
+          "wall_tokens_per_second": 17.47
+        },
+        "follow_on_paths": [
+          "/"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-delete-path-protection-inventory",
+          "session_id": "bfc17788-07e7-44a5-9692-ddddf9ee7e61",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T09:05:08.252Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -113948,6 +114130,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2052
+    "_version": 2053
   }
 }
