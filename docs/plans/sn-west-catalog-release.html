@@ -28,7 +28,7 @@
 <meta name="plan-capability-verification" content="strict">
 <meta name="plan-capability-risk" content="critical">
 <meta name="plan-impl" content="0.95">
-<meta name="plan-version" content="219">
+<meta name="plan-version" content="220">
 <meta name="plan-commits" content="72b7760c60ac307f641e7e8490b7f15e532d2104">
 <meta name="plan-artifacts" content="docs/evidence/sn-west-catalog-release/residue-currency.md,tests/standard_names/test_review_body_ledger_link.py">
 </head>
@@ -953,6 +953,9 @@ rows: 20   foldable-remaining: 0   unreconciled-runs: 0</pre><p><strong>Live poi
 </div>
 <div class="r-comment" data-section="cut-predates-its-problems" data-id="c-run-r-20260909T124418223732-n-swcr-supply-the-genuinely-missing-reviews" data-who="s10b-fixtures" data-when="2026-09-09T12:57:49Z">
     <div class="r-comment-body"><p>One of the two halves is fully closed and the other found a code defect. net_power_due_to_ion_cyclotron_heating no longer carries a false-acceptance projection: it now reads docs_stage=accepted with reviewer_score_docs=1.0 AND 3 docs-axis HAS_REVIEME edges where it previously had zero, for 0.280291 USD - so the accepted state is backed by real evidence rather than merely set, which is what the done-when demanded and what a pipeline exit code alone would not have proved. The four name rows are blocked by a genuine defect rather than by missing work: they carry name_stage=accepted with a null reviewer_score_name, which is the name-axis twin of the projection just fixed on the docs axis, and the only sanctioned exact-cohort transition that would make them reviewable - accepted-name restage - dry-runs cleanly at 4 of 4 with no relationship changes but its LIVE apply exits 1 with RuntimeError: accepted restage post-state proof failed and rolls back. The node declined the one available workaround, sn review --unreviewed, because that surface is global and would have touched identities far outside a five-row scope; that refusal is correct and is why the four rows are still unchanged on a final bounded re-read</p></div>
+</div>
+<div class="r-comment" data-section="cut-predates-its-problems" data-id="c-run-r-20260909T130108611258-n-swcr-the-accepted-restage-proof-disagrees-with-its-own-write" data-who="s10b-fixtures" data-when="2026-09-09T13:14:40Z">
+    <div class="r-comment-body"><p>Candidate one, and the field was updated_at: the actual-versus-expected instrument found that on all four rows ONLY the timestamp differed. The mutation deliberately writes updated_at = datetime() while the expectation model predicted the old value, so the proof was over-strict on the single field a write must change - which is why it fired after compare-and-set had already succeeded. Not concurrent drift, so my scheduling was not the cause this time. The fix makes the proof STRONGER rather than looser, which is the part worth noting: instead of excluding the timestamp from comparison it now requires the timestamp to have ADVANCED, returning false when the after value is null or equal to the before value, and only then substitutes it so every other field is still compared exactly. The old model could not express &#x27;this field must change&#x27; at all. Both halves of the guard are locked in by test: test_null_score_accepted_row_requires_a_new_timestamp for the positive case an accepted row with a null score, and test_post_state_proof_rejects_an_unexpected_mutation for the negative, asserting the exact RuntimeError message and that the transaction rolled back rather than committed. The live exact restage then applied 4 of 4 with 300 relationships unchanged. Suite 7314 passed, 0 failed on all_debug, zero added against the stated base</p></div>
 </div>
 </section>
 </main>
