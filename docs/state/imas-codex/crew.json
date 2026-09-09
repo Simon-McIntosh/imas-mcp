@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T13:56:54",
+  "updated": "2026-09-09T13:59:10",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -116430,6 +116430,294 @@
           ],
           "message": "run 'r-20260909T072310390297-n-pidp-restore-pedestal-density-family' has a passing gate presenting 3 commit(s) of the 5 its manifest declares; missing: 55e8420c7cff29c0fd9a728baf91a4856a1d8dad, 9284f2138226e4ac937602e6f1f691c7e84d7627. The out-of-scope boundary check runs against the presented commits, so an incomplete presentation narrows it. This is a report, not a refusal \u2014 present the full list, or the boundary check may not cover the node's work"
         }
+      },
+      {
+        "run_id": "r-20260909T115204796534-n-sea-adjudicate-the-derived-source-produced-names",
+        "plan": "scalar-edge-authority",
+        "section": "\u00a73",
+        "node": "n-sea-adjudicate-the-derived-source-produced-names",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 430,
+                "cached_input_tokens": 297160,
+                "input_tokens": 297592,
+                "output_tokens": 3084,
+                "reasoning_output_tokens": 660,
+                "total_tokens": 300676,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/scalar-edge-authority/derived-source-adjudication.md re-identifies the 26 unadjudicated multi-target rows from docs/evidence/scalar-edge-authority/produced-name-adjudication.md against the live graph, confirms the subgroup sizes of 15 derived sources with no dd_path and no signal, 9 direction or state ambiguities, one RMS-versus-peak current and one state-versus-internal-state flux, and says whether any has moved. For the 15 derived sources the instrument is NOT the absent DD path: a derived source intended target follows from its derivation, so resolve each one through its derived provenance - the parent identity it was derived from and that parent own bindings - and record per row the derivation chain you followed, the target it implies, and the verdict. For the 9 direction or state rows and the 2 physics distinctions, resolve from the candidate identities own descriptions and units, quoting the clause that decides it, and state the semantic difference in plain language rather than asserting a preference. Give every one of the 26 a verdict of scalar-intended, edge-intended, or still-unadjudicated-with-the-named-evidence-that-would-settle-it, and verify that your verdict counts sum to 26 rather than assuming they do. Where two candidate identities are genuinely distinct physical quantities rather than a mislabelling, say so explicitly, because that is a KEEP-AS-DISTINCT finding that retires a supposed defect and is a deliverable of this plan in its own right. This node adjudicates and does not repair: write no code, rewrite no scalar, create or delete no edge, run no pipeline, and treat the graph as read-only while a peer writes lifecycle scalars. Live graph work runs on the login node because the Neo4j tunnel is login-node-local; bound every query to a named row set, keep each under ten seconds, and say so in the manifest. Include a figure under docs/figures/scalar-edge-authority/ showing the 26 by subgroup and verdict, embedded with a project-absolute src. Write the manifest before any long query because your process ends with its turn",
+          "estimated_hours": null,
+          "goal": "Adjudicate the 26 multi-target produced-name rows the source-semantics pass could not settle, using the instrument each subgroup actually needs",
+          "id": "n-sea-adjudicate-the-derived-source-produced-names",
+          "lane_declaration": {
+            "backend": "codex-terra",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T11:52:05Z",
+            "read_at": "2026-09-09T11:52:06Z",
+            "resolved_backend": "codex-terra",
+            "utilisation_pct": 78.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T115204796534-n-sea-adjudicate-the-derived-source-produced-names/manifest.md",
+          "plan": "scalar-edge-authority",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a73",
+          "spec_level": "guided",
+          "time_budget": "50m",
+          "write_paths": [
+            "docs/evidence/scalar-edge-authority/derived-source-adjudication.md",
+            "docs/figures/scalar-edge-authority/"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-fixtures",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T11:52:15Z",
+        "completed_at": "2026-09-09T11:57:34Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 319,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 319,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "0e5042fbc23754cccc707543de45bab1cc7e51ed",
+        "commits": [
+          "cfc3aeeb1e562eb8019313ea36b92a7494c84d8c"
+        ],
+        "changed_lines": {
+          "added": 98,
+          "removed": 0,
+          "files": 2
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "bounded login-node read-only re-identification, derived-provenance resolution, candidate description and unit collection, and a final cohort recheck, with static validation that both the subgroup split and the verdict totals equal 26",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "cohort 15+9+1+1=26 unchanged; verdicts 1+14+11=26; every query under ten seconds; no mutation issued"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T115204796534-n-sea-adjudicate-the-derived-source-produced-names/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a084b6-f8a5-7551-bfc5-a2dfe794dc4b",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 0,
+            "cached_input_tokens_cumulative": 5109248,
+            "input_tokens": 0,
+            "input_tokens_cumulative": 5178486,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 13904,
+            "reasoning_output_tokens": 0,
+            "reasoning_output_tokens_cumulative": 2666
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T11:57:34Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 78.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T11:57:34Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3300,
+              "classification": "scoring",
+              "detail": "the worker manifest reports completion, but no independent review is attached; an independent review must be produced before promotion",
+              "elapsed_seconds": 3112,
+              "external_wait": null,
+              "lifting_condition": null,
+              "liveness_proven": true,
+              "log_age_seconds": 2922,
+              "log_fresh": false,
+              "manifest_commits": [
+                "9cbb91cb8677ff1a87c7abcf23ea82b6ae4c4e48",
+                "9284f2138226e4ac937602e6f1f691c7e84d7627",
+                "7f56f37868932e7b97e3f586f6a831812f29cdb1",
+                "55e8420c7cff29c0fd9a728baf91a4856a1d8dad",
+                "e73cd2389788d78fc636cf19c36dd28098ea1bd1"
+              ],
+              "manifest_derived": false,
+              "manifest_digest": "38febda55b42da4c3b58b01aa7131e682568282d4de64bd1aac6cf67d650dce3",
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072310390297-n-pidp-restore-pedestal-density-family/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "complete",
+              "manifest_status": "complete",
+              "marker": null,
+              "needs_help_complete": null,
+              "next_action": "reckon crew dispatch --project imas-codex --plan paid-identity-deletion-protection --section '\u00a74' --role review --spec-level exact --node review-of-n-pidp-restore-pedestal-density-family --goal 'attach an independent review to run r-20260909T072310390297-n-pidp-restore-pedestal-density-family' --done-when 'the review for r-20260909T072310390297-n-pidp-restore-pedestal-density-family parses all five score dimensions' --write-path /home/ITER/mcintos/.config/reckon/crew/reviews/imas-codex/r-20260909T072310390297-n-pidp-restore-pedestal-density-family.json --time-budget 55m --session ship-s10-20260908 --local",
+              "node": "n-pidp-restore-pedestal-density-family",
+              "phase": "complete",
+              "plan": "paid-identity-deletion-protection",
+              "process_alive": false,
+              "project": "imas-codex",
+              "recovery": "review",
+              "recovery_classification": "scoring",
+              "resets_at": null,
+              "review_error": null,
+              "review_present": false,
+              "review_status": null,
+              "run_id": "r-20260909T072310390297-n-pidp-restore-pedestal-density-family",
+              "session": "ship-s10-20260908",
+              "terminal_age_seconds": 3017,
+              "terminal_at": "2026-09-09T11:01:54Z",
+              "wait_age_seconds": null,
+              "wait_condition_state": null,
+              "wait_observed": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-restore-pedestal-density-family"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 2700,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: \"Two authorized exact-cohort applies could not yield a commit receipt: the first explicitly raised SignedManifestConflict after concurrent closure drift; and the second produced no receipt while the post-attempt census still found all 10 producer-backed null origins. A third retry would be contention thrashing rather than evidence.\"",
+              "elapsed_seconds": 718,
+              "external_wait": null,
+              "lifting_condition": null,
+              "liveness_proven": true,
+              "log_age_seconds": 4137,
+              "log_fresh": false,
+              "manifest_commits": [
+                "3d751cd8566c94a565786632a8a344ef70e634a8"
+              ],
+              "manifest_derived": false,
+              "manifest_digest": "f55359fa3849184e3d8d204024877bb5fcda8c3df6e5278c0817435630f5cd26",
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T103104976349-n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T103104976349-n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin",
+              "phase": "starting",
+              "plan": "paid-identity-deletion-protection",
+              "process_alive": false,
+              "project": "imas-codex",
+              "recovery": "decide",
+              "recovery_classification": "blocked",
+              "resets_at": null,
+              "review_error": null,
+              "review_present": false,
+              "review_status": null,
+              "run_id": "r-20260909T103104976349-n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin",
+              "session": "ship-s10-20260908",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260909T103104976349-n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin",
+                "session_id": "01a08287-cd7b-7372-8865-9d5263ecb100",
+                "source": "pointer"
+              },
+              "terminal_age_seconds": 4161,
+              "terminal_at": "2026-09-09T10:42:49Z",
+              "wait_age_seconds": null,
+              "wait_condition_state": null,
+              "wait_observed": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-manifest-rows-outside-the-cut-carry-a-true-origin"
+            }
+          ]
+        },
+        "throughput": {
+          "cumulative_cached_input_tokens": 5109248,
+          "cumulative_input_tokens": 10287734,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 16570
+        },
+        "follow_on_paths": [
+          "semantic/provenance",
+          "approval/rename",
+          "scalar/edge"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-sea-adjudicate-the-derived-source-produced-names",
+          "session_id": "01a084b6-f8a5-7551-bfc5-a2dfe794dc4b",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T11:57:34Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -116686,6 +116974,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2064
+    "_version": 2065
   }
 }
