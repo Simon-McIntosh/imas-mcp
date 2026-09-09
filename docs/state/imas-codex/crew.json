@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T19:14:22",
+  "updated": "2026-09-09T22:12:03",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -119316,6 +119316,197 @@
         "watch_override": null,
         "tool_steps": 91.0,
         "orientation_input_tokens": null
+      },
+      {
+        "run_id": "r-20260909T171636919680-n-sli-give-normalized-beta-a-live-identity",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a72",
+        "node": "n-sli-give-normalized-beta-a-live-identity",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 405,
+                "cached_input_tokens": 550867,
+                "input_tokens": 551274,
+                "output_tokens": 1518,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 552792,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/sn-lifecycle-integrity/normalized-beta-migration.md reports, per step, the live before and after state so the record proves each move rather than asserting it: normalized_toroidal_beta ends status=draft with name_stage and docs_stage accepted, a non-null reviewer_score_docs, documentation length above 1400 characters, and its producer set listed; normalized_toroidal_thermal_plasma_beta ends carrying the thermal path with its own independently reviewed docs and name scores; and a final read shows zero REFINED_FROM cycle between normalized_toroidal_beta and normalized_toroidal_plasma_beta. Execute the lead ruling locked as normalized-beta-live-identity in this plan, in this order. First resurrect normalized_toroidal_beta as the sole total-pressure identity: it already holds all eight producers and is the WEST roster member, so nothing moves except prose. Second migrate the 1504-character accepted document from the superseded normalized_toroidal_plasma_beta, and repoint its FOUR self-targeting beta links at toroidal_beta because each describes the unnormalized quantity while linking to itself - quote every link before and after. Third re-review the migrated prose so the accepted docs_stage is backed by a review edge on this identity rather than inherited, and report the docs-axis review-edge count, because a stage accepted with zero edges on its own identity is the false-acceptance projection this project has spent the day removing. Fourth move only dd:summary/global_quantities/beta_tor_thermal_norm/value to normalized_toroidal_thermal_plasma_beta and review that identity independently on both axes; leave dd:summary/global_quantities/beta_tor_norm_mhd/value on the total identity, because an MHD evaluation is an estimator facet under the locked provenance rule while thermal-only excludes fast-ion pressure and is a different quantity. Fifth remove the obsolete inverse REFINED_FROM edge that a 2026-09-06 fold minted, and report the lineage both ways afterwards. Use sn edit for every name or documentation change - it is the only sanctioned path and a hand-written Cypher patch is forbidden here; never --reseed and never --force; pass --skip-global-maintenance because global structural maintenance refuses on protected identities outside this cohort. Dry-run every sn edit before applying it and quote the preview. Cap paid work at 15 USD. Touch no identity outside normalized_toroidal_beta, normalized_toroidal_thermal_plasma_beta, normalized_toroidal_plasma_beta and toroidal_beta, and if any step cannot be completed through a sanctioned path, stop and report rather than working around it. Live graph work runs on the login node because the Neo4j tunnel is login-node-local; keep queries bounded and say so. Never pipe imas-codex CLI output; read its log. Write the manifest before any rotation because your process ends with its turn.",
+          "estimated_hours": null,
+          "goal": "Give normalized toroidal beta a live identity carrying its recovered documentation, with thermal-only split onto its own reviewed name",
+          "id": "n-sli-give-normalized-beta-a-live-identity",
+          "lane_declaration": {
+            "backend": "codex-terra",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T17:16:37Z",
+            "read_at": "2026-09-09T17:16:38Z",
+            "resolved_backend": "codex-terra",
+            "utilisation_pct": 56.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T171636919680-n-sli-give-normalized-beta-a-live-identity/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a72",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "token_budget": null,
+          "write_paths": [
+            "docs/evidence/sn-lifecycle-integrity/normalized-beta-migration.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-fixtures",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T17:16:47Z",
+        "completed_at": "2026-09-09T20:09:43Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": null,
+        "worker_seconds_source": "stalled",
+        "wall_seconds": 10376,
+        "stalled": true,
+        "time_budget": "55m",
+        "base_sha": "6bb8ca8a1701749664a80f3b1535eb96d4b86994",
+        "commits": [
+          "9a75102bf3a03df026248c249e25c8c35267d981",
+          "9f4aa538057c74a16dab5873c3a24721db24d445",
+          "303e9dfdc1ad9ff1a640ef14d1f80cf25b99cc6e",
+          "be3e2165d52cde420bf448eea8d916efab774ad2",
+          "90a8ca05437a6890bb12fdb31570ddb4368b5684",
+          "0d05c48bdd0e24f9b6c9eb82d349379f1c7ce810",
+          "8b86f866f88f2c773a97a2eed5b708d7857dd81c",
+          "9adf4c52b4e09f92ec252dd2a0706ed49aea15ea"
+        ],
+        "changed_lines": {
+          "added": 579,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "failed",
+        "gate_check": {
+          "command": "signed status and name_stage transitions with receipts, exact name and docs review under scoped runs, a four-link content gate on the migrated document, bounded live readback of every field, and dry-run probes of the atomic migration and ordinary attach paths",
+          "exit_status": 1,
+          "log_path": null,
+          "log_digest": "total identity accepted/accepted, 0.9375, 7 docs edges, 1468 chars, 4 toroidal_beta links, 0 self-links, 8 producers; lineage 1 direction remaining, inverse removed; thermal revived to draft/drafted with 0 producers; migration and attach both refused"
+        },
+        "suite_delta": null,
+        "failure_classification": "correct-refusal",
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T171636919680-n-sli-give-normalized-beta-a-live-identity/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a084b6-f8a5-7551-bfc5-a2dfe794dc4b",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 3060992,
+            "cached_input_tokens_cumulative": 7489792,
+            "input_tokens": 2919650,
+            "input_tokens_cumulative": 7518961,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 12099,
+            "reasoning_output_tokens": 0,
+            "reasoning_output_tokens_cumulative": 2111
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T20:09:43Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 97.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T20:09:43Z"
+            }
+          ],
+          "notional_cost_usd": 647.8223,
+          "rate_basis": {
+            "model_identifier": "gpt-5.6-terra",
+            "input_per_million": 2.0,
+            "output_per_million": 12.0,
+            "as_of": "2026-09-09"
+          }
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 227251712,
+          "cumulative_input_tokens": 230286994,
+          "detail": "model span bounded from the client rollout's tool spans; input cumulative summed across resets",
+          "generated_tokens": 14210,
+          "generation_seconds": 47138.317,
+          "machine_seconds": 4465.764,
+          "tokens_per_second": 0.3
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "resume",
+        "attempt": 8,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-sli-give-normalized-beta-a-live-identity",
+          "session_id": "01a084b6-f8a5-7551-bfc5-a2dfe794dc4b",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T20:09:43Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": {
+          "session_id": "01a084b6-f8a5-7551-bfc5-a2dfe794dc4b",
+          "source": "pointer",
+          "reason": "the only remaining route is a detach-first unbound interval, which I forbade and which the worker correctly refused; the thermal split now needs a code change, so the session has nothing further it can do"
+        },
+        "watch_override": null,
+        "tool_steps": 43.0,
+        "orientation_input_tokens": null
       }
     ],
     "holds": [
@@ -119572,6 +119763,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2079
+    "_version": 2080
   }
 }
