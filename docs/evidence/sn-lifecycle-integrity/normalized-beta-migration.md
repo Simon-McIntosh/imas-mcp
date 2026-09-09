@@ -530,3 +530,50 @@ ordinary source to a nonterminal drafted target specifically so its review can
 become source-backed, or another authority that resolves both preconditions
 without creating an unbound source interval. Repeating either existing command
 against the unchanged guard would reproduce the same refusal.
+
+## Final lineage repair and attach refusal
+
+The obsolete inverse lineage was removed through the ordinary command. Its
+dry-run named exactly the intended direction:
+
+```text
+would remove 'normalized_toroidal_plasma_beta' -[:REFINED_FROM]->
+  'normalized_toroidal_beta'
+predecessor name_stage='accepted'; remaining lineage inbound=0, outbound=4
+```
+
+The live command removed that edge and wrote change receipt
+`sn-change:5dbe61b7-e0a3-40a0-9938-b3953e307dd3`. The final bounded read
+proves the two directions separately:
+
+| Direction | Final count | Disposition |
+|---|---:|---|
+| `normalized_toroidal_beta REFINED_FROM normalized_toroidal_plasma_beta` | 1 | retained |
+| `normalized_toroidal_plasma_beta REFINED_FROM normalized_toroidal_beta` | 0 | removed |
+
+The ordinary attach surface was then tested once against the drafted thermal
+identity. Its dry-run refused before any write:
+
+```text
+Error: 'summary/global_quantities/beta_tor_thermal_norm/value' already
+realizes normalized_toroidal_beta — re-pointing is a detach followed by an
+attach; run sn detach first so the intermediate state is recorded
+```
+
+That refusal is expected and confirms the second half of the capability gap.
+The signed migration path is atomic but requires an already accepted target;
+the ordinary CLI admits drafted targets but cannot retarget atomically and
+requires the unsafe unbound interval. No attach or detach was applied.
+
+The final source read remains internally consistent: both the
+`StandardNameSource.produced_sn_id` scalar and its sole `PRODUCED_NAME` edge
+target `normalized_toroidal_beta`. That identity retains eight producers,
+including both `beta_tor_thermal_norm` and `beta_tor_norm_mhd`; the drafted
+thermal identity has zero producers. The total identity's accepted name and
+documentation state, scores, review-edge counts, four corrected links and
+1,468-character document are unchanged.
+
+The total-pressure identity and corrected lineage are complete. The thermal
+split now belongs behind a code change that supplies a sanctioned atomic
+drafted-target migration. Cumulative model spend remains USD 1.729504 of the
+USD 15.00 ceiling.
