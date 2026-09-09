@@ -51,9 +51,9 @@ exact run ID. The completed rotation processed one `generate_docs` item and one
 `review_docs` item, processed no refinement item, stopped with
 `no_eligible_work`, and spent `$0.099287` against the `$1.00` ceiling.
 
-## Live outcome
+## First review outcome and the missing description clause
 
-After the review rotation, the live `beta` row has:
+The first review rotation returned the live `beta` row to:
 
 | Field | Value |
 | --- | --- |
@@ -64,35 +64,97 @@ After the review rotation, the live `beta` row has:
 | `reviewer_score_docs` | `0.99375` |
 | docs review quorum shortfall | none |
 
-Its accepted description is:
+Its accepted description was:
 
 > Dimensionless global beta formed from volume-averaged total perpendicular
 > plasma pressure and the magnetic pressure of the combined toroidal and
 > poloidal fields.
 
-The accepted documentation fixes both the definition and its component relation:
+The long documentation carried the reciprocal relation, but the short catalog
+description did not. That left the defining harmonic relation implicit and did
+not meet the two-clause description gate.
+
+## Corrective self-scoped review
+
+The corrective hint required the relation and its physical basis in the short
+description itself while retaining both parts of the accepted definition:
 
 ```text
-Global beta is the dimensionless ratio of total plasma pressure, averaged over
-the plasma volume, to the magnetic pressure of the combined toroidal and
-poloidal magnetic fields.
+imas-codex sn edit beta \
+  --hint 'Revise the short description itself. Keep its existing statement that global beta uses volume-averaged total perpendicular plasma pressure and the magnetic pressure of the combined toroidal and poloidal fields, then state explicitly: 1/beta = 1/beta_toroidal + 1/beta_poloidal. Briefly say in the description that this reciprocal relation follows because the toroidal and poloidal magnetic fields add in quadrature over the same pressure. The formula and quadrature explanation must appear in the short description, not only in the long documentation.' \
+  --axis docs \
+  --scope self \
+  --reason 'For a common volume-averaged total perpendicular pressure, the total magnetic field satisfies B^2 = B_toroidal^2 + B_poloidal^2, so the inverse global beta is the sum of the inverse toroidal and poloidal betas and the total beta is their harmonic combination.' \
+  --dry-run
+```
 
-β = 2μ₀ <p⊥>_V / B²
+The corrective preview again reported exactly one target:
 
-B² = B_t² + B_p²
+```text
+DRY RUN sn edit: beta  mode=hint axis=docs scope=only_self entry=generate
+Actions:
+  - hint attached to 'beta' (axis=docs)
+  -  no writes performed
+```
+
+The same command with `--stage-only` in place of `--dry-run` created run
+`sn-edit-20260909T105935Z`. A live read proved that run contained exactly one
+identity, `beta`, before the review rotation. The exact-run rotation was:
+
+```text
+imas-codex sn run \
+  --scope-run-id sn-edit-20260909T105935Z \
+  --docs-only \
+  --skip-global-maintenance \
+  --cost-limit 1.0
+```
+
+It processed one `generate_docs` item and one `review_docs` item, processed no
+refinement item, stopped with `no_eligible_work`, and spent `$0.093954` against
+the `$1.00` ceiling. The two rotations together spent `$0.193241`.
+
+## Final live outcome
+
+After the corrective review rotation, the live `beta` row has:
+
+| Field | Value |
+| --- | --- |
+| `name_stage` | `accepted` |
+| `docs_stage` | `accepted` |
+| `edit_status` | `applied` |
+| `edit_scope` | `only_self` |
+| `run_id` | `sn-edit-20260909T105935Z` |
+| `reviewer_score_docs` | `1.0` |
+| docs review quorum shortfall | none |
+
+The final accepted catalog description is:
+
+> Global beta compares volume-averaged total perpendicular plasma pressure with
+> combined magnetic pressure; for a common pressure, 1/beta =
+> 1/beta_toroidal + 1/beta_poloidal because B^2 = B_toroidal^2 +
+> B_poloidal^2.
+
+The final description therefore states both required facts directly: what
+global beta is, and why it is the harmonic combination of the toroidal and
+poloidal component betas rather than their sum.
+
+The accepted long documentation gives the corresponding mathematical form:
+
+```text
+For a common volume-averaged pressure and orthogonal toroidal and poloidal
+magnetic-field components:
 
 1/β = 1/β_tor + 1/β_pol
 ```
 
-The full accepted text defines `<p⊥>_V` as the volume average of total
-perpendicular pressure, distinguishes the toroidal and poloidal component
-normalizations, and identifies `normalized_toroidal_beta` as a separate
-size/field/current normalization rather than the total-field ratio.
+It distinguishes the component normalizations and identifies
+`normalized_toroidal_beta` as a separately scaled toroidal-beta variant rather
+than a term in the reciprocal global-beta relation.
 
 ## Descendant containment
 
-The following descriptions were read immediately before the edit and again
-after the accepted review. They are byte-for-byte unchanged:
+The following descriptions were read immediately before the corrective edit and
+again after its accepted review. They are byte-for-byte unchanged:
 
 | Identity | Before | After |
 | --- | --- | --- |
