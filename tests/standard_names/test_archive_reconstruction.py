@@ -39,12 +39,24 @@ class _Transaction:
                 [] if node is None else [{"properties": deepcopy(node["properties"])}]
             )
         if "archive-reconstruction-counterpart-state" in cypher:
-            return [{"count": int(params["id"] in self.graph.counterparts)}]
+            label = re.search(r"MATCH \(counterpart:([A-Za-z]+)", cypher).group(1)
+            counterpart = self.graph.counterparts.get((label, params["id"]))
+            return (
+                []
+                if counterpart is None
+                else [{"properties": deepcopy(counterpart["properties"])}]
+            )
         if "archive-reconstruction-create-node" in cypher:
             node = self.graph.nodes.setdefault(
                 params["id"], {"properties": deepcopy(params["properties"])}
             )
             return [{"count": int(node["properties"] == params["properties"])}]
+        if "archive-reconstruction-create-counterpart" in cypher:
+            label = re.search(r"MERGE \(node:([A-Za-z]+)", cypher).group(1)
+            counterpart = self.graph.counterparts.setdefault(
+                (label, params["id"]), {"properties": deepcopy(params["properties"])}
+            )
+            return [{"count": int(counterpart["properties"] == params["properties"])}]
         if "archive-reconstruction-create-edge" in cypher:
             relationship_type = re.search(r"\[relationship:([A-Z_]+)\]", cypher).group(
                 1
@@ -98,7 +110,7 @@ class _Session:
 class _ArchiveGraph:
     def __init__(self) -> None:
         self.nodes: dict[str, dict[str, Any]] = {}
-        self.counterparts = {"unit:eV"}
+        self.counterparts = {("Unit", "unit:eV"): {"properties": {"id": "unit:eV"}}}
         self.edges: list[tuple[str, str, str, dict[str, Any]]] = []
         self.extra_counts: dict[tuple[str, str], int] = {}
 
@@ -106,7 +118,10 @@ class _ArchiveGraph:
         return _Session(self)
 
 
-def _authority(edges: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+def _authority(
+    edges: list[dict[str, Any]] | None = None,
+    counterparts: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
     authority = {
         "schema": "imas-codex.archive-reconstruction.v1",
         "operation_id": "reconstruct_archived_standard_name",
@@ -134,6 +149,8 @@ def _authority(edges: list[dict[str, Any]] | None = None) -> dict[str, Any]:
             }
         ],
     }
+    if counterparts is not None:
+        authority["counterparts"] = counterparts
     authority["signature"] = {
         "canonicalization": "json-sort-keys-v1",
         "sha256": signed_payload_sha256(authority),
@@ -201,6 +218,94 @@ def test_signed_archive_reconstruction_creates_identity_and_allowlisted_edges(
     ]
 
 
+def test_signed_archive_reconstruction_creates_allowlisted_counterparts(
+    tmp_path: Path,
+) -> None:
+    graph = _ArchiveGraph()
+    counterparts = [
+        {
+            "label": "StandardNameReview",
+            "id": "review:archived-temperature",
+            "properties": {
+                "id": "review:archived-temperature",
+                "standard_name_id": "archived_temperature",
+                "review_axis": "name",
+            },
+        },
+        {
+            "label": "DocsRevision",
+            "id": "docs:archived-temperature",
+            "properties": {
+                "id": "docs:archived-temperature",
+                "standard_name_id": "archived_temperature",
+                "documentation": "Archived temperature documentation.",
+            },
+        },
+        {
+            "label": "StandardNameSource",
+            "id": "dd:archive/temperature",
+            "properties": {
+                "id": "dd:archive/temperature",
+                "source_type": "dd",
+                "source_id": "archive/temperature",
+            },
+        },
+    ]
+    edges = [
+        {
+            "owner_id": "archived_temperature",
+            "relationship_type": "HAS_REVIEW",
+            "direction": "outgoing",
+            "counterpart_id": "review:archived-temperature",
+            "properties": {},
+        },
+        {
+            "owner_id": "archived_temperature",
+            "relationship_type": "DOCS_REVISION_OF",
+            "direction": "outgoing",
+            "counterpart_id": "docs:archived-temperature",
+            "properties": {},
+        },
+        {
+            "owner_id": "archived_temperature",
+            "relationship_type": "PRODUCED_NAME",
+            "direction": "incoming",
+            "counterpart_id": "dd:archive/temperature",
+            "properties": {},
+        },
+    ]
+    path = tmp_path / "authority.json"
+    file_hash, payload_hash = _write_authority(
+        path, _authority(edges=edges, counterparts=counterparts)
+    )
+
+    preview = _preview(graph, path, file_hash, payload_hash)
+    applied = _apply(graph, path, file_hash, payload_hash, preview["manifest_sha256"])
+
+    assert preview["outcome"] == "would_apply"
+    assert applied["outcome"] == "applied"
+    assert applied["counts"]["counterpart_rows"] == 3
+    assert {label for label, _ in graph.counterparts} == {
+        "DocsRevision",
+        "StandardNameReview",
+        "StandardNameSource",
+        "Unit",
+    }
+    assert sorted(graph.edges, key=repr) == sorted(
+        [
+            ("archived_temperature", "HAS_REVIEW", "review:archived-temperature", {}),
+            (
+                "archived_temperature",
+                "DOCS_REVISION_OF",
+                "docs:archived-temperature",
+                {},
+            ),
+            ("dd:archive/temperature", "PRODUCED_NAME", "archived_temperature", {}),
+        ],
+        key=repr,
+    )
+
+
 def test_archive_reconstruction_refuses_relationship_outside_registry(
     tmp_path: Path,
 ) -> None:
@@ -222,6 +327,32 @@ def test_archive_reconstruction_refuses_relationship_outside_registry(
 
     with pytest.raises(
         SignedManifestAuthorityError, match="outside the reconstruction registry"
+    ):
+        _preview(_ArchiveGraph(), path, file_hash, payload_hash)
+
+
+def test_archive_reconstruction_refuses_counterpart_label_outside_registry(
+    tmp_path: Path,
+) -> None:
+    counterpart = {
+        "label": "StandardNameChange",
+        "id": "change:archived-temperature",
+        "properties": {"id": "change:archived-temperature"},
+    }
+    edge = {
+        "owner_id": "archived_temperature",
+        "relationship_type": "HAS_INTERNAL_CHANGE",
+        "direction": "outgoing",
+        "counterpart_id": "change:archived-temperature",
+        "properties": {},
+    }
+    path = tmp_path / "authority.json"
+    file_hash, payload_hash = _write_authority(
+        path, _authority(edges=[edge], counterparts=[counterpart])
+    )
+
+    with pytest.raises(
+        SignedManifestAuthorityError, match="counterpart label is outside"
     ):
         _preview(_ArchiveGraph(), path, file_hash, payload_hash)
 
