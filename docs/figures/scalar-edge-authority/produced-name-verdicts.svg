@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="430" viewBox="0 0 1000 430" role="img" aria-labelledby="title desc">
+  <title id="title">Verdicts for the multi-target produced-name cohort</title>
+  <desc id="desc">A horizontal bar chart: 66 scalar-intended, 8 edge-intended, and 26 unadjudicated rows out of 100 sources with multiple produced-name edges.</desc>
+  <style>
+    .background { fill: rgb(255 255 255); } .title { font: 700 24px sans-serif; fill: rgb(22 34 51); } .subtitle { font: 14px sans-serif; fill: rgb(79 94 112); }
+    .label { font: 16px sans-serif; fill: rgb(29 42 58); } .count { font: 16px sans-serif; fill: rgb(29 42 58); } .axis { font: 12px sans-serif; fill: rgb(79 94 112); }
+    .grid { stroke: rgb(220 227 235); stroke-width: 1; } .scalar { fill: rgb(60 137 106); } .edge { fill: rgb(208 126 55); } .unknown { fill: rgb(133 98 170); }
+  </style>
+  <rect class="background" width="1000" height="430"/>
+  <text class="title" x="48" y="45">Adjudication verdicts for 100 multi-target source rows</text>
+  <text class="subtitle" x="48" y="69">Live graph census: 100 multi-target rows and 117 total produced-name mirror divergences.</text>
+  <line class="grid" x1="330" y1="115" x2="330" y2="340"/><line class="grid" x1="450" y1="115" x2="450" y2="340"/><line class="grid" x1="570" y1="115" x2="570" y2="340"/><line class="grid" x1="690" y1="115" x2="690" y2="340"/><line class="grid" x1="810" y1="115" x2="810" y2="340"/><line class="grid" x1="930" y1="115" x2="930" y2="340"/>
+  <text class="axis" x="326" y="105">0</text><text class="axis" x="443" y="105">20</text><text class="axis" x="563" y="105">40</text><text class="axis" x="683" y="105">60</text><text class="axis" x="803" y="105">80</text><text class="axis" x="920" y="105">100</text>
+  <text class="label" x="48" y="160">Scalar target intended</text><rect class="scalar" x="330" y="137" width="396" height="36" rx="4"/><text class="count" x="738" y="161">66</text>
+  <text class="label" x="48" y="235">Edge target intended</text><rect class="edge" x="330" y="212" width="48" height="36" rx="4"/><text class="count" x="390" y="236">8</text>
+  <text class="label" x="48" y="310">Unadjudicated</text><rect class="unknown" x="330" y="287" width="156" height="36" rx="4"/><text class="count" x="498" y="311">26</text>
+  <text class="subtitle" x="48" y="385">Unadjudicated rows lack the required DD path/signal semantic evidence; they remain unchanged pending a derivation receipt or DD metadata.</text>
+</svg>
