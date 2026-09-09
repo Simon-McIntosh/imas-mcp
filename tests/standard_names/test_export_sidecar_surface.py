@@ -22,6 +22,7 @@ from imas_codex.standard_names.export import (
     _SIDECAR_NAME_FIELDS,
     CATALOG_EDGE_MODEL_VERSION,
     GATE_CATALOG_STATUS,
+    _classify_export_population,
     _write_domain_yaml,
     _write_manifest,
     run_export,
@@ -182,6 +183,64 @@ def test_missing_graph_status_refuses_sidecar_export(tmp_path: Path) -> None:
     ]
     assert not (tmp_path / "catalog.yml").exists()
     assert not (tmp_path / "standard_names").exists()
+
+
+def test_valid_without_observed_validation_is_withheld() -> None:
+    """A valid verdict with no validated_at observation is never eligible.
+
+    The classifier fails closed on an absent ``_validation_observed_at`` key
+    exactly as it does on an explicit null: a projection that omits the key
+    entirely is as undated as one that carries None, and both are withheld
+    rather than trusted. An observation time present and non-null clears the
+    branch.
+    """
+    population = [
+        {
+            "id": "electron_temperature",
+            "name_stage": "accepted",
+            "validation_status": "valid",
+            "review_quorum_shortfall": None,
+            "docs_stage": "accepted",
+            "docs_review_quorum_shortfall": None,
+            "_has_docs_review": True,
+            "_has_winning_docs_review": True,
+            # ``_validation_observed_at`` deliberately omitted.
+        },
+        {
+            "id": "ion_temperature",
+            "name_stage": "accepted",
+            "validation_status": "valid",
+            "review_quorum_shortfall": None,
+            "docs_stage": "accepted",
+            "docs_review_quorum_shortfall": None,
+            "_has_docs_review": True,
+            "_has_winning_docs_review": True,
+            "_validation_observed_at": None,
+        },
+        {
+            "id": "plasma_density",
+            "name_stage": "accepted",
+            "validation_status": "valid",
+            "review_quorum_shortfall": None,
+            "docs_stage": "accepted",
+            "docs_review_quorum_shortfall": None,
+            "_has_docs_review": True,
+            "_has_winning_docs_review": True,
+            "_validation_observed_at": "2026-09-08T00:00:00Z",
+        },
+    ]
+
+    eligible, excluded = _classify_export_population(
+        population, domain=None, names_only=False
+    )
+
+    assert [record.standard_name_id for record in excluded] == [
+        "electron_temperature",
+        "ion_temperature",
+    ]
+    assert all(record.reason == "validation_observation_missing" for record in excluded)
+    assert all(record.stage == "eligibility" for record in excluded)
+    assert [candidate["id"] for candidate in eligible] == ["plasma_density"]
 
 
 class TestEntryKeepsOnlyTheReviewableFields:
