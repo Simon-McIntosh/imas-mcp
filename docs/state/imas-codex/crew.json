@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T22:36:27",
+  "updated": "2026-09-09T07:17:09",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -4525,9 +4525,11 @@
         "id": "s10b-etendue",
         "harness": "codex-luna",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "01a082a8-9f8e-75e0-8be1-231612083d8f",
+        "session_model": "gpt-5.6-luna",
+        "sessions": {
+          "{\"alias\":\"luna5.6\",\"backend\":\"codex-luna\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-luna\",\"sandbox\":\"worktree-full\"}": "01a082a8-9f8e-75e0-8be1-231612083d8f"
+        },
         "created": "2026-09-08"
       },
       {
@@ -4551,6 +4553,15 @@
           "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a08278-1282-70b1-b09d-f2130300268a"
         },
         "created": "2026-09-08"
+      },
+      {
+        "id": "s10b-headattr",
+        "harness": "codex",
+        "role": "test",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-09"
       },
       {
         "id": "s10b-importguard",
@@ -4624,12 +4635,23 @@
         "created": "2026-09-08"
       },
       {
-        "id": "s10b-westtail",
+        "id": "s10b-twinfix",
         "harness": "clive",
         "role": "implement",
         "session_id": null,
         "session_model": null,
         "sessions": {},
+        "created": "2026-09-09"
+      },
+      {
+        "id": "s10b-westtail",
+        "harness": "clive",
+        "role": "implement",
+        "session_id": "bfc17788-07e7-44a5-9692-ddddf9ee7e61",
+        "session_model": "deepseek-v4-flash",
+        "sessions": {
+          "{\"alias\":\"dsv4-flash\",\"backend\":\"clive\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"deepseek-v4-flash\",\"sandbox\":\"worktree-full\",\"usable_input_window\":1016576}": "bfc17788-07e7-44a5-9692-ddddf9ee7e61"
+        },
         "created": "2026-09-08"
       },
       {
@@ -111433,6 +111455,359 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260908T201641053025-n-swct-tail-currency",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a79",
+        "node": "n-swct-tail-currency",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2138,
+                "cached_input_tokens": 408326,
+                "input_tokens": 410466,
+                "output_tokens": 887,
+                "reasoning_output_tokens": 108,
+                "total_tokens": 411353,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/sn-west-cohort-treatment/tail-currency.md carries one row per ordered tail step with a SATISFIED or OPEN verdict whose values vary, and for each row the exact command or bounded Cypher query that was run plus its returned figure: the count of accepted-and-quarantined names for the quarantine step, the count of names leaving the export with no stated cause for the accounting step, the count of null physics_domain and tombstoned rows for the recovery step, the count of source paths still parked at extracted and names still at reviewed or drafted for the pipeline step, and the count of unnamed roster rows recording no cause for the reason-field step",
+          "estimated_hours": null,
+          "goal": "Establish from the live graph and the code which of the five ordered tail steps in this plan's driving followup are already satisfied",
+          "id": "n-swct-tail-currency",
+          "lane_declaration": {
+            "backend": "clive",
+            "headroom": null,
+            "metered": false,
+            "observed_at": null,
+            "read_at": "2026-09-08T20:16:41Z",
+            "resolved_backend": "clive",
+            "utilisation_pct": null
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T201641053025-n-swct-tail-currency/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requested_backend": "clive",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "30m",
+          "write_paths": [
+            "docs/evidence/sn-west-cohort-treatment/tail-currency.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-westtail",
+        "backend": "clive",
+        "local": false,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-08T20:16:49Z",
+        "completed_at": "2026-09-08T20:54:35.686Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 2258,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 2266,
+        "stalled": false,
+        "time_budget": "30m",
+        "base_sha": "7aed63c4705614eda98a948450f7ccd8e54830eb",
+        "commits": [
+          "cca6684ff8dd7462022c172e52454e72222266c7"
+        ],
+        "changed_lines": {
+          "added": 226,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "five bounded live-graph probes plus a real WEST export run, one per ordered step, each figure recorded beside its query",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T201641053025-n-swct-tail-currency/export-accounting-run2.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260908T201641053025-n-swct-tail-currency/manifest.md",
+        "scope_changed": false,
+        "session_id": "bfc17788-07e7-44a5-9692-ddddf9ee7e61",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 11142753,
+            "input_tokens_cumulative": 11142753,
+            "output_tokens": 53609,
+            "output_tokens_cumulative": 53609,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lane_receipt": {
+          "quota_state": "unmeasured",
+          "observed_at": "2026-09-08T20:54:35.686Z",
+          "effective_context_window": "unmeasured",
+          "quota_windows": [],
+          "unmeasured": {
+            "effective_context_window": "missing_rollout",
+            "quota_windows": "unmetered"
+          }
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 0,
+          "cumulative_input_tokens": 11142753,
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 2262.69,
+          "generated_tokens": 53609,
+          "generation_seconds": 2157.043,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 18.9,
+          "machine_seconds": 105.647,
+          "peak_input_tokens": 192049,
+          "tokens_per_second": 24.85,
+          "wall_tokens_per_second": 23.69
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-swct-tail-currency",
+          "session_id": "bfc17788-07e7-44a5-9692-ddddf9ee7e61",
+          "session_source": "pointer",
+          "retained_at": "2026-09-08T20:54:35.686Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T045359513628-n-sli-validation-observation-fails-closed",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a72",
+        "node": "n-sli-validation-observation-fails-closed",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 646,
+                "cached_input_tokens": 459211,
+                "input_tokens": 459859,
+                "output_tokens": 1374,
+                "reasoning_output_tokens": 411,
+                "total_tokens": 461233,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "imas_codex/standard_names/export.py line 786 reads candidate.get('_validation_observed_at') is None instead of testing key presence, a test in tests/standard_names/test_export_sidecar_surface.py classifies a candidate that omits the key entirely as validation_observation_missing and fails when the key-presence form is restored, and pytest tests/standard_names/test_export_sidecar_surface.py tests/standard_names/test_export_divergence_report.py reports zero failures added against the same command at the base revision",
+          "estimated_hours": null,
+          "goal": "Make the validation-observation branch of the export classifier fail closed on an absent key like every neighbouring branch in its chain",
+          "id": "n-sli-validation-observation-fails-closed",
+          "lane_declaration": {
+            "backend": "clive",
+            "headroom": null,
+            "metered": false,
+            "observed_at": null,
+            "read_at": "2026-09-09T04:53:59Z",
+            "resolved_backend": "clive",
+            "utilisation_pct": null
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T045359513628-n-sli-validation-observation-fails-closed/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requested_backend": "clive",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a72",
+          "spec_level": "exact",
+          "time_budget": "30m",
+          "write_paths": [
+            "imas_codex/standard_names/export.py",
+            "tests/standard_names/test_export_sidecar_surface.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "exact",
+        "member": "s10b-twinfix",
+        "backend": "clive",
+        "local": false,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-09T04:54:06Z",
+        "completed_at": "2026-09-09T05:14:23.533Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 1209,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 1217,
+        "stalled": false,
+        "time_budget": "30m",
+        "base_sha": "ff9b103ab9be0642fd1dc19b88639913377a3380",
+        "commits": [
+          "d307dfe73ccc7eaf3f7ea0868580ac6dc665b4dd"
+        ],
+        "changed_lines": {
+          "added": 60,
+          "removed": 4,
+          "files": 2
+        },
+        "tests_added": 1,
+        "gate": "passed",
+        "gate_check": {
+          "command": "uv run --no-sync pytest tests/standard_names/test_export_sidecar_surface.py tests/standard_names/test_export_divergence_report.py -p no:cacheprovider, plus a counterfactual with the key-presence form restored",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "fenced gate 19 base / 20 after, zero added; counterfactual EXIT=1"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T045359513628-n-sli-validation-observation-fails-closed/manifest.md",
+        "scope_changed": false,
+        "session_id": "1d7b22b2-72b6-467d-b123-6eb9ca5f604b",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 4970961,
+            "input_tokens_cumulative": 4970961,
+            "output_tokens": 45560,
+            "output_tokens_cumulative": 45560,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lane_receipt": {
+          "quota_state": "unmeasured",
+          "observed_at": "2026-09-09T05:14:23.533Z",
+          "effective_context_window": "unmeasured",
+          "quota_windows": [],
+          "unmeasured": {
+            "effective_context_window": "missing_rollout",
+            "quota_windows": "unmetered"
+          }
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 0,
+          "cumulative_input_tokens": 4970961,
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 1214.276,
+          "generated_tokens": 45560,
+          "generation_seconds": 892.651,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 13.0,
+          "machine_seconds": 321.625,
+          "peak_input_tokens": 132049,
+          "tokens_per_second": 51.04,
+          "wall_tokens_per_second": 37.52
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest tests/standard_names/test_export_sidecar_surface.py",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-sli-validation-observation-fails-closed",
+          "session_id": "1d7b22b2-72b6-467d-b123-6eb9ca5f604b",
+          "session_source": "stream",
+          "retained_at": "2026-09-09T05:14:23.533Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -111689,6 +112064,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2029
+    "_version": 2035
   }
 }
