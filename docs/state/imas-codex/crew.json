@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T15:17:02",
+  "updated": "2026-09-09T15:22:00",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -117920,6 +117920,173 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T124530581873-n-swcr-observe-the-missing-validation",
+        "plan": "sn-west-catalog-release",
+        "section": "cut-predates-its-problems",
+        "node": "n-swcr-observe-the-missing-validation",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 409,
+                "cached_input_tokens": 374975,
+                "input_tokens": 375386,
+                "output_tokens": 2195,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 377581,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/sn-west-catalog-release/etendue-validation-observation.md establishes why etendue_of_soft_xray_detector is withheld and closes it. Read and quote its live state first: validation_status='valid' with validated_at NULL, which is why the export withholds it as validation_observation_missing - the row asserts a verdict with no record of when the verdict was observed. Before writing anything, find and name the code path that normally sets validated_at, quoting file and line, and say whether the null is a row that skipped validation or a validator that recorded a verdict without stamping it, because those are different defects and only the second implicates other rows. Then, if the second, report how many OTHER live StandardName rows carry a non-null validation_status with a null validated_at - that is a population figure and it belongs in this record, since a validator that forgets its stamp would not have forgotten only once. Close the row by running the sanctioned validation path so the observation is genuinely made rather than by writing the timestamp directly: a hand-set validated_at would assert an observation that never happened, which is the same class of defect as the false-acceptance projection this cohort already contains. Finish by re-reading the row and reporting validation_status, validated_at, and whether a fresh export would now admit it. Run the pipeline scoped to this one identity, gap-only, never --reseed and never --force, and pass --skip-global-maintenance. Attempt no signed manifest apply and touch no other identity. Live graph work runs on the login node because the Neo4j tunnel is login-node-local; keep reads bounded and under ten seconds and say so in the manifest. Never pipe, tee or redirect imas-codex CLI output; read its log file afterwards. Write the manifest before any long rotation because your process ends with its turn.",
+          "estimated_hours": null,
+          "goal": "Give etendue_of_soft_xray_detector the validation observation it lacks so it stops being withheld from emission",
+          "id": "n-swcr-observe-the-missing-validation",
+          "lane_declaration": {
+            "backend": "codex",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T12:45:31Z",
+            "read_at": "2026-09-09T12:45:32Z",
+            "resolved_backend": "codex",
+            "utilisation_pct": 81.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T124530581873-n-swcr-observe-the-missing-validation/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requested_backend": "codex",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "cut-predates-its-problems",
+          "spec_level": "guided",
+          "time_budget": "50m",
+          "write_paths": [
+            "docs/evidence/sn-west-catalog-release/etendue-validation-observation.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-restore",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T12:45:41Z",
+        "completed_at": "2026-09-09T13:20:22Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 2081,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 2081,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "88af188bce8257c8865802ef77115f5ec6f425a9",
+        "commits": [
+          "2562d749bd3c065d2bfedf93aa7858471b17a972"
+        ],
+        "changed_lines": {
+          "added": 174,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "exact-name dry run, exact-name gap-only live pipeline with --skip-global-maintenance under a 5 USD cap, drain_validation_for_ids on the single target, a final bounded five-layer read, then a fresh export population and classifier check",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "dry run 1 eligible 0 writes; live run no_eligible_work, 0.00 USD; drain validated=1 quarantined=0; final validated_at stamped, issues=[], five layers passed; export eligible=1 excluded=0; 100 rows unstamped before repair, 43 of them valid"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T124530581873-n-swcr-observe-the-missing-validation/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a0850c-c677-79b1-883a-79fcde8ae49c",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 0,
+            "cached_input_tokens_cumulative": 12878208,
+            "input_tokens": 0,
+            "input_tokens_cumulative": 13970122,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 33096,
+            "reasoning_output_tokens": 2544,
+            "reasoning_output_tokens_cumulative": 11767
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T13:20:22Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 82.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T13:20:22Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 12878208,
+          "cumulative_input_tokens": 26848330,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 44863
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-swcr-observe-the-missing-validation",
+          "session_id": "01a0850c-c677-79b1-883a-79fcde8ae49c",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T13:20:22Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -118176,6 +118343,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2071
+    "_version": 2072
   }
 }
