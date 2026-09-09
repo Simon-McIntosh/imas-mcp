@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T12:11:18",
+  "updated": "2026-09-09T12:27:41",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -114061,6 +114061,475 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T095709157567-n-pidp-cut-rows-carry-a-true-origin",
+        "plan": "paid-identity-deletion-protection",
+        "section": "\u00a77",
+        "node": "n-pidp-cut-rows-carry-a-true-origin",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1747,
+                "cached_input_tokens": 722778,
+                "input_tokens": 724527,
+                "output_tokens": 2042,
+                "reasoning_output_tokens": 614,
+                "total_tokens": 726569,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/paid-identity-deletion-protection/cut-origin-repair.md records one row per identity in the 208-name published cut whose origin is null at run time, each with its PRODUCED_NAME producers, the value written and the signed receipt, and for any identity with no producer at all a stated verdict rather than a written value; a re-run of the census afterwards returns zero null-origin identities inside that cut except those the document explains; and the count of cut identities carrying origin=derived while holding a direct dd producer is zero",
+          "estimated_hours": null,
+          "goal": "Give every null-origin identity inside the published cut a provenance its producer topology supports",
+          "id": "n-pidp-cut-rows-carry-a-true-origin",
+          "lane_declaration": {
+            "backend": "codex-luna",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T09:57:09Z",
+            "read_at": "2026-09-09T09:57:10Z",
+            "resolved_backend": "codex-luna",
+            "utilisation_pct": 69.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T095709157567-n-pidp-cut-rows-carry-a-true-origin/manifest.md",
+          "plan": "paid-identity-deletion-protection",
+          "requested_backend": "codex-luna",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a77",
+          "spec_level": "guided",
+          "time_budget": "50m",
+          "write_paths": [
+            "docs/evidence/paid-identity-deletion-protection/cut-origin-repair.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-etendue",
+        "backend": "codex-luna",
+        "local": false,
+        "agent": {
+          "alias": "luna5.6",
+          "backend": "codex-luna",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-luna",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T09:57:18Z",
+        "completed_at": "2026-09-09T10:13:31Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 973,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 973,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "2c42573c74e07a1b7d2ed4c29830ea74538633c7",
+        "commits": [
+          "d324a2fc2f7fedb9415fcc7609a0e68a0dcfc553"
+        ],
+        "changed_lines": {
+          "added": 79,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "bounded live census over the 208 emitted_identities before and after a signed set_properties apply, plus coordinator re-verification over the 227-name manifest superset",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "208 unique, 207 present, 206 pipeline, 2 verdict-only nulls, 0 producer-backed nulls, 0 derived-with-dd-producer; 41 admitted, 41 changed, 41 receipts, 0 refusals"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T095709157567-n-pidp-cut-rows-carry-a-true-origin/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a082a8-9f8e-75e0-8be1-231612083d8f",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 0,
+            "cached_input_tokens_cumulative": 8764160,
+            "input_tokens": 0,
+            "input_tokens_cumulative": 9314226,
+            "output_tokens": 6949,
+            "output_tokens_cumulative": 33854,
+            "reasoning_output_tokens": 3060,
+            "reasoning_output_tokens_cumulative": 9976
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T10:13:31Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 70.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T10:13:31Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3300,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: \"The merged candidate filter applies to _query_derived_parents_for_admission_cleanup; but this node fails earlier in write_standard_names skeleton placeholder cleanup. That path still passes every relationship-side skeleton_candidate_id to refuse_protected_automatic_deletion before its Cypher statement establishes the positive placeholder predicates. The worktree-bound resumed run reproduced the same ProtectedDeletionError with 0 identities committed.\"",
+              "elapsed_seconds": 984,
+              "external_wait": null,
+              "lifting_condition": null,
+              "liveness_proven": true,
+              "log_age_seconds": 4490,
+              "log_fresh": false,
+              "manifest_commits": [
+                "9cbb91cb8677ff1a87c7abcf23ea82b6ae4c4e48",
+                "9284f2138226e4ac937602e6f1f691c7e84d7627",
+                "7f56f37868932e7b97e3f586f6a831812f29cdb1"
+              ],
+              "manifest_derived": false,
+              "manifest_digest": "3294a6b389be14a98e7c2ec1308653711b47caf61862b8866b8f9732f600adf8",
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072310390297-n-pidp-restore-pedestal-density-family/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072310390297-n-pidp-restore-pedestal-density-family/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-pidp-restore-pedestal-density-family",
+              "phase": "working",
+              "plan": "paid-identity-deletion-protection",
+              "process_alive": false,
+              "project": "imas-codex",
+              "recovery": "decide",
+              "recovery_classification": "blocked",
+              "resets_at": null,
+              "review_error": null,
+              "review_present": false,
+              "review_status": null,
+              "run_id": "r-20260909T072310390297-n-pidp-restore-pedestal-density-family",
+              "session": "ship-s10-20260908",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260909T072310390297-n-pidp-restore-pedestal-density-family",
+                "session_id": "01a0850c-c677-79b1-883a-79fcde8ae49c",
+                "source": "pointer"
+              },
+              "terminal_age_seconds": 4564,
+              "terminal_at": "2026-09-09T08:41:10Z",
+              "wait_age_seconds": null,
+              "wait_condition_state": null,
+              "wait_observed": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-restore-pedestal-density-family"
+            }
+          ]
+        },
+        "throughput": {
+          "cumulative_cached_input_tokens": 8764160,
+          "cumulative_input_tokens": 18078386,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 43830
+        },
+        "follow_on_paths": [
+          "reconstruction/verdict"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-cut-rows-carry-a-true-origin",
+          "session_id": "01a082a8-9f8e-75e0-8be1-231612083d8f",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T10:13:31Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T100726275963-n-pidp-reconstruction-handles-typed-and-live-counterparts",
+        "plan": "paid-identity-deletion-protection",
+        "section": "\u00a74",
+        "node": "n-pidp-reconstruction-handles-typed-and-live-counterparts",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 497,
+                "cached_input_tokens": 731111,
+                "input_tokens": 731610,
+                "output_tokens": 1780,
+                "reasoning_output_tokens": 675,
+                "total_tokens": 733390,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "tests/standard_names/test_archive_reconstruction.py proves the transaction reconstructs an archived edge whose counterpart identity is numeric rather than a string, proves it creates the archived edge to a counterpart that already exists live and identical without including that counterpart in the creation payload, proves it still refuses a live counterpart whose state differs from the archive, retains all seven existing tests unchanged, and a run of pytest -p no:cacheprovider tests/standard_names/ on the all_debug partition using /home/ITER/mcintos/.local/bin/uv run --no-sync reports zero failures added against the same command at the base revision",
+          "estimated_hours": null,
+          "goal": "Let the archive-reconstruction transaction address a counterpart by its own identity type and skip creating one that is already live and identical",
+          "id": "n-pidp-reconstruction-handles-typed-and-live-counterparts",
+          "lane_declaration": {
+            "backend": "codex-terra",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T10:07:27Z",
+            "read_at": "2026-09-09T10:07:28Z",
+            "resolved_backend": "codex-terra",
+            "utilisation_pct": 70.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T100726275963-n-pidp-reconstruction-handles-typed-and-live-counterparts/manifest.md",
+          "plan": "paid-identity-deletion-protection",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a74",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/signed_manifest.py",
+            "tests/standard_names/test_archive_reconstruction.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-fixtures",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T10:07:40Z",
+        "completed_at": "2026-09-09T10:25:54Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1094,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1094,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "2c42573c74e07a1b7d2ed4c29830ea74538633c7",
+        "commits": [
+          "bb061a54c45a80b9b796428474e6541d4a61e5fc"
+        ],
+        "changed_lines": {
+          "added": 134,
+          "removed": 8,
+          "files": 2
+        },
+        "tests_added": 3,
+        "gate": "passed",
+        "gate_check": {
+          "command": "srun --partition=all_debug /home/ITER/mcintos/.local/bin/uv run --no-sync pytest -p no:cacheprovider tests/standard_names/",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "focused 10 passed 0 failed; full suite zero added failures"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T100726275963-n-pidp-reconstruction-handles-typed-and-live-counterparts/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a084b6-f8a5-7551-bfc5-a2dfe794dc4b",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 0,
+            "cached_input_tokens_cumulative": 5131008,
+            "input_tokens": 0,
+            "input_tokens_cumulative": 5645823,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 16789,
+            "reasoning_output_tokens": 0,
+            "reasoning_output_tokens_cumulative": 4629
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T10:25:54Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 71.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T10:25:54Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3300,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: \"The merged candidate filter applies to _query_derived_parents_for_admission_cleanup; but this node fails earlier in write_standard_names skeleton placeholder cleanup. That path still passes every relationship-side skeleton_candidate_id to refuse_protected_automatic_deletion before its Cypher statement establishes the positive placeholder predicates. The worktree-bound resumed run reproduced the same ProtectedDeletionError with 0 identities committed.\"",
+              "elapsed_seconds": 984,
+              "external_wait": null,
+              "lifting_condition": null,
+              "liveness_proven": true,
+              "log_age_seconds": 5111,
+              "log_fresh": false,
+              "manifest_commits": [
+                "9cbb91cb8677ff1a87c7abcf23ea82b6ae4c4e48",
+                "9284f2138226e4ac937602e6f1f691c7e84d7627",
+                "7f56f37868932e7b97e3f586f6a831812f29cdb1"
+              ],
+              "manifest_derived": false,
+              "manifest_digest": "3294a6b389be14a98e7c2ec1308653711b47caf61862b8866b8f9732f600adf8",
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072310390297-n-pidp-restore-pedestal-density-family/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072310390297-n-pidp-restore-pedestal-density-family/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-pidp-restore-pedestal-density-family",
+              "phase": "working",
+              "plan": "paid-identity-deletion-protection",
+              "process_alive": false,
+              "project": "imas-codex",
+              "recovery": "decide",
+              "recovery_classification": "blocked",
+              "resets_at": null,
+              "review_error": null,
+              "review_present": false,
+              "review_status": null,
+              "run_id": "r-20260909T072310390297-n-pidp-restore-pedestal-density-family",
+              "session": "ship-s10-20260908",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260909T072310390297-n-pidp-restore-pedestal-density-family",
+                "session_id": "01a0850c-c677-79b1-883a-79fcde8ae49c",
+                "source": "pointer"
+              },
+              "terminal_age_seconds": 5185,
+              "terminal_at": "2026-09-09T08:41:10Z",
+              "wait_age_seconds": null,
+              "wait_condition_state": null,
+              "wait_observed": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-restore-pedestal-density-family"
+            }
+          ]
+        },
+        "throughput": {
+          "cumulative_cached_input_tokens": 5131008,
+          "cumulative_input_tokens": 10776831,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 21418
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest -p",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-reconstruction-handles-typed-and-live-counterparts",
+          "session_id": "01a084b6-f8a5-7551-bfc5-a2dfe794dc4b",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T10:25:54Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -114317,6 +114786,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2054
+    "_version": 2056
   }
 }
