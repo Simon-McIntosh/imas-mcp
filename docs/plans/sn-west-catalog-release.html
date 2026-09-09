@@ -16,7 +16,7 @@
 <meta name="plan-effort" content="M">
 <meta name="plan-sprint" content="S10">
 <meta name="plan-owner" content="Simon McIntosh">
-<meta name="plan-modified" content="2026-09-08">
+<meta name="plan-modified" content="2026-09-09">
 <meta name="plan-graph-handle" content="west-rc">
 <meta name="plan-depends-on" content="sn-west-review-rehearsal,sn-west-cohort-treatment">
 <meta name="plan-blocks" content="">
@@ -28,7 +28,7 @@
 <meta name="plan-capability-verification" content="strict">
 <meta name="plan-capability-risk" content="critical">
 <meta name="plan-impl" content="0.95">
-<meta name="plan-version" content="210">
+<meta name="plan-version" content="211">
 <meta name="plan-commits" content="72b7760c60ac307f641e7e8490b7f15e532d2104">
 <meta name="plan-artifacts" content="docs/evidence/sn-west-catalog-release/residue-currency.md,tests/standard_names/test_review_body_ledger_link.py">
 </head>
@@ -109,10 +109,39 @@
     <code>net_power_due_to_ion_cyclotron_heating</code>, which carries those same 1,679 characters
     by the asserted-equivalence document carry, is added in its place. A provenance repair here
     would be answering the wrong question about a name that should not be in the batch.</li>
-    <li><strong>The release is therefore a re-cut, not a repair of the standing one.</strong> The
-    next candidate must carry the restored identity, drop the superseded spelling and admit its
-    successor. Reviewing the standing candidate would publish a graph that no longer exists.</li>
+    <li><strong>The candidate is internally inconsistent on a third row, and a reviewer would
+    have found it.</strong> Three names in the same 208-name cut are drawn from the same two
+    diagnostic IDSs and spell the same locus two different ways:
+    <code>hard_x_rays/channel/etendue</code> is <code>etendue_of_hard_xray_detector</code>,
+    <code>soft_x_rays/channel/power</code> is <code>power_of_soft_xray_detector</code>, and
+    <code>soft_x_rays/channel/etendue</code> alone is
+    <code>etendue_of_spectrometer_channel</code>. The DD description of that path names &ldquo;a
+    soft X-ray diagnostic channel's optical system &hellip; the product of detector area and solid
+    angle&rdquo; and no spectrometer at all &mdash; and the hard and soft etendue documentation
+    strings are <strong>byte-identical</strong>, so nothing in the source text distinguishes them
+    and the only differentiator is the IDS name. The divergent spelling is therefore an error
+    rather than a judgement that went the other way. <strong>Lead ruling 2026-09-08: keep the
+    recomposition's spelling</strong> &mdash; the identity is
+    <code>etendue_of_soft_xray_detector</code> and its ratified child follows to
+    <code>spectral_etendue_of_soft_xray_detector</code>. The child carries
+    <code>unchanged_ratification</code>, so that is a catalog-visible correction, taken while the
+    candidate is closed rather than after approval.</li>
+
+    <li><strong>The release is therefore a re-cut of three edits, not a repair of one row.</strong>
+    Two names are respelled or replaced &mdash; the superseded ICH spelling gives way to its live
+    successor, and the etendue row takes the detector spelling with its child &mdash; and one name
+    is restored. Reviewing the standing candidate would publish a graph that no longer exists, on
+    two rows it never described correctly.</li>
   </ul>
+
+  <p>The recomposition is what surfaced the third row, and that is worth keeping. The path
+  <code>soft_x_rays/channel/etendue</code> was quoted repeatedly today as the recovery route,
+  in the same sentences that named the quantity a spectrometer channel: <strong>the
+  disconfirming evidence was inside the string being used as support.</strong> A composer reading
+  the definition cold proposed the consistent name, a rename overrode it to satisfy an archival
+  criterion, and the worker flagged the semantic mismatch rather than letting the rename stand
+  silently. The general form is the one this repository already knows &mdash; read the definition,
+  not the name &mdash; applied to a <em>path</em>, whose segments are a definition too.</p>
 
   <p><strong>Nothing is open on the fork.</strong> Pull request 18 &mdash; the candidate opened at
   10:48Z &mdash; was closed at the lead's instruction pending this work; 11 through 16 are closed
