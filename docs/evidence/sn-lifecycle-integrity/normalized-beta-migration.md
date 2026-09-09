@@ -1,19 +1,25 @@
-# Blocked normalized-beta migration
+# Partial normalized-beta identity revival
 
 ## Result
 
-The ordered migration cannot be completed through the sanctioned Standard Names
-paths presently available. The identity selected by the live-plan ruling,
-`normalized_toroidal_beta`, holds all eight producers but is catalog-terminal
-(`status='superseded'`). The sanctioned rescore operation can change its
-pipeline stage, but does not revive its catalog status; the exact scoped review
-path then correctly refuses the same identity as terminal. No hand-written
-Cypher workaround was used.
+`normalized_toroidal_beta` is no longer an orphaned terminal identity. A
+one-row signed transaction changed only its catalog `status`, from
+`superseded` to `draft`, and wrote one persistent receipt. An independent live
+read found the identity at `status='draft'`, `name_stage='drafted'`, with all
+eight producers unchanged and no worker claim. The document migration,
+thermal-only split, independent reviews, and inverse-lineage removal have not
+yet run.
 
-All live graph reads were bounded to these four identities on the login node,
-where the Neo4j tunnel is available. They completed in under ten seconds.
+The two redesign routes documented for superseded names were both tested first
+and both refused because the target spelling already exists. The signed
+fallback therefore proved necessary for this already-materialised orphan. No
+hand-written Cypher property update was used.
 
-## Live state before attempting the migration
+All live graph work ran on the login node because the Neo4j tunnel is local to
+that node. Every read was bounded to the four named identities or to one exact
+claim token and completed in under ten seconds.
+
+## Live state before the work
 
 | Identity | status | name_stage | docs_stage | producer count | docs length | docs score | docs review edges |
 |---|---|---|---|---:|---:|---:|---:|
@@ -22,76 +28,168 @@ where the Neo4j tunnel is available. They completed in under ten seconds.
 | `normalized_toroidal_thermal_plasma_beta` | `superseded` | `superseded` | `pending` | 0 | 0 | null | 0 |
 | `toroidal_beta` | `draft` | `accepted` | `accepted` | 5 | 1,449 | 0.925 | 9 |
 
-The 1,504-character source document contains four erroneous links whose label
-describes unnormalised toroidal beta but whose target is the document's own
-identity. The intended replacements are all
-`[toroidal_beta](name:toroidal_beta)`. The document was not copied because the
-sanctioned docs edit correctly refused its target before mutation.
+The 1,504-character source document contains four textual links whose label
+describes unnormalised toroidal beta but whose target is its own
+`normalized_toroidal_plasma_beta` identity. None was changed in this partial
+run. Each eventual replacement is
+`[toroidal_beta](name:toroidal_beta)`.
 
-## Sanctioned-path results
+## Initial sanctioned-path deadlock
 
-1. `sn edit normalized_toroidal_beta --docs … --scope self --dry-run` refused:
-   `target name_stage='reviewed' — docs edits require an accepted name`.
-   This protects the docs review gate; it means the recovered documentation
-   cannot be placed until the name has re-entered acceptance.
+The first documentation dry-run protected the review gate:
 
-2. `sn supersede normalized_toroidal_plasma_beta --into
-   normalized_toroidal_beta --dry-run` refused: its target was
-   `name_stage='reviewed'`, not `accepted`. That operation cannot be used to
-   revive the selected total-pressure identity before it has itself passed name
-   review.
+```text
+BLOCKED
+target name_stage='reviewed' — docs edits require an accepted name
+(name_stage='accepted')
+Actions considered:
+- target name_stage='reviewed' — docs edits require an accepted name
+(name_stage='accepted')
+```
 
-3. `sn rescore normalized_toroidal_beta --dry-run` was admitted, and the live
-   sanctioned rescore transitioned the name axis from `reviewed` to `drafted`
-   under `run_id=sn-rescore-20260909T172147Z`. It cleared the stale name score
-   as designed. It did **not** change `status`, leaving it `superseded`.
+`sn supersede normalized_toroidal_plasma_beta --into
+normalized_toroidal_beta --dry-run` likewise refused because the target name
+stage was `reviewed`, not `accepted`.
 
-4. The exact scoped continuation required to review that drafted identity,
-   `sn run --name normalized_toroidal_beta --only review_name
-   --skip-global-maintenance --dry-run`, then refused with
-   `normalized_toroidal_beta: terminal StandardName lifecycle`.
+`sn rescore normalized_toroidal_beta --dry-run` admitted the row. The live
+rescore then moved the name stage from `reviewed` to `drafted`, cleared the old
+name score, assigned `run_id=sn-rescore-20260909T172147Z`, and revalidated the
+row. It retained `status='superseded'`. The exact review continuation therefore
+refused:
 
-The zero-cost read of `LLMCost` for the rescore run found no associated rows, so
-the $15 cap has not been consumed. The live partial state after the sanctioned
-rescore is therefore:
+```text
+Error: normalized_toroidal_beta: terminal StandardName lifecycle
+```
 
-| Identity | status | name_stage | docs_stage | name score | docs score | producer count |
-|---|---|---|---:|---:|---:|---:|
-| `normalized_toroidal_beta` | `superseded` | `drafted` | `pending` | null | null | 8 |
+The `LLMCost` read for that rescore run returned zero rows and USD 0.00.
 
-No name-review edge was added in this attempt; the count remains 10 historical
-name-axis edges. The four-identity lineage still contains both directions:
-`normalized_toroidal_beta REFINED_FROM normalized_toroidal_plasma_beta` and
-the inverse. No source path, documentation, link, or lineage edge was moved.
+## Redesign-route dry-runs
 
-## Cause
+The same-spelling redesign command carried this physics reason:
 
-The two sanctioned mechanisms disagree on the status of a rescore candidate:
+> This is the canonical total-pressure normalized toroidal beta identity: it
+> retains the WEST roster membership and all eight producers, including the
+> MHD estimator facet, while the thermal-pressure-only source is a physically
+> distinct quantity.
 
-* `stage_name_for_rescore` explicitly admits a `reviewed` predecessor, changes
-  only the name-axis state to `drafted`, and leaves a superseded predecessor's
-  catalog status intact so its lineage survives.
-* `scope_exact_standard_names`, used by `sn run --name`, refuses either
-  `name_stage='superseded'` **or** `status='superseded'` as a terminal
-  lifecycle.
+Its complete CLI verdict was:
 
-The rescore API therefore creates a drafted review candidate that its own
-scoped pipeline cannot claim whenever the historical catalog status is
-`superseded`. A docs edit is also unavailable because it requires both
-`name_stage='accepted'` and an already settled docs axis.
+```text
+╭────────────────────── sn edit normalized_toroidal_beta ──────────────────────╮
+│ BLOCKED                                                                      │
+│ a StandardName 'normalized_toroidal_beta' already exists                     │
+╰──────────────────────────────────────────────────────────────────────────────╯
 
-## Required authority and next action
+Actions considered:
+  - a StandardName 'normalized_toroidal_beta' already exists
+```
 
-This needs a narrowly sanctioned identity-revival path that atomically changes
-the selected, source-bound predecessor from catalog-superseded to reviewable
-draft while preserving its eight `PRODUCED_NAME` bindings and lineage. The path
-must be available through the Standard Names CLI, re-review the unchanged name,
-and allow the documentation edit only after name acceptance. It must not be a
-hand-written graph patch and must retain the current terminal-state guard for
-ordinary exact scopes.
+The document-bearing orphan was then aimed at the elected spelling with this
+physics reason:
 
-After that capability exists, resume in this order: revive and name-review
-`normalized_toroidal_beta`; migrate and independently review the corrected
-1,504-character document; move only
-`dd:summary/global_quantities/beta_tor_thermal_norm/value` to the thermal-only
-identity and review both axes; then remove the inverse `REFINED_FROM` edge.
+> The source document defines the total-pressure normalized toroidal beta,
+> whose canonical family spelling omits the redundant plasma segment; its four
+> unnormalised-beta references must resolve to toroidal_beta, while thermal-only
+> pressure remains a separate quantity.
+
+Its complete CLI verdict was the same collision refusal:
+
+```text
+╭────────────────── sn edit normalized_toroidal_plasma_beta ───────────────────╮
+│ BLOCKED                                                                      │
+│ a StandardName 'normalized_toroidal_beta' already exists                     │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+Actions considered:
+  - a StandardName 'normalized_toroidal_beta' already exists
+```
+
+The redesign route can therefore resurrect into an absent spelling, but these
+dry-runs show that it cannot revive an existing orphan under its own spelling
+or collide a second orphan into that row.
+
+## Signed status transition
+
+The fallback authority contained one `StandardName` participant and one closed
+`set_properties` mutation:
+
+```text
+normalized_toroidal_beta: {status: draft}
+```
+
+It changed no stage, score, claim, documentation, source binding, or lineage
+property. The physics reason carried by the authority was:
+
+> Restore the total-pressure normalized toroidal beta identity to draft so its
+> eight bound producers can receive independent name and documentation review.
+
+The preview and apply receipts were:
+
+| Measure | Preview | Apply |
+|---|---:|---:|
+| Authority rows | 1 | 1 |
+| Admitted / refused | 1 / 0 | 1 / 0 |
+| Outcome | `would_apply` | `applied` |
+| Would change / changed | 1 | 1 |
+| Receipt rows | — | 1 |
+| Persistent writes | 0 | 2 |
+
+- Authority file SHA-256:
+  `fbfe19d039588a7d79ce974089d7c98db849bf4d4b5b76c6e101c5e3c9543933`
+- Authority payload SHA-256:
+  `c1315713597e8e39af62fcbf122622fec78fb0a23dda538035512805f1cbdeac`
+- Previewed and applied manifest SHA-256:
+  `735bda186280d8d979073f0bd2c61ee5e397afc9534305519c6f9b13e7a9a8ca`
+
+The full authority, preview, and apply receipt are preserved beside the worker
+manifest as `status-revival-authority.json`, `status-revival-preview.json`, and
+`status-revival-apply.json`. The apply receipt, rather than an absent exception,
+is the evidence that the mutation committed.
+
+## Review hand-off and current graph state
+
+After the successful status transition, the first exact review dry-run reached
+a different guard:
+
+```text
+Error: normalized_toroidal_beta: current worker claim
+```
+
+The exact token matched only `normalized_toroidal_beta`; no live process held
+it. Its `claimed_at=2026-09-09T17:26:47.868Z` was later than the completed
+validation observation at `validated_at=2026-09-09T17:21:57.433Z`. The
+repository's token-and-stage-verified `release_review_names_claims` helper was
+called for that one identity, that exact token, and expected
+`name_stage='drafted'`; it returned `released=1`. The final live read confirms:
+
+| Identity | status | name_stage | docs_stage | name score | docs score | docs length | producer count | claim token |
+|---|---|---|---|---:|---:|---:|---:|---|
+| `normalized_toroidal_beta` | `draft` | `drafted` | `pending` | null | null | 0 | 8 | null |
+
+The eight producers remain:
+
+- `dd:summary/global_quantities/beta_tor_norm_mhd/value`
+- `dd:equilibrium/time_slice/global_quantities/beta_tor_norm`
+- `dd:summary/global_quantities/beta_tor_thermal_norm/value`
+- `dd:equilibrium/time_slice/global_quantities/beta_normal`
+- `dd:summary/global_quantities/beta_tor_norm/value`
+- `derived:beta`
+- `dd:core_profiles/global_quantities/beta_tor_norm`
+- `dd:plasma_profiles/global_quantities/beta_tor_norm`
+
+No third review attempt was made: the same exact review command had now refused
+twice under two different remedies, which is this worker's mandatory stop
+condition. Total provider spend remains USD 0.00 of the USD 15.00 ceiling.
+
+## Remaining work
+
+The next invocation can begin directly with the claim-free exact name-axis
+review of `normalized_toroidal_beta`; it must not repeat the status repair.
+Documentation work can then use the ordinary governed edit route to migrate the
+corrected 1,504-character document and establish an identity-local docs review
+edge. After that, move only
+`dd:summary/global_quantities/beta_tor_thermal_norm/value` to
+`normalized_toroidal_thermal_plasma_beta`, review that distinct thermal-only
+quantity on both axes, leave the MHD estimator on the total identity, and
+remove the obsolete inverse `REFINED_FROM` edge. The two lineage directions
+remain present now; no lineage mutation was attempted.
