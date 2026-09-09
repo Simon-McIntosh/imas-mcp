@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T08:07:39",
+  "updated": "2026-09-09T09:39:31",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -112328,6 +112328,174 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T072200532479-n-pidp-archive-reconstruction-adapter",
+        "plan": "paid-identity-deletion-protection",
+        "section": "\u00a74",
+        "node": "n-pidp-archive-reconstruction-adapter",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1771,
+                "cached_input_tokens": 539787,
+                "input_tokens": 541560,
+                "output_tokens": 914,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 542474,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "tests/standard_names/test_archive_reconstruction.py proves the new mutation creates an absent StandardName together with its allowlisted archived edges under a signed exact-identity manifest, and separately proves it refuses each of: a relationship type outside its registry, an archived edge whose counterpart is neither live nor included, a node that already exists with non-identical state, and a per-type archive-versus-live count mismatch; and a run of pytest -p no:cacheprovider tests/standard_names/ on the all_debug partition using /home/ITER/mcintos/.local/bin/uv run --no-sync reports zero failures added against the same command at the base revision",
+          "estimated_hours": null,
+          "goal": "Build the narrowly typed archive-reconstruction mutation inside the signed-manifest transaction boundary",
+          "id": "n-pidp-archive-reconstruction-adapter",
+          "lane_declaration": {
+            "backend": "codex-terra",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T07:22:01Z",
+            "read_at": "2026-09-09T07:22:02Z",
+            "resolved_backend": "codex-terra",
+            "utilisation_pct": 58.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072200532479-n-pidp-archive-reconstruction-adapter/manifest.md",
+          "plan": "paid-identity-deletion-protection",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a74",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/signed_manifest.py",
+            "tests/standard_names/test_archive_reconstruction.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-export",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T07:22:13Z",
+        "completed_at": "2026-09-09T07:37:55Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 942,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 942,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "c3009010c9ec4d9f0d92437b53914dd3c9f05fcd",
+        "commits": [
+          "f65d82e75984981cf4fd27f1f9d25662579881f5"
+        ],
+        "changed_lines": {
+          "added": 674,
+          "removed": 0,
+          "files": 2
+        },
+        "tests_added": 5,
+        "gate": "passed",
+        "gate_check": {
+          "command": "srun --partition=all_debug /home/ITER/mcintos/.local/bin/uv run --no-sync pytest -p no:cacheprovider tests/standard_names/",
+          "exit_status": 0,
+          "log_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072200532479-n-pidp-archive-reconstruction-adapter/after-suite.log",
+          "log_digest": null
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072200532479-n-pidp-archive-reconstruction-adapter/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a08287-cd7b-7372-8865-9d5263ecb100",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 8502272,
+            "cached_input_tokens_cumulative": 12816128,
+            "input_tokens": 8646593,
+            "input_tokens_cumulative": 13128410,
+            "output_tokens": 10413,
+            "output_tokens_cumulative": 27804,
+            "reasoning_output_tokens": 2673,
+            "reasoning_output_tokens_cumulative": 9078
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T07:37:55Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 59.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T07:37:55Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 12816128,
+          "cumulative_input_tokens": 25944538,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 36882
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest -p",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-archive-reconstruction-adapter",
+          "session_id": "01a08287-cd7b-7372-8865-9d5263ecb100",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T07:37:55Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -112584,6 +112752,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2041
+    "_version": 2042
   }
 }
