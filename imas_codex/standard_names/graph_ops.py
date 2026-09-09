@@ -37,6 +37,7 @@ from imas_codex.standard_names.doc_links import find_name_references
 from imas_codex.standard_names.ledger import reattach_produced_name_edges
 from imas_codex.standard_names.protection import (
     ProtectedDeletionError,
+    filter_automatic_deletion_candidates,
     refuse_protected_automatic_deletion,
 )
 from imas_codex.standard_names.provenance_lifecycle import (
@@ -3625,8 +3626,9 @@ def _query_derived_parents_for_admission_cleanup(gc: Any) -> list[str]:
     born before their first batch child has a graph edge, when the shadow veto
     has no topology to inspect. Both states must pass the current gate before
     lifecycle materialization or structural acceptance can promote them.
-    Restrict to ``origin='derived'`` so catalog-authoritative and
-    pipeline-authored names are never touched by this cleanup.
+    Restrict to ``origin='derived'`` and exclude identities carrying durable
+    authority before admission is evaluated.  The deletion path repeats the
+    authority check as a backstop against changes between selection and write.
 
     Re-check regardless of ``docs_stage``. A single-child shadow can otherwise
     survive either pending materialization or an accepted names-only run.
@@ -3640,7 +3642,8 @@ def _query_derived_parents_for_admission_cleanup(gc: Any) -> list[str]:
         RETURN DISTINCT parent.id AS parent_id
         """
     )
-    return [str(r["parent_id"]) for r in rows if r.get("parent_id")]
+    candidate_ids = [str(r["parent_id"]) for r in rows if r.get("parent_id")]
+    return filter_automatic_deletion_candidates(gc, candidate_ids)
 
 
 def _delete_derived_parent_nodes(
