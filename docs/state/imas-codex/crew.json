@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T10:08:56",
+  "updated": "2026-09-09T10:27:34",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -4611,9 +4611,11 @@
         "id": "s10b-provenance",
         "harness": "codex",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "01a0852b-27a1-75e0-90d5-b574ddc868a0",
+        "session_model": "gpt-5.6-sol",
+        "sessions": {
+          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a0852b-27a1-75e0-90d5-b574ddc868a0"
+        },
         "created": "2026-09-08"
       },
       {
@@ -4642,9 +4644,11 @@
         "id": "s10b-restore",
         "harness": "codex",
         "role": "implement",
-        "session_id": null,
-        "session_model": null,
-        "sessions": {},
+        "session_id": "01a0850c-c677-79b1-883a-79fcde8ae49c",
+        "session_model": "gpt-5.6-sol",
+        "sessions": {
+          "{\"alias\":\"sol5.6\",\"backend\":\"codex\",\"effort\":\"high\",\"launch\":\"cli\",\"model\":\"gpt-5.6-sol\",\"sandbox\":\"worktree-full\"}": "01a0850c-c677-79b1-883a-79fcde8ae49c"
+        },
         "created": "2026-09-08"
       },
       {
@@ -112842,6 +112846,472 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T074336257867-n-pidp-protected-rows-leave-the-candidate-set",
+        "plan": "paid-identity-deletion-protection",
+        "section": "\u00a73a",
+        "node": "n-pidp-protected-rows-leave-the-candidate-set",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 967,
+                "cached_input_tokens": 589262,
+                "input_tokens": 590231,
+                "output_tokens": 813,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 591044,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "a test fails when the selector's protected-identity exclusion is removed, a second test still proves refuse_protected_automatic_deletion raises when a protected identity is handed to the deleter directly, and a run of pytest -p no:cacheprovider tests/standard_names/ on the all_debug partition using /home/ITER/mcintos/.local/bin/uv run --no-sync reports zero failures added against the same command at the base revision",
+          "estimated_hours": null,
+          "goal": "Exclude protected identities from structural derived-parent candidate selection so global maintenance stops failing on them, keeping the deletion-time refusal as the backstop",
+          "id": "n-pidp-protected-rows-leave-the-candidate-set",
+          "lane_declaration": {
+            "backend": "codex",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T07:43:36Z",
+            "read_at": "2026-09-09T07:43:37Z",
+            "resolved_backend": "codex",
+            "utilisation_pct": 59.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T074336257867-n-pidp-protected-rows-leave-the-candidate-set/manifest.md",
+          "plan": "paid-identity-deletion-protection",
+          "requested_backend": "codex",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a73a",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/graph_ops.py",
+            "imas_codex/standard_names/protection.py",
+            "tests/standard_names/test_protected_identity_exclusion.py"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-quarantine",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T07:43:45Z",
+        "completed_at": "2026-09-09T08:23:46Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 2401,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 2401,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "5f3f0f7c7c20c9cdfc5f4cb3ea2386fb61693e6c",
+        "commits": [
+          "a79b2bfabe10853c78709d32f6ae3e221a6042bd",
+          "6a5dc1a00c1b8a286c5a3967eb4939fcd464b32b"
+        ],
+        "changed_lines": {
+          "added": 86,
+          "removed": 4,
+          "files": 4
+        },
+        "tests_added": 8,
+        "gate": "passed",
+        "gate_check": {
+          "command": "srun --partition=all_debug /home/ITER/mcintos/.local/bin/uv run --no-sync pytest -p no:cacheprovider tests/standard_names/",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "final: 7301 passed, 11 skipped, 323 deselected, 0 failed; zero added against base 7299"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T074336257867-n-pidp-protected-rows-leave-the-candidate-set/manifest.md",
+        "scope_changed": true,
+        "session_id": "01a08278-ca2e-70b0-a6f3-c9c918ed3580",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 0,
+            "cached_input_tokens_cumulative": 1984640,
+            "input_tokens": 0,
+            "input_tokens_cumulative": 2115176,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 10610,
+            "reasoning_output_tokens": 0,
+            "reasoning_output_tokens_cumulative": 1287
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T08:23:46Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 64.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T08:23:46Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 1984640,
+          "cumulative_input_tokens": 4099816,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 11897
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": "pytest -p",
+          "override": false,
+          "role": "implement",
+          "status": "compatible"
+        },
+        "attempt_kind": "resume",
+        "attempt": 2,
+        "scope_acceptances": [
+          {
+            "path": "tests/standard_names/test_derived_parent_lifecycle_repair.py",
+            "reason": "coordinator-granted scope extension: the fix reached this fixture, whose single canned probe response could not model the newly reached guarded statements; the fencing omission was the coordinator's"
+          }
+        ],
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-protected-rows-leave-the-candidate-set",
+          "session_id": "01a08278-ca2e-70b0-a6f3-c9c918ed3580",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T08:23:46Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T075617716185-n-sea-materialise-the-reference-edges",
+        "plan": "scalar-edge-authority",
+        "section": "\u00a73",
+        "node": "n-sea-materialise-the-reference-edges",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1600,
+                "cached_input_tokens": 623588,
+                "input_tokens": 625190,
+                "output_tokens": 873,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 626063,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/scalar-edge-authority/reference-edge-materialisation.md records the live count of REFERENCES edges after the write beside the 6682 the scalar implies with equality required; records the count of standard names carrying a non-empty links scalar both before and after the write with both required to equal 2948 and no scalar value modified; names every link whose target cannot be resolved together with the reason rather than dropping it; and states that the derive beat of this pair was not performed",
+          "estimated_hours": null,
+          "goal": "Materialise the REFERENCES relationship from every non-empty links scalar",
+          "id": "n-sea-materialise-the-reference-edges",
+          "lane_declaration": {
+            "backend": "codex",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T07:56:18Z",
+            "read_at": "2026-09-09T07:56:19Z",
+            "resolved_backend": "codex",
+            "utilisation_pct": 60.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T075617716185-n-sea-materialise-the-reference-edges/manifest.md",
+          "plan": "scalar-edge-authority",
+          "requested_backend": "codex",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a73",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "docs/evidence/scalar-edge-authority/reference-edge-materialisation.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-provenance",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T07:56:32Z",
+        "completed_at": "2026-09-09T08:24:55Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1703,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1703,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "c18791498b1f05575092ca53d16aa381c188ff3c",
+        "commits": [
+          "dba2e48f18d70f8bafa9f38f242beb474f9eff17",
+          "8205d1c1438a3d7d9f9d526458855ce086d3f469"
+        ],
+        "changed_lines": {
+          "added": 203,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "bounded live GraphClient census before and after the idempotent MERGE, plus coordinator re-verification of edge count, endpoint labels and scalar preservation",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "6557 edges materialised; 127 exclusions named; scalar digest equal before/after; 0 stray edges"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T075617716185-n-sea-materialise-the-reference-edges/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a0852b-27a1-75e0-90d5-b574ddc868a0",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 6404224,
+            "cached_input_tokens_cumulative": 6404224,
+            "input_tokens": 6478948,
+            "input_tokens_cumulative": 6478948,
+            "output_tokens": 20096,
+            "output_tokens_cumulative": 20096,
+            "reasoning_output_tokens": 8224,
+            "reasoning_output_tokens_cumulative": 8224
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T08:24:55Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 64.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T08:24:55Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3300,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: \"The paid-deletion guard evaluates the broad relationship candidate set rather than the query-proven deletable skeleton set; so ordinary composition of every paid family identity raises ProtectedDeletionError before any StandardName can commit. The required graph_ops.py and test repair is outside this node's exclusive write scope.\"",
+              "elapsed_seconds": 1540,
+              "external_wait": null,
+              "lifting_condition": null,
+              "liveness_proven": true,
+              "log_age_seconds": 446,
+              "log_fresh": true,
+              "manifest_commits": [
+                "9cbb91cb8677ff1a87c7abcf23ea82b6ae4c4e48"
+              ],
+              "manifest_derived": false,
+              "manifest_digest": "3292c6116fbcfbb545d0315e7cce0cb3e1396782a22d7e920239d84b7a4d5e9d",
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072310390297-n-pidp-restore-pedestal-density-family/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072310390297-n-pidp-restore-pedestal-density-family/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-pidp-restore-pedestal-density-family",
+              "phase": "starting",
+              "plan": "paid-identity-deletion-protection",
+              "process_alive": false,
+              "project": "imas-codex",
+              "recovery": "decide",
+              "recovery_classification": "blocked",
+              "resets_at": null,
+              "review_error": null,
+              "review_present": false,
+              "review_status": null,
+              "run_id": "r-20260909T072310390297-n-pidp-restore-pedestal-density-family",
+              "session": "ship-s10-20260908",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260909T072310390297-n-pidp-restore-pedestal-density-family",
+                "session_id": "01a0850c-c677-79b1-883a-79fcde8ae49c",
+                "source": "stream"
+              },
+              "terminal_age_seconds": 482,
+              "terminal_at": "2026-09-09T07:48:25Z",
+              "wait_age_seconds": null,
+              "wait_condition_state": null,
+              "wait_observed": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-restore-pedestal-density-family"
+            },
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3000,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: \"The complete signed archive closure cannot apply under the current adapter: 77 archived counterparts are neither live nor includable in its StandardName-only authority. Applying only the available parent and twelve other live-counterpart edges would violate the required complete archive count parity.\"",
+              "elapsed_seconds": 603,
+              "external_wait": null,
+              "lifting_condition": null,
+              "liveness_proven": true,
+              "log_age_seconds": 330,
+              "log_fresh": true,
+              "manifest_commits": [
+                "45d0baede882a7c2b7dbe88dabef303b60ccfb8b\"]; changed_paths: [\"docs/evidence/paid-identity-deletion-protection/spectral-child-restore.md"
+              ],
+              "manifest_derived": false,
+              "manifest_digest": "799c5eaf712031cb4dd1428f4af994f9045eacc37984fd754876c750ec01450e",
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T074045931481-n-pidp-restore-ratified-spectral-child/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T074045931481-n-pidp-restore-ratified-spectral-child/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-pidp-restore-ratified-spectral-child",
+              "phase": "starting",
+              "plan": "paid-identity-deletion-protection",
+              "process_alive": false,
+              "project": "imas-codex",
+              "recovery": "decide",
+              "recovery_classification": "blocked",
+              "resets_at": null,
+              "review_error": null,
+              "review_present": false,
+              "review_status": null,
+              "run_id": "r-20260909T074045931481-n-pidp-restore-ratified-spectral-child",
+              "session": "ship-s10-20260908",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260909T074045931481-n-pidp-restore-ratified-spectral-child",
+                "session_id": "01a08287-cd7b-7372-8865-9d5263ecb100",
+                "source": "pointer"
+              },
+              "terminal_age_seconds": 356,
+              "terminal_at": "2026-09-09T07:50:31Z",
+              "wait_age_seconds": null,
+              "wait_condition_state": null,
+              "wait_observed": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-restore-ratified-spectral-child"
+            }
+          ]
+        },
+        "throughput": {
+          "cumulative_cached_input_tokens": 6404224,
+          "cumulative_input_tokens": 12883172,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 28320
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "resume",
+        "attempt": 2,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-sea-materialise-the-reference-edges",
+          "session_id": "01a0852b-27a1-75e0-90d5-b574ddc868a0",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T08:24:55Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -113098,6 +113568,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2045
+    "_version": 2049
   }
 }
