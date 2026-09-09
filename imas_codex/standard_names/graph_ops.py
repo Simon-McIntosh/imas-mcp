@@ -4621,7 +4621,7 @@ def normalize_derived_parent_lifecycle(gc: Any | None = None) -> int:
         # orphaned. Delete docs/reviews/derived-source scaffolding too.
         reaped_parent_ids: set[str] = set()
         while True:
-            childless = [
+            childless_candidates = [
                 r["id"]
                 for r in gc.query(
                     """
@@ -4633,6 +4633,7 @@ def normalize_derived_parent_lifecycle(gc: Any | None = None) -> int:
                 or []
                 if r["id"] not in reaped_parent_ids
             ]
+            childless = filter_automatic_deletion_candidates(gc, childless_candidates)
             if not childless:
                 break
             reaped_parent_ids.update(childless)
