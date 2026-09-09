@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T15:28:14",
+  "updated": "2026-09-09T16:27:57",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -118254,6 +118254,184 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T132441130606-n-swcr-a-persisted-verdict-must-carry-its-observation",
+        "plan": "sn-west-catalog-release",
+        "section": "cut-predates-its-problems",
+        "node": "n-swcr-a-persisted-verdict-must-carry-its-observation",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 896,
+                "cached_input_tokens": 414362,
+                "input_tokens": 415260,
+                "output_tokens": 1354,
+                "reasoning_output_tokens": 206,
+                "total_tokens": 416614,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/sn-west-catalog-release/validation-observation-writer.md reports the whole-suite exposure count and file list measured in a scratch copy BEFORE the change lands, then the landed change with tests/standard_names passing on a debug partition at a stated base revision with zero added failures, plus two named tests proving a verdict written through the pooled inline-audit path arrives stamped and a persist carrying no incoming status invents no observation. The invariant is that a persisted non-null validation_status always carries a validated_at observation. graph_ops.py near line 8139 in mark_names_validated already stamps validated_at atomically with validation_status and is the sanctioned behaviour to reuse rather than reimplement; workers.py near 6330-6358 sets the inline-audit status with no observation and the candidate-persist write in graph_ops.py near 5398-5400 coalesces it in without stamping. Record which site you chose to close it at and why, noting that stamping at the persist query covers every caller while it must stamp only when the incoming status is genuinely non-null so a re-coalesce of an unchanged value forges no fresh observation. Do not satisfy the gate by loosening the export validation_observation_missing check, which is the only thing that currently reveals this defect class. Do not repair the 99 already-affected rows here: the writer first, the rows separately, because rows fixed before the writer would be re-broken. Gate with tests/standard_names rather than tests/graph since both files are Cypher in the standard-names package. If fixtures outside your write fence must change, name them and stop rather than writing out of scope. A peer is running a scoped four-identity name-review rotation, so run no broad pipeline and attempt no signed manifest apply. Keep live reads on the login node and bounded, never pipe imas-codex CLI output, and write the manifest before any full-suite run because your process ends with its turn.",
+          "estimated_hours": null,
+          "goal": "Make every persisted validation verdict carry the time it was observed",
+          "id": "n-swcr-a-persisted-verdict-must-carry-its-observation",
+          "lane_declaration": {
+            "backend": "codex",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T13:24:41Z",
+            "read_at": "2026-09-09T13:24:42Z",
+            "resolved_backend": "codex",
+            "utilisation_pct": 82.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T132441130606-n-swcr-a-persisted-verdict-must-carry-its-observation/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requested_backend": "codex",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "cut-predates-its-problems",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "imas_codex/standard_names/workers.py",
+            "imas_codex/standard_names/graph_ops.py",
+            "docs/evidence/sn-west-catalog-release/validation-observation-writer.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-restore",
+        "backend": "codex",
+        "local": false,
+        "agent": {
+          "alias": "sol5.6",
+          "backend": "codex",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-sol",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T13:24:51Z",
+        "completed_at": "2026-09-09T14:26:03Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 3672,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 3672,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "2dcc80afbf0c03cd5a6b3188825910df9363e8f0",
+        "commits": [
+          "0602ebf1a6a787b4b93e1125cf1d79aa8a93aca1",
+          "324a8df9a41b970b62404c8830fb09ed29470351"
+        ],
+        "changed_lines": {
+          "added": 181,
+          "removed": 0,
+          "files": 3
+        },
+        "tests_added": 2,
+        "gate": "passed",
+        "gate_check": {
+          "command": "read-only test census, scratch-copy whole-suite exposure measurement before landing, then focused regressions and the full tests/standard_names suite on all_debug at the landed revision",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "scratch exposure 7314 passed, 0 writer-invariant failures; landed focused class 3 passed; full suite 7316 passed 11 skipped 0 failed, zero added"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T132441130606-n-swcr-a-persisted-verdict-must-carry-its-observation/manifest.md",
+        "scope_changed": true,
+        "session_id": "01a0850c-c677-79b1-883a-79fcde8ae49c",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 0,
+            "cached_input_tokens_cumulative": 9884800,
+            "input_tokens": 0,
+            "input_tokens_cumulative": 10040000,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 28612,
+            "reasoning_output_tokens": 0,
+            "reasoning_output_tokens_cumulative": 6406
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T14:26:03Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 84.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T14:26:03Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 83524480,
+          "cumulative_input_tokens": 85173802,
+          "detail": "model span bounded from the client rollout's tool spans; input cumulative summed across resets",
+          "generated_tokens": 35018,
+          "generation_seconds": 23222.021,
+          "machine_seconds": 2138.143,
+          "tokens_per_second": 1.51
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "resume",
+        "attempt": 2,
+        "scope_acceptances": [
+          {
+            "path": "tests/standard_names/test_validation_status.py",
+            "reason": "the natural home for both regressions, already holding the coalesce test for the very query changed; the node stopped and named it rather than write out of scope and I granted it mid-flight - my done-when demanded tests while fencing no test file"
+          }
+        ],
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-swcr-a-persisted-verdict-must-carry-its-observation",
+          "session_id": "01a0850c-c677-79b1-883a-79fcde8ae49c",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T14:26:03Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -118510,6 +118688,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2073
+    "_version": 2074
   }
 }
