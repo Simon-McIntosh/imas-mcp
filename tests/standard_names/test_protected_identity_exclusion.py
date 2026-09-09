@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, call, patch
 
 import pytest
 
@@ -150,6 +150,61 @@ def test_direct_structural_delete_still_refuses_protected_identity() -> None:
     assert not any(
         "DETACH DELETE sn" in call.args[0] for call in gc.query.call_args_list
     )
+
+
+def test_childless_selector_excludes_protected_before_structural_delete() -> None:
+    gc = MagicMock()
+
+    def query(cypher: str, **params: Any) -> list[dict[str, Any]]:
+        if "NOT EXISTS { MATCH (:StandardName)-[:HAS_PARENT]->(p) }" in cypher:
+            return [
+                {"id": "ion_power_density"},
+                {"id": "unspent_structural_parent"},
+            ]
+        if "MERGE (cost)-[:FOR_STANDARD_NAME]->(sn)" in cypher:
+            return [{"linked": 1}]
+        if "OPTIONAL MATCH (cost:LLMCost)-[:FOR_STANDARD_NAME]->(sn)" in cypher:
+            assert params["names"] in (
+                ["ion_power_density"],
+                ["ion_power_density", "unspent_structural_parent"],
+            )
+            return [
+                {
+                    "id": "ion_power_density",
+                    "reasons": ["recorded_llm_spend_usd=0.25"],
+                    "recorded_spend": 0.25,
+                }
+            ]
+        if "MATCH (dr:DocsRevision)" in cypher:
+            return [{"n": 0}]
+        raise AssertionError(f"unexpected query: {cypher}")
+
+    gc.query.side_effect = query
+    with (
+        patch.object(graph_ops, "_query_seedable_derived_parents", return_value=[]),
+        patch.object(
+            graph_ops,
+            "_query_legacy_repairable_derived_parents",
+            return_value=[],
+        ),
+        patch.object(
+            graph_ops,
+            "_query_derived_parents_for_admission_cleanup",
+            return_value=[],
+        ),
+        patch.object(
+            graph_ops,
+            "_delete_derived_parent_nodes",
+            side_effect=[0, 1],
+        ) as delete_nodes,
+    ):
+        changed = graph_ops.normalize_derived_parent_lifecycle(gc)
+
+    assert changed == 1
+    assert delete_nodes.call_args_list == [
+        call(gc, []),
+        call(gc, ["unspent_structural_parent"]),
+    ]
 
 
 def test_paid_composed_identity_is_filtered_before_skeleton_refusal() -> None:

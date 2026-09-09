@@ -732,6 +732,10 @@ def test_childless_derived_placeholder_is_retired() -> None:
     gc = MagicMock()
 
     def query(cypher: str, **_kwargs):
+        if "MERGE (cost)-[:FOR_STANDARD_NAME]->(sn)" in cypher:
+            return [{"linked": 0}]
+        if "OPTIONAL MATCH (cost:LLMCost)-[:FOR_STANDARD_NAME]->(sn)" in cypher:
+            return []
         if "NOT EXISTS { MATCH (:StandardName)-[:HAS_PARENT]->(p) }" in cypher:
             return [{"id": "impurity_ion_velocity", "unit": None}]
         if "MATCH (dr:DocsRevision)" in cypher:
@@ -808,6 +812,10 @@ def test_reaped_snapshot_candidate_is_not_rematerialized(snapshot: str) -> None:
     gc = MagicMock()
 
     def query(cypher: str, **_kwargs):
+        if "MERGE (cost)-[:FOR_STANDARD_NAME]->(sn)" in cypher:
+            return [{"linked": 0}]
+        if "OPTIONAL MATCH (cost:LLMCost)-[:FOR_STANDARD_NAME]->(sn)" in cypher:
+            return []
         if "NOT EXISTS { MATCH (:StandardName)-[:HAS_PARENT]->(p) }" in cypher:
             return [{"id": parent_id}]
         if "MATCH (dr:DocsRevision)" in cypher:
@@ -880,6 +888,10 @@ def test_childless_parent_chain_is_reaped_to_fixpoint() -> None:
     gc = MagicMock()
 
     def query(cypher: str, **_kwargs):
+        if "MERGE (cost)-[:FOR_STANDARD_NAME]->(sn)" in cypher:
+            return [{"linked": 0}]
+        if "OPTIONAL MATCH (cost:LLMCost)-[:FOR_STANDARD_NAME]->(sn)" in cypher:
+            return []
         if "NOT EXISTS { MATCH (:StandardName)-[:HAS_PARENT]->(p) }" in cypher:
             return [{"id": parent_id} for parent_id in childless_batches.pop(0)]
         if "MATCH (dr:DocsRevision)" in cypher:
