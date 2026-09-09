@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
 <meta name="plan-modified" content="2026-09-09">
-<meta name="plan-version" content="5">
+<meta name="plan-version" content="7">
 <meta name="plan-impl" content="0.12">
 </head>
 <body>
@@ -157,31 +157,23 @@
 
     <section data-reckon="decisions" id="decisions" class="r-decisions">
 <h2><span class="sec">§</span> Decisions</h2>
-<div class="r-dec" data-key="derive-timing" data-choice="" data-by="" data-when="">
+<div class="r-dec" data-key="derive-timing" data-choice="never" data-by="ship-s10-20260908" data-when="2026-09-09T11:39:27+00:00">
     <p class="r-dec-q">May a DERIVE node run before its pair&#x27;s relationship is materialised and
         count-verified?</p>
     <p class="r-dec-opts">
-      <button class="r-opt" data-value="never">Never — materialise and verify first</button>
+      <button class="r-opt chosen" data-value="never">Never — materialise and verify first</button>
       <button class="r-opt" data-value="case-by-case">Case by case</button>
       </p>
-    <p class="r-dec-rat">Recommendation: never. The links pair shows why in one
-        measurement — zero REFERENCES edges against 2,948 populated scalars, so
-        deriving first is data loss rather than a migration. Making it an invariant costs nothing
-        where the relationship already exists and prevents the one irreversible mistake this plan
-        can make.</p>
+    <p class="r-dec-rat">&lt;p&gt;&lt;strong&gt;Never.&lt;/strong&gt; A DERIVE node may not run before its pair&#x27;s relationship set is materialised and count-verified, and the reader inventory turns that from a prudent default into a measured requirement.&lt;/p&gt;&lt;p&gt;The inventory&#x27;s first finding is that &lt;em&gt;no current reader resolves a relationship in place of its scalar&lt;/em&gt; — every publication and pipeline gate still reads the stored value — so nothing today can observe a partial set, because nothing reads the set at all. That is precisely why the risk arrives with the replacement readers rather than before them, and it is marked as a static finding rather than a claim about live transaction isolation.&lt;/p&gt;&lt;p&gt;What the replacements would do on a partial set is named per reader, and every one is an admission or publication decision: &lt;code&gt;export.py:984&lt;/code&gt; would return only committed &lt;code&gt;REFERENCES&lt;/code&gt; targets, &lt;code&gt;graph_ops.py:12309&lt;/code&gt; could see several &lt;code&gt;PRODUCED_NAME&lt;/code&gt; targets, &lt;code&gt;graph_ops.py:17122&lt;/code&gt; would undercount docs revisions, &lt;code&gt;graph_ops.py:16477&lt;/code&gt; would undercount refinement depth, and &lt;code&gt;review/pipeline.py:351&lt;/code&gt; would see no selected review until its edge exists. The repository text does not prove an all-pair transaction boundary, so the interleaving is &lt;strong&gt;unverified from source&lt;/strong&gt; and must not be assumed.&lt;/p&gt;&lt;p&gt;A live instance settles it. On 2026-09-09 all 31 WEST rows withheld from a catalog cut held intact documentation and 285 intact docs-axis review edges while two mirrored scalars read pending and null — a recoverable regression. Had a DERIVE pass run against a partially materialised review set, it would have written that emptiness into the scalar and made the regression permanent. Same shape as this section&#x27;s &lt;code&gt;REFERENCES&lt;/code&gt; trap, where 2,948 names would lose their links to an empty read.&lt;/p&gt;</p>
     </div>
-<div class="r-dec" data-key="scalar-retention" data-choice="" data-by="" data-when="">
+<div class="r-dec" data-key="scalar-retention" data-choice="remove" data-by="ship-s10-20260908" data-when="2026-09-09T11:39:27+00:00">
     <p class="r-dec-q">After a scalar is derived from its relationship, is the stored copy
         removed or kept as a read cache?</p>
     <p class="r-dec-opts">
-      <button class="r-opt" data-value="remove">Remove it</button>
+      <button class="r-opt chosen" data-value="remove">Remove it</button>
       <button class="r-opt" data-value="keep-as-cache">Keep as a cache with a single writer</button>
       </p>
-    <p class="r-dec-rat">Recommendation: remove it where a query can read the relationship
-        directly, and keep it only where a measured query cost forces the cache — in which case
-        it becomes a KEEP AND RECONCILE pair with a named single writer, not a DERIVE. A cache with
-        two writers is the defect this plan closes, so a retained scalar needs its writer named in
-        the same commit that retains it.</p>
+    <p class="r-dec-rat">&lt;p&gt;&lt;strong&gt;Remove.&lt;/strong&gt; The reader inventory recommends removal for all twelve DERIVE surfaces, and its reason for rejecting &lt;code&gt;keep-as-cache&lt;/code&gt; is stated as an absence rather than a refutation, which is the honest form: &lt;em&gt;no repository source reports query timing or cost for any of the twelve&lt;/em&gt;, so there is no evidence for a cache anywhere. A cache justified by an unmeasured performance worry would reintroduce this plan&#x27;s whole failure mode to buy something nobody has shown is needed.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The non-cheap rows are sequence blockers, not cache candidates&lt;/strong&gt; — the distinction that makes this decision safe to lock now. &lt;code&gt;links&lt;/code&gt; waits on full &lt;code&gt;REFERENCES&lt;/code&gt; parity, &lt;code&gt;produced_sn_id&lt;/code&gt; on multi-target adjudication, the axis reviewer projections on an atomic selected-review write, and &lt;code&gt;origin&lt;/code&gt; on separating one value that carries incompatible meanings. Each names a prerequisite, none names a reason to retain a copy. Cheap removals, whose replacements are cardinality-one or one-hop reads: &lt;code&gt;primary_cluster_id&lt;/code&gt;, &lt;code&gt;dd_path&lt;/code&gt;/&lt;code&gt;signal&lt;/code&gt;, &lt;code&gt;deprecates&lt;/code&gt;/&lt;code&gt;superseded_by&lt;/code&gt;, and the review timestamps once one shared authority predicate exists.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The measured cost of keeping a copy is now on the record.&lt;/strong&gt; On 2026-09-09, 37 names were dropped from a WEST catalog cut on the strength of two stale scalars while the evidence they mirror sat undamaged — 31 of 31 rows with documentation intact, 285 docs-axis review edges intact, best scores 0.9375 to 1.0. A &lt;code&gt;docs_stage&lt;/code&gt; resolved from those edges at read time could not have regressed, because there would be no second copy to fall out of step, and the writer that caused it was ordinary concurrent restore work rather than anything exotic.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;The reopening condition, stated so it is not a loophole:&lt;/strong&gt; if profiling later proves a material relationship-query cost, the retained value must have exactly one named writer and an edge-to-scalar reconcile. That makes it a cache with an owner, which is a different decision from a DERIVE scalar with none — and it must be argued on measured numbers, never on the expectation of them.&lt;/p&gt;</p>
     </div>
 </section>
 
@@ -203,6 +195,9 @@
 </div>
 <div class="r-comment" data-section="s3" data-id="c-sea-a-stale-scalar-is-holding-a-release" data-who="ship-s10-20260908" data-when="2026-09-09">
     <div class="r-comment-body"><p><strong>This plan's thesis is currently blocking a release, which makes it the strongest available evidence for the retention decision.</strong> Measured 2026-09-09 on the live graph over the 31 WEST cohort rows a re-mint withheld from emission:</p><ul><li>documentation text present on <strong>31 of 31</strong></li><li><code>HAS_REVIEW</code> edges on the docs axis present on <strong>31 of 31</strong> — <strong>285</strong> edges in total, best score per row between 0.9375 and 1.0, none below 0.90</li><li><code>reviewer_score_docs</code> scalar <strong>null on all 31</strong></li><li><code>docs_stage</code> scalar <strong>pending on all 31</strong></li></ul><p>The authoritative relationship set is intact and complete on every row. Two cached scalars disagree with it, and because the export path gates emission on the <em>scalars</em>, <strong>37 names were dropped from a catalog cut on the strength of a stale copy</strong> while the evidence they mirror sat undamaged in the graph. That is precisely “the stale copy wins”, with a measured cost attached rather than a hypothetical one.</p><p><strong>Bearing on <code>scalar-retention</code>:</strong> a <code>docs_stage</code> resolved from its docs-axis review edges at read time could not have regressed this way, because there would be no second copy to fall out of step. <code>keep-as-cache</code> preserves the failure mode unless invalidation is proved correct on every writer, and the writer that caused this one was ordinary concurrent restore work rather than anything exotic. This is one pair of the twelve and not the whole decision, but it is the pair with a release behind it.</p><p><strong>Bearing on <code>derive-timing</code>:</strong> the same measurement is a reminder in the other direction. Had a DERIVE node run against a partially materialised review set, it would have written the emptiness into the scalar and made a recoverable regression permanent — the identical shape as the <code>REFERENCES</code> trap this section already names, where 2,948 names would lose their links to an empty read.</p></div>
+</div>
+<div class="r-comment" data-section="s3" data-id="c-run-r-20260909T112247593387-n-sea-who-reads-the-twelve-mirrored-scalars" data-who="s10b-fixtures" data-when="2026-09-09T11:36:53Z">
+    <div class="r-comment-body"><p>Both open decisions now have evidence, and the node was disciplined about what it could not measure. All twelve DERIVE surfaces are recommended remove, and the reason keep-as-cache is not recommended for any of them is stated as an absence rather than a refutation: no repository source reports query timing or cost for any surface, so there is no evidence for a cache anywhere. The four non-cheap rows are sequence blockers rather than cache candidates - links waits on REFERENCES parity, produced_sn_id on multi-target adjudication, the axis reviewer projections on an atomic selected-review write, and origin on separating one value that carries incompatible meanings. Cheap removals are primary_cluster_id, dd_path/signal, deprecates/superseded_by and the review timestamps behind one shared authority predicate. On derive-timing the answer is never: no current reader resolves a relationship in place of its scalar, so none can observe a partial set today, but the replacement readers could if edge creation commits in batches, and the node marked the transaction boundary unverified from source rather than assuming one. It named the consequence per reader - export.py:984 would return only committed REFERENCES targets, graph_ops.py:17122 would undercount docs revisions, review/pipeline.py:351 would see no selected review until its edge exists - and every one is an admission or publication decision</p></div>
 </div>
 </section>
 </main>
