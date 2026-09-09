@@ -306,6 +306,114 @@ def test_signed_archive_reconstruction_creates_allowlisted_counterparts(
     )
 
 
+def test_signed_archive_reconstruction_uses_numeric_counterpart_identity(
+    tmp_path: Path,
+) -> None:
+    graph = _ArchiveGraph()
+    graph.counterparts[("StandardNameReview", 42)] = {
+        "properties": {
+            "id": 42,
+            "standard_name_id": "archived_temperature",
+            "review_axis": "name",
+        }
+    }
+    edge = {
+        "owner_id": "archived_temperature",
+        "relationship_type": "HAS_REVIEW",
+        "direction": "outgoing",
+        "counterpart_id": 42,
+        "properties": {"source": "archive"},
+    }
+    path = tmp_path / "authority.json"
+    file_hash, payload_hash = _write_authority(path, _authority(edges=[edge]))
+
+    preview = _preview(graph, path, file_hash, payload_hash)
+    applied = _apply(graph, path, file_hash, payload_hash, preview["manifest_sha256"])
+
+    assert preview["outcome"] == "would_apply"
+    assert preview["manifest"]["state"]["counterparts"] == {
+        "StandardNameReview:int:42": graph.counterparts[("StandardNameReview", 42)][
+            "properties"
+        ]
+    }
+    assert applied["outcome"] == "applied"
+    assert graph.edges == [
+        ("archived_temperature", "HAS_REVIEW", 42, {"source": "archive"})
+    ]
+
+
+def test_signed_archive_reconstruction_uses_identical_live_counterpart_without_creation(
+    tmp_path: Path,
+) -> None:
+    graph = _ArchiveGraph()
+    graph.counterparts[("StandardNameReview", "review:archived-temperature")] = {
+        "properties": {
+            "id": "review:archived-temperature",
+            "standard_name_id": "archived_temperature",
+            "review_axis": "name",
+        }
+    }
+    edge = {
+        "owner_id": "archived_temperature",
+        "relationship_type": "HAS_REVIEW",
+        "direction": "outgoing",
+        "counterpart_id": "review:archived-temperature",
+        "properties": {},
+    }
+    path = tmp_path / "authority.json"
+    authority = _authority(edges=[edge])
+    assert "counterparts" not in authority
+    file_hash, payload_hash = _write_authority(path, authority)
+
+    preview = _preview(graph, path, file_hash, payload_hash)
+    applied = _apply(graph, path, file_hash, payload_hash, preview["manifest_sha256"])
+
+    assert preview["outcome"] == "would_apply"
+    assert applied["outcome"] == "applied"
+    assert applied["counts"]["counterpart_rows"] == 0
+    assert applied["mutations"] == 2
+    assert graph.edges == [
+        ("archived_temperature", "HAS_REVIEW", "review:archived-temperature", {})
+    ]
+
+
+def test_archive_reconstruction_refuses_nonidentical_existing_counterpart(
+    tmp_path: Path,
+) -> None:
+    graph = _ArchiveGraph()
+    counterpart = {
+        "label": "StandardNameReview",
+        "id": "review:archived-temperature",
+        "properties": {
+            "id": "review:archived-temperature",
+            "standard_name_id": "archived_temperature",
+            "review_axis": "name",
+        },
+    }
+    graph.counterparts[("StandardNameReview", "review:archived-temperature")] = {
+        "properties": {
+            **counterpart["properties"],
+            "review_axis": "docs",
+        }
+    }
+    edge = {
+        "owner_id": "archived_temperature",
+        "relationship_type": "HAS_REVIEW",
+        "direction": "outgoing",
+        "counterpart_id": "review:archived-temperature",
+        "properties": {},
+    }
+    path = tmp_path / "authority.json"
+    file_hash, payload_hash = _write_authority(
+        path, _authority(edges=[edge], counterparts=[counterpart])
+    )
+
+    preview = _preview(graph, path, file_hash, payload_hash)
+
+    assert preview["outcome"] == "refused"
+    assert "existing counterpart differs" in preview["refusals"][0]["reason"]
+
+
 def test_archive_reconstruction_refuses_relationship_outside_registry(
     tmp_path: Path,
 ) -> None:
