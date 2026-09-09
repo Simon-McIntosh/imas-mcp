@@ -1,8 +1,8 @@
-"""Tests for LLMCost deletion on `sn clear --force` and `clear_standard_names()`.
+"""Tests for LLMCost preservation across Standard Name clear operations.
 
 Verifies that both the full-wipe path (`sn clear --force` → `clear_sn_subsystem`)
 and the partial-reset path (`sn run --reset-to extracted` → `clear_standard_names`)
-both delete LLMCost nodes so the cost ledger is not left with stale rows.
+leave the all-time cost ledger unchanged while resetting their owned state.
 """
 
 from __future__ import annotations
@@ -16,7 +16,11 @@ import pytest
 # ---------------------------------------------------------------------------
 
 
-def _make_fake_gc(counts: dict[str, int] | None = None) -> MagicMock:
+def _make_fake_gc(
+    counts: dict[str, int] | None = None,
+    *,
+    cost_rows: list[float] | None = None,
+) -> MagicMock:
     """Return a mock GraphClient context manager.
 
     ``query`` returns a count row for MATCH…RETURN count(n) calls, and a
@@ -27,8 +31,12 @@ def _make_fake_gc(counts: dict[str, int] | None = None) -> MagicMock:
     fake_gc.__exit__.return_value = None
 
     default_count = counts or {}
+    ledger_rows = list(cost_rows or [])
 
     def _query(cypher: str, **_kwargs):
+        if "MATCH (c:LLMCost) DETACH DELETE c" in cypher:
+            ledger_rows.clear()
+            return []
         # Count queries: MATCH (n:Label) RETURN count(n) AS n
         for label, n in default_count.items():
             if f":{label}" in cypher and "count(n)" in cypher:
@@ -39,7 +47,13 @@ def _make_fake_gc(counts: dict[str, int] | None = None) -> MagicMock:
         return []
 
     fake_gc.query = MagicMock(side_effect=_query)
+    fake_gc.ledger_rows = ledger_rows
     return fake_gc
+
+
+def _ledger_snapshot(fake_gc: MagicMock) -> tuple[int, float]:
+    rows = fake_gc.ledger_rows
+    return len(rows), sum(rows)
 
 
 # ---------------------------------------------------------------------------
@@ -47,11 +61,11 @@ def _make_fake_gc(counts: dict[str, int] | None = None) -> MagicMock:
 # ---------------------------------------------------------------------------
 
 
-class TestClearSnSubsystemDeletesLLMCost:
-    """``clear_sn_subsystem`` must include LLMCost in its deletion sweep."""
+class TestClearSnSubsystemPreservesLLMCost:
+    """``clear_sn_subsystem`` must not include LLMCost in its deletion sweep."""
 
-    def test_llmcost_in_returned_labels(self):
-        """Dry-run result dict must include the LLMCost key."""
+    def test_llmcost_not_in_returned_deletion_labels(self):
+        """Dry-run result keys describe only state the clear may delete."""
         from imas_codex.standard_names import graph_ops
 
         fake_gc = _make_fake_gc({"LLMCost": 3})
@@ -59,21 +73,22 @@ class TestClearSnSubsystemDeletesLLMCost:
         with patch.object(graph_ops, "GraphClient", return_value=fake_gc):
             result = graph_ops.clear_sn_subsystem(dry_run=True)
 
-        assert "LLMCost" in result
+        assert "LLMCost" not in result
 
-    def test_llmcost_count_returned_in_dry_run(self):
-        """Dry-run must report the correct LLMCost count without deleting."""
+    def test_llmcost_count_and_spend_unchanged_in_dry_run(self):
+        """Dry-run must preserve both LLMCost count and all-time spend."""
         from imas_codex.standard_names import graph_ops
 
-        fake_gc = _make_fake_gc({"LLMCost": 7})
+        fake_gc = _make_fake_gc(cost_rows=[0.5, 1.25, 2.0])
+        before = _ledger_snapshot(fake_gc)
 
         with patch.object(graph_ops, "GraphClient", return_value=fake_gc):
-            result = graph_ops.clear_sn_subsystem(dry_run=True)
+            graph_ops.clear_sn_subsystem(dry_run=True)
 
-        assert result["LLMCost"] == 7
+        assert _ledger_snapshot(fake_gc) == before
 
-    def test_llmcost_detach_deleted_on_wipe(self):
-        """Full wipe must issue DETACH DELETE on LLMCost nodes."""
+    def test_llmcost_count_and_spend_unchanged_on_wipe(self):
+        """Full pipeline-state wipe must preserve the all-time cost ledger."""
         from imas_codex.standard_names import graph_ops
 
         fake_gc = _make_fake_gc(
@@ -83,17 +98,19 @@ class TestClearSnSubsystemDeletesLLMCost:
                 "StandardNameSource": 3,
                 "VocabGap": 1,
                 "SNRun": 1,
-                "LLMCost": 4,
-            }
+            },
+            cost_rows=[0.25, 0.75, 3.0, 4.5],
         )
+        before = _ledger_snapshot(fake_gc)
 
         with patch.object(graph_ops, "GraphClient", return_value=fake_gc):
             graph_ops.clear_sn_subsystem(dry_run=False)
 
         queries = [c.args[0] for c in fake_gc.query.call_args_list]
         delete_queries = [q for q in queries if "DETACH DELETE" in q]
-        assert any("LLMCost" in q for q in delete_queries), (
-            "Expected a DETACH DELETE query targeting LLMCost"
+        assert _ledger_snapshot(fake_gc) == before
+        assert not any("LLMCost" in q for q in delete_queries), (
+            "clear_sn_subsystem must preserve LLMCost rows"
         )
 
     def test_all_six_pipeline_labels_deleted(self):
@@ -104,9 +121,9 @@ class TestClearSnSubsystemDeletesLLMCost:
             "StandardName",
             "StandardNameReview",
             "StandardNameSource",
+            "DocsRevision",
             "VocabGap",
             "SNRun",
-            "LLMCost",
         }
         fake_gc = _make_fake_gc(dict.fromkeys(expected, 1))
 
@@ -140,8 +157,8 @@ class TestClearSnSubsystemDeletesLLMCost:
 # ---------------------------------------------------------------------------
 
 
-class TestClearStandardNamesDeletesLLMCost:
-    """``clear_standard_names`` must delete LLMCost rows on the reset path."""
+class TestClearStandardNamesPreservesLLMCost:
+    """``clear_standard_names`` must preserve LLMCost rows on every path."""
 
     def _make_gc_for_clear_standard_names(self, sn_count: int = 5) -> MagicMock:
         """Build a fake GC that reports sn_count matching StandardName nodes."""
@@ -149,7 +166,12 @@ class TestClearStandardNamesDeletesLLMCost:
         fake_gc.__enter__.return_value = fake_gc
         fake_gc.__exit__.return_value = None
 
+        ledger_rows = [0.4, 1.1, 2.5]
+
         def _query(cypher: str, **_kwargs):
+            if "MATCH (c:LLMCost) DETACH DELETE c" in cypher:
+                ledger_rows.clear()
+                return []
             if "count(DISTINCT sn)" in cypher or "count(sn)" in cypher:
                 return [{"n": sn_count}]
             if "count(r)" in cypher:
@@ -157,20 +179,23 @@ class TestClearStandardNamesDeletesLLMCost:
             return []
 
         fake_gc.query = MagicMock(side_effect=_query)
+        fake_gc.ledger_rows = ledger_rows
         return fake_gc
 
-    def test_llmcost_detach_deleted_on_full_clear(self):
-        """``clear_standard_names()`` must DETACH DELETE LLMCost nodes."""
+    def test_llmcost_count_and_spend_unchanged_on_full_clear(self):
+        """An unscoped clear must preserve LLMCost count and all-time spend."""
         from imas_codex.standard_names import graph_ops
 
         fake_gc = self._make_gc_for_clear_standard_names(sn_count=3)
+        before = _ledger_snapshot(fake_gc)
 
         with patch.object(graph_ops, "GraphClient", return_value=fake_gc):
             graph_ops.clear_standard_names()
 
         queries = [c.args[0] for c in fake_gc.query.call_args_list]
-        assert any("LLMCost" in q and "DETACH DELETE" in q for q in queries), (
-            "clear_standard_names must issue DETACH DELETE for LLMCost"
+        assert _ledger_snapshot(fake_gc) == before
+        assert not any("LLMCost" in q and "DETACH DELETE" in q for q in queries), (
+            "clear_standard_names must preserve LLMCost rows"
         )
 
     def test_llmcost_not_deleted_with_source_filter(self):
@@ -236,7 +261,7 @@ class TestClearStandardNamesDeletesLLMCost:
 
 
 class TestClearStandardNamesResetsOrphanedSources:
-    """Step E: clearing names must reset orphaned composed/attached sources.
+    """Clearing names must reset orphaned composed/attached sources.
 
     Deleting a StandardName strands its StandardNameSource at
     'composed'/'attached' — statuses the generate pool never claims — so

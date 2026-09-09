@@ -116,7 +116,6 @@ class TestClearSnSubsystemLabels:
         "DocsRevision",
         "VocabGap",
         "SNRun",
-        "LLMCost",
     }
 
     _GRAMMAR_LABELS = {
@@ -158,10 +157,19 @@ class TestClearSnSubsystemLabels:
     def test_wipe_deletes_only_pipeline_labels(self):
         from imas_codex.standard_names import graph_ops
 
+        ledger_rows = [0.5, 1.25, 3.75]
+        ledger_before = len(ledger_rows), sum(ledger_rows)
         fake_gc = MagicMock()
         fake_gc.__enter__.return_value = fake_gc
         fake_gc.__exit__.return_value = None
-        fake_gc.query = MagicMock(return_value=[{"n": 5}])
+
+        def _query(cypher: str, **_kwargs):
+            if "MATCH (c:LLMCost) DETACH DELETE c" in cypher:
+                ledger_rows.clear()
+                return []
+            return [{"n": 5}]
+
+        fake_gc.query = MagicMock(side_effect=_query)
 
         with patch.object(graph_ops, "GraphClient", return_value=fake_gc):
             graph_ops.clear_sn_subsystem(dry_run=False)
@@ -174,6 +182,8 @@ class TestClearSnSubsystemLabels:
             assert any(label in q for q in detach_deletes), (
                 f"Missing DETACH DELETE for {label}"
             )
+        assert (len(ledger_rows), sum(ledger_rows)) == ledger_before
+        assert not any("LLMCost" in q for q in detach_deletes)
         # Must NOT issue DETACH DELETE on any grammar label.
         for label in self._GRAMMAR_LABELS:
             assert not any(label in q for q in detach_deletes), (

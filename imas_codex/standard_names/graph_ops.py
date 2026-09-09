@@ -9030,26 +9030,6 @@ def clear_standard_names(
         if orphan_count:
             logger.info("Swept %d orphaned StandardNameReview nodes", orphan_count)
 
-        # Delete the LLMCost ledger only on an unscoped clear.
-        # A full clear owns the whole ledger (every run's StandardName output
-        # is being removed, so its cost rows are stale). A SCOPED clear (any
-        # stage/source/ids/path/time/score/tier/validation filter) removes
-        # only a slice of names and must NOT wipe the global cost ledger —
-        # that would erase cost history for the names left intact.
-        scoped = (
-            stage_filter is not None
-            or bool(source_filter)
-            or bool(ids_filter)
-            or path_allowlist is not None
-            or bool(since)
-            or bool(before)
-            or below_score is not None
-            or bool(tiers)
-            or bool(validation_status)
-        )
-        if not scoped:
-            gc.query("MATCH (c:LLMCost) DETACH DELETE c")
-
         # Reset orphaned sources. Deleting a StandardName strands its
         # StandardNameSource at 'composed'/'attached' — a status the generate
         # pool never claims — so without this reset the source silently drops
@@ -9095,7 +9075,10 @@ def clear_sn_subsystem(
     * ``DocsRevision`` — refine_docs snapshot history (orphans without parent SN)
     * ``VocabGap`` — grammar vocabulary gap reports
     * ``SNRun`` — run audit / rotation memory
-    * ``LLMCost`` — LLM call cost ledger rows
+
+    ``LLMCost`` rows are an all-time record of money spent, independent of
+    the mutable pipeline state cleared here. They remain in place even when
+    every identity they name has been removed.
 
     **Grammar nodes** (``GrammarToken``, ``GrammarSegment``,
     ``GrammarTemplate``, ``ISNGrammarVersion``) are ISN-authoritative
@@ -9122,7 +9105,6 @@ def clear_sn_subsystem(
         "DocsRevision",
         "VocabGap",
         "SNRun",
-        "LLMCost",
     )
 
     with GraphClient() as gc:
@@ -9160,7 +9142,6 @@ def clear_sn_subsystem(
         gc.query("MATCH (d:DocsRevision) DETACH DELETE d")
         gc.query("MATCH (v:VocabGap) DETACH DELETE v")
         gc.query("MATCH (rr:SNRun) DETACH DELETE rr")
-        gc.query("MATCH (c:LLMCost) DETACH DELETE c")
 
     total = sum(counts.values())
     logger.info("clear_sn_subsystem: deleted %d nodes (%s)", total, counts)
