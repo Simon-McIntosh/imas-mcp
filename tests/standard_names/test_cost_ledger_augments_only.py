@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ast
 import re
+import warnings
 from pathlib import Path
 from typing import Any
 from unittest.mock import patch
@@ -19,7 +20,9 @@ _DELETED_BINDING = re.compile(
 def _llm_cost_deletions(package: Path) -> list[str]:
     violations: list[str] = []
     for path in package.rglob("*.py"):
-        tree = ast.parse(path.read_text(), filename=str(path))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", SyntaxWarning)
+            tree = ast.parse(path.read_text(), filename=str(path))
         for node in ast.walk(tree):
             if not isinstance(node, ast.Constant) or not isinstance(node.value, str):
                 continue
