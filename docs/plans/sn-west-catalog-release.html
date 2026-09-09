@@ -28,7 +28,7 @@
 <meta name="plan-capability-verification" content="strict">
 <meta name="plan-capability-risk" content="critical">
 <meta name="plan-impl" content="0.95">
-<meta name="plan-version" content="213">
+<meta name="plan-version" content="214">
 <meta name="plan-commits" content="72b7760c60ac307f641e7e8490b7f15e532d2104">
 <meta name="plan-artifacts" content="docs/evidence/sn-west-catalog-release/residue-currency.md,tests/standard_names/test_review_body_ledger_link.py">
 </head>
@@ -216,6 +216,16 @@
 <div class="r-dec" data-key="west-batch-release-legs" data-choice="Fork review, then exercise the upstream leg on a request that is unwound, then the real upstream request" data-by="smc" data-when="2026-09-07T18:10:22+00:00">
     <p class="r-dec-q">Where the WEST batch lands, and whether the upstream leg is rehearsed first</p>
     <p class="r-dec-rat">Three facts decided the sequence rather than a preference. The upstream leg has never run live — its mechanism shipped 2026-07-22 with every test mocked — so its first real execution is an unmeasured step. The organisation catalog holds no names at all, so the WEST batch would be its first content, which makes that step an event rather than a routine second leg. And the merge that concludes it is irreversible. Combining all three in one attempt means the first live exercise of an untested leg is also the thing that cannot be undone. The rehearsal separates them at the cost of one throwaway request cycle, using the pattern already proven on fork requests 4 and 5: open it, verify continuous integration, the deployed preview and the tag contract, then close it and delete the branch. Rejected: going straight to upstream after the re-cut, which buys one cycle and accepts that the leg&#x27;s first run and the irreversible landing are the same act. Rejected: deferring upstream entirely, which leaves the organisation catalog empty and postpones a leg that has to be exercised eventually anyway.</p>
+    </div>
+<div class="r-dec" data-key="derived-only-child-batch-membership" data-choice="exclude-derived-only-children" data-by="ship-s10-20260908" data-when="2026-09-09T11:21:00+00:00">
+    <p class="r-dec-q">Whether a derived-only qualifier child joins a batch defined by DD paths</p>
+    <p class="r-dec-ctx">&lt;p&gt;&lt;code&gt;spectral_etendue_of_soft_xray_detector&lt;/code&gt; came back through the restore as accepted and valid, but its sole producer binding is &lt;code&gt;derived:spectral_etendue_of_spectrometer_channel&lt;/code&gt; — it holds no DD path of its own. The WEST batch&#x27;s membership predicate is the 355 WEST DD source paths, so the re-mint placed it outside the cohort. The plan had expected both etendue names to be present and flagged the mismatch to the coordinator rather than inferring a resolution.&lt;/p&gt;</p>
+    <p class="r-dec-opts">
+      <button class="r-opt chosen" data-value="exclude-derived-only-children">It stays out of a DD-path batch</button>
+      <button class="r-opt" data-value="bind-a-dd-path">Give it a DD manifest binding so it qualifies</button>
+      <button class="r-opt" data-value="family-inclusion-rule">Admit it because its parent is a member</button>
+      </p>
+    <p class="r-dec-rat">&lt;p&gt;A derived-only qualifier child has no DD path by construction: it is a composed refinement of a parent that has one. Admitting it on its parent&#x27;s membership would change what the batch means — from “names bound to WEST data” to “names bound to WEST data plus anything composed from them” — and that binding is exactly the property that makes the published catalog auditable against the facility. So the exclusion is the batch definition working, not a gap in it.&lt;/p&gt;&lt;p&gt;This is not a judgement about the name, which is correct and correctly spelled under the lead&#x27;s ruling to keep the composer&#x27;s detector spelling. &lt;code&gt;spectral_etendue_of_soft_xray_detector&lt;/code&gt; is a real identity that belongs in the catalog; it enters when a DD path binds it, or through a channel for derived families, and neither is this cut&#x27;s job. The practical consequence is narrow: the plan&#x27;s phrasing that both etendue names would be present in the cohort is retired, and only &lt;code&gt;etendue_of_soft_xray_detector&lt;/code&gt; is a WEST batch member — once it has the validation observation it is missing.&lt;/p&gt;</p>
     </div>
 </section>
 <section data-reckon="followups" id="followups" class="r-followups">
