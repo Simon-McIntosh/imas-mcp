@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="360" viewBox="0 0 920 360" role="img" aria-labelledby="title desc">
+  <title id="title">Single-edge produced-name divergence adjudication</title>
+  <desc id="desc">Seventeen live disagreements: ten scalar-intended, four edge-intended, three unresolved naming-equivalence rows. Thirteen edges are likely later writers, two scalars are likely later writers, and two have no ordering evidence.</desc>
+  <style>
+    text { font-family: Inter, Arial, sans-serif; fill: #18212f; }
+    .title { font-size: 23px; font-weight: 700; }
+    .subtitle { font-size: 14px; fill: #56657a; }
+    .section { font-size: 16px; font-weight: 700; }
+    .label { font-size: 14px; }
+    .count { font-size: 15px; font-weight: 700; }
+    .note { font-size: 12px; fill: #56657a; }
+  </style>
+  <rect width="920" height="360" fill="#f8fafc"/>
+  <text class="title" x="42" y="42">17 single-edge produced-name divergences</text>
+  <text class="subtitle" x="42" y="66">Live census unchanged from the recorded 17; adjudication is evidence only.</text>
+
+  <text class="section" x="42" y="110">Intended binding</text>
+  <text class="label" x="42" y="143">Scalar intended</text>
+  <rect x="210" y="126" width="400" height="25" rx="4" fill="#dbeafe"/>
+  <rect x="210" y="126" width="235" height="25" rx="4" fill="#2563eb"/>
+  <text class="count" x="458" y="145">10</text>
+  <text class="label" x="42" y="181">Edge intended</text>
+  <rect x="210" y="164" width="400" height="25" rx="4" fill="#dcfce7"/>
+  <rect x="210" y="164" width="94" height="25" rx="4" fill="#16a34a"/>
+  <text class="count" x="316" y="183">4</text>
+  <text class="label" x="42" y="219">Unresolved equivalence</text>
+  <rect x="210" y="202" width="400" height="25" rx="4" fill="#fef3c7"/>
+  <rect x="210" y="202" width="71" height="25" rx="4" fill="#d97706"/>
+  <text class="count" x="293" y="221">3</text>
+
+  <text class="section" x="652" y="110">Likely later writer</text>
+  <text class="label" x="652" y="143">Edge retarget</text>
+  <rect x="652" y="154" width="208" height="25" rx="4" fill="#e0e7ff"/>
+  <rect x="652" y="154" width="159" height="25" rx="4" fill="#4f46e5"/>
+  <text class="count" x="823" y="173">13</text>
+  <text class="label" x="652" y="214">Scalar refresh</text>
+  <rect x="652" y="225" width="208" height="25" rx="4" fill="#fce7f3"/>
+  <rect x="652" y="225" width="25" height="25" rx="4" fill="#db2777"/>
+  <text class="count" x="689" y="244">2</text>
+  <text class="label" x="652" y="285">No ordering record</text>
+  <rect x="652" y="296" width="208" height="25" rx="4" fill="#e5e7eb"/>
+  <rect x="652" y="296" width="25" height="25" rx="4" fill="#6b7280"/>
+  <text class="count" x="689" y="315">2</text>
+
+  <text class="note" x="42" y="340">10 rows are KEEP-AS-DISTINCT findings: the competing identities name physically different quantities even where one binding is wrong.</text>
+</svg>
