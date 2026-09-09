@@ -740,7 +740,12 @@ class TestSkeletonSweepNoUseAfterClose:
         gc_sweep.__enter__ = MagicMock(return_value=gc_sweep)
         gc_sweep.__exit__ = MagicMock(return_value=False)
 
-        def sweep_query(query: str, **_kwargs):
+        def sweep_query(query: str, **kwargs):
+            if "STANDARD_NAME_SKELETON_PLACEHOLDER_SELECTION" in query:
+                return [
+                    {"candidate_id": candidate_id}
+                    for candidate_id in kwargs["candidate_ids"]
+                ]
             if "MATCH (cost:LLMCost)" in query:
                 return [{"linked": 0}]
             if "UNWIND $names AS name" in query:
@@ -802,7 +807,12 @@ class TestSkeletonSweepNoUseAfterClose:
         gc_main, gc_sweep = self._make_gc_sequence()
         sweep_query_called_while_open: list[bool] = []
 
-        def tracking_query(query: str, **_kwargs):
+        def tracking_query(query: str, **kwargs):
+            if "STANDARD_NAME_SKELETON_PLACEHOLDER_SELECTION" in query:
+                return [
+                    {"candidate_id": candidate_id}
+                    for candidate_id in kwargs["candidate_ids"]
+                ]
             if "MATCH (cost:LLMCost)" in query:
                 return [{"linked": 0}]
             if "UNWIND $names AS name" in query:

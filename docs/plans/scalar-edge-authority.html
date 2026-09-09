@@ -8,7 +8,7 @@
   <meta name="plan-slug" content="scalar-edge-authority">
   <meta name="plan-title" content="Twenty-Four Scalars Mirror An Edge, And The Stale Copy Wins">
   <meta name="plan-summary" content="A cached scalar gates publication while its authoritative relationship disagrees; derive twelve, give twelve a single writer, and keep five apart">
-  <meta name="plan-status" content="draft">
+  <meta name="plan-status" content="active">
   <meta name="plan-roi" content="high">
   <meta name="plan-effort-hours" content="22.0">
   <meta name="plan-capability-version" content="1.0">
@@ -24,8 +24,9 @@
   <title>Twenty-Four Scalars Mirror An Edge, And The Stale Copy Wins | imas-codex</title>
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
-<meta name="plan-modified" content="2026-09-08">
-<meta name="plan-version" content="1">
+<meta name="plan-modified" content="2026-09-09">
+<meta name="plan-version" content="4">
+<meta name="plan-impl" content="0.12">
 </head>
 <body>
   <main class="plan-doc">
@@ -99,6 +100,38 @@
       per the review's verdict.</li>
     </ol>
 
+    <h2 id="s2a">&sect;2a &mdash; The census figures are a prior reading, not an authority, and 127 targets are absent</h2>
+
+    <p>Measured live 2026-09-09 while materialising the first pair: the population is
+    <strong>2,949</strong> non-empty <code>links</code> scalars and <strong>6,684</strong> entries,
+    not the 2,948 and 6,682 &sect;1 records. Nothing drifted mysteriously &mdash; the difference is
+    this repository's own work on the same day, one restored identity and forty relabelled
+    origins. The lesson is procedural and it cost a node: <strong>a figure measured on one date
+    must not be written into a gate as a required equality.</strong> Measure the cohort at run
+    time, record what was measured with its timestamp, and read &sect;1's table as the prior
+    reading it is.</p>
+
+    <p>The substantive finding is larger than the drift. Of the 6,684 link entries,
+    <strong>6,557 resolve and 127 name a target id with no <code>StandardName</code> node at
+    all</strong>. So an all-or-none materialisation of this pair is impossible today, and the
+    plan's own &sect;2 wording is what resolves it: the edges are materialised first and verified
+    count-for-count, and <em>only then</em> may the scalar be derived. <strong>Count-for-count
+    parity is a precondition for the DERIVE beat, not for the materialise beat.</strong></p>
+
+    <p>So the first pair materialises its 6,557 resolvable edges and carries the 127 as a
+    <strong>named exclusion ledger</strong> &mdash; one row each with the source name, the absent
+    target id and the cause. This is not the partial-closure failure the archive restore correctly
+    refused an hour earlier, and the distinction is worth keeping because the two look alike: a
+    partial archive closure asserts a restored identity carrying a fraction of its evidence, which
+    is a false claim about a thing. Materialising every resolvable edge asserts nothing false
+    &mdash; each edge that exists is correct, the scalar remains the only record of the 127, and
+    the ledger names them. Nothing is destroyed and nothing is over-claimed.</p>
+
+    <p><strong>The DERIVE beat for this pair stays shut until parity reaches 6,684.</strong> The
+    127 are expected to shrink without separate adjudication: several are likely among the
+    identities the deletion-recovery plan is still restoring, so a later re-materialisation picks
+    them up. They are named and left, not chased.</p>
+
     <h2 id="s3">&sect;3 &mdash; Sequence, one pair per node, largest exposure first</h2>
 
     <p>One pair per node. Each node states which of the three beats it performs, and a node that
@@ -161,6 +194,14 @@
     </article>
 </section>
 
-  </main>
+  <section data-reckon="comments" id="comments" class="r-comments">
+<div class="r-comment" data-section="s3" data-id="c-run-r-20260909T075617716185-n-sea-materialise-the-reference-edges" data-who="s10b-provenance" data-when="2026-09-09T08:24:55Z">
+    <div class="r-comment-body"><p>the highest-exposure mirrored pair now has authoritative edges where it had none: 6557 REFERENCES materialised from a runtime cohort of 2949 names and 6684 scalar pairs, with 127 unresolvable targets carried as a named exclusion ledger. Coordinator verified 6557 edges live, zero non-StandardName endpoints, and the links scalar intact. Scalar SHA-256 equal before and after, zero stray edges, DERIVE not performed and gated until a fresh census shows zero exclusions. The MERGE is idempotent so a later re-run shrinks the exclusion set as identities are restored</p></div>
+</div>
+<div class="r-comment" data-section="s3" data-id="c-20260909T0827-the-first-pair-has-authoritative-edges" data-who="reckon-ship" data-when="2026-09-09T08:27:00Z">
+    <div class="r-comment-body"><p><strong>The highest-exposure pair now has authoritative edges where it had none.</strong> Commits dba2e48f1 and 8205d1c14: <strong>6,557 <code>REFERENCES</code> edges materialised</strong> from a runtime cohort of 2,949 names and 6,684 scalar pairs, with the 127 unresolvable targets carried as a named exclusion ledger. Before this, the graph held <strong>zero</strong> edges of that type against 2,948 populated scalars &mdash; the scalar was the only copy, which is why &sect;2 forbids deriving first.</p><p><strong>Coordinator verified both halves independently, and the negative half is the one that mattered:</strong> 6,557 edges live, <strong>zero</strong> non-<code>StandardName</code> endpoints, and the <code>links</code> scalar still populated. The worker's own check is stronger &mdash; the scalar's SHA-256 is <em>equal before and after</em>, so the materialisation demonstrably consumed nothing. A pass that had read its source and blanked it would have produced the same edge count and looked identical.</p><p><strong>The census figure moved three times in one hour, which settles the procedural point.</strong> &sect;1 recorded 2,948 names; the node measured 2,949 at 08:16Z; the coordinator's verification read <strong>2,950 / 6,687</strong> minutes later, because the pedestal restore was adding identities concurrently. None of that is drift or error &mdash; it is a live population under a working fleet. A figure measured on one date cannot be a gate constant, and this pair proved it twice: once by refusing on my stale equality, and once by moving again during its own verification.</p><p><strong>What stays shut.</strong> The DERIVE beat for this pair is gated on a fresh runtime census showing zero exclusions with <code>REFERENCES</code> equal to that same census's scalar-pair total. The <code>MERGE</code> is idempotent by construction, so re-running it after later identity restorations shrinks the 127 without re-work &mdash; and several of the 127 are expected to be identities the deletion-recovery plan is still restoring.</p></div>
+</div>
+</section>
+</main>
 </body>
 </html>
