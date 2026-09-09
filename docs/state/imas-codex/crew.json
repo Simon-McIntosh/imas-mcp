@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T13:10:53",
+  "updated": "2026-09-09T13:34:44",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -115124,6 +115124,246 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T095558811143-n-pidp-restore-the-three-ratified-identities",
+        "plan": "paid-identity-deletion-protection",
+        "section": "\u00a74",
+        "node": "n-pidp-restore-the-three-ratified-identities",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1747,
+                "cached_input_tokens": 722778,
+                "input_tokens": 724527,
+                "output_tokens": 2042,
+                "reasoning_output_tokens": 614,
+                "total_tokens": 726569,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/paid-identity-deletion-protection/ratified-restore.md records time, plasma_beta and flux_surface_averaged_current_density_due_to_wave_driven_current_drive each live with per-relationship-type incident edge counts equal to the archive's counts for that identity and every archive-absent type named, each carrying its three unchanged_ratification records, each at status draft, the signed receipt and refusal count per identity, and the origin value written on each stated with the producer evidence that makes it truthful",
+          "estimated_hours": null,
+          "goal": "Reconstruct the three ratified identities that remain absent from before the incident, through the proven signed archive transaction",
+          "id": "n-pidp-restore-the-three-ratified-identities",
+          "lane_declaration": {
+            "backend": "codex-terra",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T09:55:59Z",
+            "read_at": "2026-09-09T09:56:00Z",
+            "resolved_backend": "codex-terra",
+            "utilisation_pct": 69.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T095558811143-n-pidp-restore-the-three-ratified-identities/manifest.md",
+          "plan": "paid-identity-deletion-protection",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a74",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "write_paths": [
+            "docs/evidence/paid-identity-deletion-protection/ratified-restore.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-relabel",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T09:56:10Z",
+        "completed_at": "2026-09-09T11:32:33Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 5783,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 5783,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "2c42573c74e07a1b7d2ed4c29830ea74538633c7",
+        "commits": [
+          "2fb91edf60a4be615eb5339d95feb949f166c709",
+          "71c8f86ef3e5739d51e20e8333e54a0459ea4af0"
+        ],
+        "changed_lines": {
+          "added": 223,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "failed",
+        "gate_check": {
+          "command": "signed preview then atomic apply per identity with receipt verification, corrected-floor postflight per relationship type, then offline derive_edges plus source inspection to locate the missing-edge mechanism",
+          "exit_status": 1,
+          "log_path": null,
+          "log_digest": "2/2 applied, changed=1 each, 0 refusals, 18 archived edges each; all archived floors met except HAS_PARENT 1v2 on both; 3 ratifications unchanged; surpluses explained"
+        },
+        "suite_delta": null,
+        "failure_classification": "correct-refusal",
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T095558811143-n-pidp-restore-the-three-ratified-identities/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a082a7-d5f8-7141-95d6-0717ec558fbc",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 0,
+            "cached_input_tokens_cumulative": 7652864,
+            "input_tokens": 0,
+            "input_tokens_cumulative": 7729980,
+            "output_tokens": 4920,
+            "output_tokens_cumulative": 27858,
+            "reasoning_output_tokens": 586,
+            "reasoning_output_tokens_cumulative": 9713
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T11:32:33Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 77.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T11:32:33Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": [
+            {
+              "budget_overrun": false,
+              "budget_overrun_seconds": 0,
+              "budget_seconds": 3300,
+              "classification": "blocked",
+              "detail": "the worker manifest reports blocked: \"The merged candidate filter applies to _query_derived_parents_for_admission_cleanup; but this node fails earlier in write_standard_names skeleton placeholder cleanup. That path still passes every relationship-side skeleton_candidate_id to refuse_protected_automatic_deletion before its Cypher statement establishes the positive placeholder predicates. The worktree-bound resumed run reproduced the same ProtectedDeletionError with 0 identities committed.\"",
+              "elapsed_seconds": 984,
+              "external_wait": null,
+              "lifting_condition": null,
+              "liveness_proven": true,
+              "log_age_seconds": 4421,
+              "log_fresh": false,
+              "manifest_commits": [
+                "9cbb91cb8677ff1a87c7abcf23ea82b6ae4c4e48",
+                "9284f2138226e4ac937602e6f1f691c7e84d7627",
+                "7f56f37868932e7b97e3f586f6a831812f29cdb1"
+              ],
+              "manifest_derived": false,
+              "manifest_digest": "3294a6b389be14a98e7c2ec1308653711b47caf61862b8866b8f9732f600adf8",
+              "manifest_error": null,
+              "manifest_file_present": true,
+              "manifest_fresh": true,
+              "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072310390297-n-pidp-restore-pedestal-density-family/manifest.md",
+              "manifest_present": true,
+              "manifest_reported_status": "blocked",
+              "manifest_status": "blocked",
+              "marker": "!",
+              "needs_help_complete": false,
+              "next_action": "read /home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072310390297-n-pidp-restore-pedestal-density-family/manifest.md; resolve the blocker before resuming the run",
+              "node": "n-pidp-restore-pedestal-density-family",
+              "phase": "working",
+              "plan": "paid-identity-deletion-protection",
+              "process_alive": false,
+              "project": "imas-codex",
+              "recovery": "decide",
+              "recovery_classification": "blocked",
+              "resets_at": null,
+              "review_error": null,
+              "review_present": false,
+              "review_status": null,
+              "run_id": "r-20260909T072310390297-n-pidp-restore-pedestal-density-family",
+              "session": "ship-s10-20260908",
+              "session_resolution": {
+                "consulted": [
+                  "pointer",
+                  "stream",
+                  "ledger"
+                ],
+                "resolved": true,
+                "run_id": "r-20260909T072310390297-n-pidp-restore-pedestal-density-family",
+                "session_id": "01a0850c-c677-79b1-883a-79fcde8ae49c",
+                "source": "pointer"
+              },
+              "terminal_age_seconds": 4495,
+              "terminal_at": "2026-09-09T08:41:10Z",
+              "wait_age_seconds": null,
+              "wait_condition_state": null,
+              "wait_observed": null,
+              "wait_overdue": null,
+              "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-restore-pedestal-density-family"
+            }
+          ]
+        },
+        "throughput": {
+          "cumulative_cached_input_tokens": 7652864,
+          "cumulative_input_tokens": 15382844,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 37571
+        },
+        "follow_on_paths": [
+          "imas_codex/standard_names/graph_ops.py"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "resume",
+        "attempt": 4,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-restore-the-three-ratified-identities",
+          "session_id": "01a082a7-d5f8-7141-95d6-0717ec558fbc",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T11:32:33Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": {
+          "session_id": "01a082a7-d5f8-7141-95d6-0717ec558fbc",
+          "source": "pointer",
+          "reason": "every remaining action is outside this node's scope: the fix belongs in graph_ops.py, which a concurrent protected-identity node owns, and the live edge remediation needs separate authorisation. The session has nothing further it can do without exceeding its fence"
+        },
+        "watch_override": null
       }
     ],
     "holds": [
@@ -115380,6 +115620,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2059
+    "_version": 2060
   }
 }
