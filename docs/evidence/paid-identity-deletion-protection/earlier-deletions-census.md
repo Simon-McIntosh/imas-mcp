@@ -78,8 +78,10 @@ Two subtleties keep the reconciliation arithmetic honest. First, one identity,
 `ion_density_at_pedestal_top`, was removed both before and on 2026-09-08 and is absent now, so
 it belongs to both cohort rows and must be subtracted once (apportioned spend $0.108893, two
 cost rows). Second, the all-time and per-cohort totals are all computed over the **same
-snapshot**, so they decompose exactly: 57.392665 + 41.276933 − 0.108893 = 98.560704 (six
-decimal places, matching to $10^-6$).
+snapshot**, so they decompose to the sixth decimal place: the component sum
+(57.392665 + 41.276933 − 0.108893 = 98.560705) agrees with the direct all-time measurement of
+$98.560704$, the $10^-6$ residual in the last digit being per-identity float rounding across
+the two aggregation paths.
 
 ## What it cost
 
