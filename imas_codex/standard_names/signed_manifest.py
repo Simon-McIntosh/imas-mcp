@@ -183,6 +183,9 @@ _ARCHIVE_RECONSTRUCTION_GUARDS = (
     "archive-live-edge-count-parity",
 )
 _ARCHIVE_RECONSTRUCTION_SCHEMA = "imas-codex.archive-reconstruction.v1"
+_ARCHIVE_RECONSTRUCTABLE_COUNTERPART_LABELS = frozenset(
+    {"StandardNameReview", "DocsRevision", "StandardNameSource"}
+)
 _ARCHIVE_EDGE_COUNTERPARTS: dict[str, dict[str, str]] = {
     "PRODUCED_NAME": {"incoming": "StandardNameSource"},
     "HAS_STANDARD_NAME": {"incoming": "IMASNode"},
@@ -301,6 +304,7 @@ class _Authority:
 class _ArchiveReconstructionAuthority:
     operation_id: str
     nodes: tuple[dict[str, Any], ...]
+    counterparts: tuple[dict[str, Any], ...]
     edges: tuple[dict[str, Any], ...]
     file_sha256: str
     payload_sha256: str
@@ -6905,14 +6909,16 @@ def _load_archive_reconstruction_authority(
         )
     identities = data.get("identities")
     nodes = data.get("nodes")
+    counterparts = data.get("counterparts", [])
     edges = data.get("edges")
     if (
         not isinstance(identities, list)
         or not isinstance(nodes, list)
+        or not isinstance(counterparts, list)
         or not isinstance(edges, list)
     ):
         raise SignedManifestAuthorityError(
-            "archive reconstruction requires identities, nodes, and edges"
+            "archive reconstruction requires identities, nodes, counterparts, and edges"
         )
     node_ids = [str(node.get("id") or "") for node in nodes if isinstance(node, dict)]
     if (
@@ -6941,6 +6947,37 @@ def _load_archive_reconstruction_authority(
             )
         properties["origin"] = "pipeline"
         normalized_nodes.append({"id": node_id, "properties": properties})
+    normalized_counterparts: list[dict[str, Any]] = []
+    counterpart_keys: set[tuple[str, str]] = set()
+    for counterpart in counterparts:
+        if not isinstance(counterpart, dict):
+            raise SignedManifestAuthorityError(
+                "archive reconstruction counterpart must be an object"
+            )
+        label = str(counterpart.get("label") or "")
+        counterpart_id = str(counterpart.get("id") or "")
+        properties = counterpart.get("properties")
+        if label not in _ARCHIVE_RECONSTRUCTABLE_COUNTERPART_LABELS:
+            raise SignedManifestAuthorityError(
+                f"archive counterpart label is outside the reconstruction registry: {label}"
+            )
+        if not counterpart_id or not isinstance(properties, dict):
+            raise SignedManifestAuthorityError(
+                "archive reconstruction counterpart needs an id and properties"
+            )
+        if properties.get("id") != counterpart_id:
+            raise SignedManifestAuthorityError(
+                "archive counterpart property id must match counterpart id"
+            )
+        key = (label, counterpart_id)
+        if key in counterpart_keys:
+            raise SignedManifestAuthorityError(
+                "archive reconstruction counterpart identities must be unique"
+            )
+        counterpart_keys.add(key)
+        normalized_counterparts.append(
+            {"label": label, "id": counterpart_id, "properties": dict(properties)}
+        )
     normalized_edges: list[dict[str, Any]] = []
     for edge in edges:
         if not isinstance(edge, dict):
@@ -6975,6 +7012,13 @@ def _load_archive_reconstruction_authority(
                 "properties": dict(properties),
             }
         )
+    declared_counterparts = {
+        (edge["counterpart_label"], edge["counterpart_id"]) for edge in normalized_edges
+    }
+    if not counterpart_keys.issubset(declared_counterparts):
+        raise SignedManifestAuthorityError(
+            "archive reconstruction counterpart must occur in an allowlisted edge"
+        )
     operation_id = str(data.get("operation_id") or "")
     if not operation_id:
         raise SignedManifestAuthorityError(
@@ -6983,6 +7027,7 @@ def _load_archive_reconstruction_authority(
     return _ArchiveReconstructionAuthority(
         operation_id=operation_id,
         nodes=tuple(sorted(normalized_nodes, key=lambda node: node["id"])),
+        counterparts=tuple(sorted(normalized_counterparts, key=_canonical_bytes)),
         edges=tuple(sorted(normalized_edges, key=_canonical_bytes)),
         file_sha256=file_sha256,
         payload_sha256=payload_sha256,
@@ -6993,7 +7038,12 @@ def _archive_reconstruction_preview(
     query: _Query, authority: _ArchiveReconstructionAuthority, reason: str
 ) -> tuple[dict[str, Any], list[dict[str, str]]]:
     included = {node["id"] for node in authority.nodes}
+    included_counterparts = {
+        (counterpart["label"], counterpart["id"]): counterpart["properties"]
+        for counterpart in authority.counterparts
+    }
     state: dict[str, Any] = {"nodes": {}, "counterparts": {}}
+    seen_counterparts: set[tuple[str, str]] = set()
     refusals: list[dict[str, str]] = []
     for node in authority.nodes:
         rows = query.query(
@@ -7014,22 +7064,35 @@ def _archive_reconstruction_preview(
         counterpart_id = edge["counterpart_id"]
         if counterpart_id in included and edge["counterpart_label"] == "StandardName":
             continue
-        key = f"{edge['counterpart_label']}:{counterpart_id}"
-        if key in state["counterparts"]:
+        key = (edge["counterpart_label"], counterpart_id)
+        if key in seen_counterparts:
             continue
+        seen_counterparts.add(key)
         rows = query.query(
             f"""// archive-reconstruction-counterpart-state
             MATCH (counterpart:{edge["counterpart_label"]} {{id: $id}})
-            RETURN count(counterpart) AS count""",
+            RETURN properties(counterpart) AS properties""",
             id=counterpart_id,
         )
-        exists = bool(rows and int(rows[0]["count"]) == 1)
-        state["counterparts"][key] = exists
-        if not exists:
+        properties = dict(rows[0]["properties"]) if rows else None
+        state["counterparts"][f"{key[0]}:{key[1]}"] = properties
+        expected_properties = included_counterparts.get(key)
+        if properties is None and expected_properties is None:
             refusals.append(
                 {
                     "row_id": edge["owner_id"],
                     "reason": f"archived counterpart is neither live nor included: {counterpart_id}",
+                }
+            )
+        elif (
+            properties is not None
+            and expected_properties is not None
+            and properties != expected_properties
+        ):
+            refusals.append(
+                {
+                    "row_id": edge["owner_id"],
+                    "reason": "existing counterpart differs from signed reconstruction state",
                 }
             )
     manifest = {
@@ -7107,6 +7170,7 @@ def _apply_archive_reconstruction(
                 digest = _digest(manifest)
                 counts = {
                     "authority_rows": len(authority.nodes),
+                    "counterpart_rows": len(authority.counterparts),
                     "admitted": len(authority.nodes)
                     - len({item["row_id"] for item in refusals}),
                     "refused": len(refusals),
@@ -7140,6 +7204,20 @@ def _apply_archive_reconstruction(
                     if not result or int(result[0]["count"]) != 1:
                         raise SignedManifestConflict(
                             "archive node changed before reconstruction"
+                        )
+                for counterpart in authority.counterparts:
+                    result = query.query(
+                        f"""// archive-reconstruction-create-counterpart
+                        MERGE (node:{counterpart["label"]} {{id: $id}})
+                        ON CREATE SET node = $properties
+                        WITH node WHERE properties(node) = $properties
+                        RETURN count(node) AS count""",
+                        id=counterpart["id"],
+                        properties=counterpart["properties"],
+                    )
+                    if not result or int(result[0]["count"]) != 1:
+                        raise SignedManifestConflict(
+                            "archive counterpart changed before reconstruction"
                         )
                 for edge in authority.edges:
                     if edge["direction"] == "outgoing":
@@ -7183,7 +7261,11 @@ def _apply_archive_reconstruction(
                     "schema": SIGNED_MANIFEST_RECEIPT_SCHEMA,
                     "outcome": "applied",
                     "changed": len(authority.nodes),
-                    "mutations": len(authority.nodes) + len(authority.edges),
+                    "mutations": (
+                        len(authority.nodes)
+                        + len(authority.counterparts)
+                        + len(authority.edges)
+                    ),
                     "counts": counts,
                     "refusals": [],
                     "manifest_sha256": digest,
