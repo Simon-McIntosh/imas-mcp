@@ -23,8 +23,8 @@
   <title>WEST Cohort Treatment and Batch Scoping | imas-codex</title>
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
-<meta name="plan-modified" content="2026-09-08">
-<meta name="plan-version" content="42">
+<meta name="plan-modified" content="2026-09-09">
+<meta name="plan-version" content="43">
 <meta name="plan-impl" content="0.8">
 <meta name="plan-commits" content="2d9d674a">
 </head>
@@ -585,6 +585,9 @@ worth paying for, because only then can its result be seen.</p>
 </div>
 <div class="r-comment" data-section="s9" data-id="c-run-r-20260908T095635820078-n-swct-the-sn-toolset-guidance-names-the-capability-not-the-flag" data-who="codex-terra-a" data-when="2026-09-08T10:15:01Z">
     <div class="r-comment-body"><p>The standard-name toolset is now documented by situation rather than by flag, in four-column tables giving the command form, when it is right, and when it is wrong — that last column being what --help cannot supply. It covers the traps that cost this sprint real time: --flush suppresses auto-seeding and generate_name while keeping review, refine, docs and parent enrichment alive, so it drains a stalled cohort but cannot mint a missing name; -t is minutes rather than a worker count; --cost-limit is soft because an issued provider request can report its charge after the call, with the historical headless overshoot now prevented by lease admission and a hard-stop watchdog. It also names distinctions no reader could infer: --only compose silently includes docs generation and parent enrichment, --name addresses StandardName nodes while --focus addresses DD paths so passing a name to --focus tries to seed a source that does not exist, --skip-global-maintenance is required whenever a scoped run would otherwise trigger global maintenance and is invalid in reset modes, --reseed returns focused paths to pending, and sn clear has no guard and is a full subsystem wipe rather than a recovery tool. Compose concurrency is set by IMAS_CODEX_SN_POOLS_GENERATE_NAME_REPLICAS rather than any flag, with four the measured knee. Each block cites its implementation boundary so a reader can go deeper, and each is placed in the subtree owning the code.</p></div>
+</div>
+<div class="r-comment" data-section="s9" data-id="c-run-r-20260908T201641053025-n-swct-tail-currency" data-who="s10b-westtail" data-when="2026-09-08T20:54:35.686Z">
+    <div class="r-comment-body"><p>four of the five ordered WEST tail steps are already SATISFIED and only step 4 is OPEN: quarantine 22 accepted-and-quarantined (4 in batch, all dated), export residue 0 with candidate 211 published 202 accounted 9 and all gates passed, null physics_domain 0 and 2 tombstoned rows suppressed at selection, roster causeless rows 0; step 4 leaves 2 WEST sources at extracted and 4 batch names at reviewed or drafted. Ran on the free unmetered lane at no quota cost</p></div>
 </div>
 </section>
 </main>
