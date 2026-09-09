@@ -759,7 +759,9 @@ class TestOrderingCycleDetection:
             {
                 "id": name,
                 "name_stage": "accepted",
+                "status": "draft",
                 "validation_status": "valid",
+                "_validation_observed_at": "2026-09-09T00:00:00Z",
                 "review_quorum_shortfall": None,
                 "docs_stage": "accepted",
                 "docs_review_quorum_shortfall": None,

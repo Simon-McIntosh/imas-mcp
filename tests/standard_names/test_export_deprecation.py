@@ -23,7 +23,9 @@ def _candidate(name: str, **overrides) -> dict:
     candidate = {
         "id": name,
         "name_stage": "accepted",
+        "status": "draft",
         "validation_status": "valid",
+        "_validation_observed_at": "2026-09-09T00:00:00Z",
         "review_quorum_shortfall": None,
         "docs_stage": "accepted",
         "docs_review_quorum_shortfall": None,
@@ -144,6 +146,7 @@ def test_active_entry_projection_drops_graph_lifecycle_fields() -> None:
     entry = _graph_node_to_entry_dict(
         _candidate(
             "core_ion_temperature",
+            status="active",
             deprecates="ion_temperature_core",
             superseded_by="future_ion_temperature",
         )

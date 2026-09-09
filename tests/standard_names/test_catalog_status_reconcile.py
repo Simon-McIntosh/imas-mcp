@@ -236,13 +236,17 @@ def test_export_reader_withholds_valid_but_exhausted_names() -> None:
             {
                 "id": "exhausted_valid",
                 "name_stage": "exhausted",
+                "status": "draft",
                 "validation_status": "valid",
+                "_validation_observed_at": "2026-09-09T00:00:00Z",
                 "physics_domain": [],
             },
             {
                 "id": "accepted_valid",
                 "name_stage": "accepted",
+                "status": "draft",
                 "validation_status": "valid",
+                "_validation_observed_at": "2026-09-09T00:00:00Z",
                 "physics_domain": [],
             },
         ],

@@ -81,7 +81,9 @@ def test_export_gate_and_population_use_shared_traversal() -> None:
 def test_export_reason_distinguishes_absence_from_unrecorded_resolution() -> None:
     common = {
         "name_stage": "accepted",
+        "status": "draft",
         "validation_status": "valid",
+        "_validation_observed_at": "2026-09-09T00:00:00Z",
         "review_quorum_shortfall": None,
         "docs_stage": "accepted",
         "docs_review_quorum_shortfall": None,
