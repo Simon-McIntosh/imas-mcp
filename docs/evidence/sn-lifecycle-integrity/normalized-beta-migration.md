@@ -364,26 +364,111 @@ Error: normalized_toroidal_thermal_plasma_beta: terminal StandardName lifecycle
 No detach was attempted. The thermal path remains among the total identity's
 eight producers, as does the MHD estimator path.
 
+## Thermal name-stage transition
+
+The next signed authority was deliberately separate from the status authority
+and contained one property mutation on the same one participant:
+
+```text
+normalized_toroidal_thermal_plasma_beta: {name_stage: drafted}
+```
+
+The preview result was:
+
+```text
+authority rows: 1
+admitted: 1
+refused: 0
+would_change: 1
+manifest_sha256: a1eee610dddc390416fed16fe0d0d0082d40c551cb7bcce70ec6355ccf26c566
+```
+
+The exact apply was issued once. Its returned receipt could not initially be
+serialized to the local JSON artifact because the Neo4j driver exposed
+`changed_at` as a `DateTime` object. The graph mutation had already committed,
+so the apply was not replayed. A bounded receipt read instead found exactly one
+`StandardNameChange`, with change id
+`sn-change:signed-manifest:a1eee610dddc390416fed16fe0d0d0082d40c551cb7bcce70ec6355ccf26c566:ddc8d60a82bc3ca2b506f010`,
+operation
+`revive_normalized_toroidal_thermal_plasma_beta_name_stage`, and the same
+manifest hash. The independent post-read showed `status='draft'`,
+`name_stage='drafted'`, historical `reviewer_score_name=0.5875`,
+`docs_stage='pending'`, zero producers, and no claim. Thus the status and name
+axes are independently terminal: a signed revival that changes only `status`
+does not make the identity reachable by ordinary commands; both axes must be
+moved explicitly.
+
+- Authority file SHA-256:
+  `7ac425064bfcd9635bb5bea67e53ea7a6078a8b763e890d7a0582f5bc0533324`
+- Authority payload SHA-256:
+  `86c22a78c6abecca1d24f2b0d2c7a9b1d978e93c53774675444e8c73ad9a9c2b`
+- Previewed and applied manifest SHA-256:
+  `a1eee610dddc390416fed16fe0d0d0082d40c551cb7bcce70ec6355ccf26c566`
+
+## Name review exposes a source-cohort deadlock
+
+After both lifecycle transitions, the exact name-review preview finally
+admitted the identity:
+
+```text
+Exact-name dry run: 1 existing name(s) eligible; no graph writes performed
+```
+
+The first scoped rotation, with global maintenance skipped, wrote three new
+name-axis reviews and moved the identity to `reviewed`. The authoritative
+escalation score was 0.6875, below the 0.85 acceptance threshold. Together
+with its surviving historical evidence, the identity then carried eight
+name-axis review edges.
+
+An ordinary exact-name continuation was dry-run before execution. It attempted
+the normal refine path twice, proposing
+`normalized_toroidal_thermal_beta` both times, but each persistence refused for
+the same graph invariant:
+
+```text
+refusal_reason: authoritative_source_cohort_empty
+proposed_name: normalized_toroidal_thermal_beta
+```
+
+Attempt two stopped at `reviewed`; attempt three reached the rotation cap and
+stopped at `exhausted`. The final bounded state is:
+
+| Field | Final value |
+|---|---|
+| `status` | `draft` |
+| `name_stage` / score | `exhausted` / 0.6875 |
+| Name-axis review edges | 8 |
+| `refine_attempts` | 3 |
+| `docs_stage` / docs review edges | `pending` / 0 |
+| Producers | 0 |
+| Claim | none |
+
+This is a new ordering deadlock. The requested safe order was to accept the
+name and docs axes before moving the thermal source. Review can now reach the
+identity, but refinement cannot persist any result without an authoritative
+source cohort. Conversely, moving the source first would violate that order
+and would require detaching it from the accepted total identity before a
+replacement attach is proven. No detach was attempted.
+
+The two thermal review rotations spent USD 0.218410 and USD 0.714115. Added to
+the USD 0.796979 already spent on the total identity, cumulative spend is USD
+1.729504 of the USD 15.00 ceiling.
+
 ## Remaining work
 
-The thermal identity needs a sanctioned transition of its independent
-name-axis state from `superseded` to a reviewable state. The authorized status
-transition alone cannot supply it: exact review rejects the terminal name
-condition, `sn attach` only permits stable binding lifecycle values, and a name hint has no
-producer to regenerate from, and the redesign-to-self route has already been
-shown to collide with an existing identity. Moving the source before this is
-resolved would create an avoidable unbound interval and cannot complete the
-attach.
+The thermal identity is now `name_stage='exhausted'` because an identity with
+zero producers cannot persist its proposed refined spelling. A sanctioned
+ordering is required: either bind or atomically migrate
+`dd:summary/global_quantities/beta_tor_thermal_norm/value` before retrying the
+name axis, or provide an authority that restores the reviewed identity without
+claiming a source-backed refinement occurred. Repeating the same name run
+against the unchanged zero-source cause would only spend money and hit the same
+refusal.
 
-After the name axis can be reviewed, move only
-`dd:summary/global_quantities/beta_tor_thermal_norm/value` from the total
-identity to `normalized_toroidal_thermal_plasma_beta`, review its name and docs
-axes independently, and prove both scores have nonzero review-edge counts.
-Leave `dd:summary/global_quantities/beta_tor_norm_mhd/value` on
-`normalized_toroidal_beta`.
-
-Only after that source split should the obsolete
-`normalized_toroidal_plasma_beta REFINED_FROM normalized_toroidal_beta`
-direction be removed. The intended historical direction,
-`normalized_toroidal_beta REFINED_FROM normalized_toroidal_plasma_beta`, stays.
-Both directions remain present now; no lineage mutation was attempted.
+`dd:summary/global_quantities/beta_tor_thermal_norm/value` and
+`dd:summary/global_quantities/beta_tor_norm_mhd/value` both remain on
+`normalized_toroidal_beta`, whose producer count therefore remains eight. The
+thermal identity still has zero producers and no docs review. Both
+`REFINED_FROM` directions between `normalized_toroidal_beta` and
+`normalized_toroidal_plasma_beta` also remain present; no lineage mutation was
+attempted.
