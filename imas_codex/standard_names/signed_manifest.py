@@ -186,6 +186,22 @@ _ARCHIVE_RECONSTRUCTION_SCHEMA = "imas-codex.archive-reconstruction.v1"
 _ARCHIVE_RECONSTRUCTABLE_COUNTERPART_LABELS = frozenset(
     {"StandardNameReview", "DocsRevision", "StandardNameSource"}
 )
+
+
+def _archive_counterpart_identity(value: Any) -> str | int:
+    """Return a signed counterpart identity without changing its property type."""
+    if isinstance(value, bool) or not isinstance(value, str | int) or value == "":
+        raise SignedManifestAuthorityError(
+            "archive reconstruction counterpart id must be a non-empty string or integer"
+        )
+    return value
+
+
+def _archive_counterpart_state_key(label: str, counterpart_id: str | int) -> str:
+    """Encode a counterpart identity without conflating numeric and text values."""
+    return f"{label}:{type(counterpart_id).__name__}:{counterpart_id}"
+
+
 _ARCHIVE_EDGE_COUNTERPARTS: dict[str, dict[str, str]] = {
     "PRODUCED_NAME": {"incoming": "StandardNameSource"},
     "HAS_STANDARD_NAME": {"incoming": "IMASNode"},
@@ -6948,24 +6964,26 @@ def _load_archive_reconstruction_authority(
         properties["origin"] = "pipeline"
         normalized_nodes.append({"id": node_id, "properties": properties})
     normalized_counterparts: list[dict[str, Any]] = []
-    counterpart_keys: set[tuple[str, str]] = set()
+    counterpart_keys: set[tuple[str, str | int]] = set()
     for counterpart in counterparts:
         if not isinstance(counterpart, dict):
             raise SignedManifestAuthorityError(
                 "archive reconstruction counterpart must be an object"
             )
         label = str(counterpart.get("label") or "")
-        counterpart_id = str(counterpart.get("id") or "")
+        counterpart_id = _archive_counterpart_identity(counterpart.get("id"))
         properties = counterpart.get("properties")
         if label not in _ARCHIVE_RECONSTRUCTABLE_COUNTERPART_LABELS:
             raise SignedManifestAuthorityError(
                 f"archive counterpart label is outside the reconstruction registry: {label}"
             )
-        if not counterpart_id or not isinstance(properties, dict):
+        if not isinstance(properties, dict):
             raise SignedManifestAuthorityError(
                 "archive reconstruction counterpart needs an id and properties"
             )
-        if properties.get("id") != counterpart_id:
+        if properties.get("id") != counterpart_id or type(
+            properties.get("id")
+        ) is not type(counterpart_id):
             raise SignedManifestAuthorityError(
                 "archive counterpart property id must match counterpart id"
             )
@@ -6985,8 +7003,8 @@ def _load_archive_reconstruction_authority(
         owner_id = str(edge.get("owner_id") or "")
         relationship_type = str(edge.get("relationship_type") or "")
         direction = str(edge.get("direction") or "")
-        counterpart_id = str(edge.get("counterpart_id") or "")
-        if owner_id not in node_ids or not counterpart_id:
+        counterpart_id = _archive_counterpart_identity(edge.get("counterpart_id"))
+        if owner_id not in node_ids:
             raise SignedManifestAuthorityError(
                 "archive edge must name an exact owner and counterpart"
             )
@@ -7043,7 +7061,7 @@ def _archive_reconstruction_preview(
         for counterpart in authority.counterparts
     }
     state: dict[str, Any] = {"nodes": {}, "counterparts": {}}
-    seen_counterparts: set[tuple[str, str]] = set()
+    seen_counterparts: set[tuple[str, str | int]] = set()
     refusals: list[dict[str, str]] = []
     for node in authority.nodes:
         rows = query.query(
@@ -7075,7 +7093,7 @@ def _archive_reconstruction_preview(
             id=counterpart_id,
         )
         properties = dict(rows[0]["properties"]) if rows else None
-        state["counterparts"][f"{key[0]}:{key[1]}"] = properties
+        state["counterparts"][_archive_counterpart_state_key(*key)] = properties
         expected_properties = included_counterparts.get(key)
         if properties is None and expected_properties is None:
             refusals.append(
