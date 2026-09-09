@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T12:58:46",
+  "updated": "2026-09-09T13:10:53",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -114772,6 +114772,358 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T103931492804-n-pidp-beta-is-the-global-beta",
+        "plan": "paid-identity-deletion-protection",
+        "section": "\u00a74b",
+        "node": "n-pidp-beta-is-the-global-beta",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 791,
+                "cached_input_tokens": 790112,
+                "input_tokens": 790905,
+                "output_tokens": 760,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 791665,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/paid-identity-deletion-protection/beta-global-definition.md records the sn edit invocation used with its reason text, the dry-run preview showing exactly one affected identity and no cascade into toroidal_beta, poloidal_beta or normalized_toroidal_beta, the live edit_status after a review rotation, and the resulting accepted description text; that description states the global beta as the ratio of volume-averaged perpendicular plasma pressure to total magnetic pressure and gives the reciprocal relation to the toroidal and poloidal betas; and the live docs_stage for beta reads accepted with its three children's descriptions unchanged, quoted before and after to prove it",
+          "estimated_hours": null,
+          "goal": "Steer the beta standard name's documentation to define the global beta by the reciprocal sum of its toroidal and poloidal components",
+          "id": "n-pidp-beta-is-the-global-beta",
+          "lane_declaration": {
+            "backend": "codex-terra",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T10:39:32Z",
+            "read_at": "2026-09-09T10:39:33Z",
+            "resolved_backend": "codex-terra",
+            "utilisation_pct": 72.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T103931492804-n-pidp-beta-is-the-global-beta/manifest.md",
+          "plan": "paid-identity-deletion-protection",
+          "requested_backend": "codex-terra",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a74b",
+          "spec_level": "guided",
+          "time_budget": "50m",
+          "write_paths": [
+            "docs/evidence/paid-identity-deletion-protection/beta-global-definition.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-fixtures",
+        "backend": "codex-terra",
+        "local": false,
+        "agent": {
+          "alias": "terra5.6",
+          "backend": "codex-terra",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-terra",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T10:39:48Z",
+        "completed_at": "2026-09-09T11:07:39Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 1671,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 1671,
+        "stalled": false,
+        "time_budget": "50m",
+        "base_sha": "54563ff66b9d279f0e8d6b419c1b9bf31bfb8768",
+        "commits": [
+          "00fa2605994b2df8bdc13b2fad211f48c2e11599",
+          "e58a4880700f8ad066f4f06fb9af2150771d3282"
+        ],
+        "changed_lines": {
+          "added": 173,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "two dry-runs confirming scope=only_self and beta-only staging, two scoped docs rotations under --scope-run-id with global maintenance bypassed, live readback of beta plus all three children",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "generate_docs=1 review_docs=1 refine_docs=0 exit 0; score 1.0; three child descriptions unchanged"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T103931492804-n-pidp-beta-is-the-global-beta/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a084b6-f8a5-7551-bfc5-a2dfe794dc4b",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 2538112,
+            "cached_input_tokens_cumulative": 7669120,
+            "input_tokens": 2565636,
+            "input_tokens_cumulative": 8211459,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 12626,
+            "reasoning_output_tokens": 0,
+            "reasoning_output_tokens_cumulative": 2307
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T11:07:39Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 75.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T11:07:39Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": []
+        },
+        "throughput": {
+          "cumulative_cached_input_tokens": 7669120,
+          "cumulative_input_tokens": 15880579,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 14933
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "resume",
+        "attempt": 2,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-pidp-beta-is-the-global-beta",
+          "session_id": "01a084b6-f8a5-7551-bfc5-a2dfe794dc4b",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T11:07:39Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T102852132454-n-swcr-the-reminted-cohort-is-correct",
+        "plan": "sn-west-catalog-release",
+        "section": "cut-predates-its-problems",
+        "node": "n-swcr-the-reminted-cohort-is-correct",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 891,
+                "cached_input_tokens": 761634,
+                "input_tokens": 762527,
+                "output_tokens": 2723,
+                "reasoning_output_tokens": 1321,
+                "total_tokens": 765250,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/sn-west-catalog-release/reminted-cohort.md records the re-minted cohort size beside the standing candidate's 208 emitted identities, and per-name verdicts for the three known edits: power_due_to_ion_cyclotron_heating absent with the mechanism that excludes it, net_power_due_to_ion_cyclotron_heating present or absent with the reason, etendue_of_soft_xray_detector and spectral_etendue_of_soft_xray_detector both present with the archived spellings absent; plus a full added-and-removed delta against the standing candidate with every row attributed to a cause, and a statement of whether any row still lacks a truthful origin",
+          "estimated_hours": null,
+          "goal": "Establish what a re-minted WEST batch cohort contains now, against the standing candidate",
+          "id": "n-swcr-the-reminted-cohort-is-correct",
+          "lane_declaration": {
+            "backend": "clive",
+            "headroom": null,
+            "metered": false,
+            "observed_at": null,
+            "read_at": "2026-09-09T10:28:52Z",
+            "resolved_backend": "clive",
+            "utilisation_pct": null
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T102852132454-n-swcr-the-reminted-cohort-is-correct/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requested_backend": "clive",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "cut-predates-its-problems",
+          "spec_level": "guided",
+          "time_budget": "45m",
+          "write_paths": [
+            "docs/evidence/sn-west-catalog-release/reminted-cohort.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-westtail",
+        "backend": "clive",
+        "local": false,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-09T10:29:00Z",
+        "completed_at": "2026-09-09T11:07:11.008Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 2264,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 2291,
+        "stalled": false,
+        "time_budget": "45m",
+        "base_sha": "4ce55dce1c6c9fbeba02b0bc4c621928551b3221",
+        "commits": [
+          "4bb804d9745f1722745999824e0b2724dd33a6b2"
+        ],
+        "changed_lines": {
+          "added": 111,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "fetch_manifest_source_release_rows over the 355 WEST paths then run_export with that review batch, stopping before freeze/tag/branch/PR, diffed against the standing rc6 emitted set read from the fork branch's committed export report",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "roster 227 candidates 226 emitted 171 exclusions 55 residue 0; catalog_status, identity_token_collision, exclusion_accounting, manifest_source_accounting all passed"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T102852132454-n-swcr-the-reminted-cohort-is-correct/manifest.md",
+        "scope_changed": false,
+        "session_id": "bfc17788-07e7-44a5-9692-ddddf9ee7e61",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 0,
+            "input_tokens_cumulative": 10421195,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 34294,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lane_receipt": {
+          "quota_state": "unmeasured",
+          "observed_at": "2026-09-09T11:07:11.008Z",
+          "effective_context_window": "unmeasured",
+          "quota_windows": [],
+          "unmeasured": {
+            "effective_context_window": "missing_rollout",
+            "quota_windows": "unmetered"
+          }
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": {
+          "grace": "5m",
+          "requested": true,
+          "waived_runs": []
+        },
+        "throughput": {
+          "cumulative_cached_input_tokens": 0,
+          "cumulative_input_tokens": 10421195,
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 2287.238,
+          "generated_tokens": 34294,
+          "generation_seconds": 2184.696,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 31.1,
+          "machine_seconds": 102.542,
+          "peak_input_tokens": 315795,
+          "tokens_per_second": 15.7,
+          "wall_tokens_per_second": 14.99
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-swcr-the-reminted-cohort-is-correct",
+          "session_id": "bfc17788-07e7-44a5-9692-ddddf9ee7e61",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T11:07:11.008Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -115028,6 +115380,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2057
+    "_version": 2059
   }
 }
