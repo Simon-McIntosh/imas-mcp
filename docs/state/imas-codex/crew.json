@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T09:40:45",
+  "updated": "2026-09-09T09:45:05",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -112505,6 +112505,175 @@
         "boundary_waiver": null,
         "resume_waiver": null,
         "watch_override": null
+      },
+      {
+        "run_id": "r-20260909T072409074610-n-swct-drain-the-actionable-tail",
+        "plan": "sn-west-cohort-treatment",
+        "section": "\u00a79",
+        "node": "n-swct-drain-the-actionable-tail",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 678,
+                "cached_input_tokens": 544013,
+                "input_tokens": 544693,
+                "output_tokens": 30,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 544723,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/sn-west-cohort-treatment/tail-drain.md records one row per open tail item with a terminal state or a named external gate, specifically: hot_neutral_temperature carrying a name-axis score after a rescore, each quarantined batch name either released to valid or holding a stated validation error, each parked source either composed or recorded against the exact grammar token it is missing, and actual LLM spend beside the authorised ceiling",
+          "estimated_hours": null,
+          "goal": "Bring every WEST tail row that this repository can act on to a terminal state and separate those from the ones gated upstream",
+          "id": "n-swct-drain-the-actionable-tail",
+          "lane_declaration": {
+            "backend": "codex-luna",
+            "headroom": "known",
+            "metered": true,
+            "observed_at": "2026-09-09T07:24:10Z",
+            "read_at": "2026-09-09T07:24:11Z",
+            "resolved_backend": "codex-luna",
+            "utilisation_pct": 58.0
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072409074610-n-swct-drain-the-actionable-tail/manifest.md",
+          "plan": "sn-west-cohort-treatment",
+          "requested_backend": "codex-luna",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a79",
+          "spec_level": "guided",
+          "time_budget": "45m",
+          "write_paths": [
+            "docs/evidence/sn-west-cohort-treatment/tail-drain.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10b-etendue",
+        "backend": "codex-luna",
+        "local": false,
+        "agent": {
+          "alias": "luna5.6",
+          "backend": "codex-luna",
+          "effort": "high",
+          "launch": "cli",
+          "model": "gpt-5.6-luna",
+          "sandbox": "worktree-full"
+        },
+        "dispatched_at": "2026-09-09T07:24:22Z",
+        "completed_at": "2026-09-09T07:39:46Z",
+        "completed_at_source": "stream_mtime",
+        "worker_seconds": 924,
+        "worker_seconds_source": "wall_fallback",
+        "wall_seconds": 924,
+        "stalled": false,
+        "time_budget": "45m",
+        "base_sha": "c3009010c9ec4d9f0d92437b53914dd3c9f05fcd",
+        "commits": [
+          "973b50318674e2d3145dde889d0309b9912b34a1"
+        ],
+        "changed_lines": {
+          "added": 117,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "bounded live census before and after, plus sn run --name hot_neutral_temperature --only review_name --skip-global-maintenance -c 1 -t 15",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "final bounded census: fresh score present, 4 of 4 quarantines with explicit errors, 2 of 2 sources naming missing tokens"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T072409074610-n-swct-drain-the-actionable-tail/manifest.md",
+        "scope_changed": false,
+        "session_id": "01a082a8-9f8e-75e0-8be1-231612083d8f",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_write_input_tokens": 0,
+            "cache_write_input_tokens_cumulative": 0,
+            "cached_input_tokens": 4070272,
+            "cached_input_tokens_cumulative": 11290624,
+            "input_tokens": 3864986,
+            "input_tokens_cumulative": 11606373,
+            "output_tokens": 0,
+            "output_tokens_cumulative": 26905,
+            "reasoning_output_tokens": 0,
+            "reasoning_output_tokens_cumulative": 6916
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "backend reports token usage but no headroom"
+        },
+        "lane_receipt": {
+          "quota_state": "measured",
+          "observed_at": "2026-09-09T07:39:46Z",
+          "effective_context_window": 380000,
+          "quota_windows": [
+            {
+              "window_minutes": 10080,
+              "used_percent": 59.0,
+              "resets_at": 1789439333,
+              "observed_at": "2026-09-09T07:39:46Z"
+            }
+          ]
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 11290624,
+          "cumulative_input_tokens": 22896997,
+          "detail": "turn tokens recorded, but no span was supplied to rate them",
+          "generated_tokens": 33821
+        },
+        "follow_on_paths": [
+          "validation/name"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-swct-drain-the-actionable-tail",
+          "session_id": "01a082a8-9f8e-75e0-8be1-231612083d8f",
+          "session_source": "pointer",
+          "retained_at": "2026-09-09T07:39:46Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null
       }
     ],
     "holds": [
@@ -112761,6 +112930,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2043
+    "_version": 2044
   }
 }
