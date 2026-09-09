@@ -9,7 +9,10 @@ passed ordinary quorum review at score 1.0, backed by 12 name-axis review edges.
 An independent live read found all eight producers unchanged and no worker
 claim. The document migration is blocked by the docs-edit precondition because
 the target has no prior document and is therefore still `docs_stage='pending'`.
-The thermal-only split and inverse-lineage removal have not run.
+The preferred docs hint is now attached with `edit_status='open'`, but its inline
+review was halted when `sn edit` entered global maintenance outside the
+four-identity fence. The thermal-only split and inverse-lineage removal have
+not run.
 
 The two redesign routes documented for superseded names were both tested first
 and both refused because the target spelling already exists. The signed
@@ -224,15 +227,54 @@ implementation refuses a live accepted name that has no prior document because
 its docs axis has not settled. Total provider spend is USD 0.091405 of the USD
 15.00 ceiling.
 
+## Preferred hint route and scope refusal
+
+The docs-axis hint carried the recovered physics explicitly: normalized
+toroidal beta is $\beta_N = 100\,\beta_{\mathrm{tor}}\,aB_0/I_p$, a
+whole-plasma equilibrium metric built on the volume-averaged total
+perpendicular pressure entering toroidal beta. It required the defining
+relation and all four links to `toroidal_beta`. Its provenance reason named the
+accepted 1,504-character predecessor document, its 0.93125 score, and its seven
+docs-axis reviews.
+
+The complete dry-run result was:
+
+```text
+DRY RUN sn edit: normalized_toroidal_beta  mode=hint axis=docs scope=only_self
+entry=generate
+
+Actions:
+  - hint attached to 'normalized_toroidal_beta' (axis=docs)
+  -  no writes performed
+```
+
+The live attach succeeded and stamped `run_id=sn-edit-20260909T181732Z`,
+`edit_status='open'`, `edit_scope='only_self'`, and the exact hint and reason.
+The CLI then launched its default inline `run_sn_pools` continuation. Unlike
+`sn run`, the `sn edit` surface exposes no `--skip-global-maintenance` option,
+and its inline helper does not forward that control. The runner entered global
+maintenance before processing the scoped edit. Its output named sourceless-name
+reconciliation, attachment-consistency reconciliation, the global source
+ledger, and 122 missing derived-parent targets outside this node's cohort. The
+runner was interrupted rather than allowed to continue outside the fence.
+
+A bounded post-read of `normalized_toroidal_beta` found the hint intact and
+resumable, with `status='draft'`, `name_stage='accepted'`,
+`docs_stage='pending'`, `edit_status='open'`, zero document characters, zero
+docs review edges, and no claim. No additional LLM cost was
+recorded. Whether the global startup maintenance committed collateral changes
+before interruption is unverified because this node is not authorized to scan
+or mutate identities outside the named cohort.
+
 ## Remaining work
 
-Two routes remain. The direct route is to extend `sn edit --docs` so exact docs
-text can enter review when a live accepted identity is at
-`docs_stage='pending'`; that requires code outside this node's write scope. The
-existing but wasteful route is to run docs generation and review first, then
-replace that newly accepted document through the requested exact docs edit.
-Directly setting `docs_stage='accepted'` would create the false-acceptance
-projection this work is meant to remove and is not an acceptable route.
+Do not attach the hint again: it is already open. The narrow continuation is a
+docs-only `sn run` using `--scope-run-id sn-edit-20260909T181732Z` and
+`--skip-global-maintenance`, which can drain the attached hint without revisiting
+global maintenance. The durable code follow-on is to add the same skip control
+to `sn edit` inline review so the sanctioned one-command edit path can obey an
+exact graph scope. Directly setting `docs_stage='accepted'` would create the
+false-acceptance projection this work is meant to remove and remains forbidden.
 
 After the corrected document has its own accepted docs review, move only
 `dd:summary/global_quantities/beta_tor_thermal_norm/value` to
