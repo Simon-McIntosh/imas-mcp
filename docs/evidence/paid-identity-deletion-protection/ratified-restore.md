@@ -2,14 +2,15 @@
 
 ## Outcome
 
-**Blocked after two successful atomic applies.** `time` and
+**Blocked on one structural-retention code gap after two successful atomic
+applies.** `time` and
 `flux_surface_averaged_current_density_due_to_wave_driven_current_drive` each
 passed an independent signed preview with zero refusals and each received an
 `applied` receipt for its complete 18-edge archive authority. Both live nodes
 have the exact signed node properties, `status=draft`, `origin=pipeline`, one
 matching direct producer, and three unchanged-ratification records. The later
-independent reproduction query nevertheless found that neither node still has
-full per-relationship-type incident parity with its archive snapshot.
+independent reproduction query found that both retained every archived
+relationship-type floor except the second `HAS_PARENT` edge.
 
 The quantitative result is therefore:
 
@@ -18,10 +19,15 @@ The quantitative result is therefore:
 - atomic applies reported `applied`: **2/2**;
 - restored nodes at `status=draft` and `origin=pipeline`: **2/2**;
 - restored nodes carrying exactly three unchanged-ratification records: **2/2**;
-- restored nodes with complete incident-type archive parity afterward: **0/2**;
+- restored nodes with every archived relationship count at or above its archive
+  floor afterward: **0/2**, solely because `HAS_PARENT` is 1 live against 2
+  archived on each;
+- live relationship surpluses treated as retained evidence rather than
+  failures: `FOR_STANDARD_NAME +22` on `time`, `FOR_STANDARD_NAME +11` and
+  `HAS_INTERNAL_CHANGE +1` on the flux-surface identity;
 - `plasma_beta` live nodes created: **0**.
 
-No further graph mutation was attempted after the independent parity failure.
+No further graph mutation was attempted after the independent floor failure.
 The live-graph commands ran on the login node because the configured Neo4j
 endpoint is a login-local tunnel; every query was restricted to the named
 identities or their exact producer cohort and completed within the ten-second
@@ -53,10 +59,10 @@ truthful because the direct producer is `derived:time`, whose status is
 
 The archive authority declared these 18 incident edges:
 
-| Relationship type | Archive | Live at 12:47:53 CEST | Equal |
+| Relationship type | Archive floor | Live | Meets floor |
 | --- | ---: | ---: | :---: |
 | `DOCS_REVISION_OF` | 2 | 2 | yes |
-| `FOR_STANDARD_NAME` | 0, absent from archive | 22 | **no** |
+| `FOR_STANDARD_NAME` | 0, absent from archive | 22 | yes; surplus 22 |
 | `HAS_INTERNAL_CHANGE` | 3 | 3 | yes |
 | `HAS_PARENT` | 2 | 1 | **no** |
 | `HAS_REVIEW` | 8 | 8 | yes |
@@ -65,10 +71,14 @@ The archive authority declared these 18 incident edges:
 | `PRODUCED_NAME` | 1 | 1 | yes |
 
 All 22 live-only `FOR_STANDARD_NAME` relationships come from `LLMCost` nodes.
+The pipeline re-minted this correct cost evidence after deletion; removing it
+to reproduce archive equality would destroy newer authority and is forbidden.
 The archive's two `HAS_PARENT` incidents were incoming edges from
 `alfven_time` and `ratio_of_coolant_mass_to_time`. The live reproduction query
-found only the incoming `alfven_time` edge; the latter child is live but has no
-`HAS_PARENT` target.
+found only the incoming `alfven_time` edge. The missing counterpart is a
+`StandardName` node and the archived relationship direction is incoming:
+`(ratio_of_coolant_mass_to_time)-[:HAS_PARENT]->(time)`. That counterpart is
+currently `name_stage=superseded`, `status=superseded`.
 
 The three retained unchanged-ratification records are:
 
@@ -88,24 +98,33 @@ target the restored identity.
 
 The archive authority declared these 18 incident edges:
 
-| Relationship type | Archive | Live at 12:47:53 CEST | Equal |
+| Relationship type | Archive floor | Live | Meets floor |
 | --- | ---: | ---: | :---: |
 | `DOCS_REVISION_OF` | 2 | 2 | yes |
 | `ENTAILED_FROM_CHILD` | 1 | 1 | yes |
-| `FOR_STANDARD_NAME` | 0, absent from archive | 11 | **no** |
-| `HAS_INTERNAL_CHANGE` | 3 | 3 | yes |
+| `FOR_STANDARD_NAME` | 0, absent from archive | 11 | yes; surplus 11 |
+| `HAS_INTERNAL_CHANGE` | 3 | 4 | yes; surplus 1 |
 | `HAS_PARENT` | 2 | 1 | **no** |
 | `HAS_REVIEW` | 7 | 7 | yes |
 | `HAS_STRUCTURAL_AUTHORITY` | 1 | 1 | yes |
 | `HAS_UNIT` | 1 | 1 | yes |
 | `PRODUCED_NAME` | 1 | 1 | yes |
 
-All 11 live-only `FOR_STANDARD_NAME` relationships come from `LLMCost` nodes.
+All 11 live-only `FOR_STANDARD_NAME` relationships come from `LLMCost` nodes
+re-minted by the pipeline after deletion and are correct retained evidence. The
+fourth live `HAS_INTERNAL_CHANGE` is
+`sn-change:f3c39d04-1418-4771-9872-10bb8519a910`, a
+`realign_grammar_segments` reconciliation record created because stored grammar
+segments disagreed with the canonical parse. Both surpluses are explained
+observations and satisfy the corrected archive-floor measure.
+
 The archive's two `HAS_PARENT` incidents were an incoming edge from
 `parallel_flux_surface_averaged_current_density_due_to_wave_driven_current_drive`
 and an outgoing edge to `current_density_due_to_wave_driven_current_drive`.
-Only the outgoing edge is live; the parallel child is live but has no
-`HAS_PARENT` target.
+Only the outgoing edge is live. The missing counterpart is a `StandardName`
+node and the archived relationship direction is incoming:
+`(parallel_flux_surface_averaged_current_density_due_to_wave_driven_current_drive)-[:HAS_PARENT]->(flux_surface_averaged_current_density_due_to_wave_driven_current_drive)`.
+That counterpart is currently `name_stage=superseded`, `status=superseded`.
 
 The three retained unchanged-ratification records are:
 
@@ -131,27 +150,11 @@ The archived source
 source authority and would contradict that scalar. A partial closure for
 `plasma_beta` was therefore refused.
 
-The lead's independent observation reported seven `beta_tor` sources, all
-attached or composed, with scalar and edge agreement on `toroidal_beta`. The
-bounded live reproduction at 12:47:53 and 12:54:03 CEST found only the five
-rows below. It found no additional `StandardNameSource` with
-`produced_sn_id=toroidal_beta`, so two exact source identities and statuses
-cannot be recorded from the current graph without inventing evidence.
-
-| Live source | Status | Scalar | Edge target |
-| --- | --- | --- | --- |
-| `dd:core_profiles/global_quantities/beta_tor` | `attached` | `toroidal_beta` | `toroidal_beta` |
-| `dd:equilibrium/time_slice/global_quantities/beta_tor` | `attached` | `toroidal_beta` | `toroidal_beta` |
-| `dd:plasma_profiles/global_quantities/beta_tor` | `attached` | `toroidal_beta` | `toroidal_beta` |
-| `dd:summary/global_quantities/beta_tor/value` | `attached` | `toroidal_beta` | `toroidal_beta` |
-| `dd:summary/global_quantities/beta_tor_mhd/value` | `composed` | `toroidal_beta` | `toroidal_beta` |
-
-The target itself has `name_stage=accepted`, `status=draft`, and
-`origin=pipeline`; it has `HAS_PARENT` to `beta` and `REFINED_FROM` to
-`mhd_beta`. This is a coherent current home for the observed five producers and
-is stronger authority than the deleted row's old producer edge. The three
-unchanged-ratification records are evidence about the former catalog row; they
-do not authorize this restore to adjudicate the quantity's current home.
+The hold is accepted as correct and is now a rename question under the lead's
+beta ruling. The three unchanged-ratification records remain evidence about the
+former catalog row; they do not authorize this restore to adjudicate the
+quantity's current home. No further beta mutation or disposition decision was
+undertaken.
 
 No choice was made between the two possible dispositions:
 
@@ -167,18 +170,35 @@ and sole live producer edge are authority. Reinstating an archived producer
 edge would create dual authority. The restore must refuse the whole identity
 unless a separate ruling explicitly chooses a non-parity disposition.
 
-## Additional adapter capability required
+## Missing-edge diagnosis
 
-The two successful receipts demonstrate that the current closed adapter can
-reconstruct its registered archive edge types atomically. The independent
-query demonstrates that this is not enough to prove complete incident closure.
-The missing capability is **signed full-incident postflight parity**, including
-relationship types absent from the archive and the persistence of both
-directions of current `HAS_PARENT` topology. It must either keep the committed
-node at the complete signed closure or refuse and roll back when live-only
-`FOR_STANDARD_NAME` edges or non-persistent archived parent edges prevent that
-closure. Re-running the current adapter or manually deleting or recreating
-edges would bypass the signed authority and was not attempted.
+`_ARCHIVE_RECONSTRUCTABLE_COUNTERPART_LABELS` is **not** the reason either edge
+is missing. That registry controls which missing counterpart nodes may be
+created from a signed payload. Both counterparts already exist as
+`StandardName` nodes, both authority files carry the incoming edges, and the
+archive adapter's edge writer directly matches existing `StandardName`
+endpoints. Adding `StandardName` to the reconstructable counterpart registry
+would therefore address the wrong mechanism and could authorize unwanted
+identity creation.
+
+The gap is in the later structural reconciliation path in
+`imas_codex/standard_names/graph_ops.py`. `rederive_structural_edges()` deletes
+every operator-bearing `HAS_PARENT` relationship originating at a
+`superseded` or `exhausted` child. It does not consult the target identity's
+durable ratification protection. Both missing archive relationships meet that
+deletion predicate: their child counterpart is superseded and their archived
+edge carries `operator_kind` (`binary` for the ratio child and `projection` for
+the parallel child).
+
+The smallest change that carries the second edge is to bind the target in that
+dead-edge cleanup and exclude a `HAS_PARENT` relationship when its target has
+an `unchanged_ratification` protection record. A focused test must cover a
+superseded child pointing to a ratified target and prove that ordinary dead
+edges remain deletable. That change belongs to `graph_ops.py` and its structural
+protection tests, which are outside this node's write scope and already owned
+by the concurrent protected-identity work. It is recorded as a follow-on; no
+change was made to `signed_manifest.py`, no signed apply was repeated, and no
+edge was hand-edited.
 
 ## Evidence artifacts
 
@@ -194,8 +214,8 @@ edges would bypass the signed authority and was not attempted.
   — the two atomic apply receipts.
 - `ratified-restore-postflight.json` — node properties, producer mirrors,
   ratifications, full incident counts, and the held beta evidence.
-- `live-restore-drift.json` — exact current incident counterparts and the
-  bounded beta-source census.
+- `live-restore-drift.json` — exact current incident counterparts and
+  counterpart lifecycle states.
 
 These artifacts are under
 `/home/ITER/mcintos/.config/reckon/crew/runs/r-20260909T095558811143-n-pidp-restore-the-three-ratified-identities/`.
