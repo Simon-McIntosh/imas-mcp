@@ -28,7 +28,12 @@ def _write_with_candidates(candidate_ids: set[str]):
     sweep.__enter__.return_value = sweep
     sweep.__exit__.return_value = None
 
-    def sweep_query(query: str, **_kwargs):
+    def sweep_query(query: str, **kwargs):
+        if "STANDARD_NAME_SKELETON_PLACEHOLDER_SELECTION" in query:
+            return [
+                {"candidate_id": candidate_id}
+                for candidate_id in kwargs["candidate_ids"]
+            ]
         if "MATCH (cost:LLMCost)" in query:
             return [{"linked": 0}]
         if "UNWIND $names AS name" in query:
