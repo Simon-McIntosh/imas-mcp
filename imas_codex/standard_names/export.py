@@ -782,10 +782,7 @@ def _classify_export_population(
         elif candidate.get("validation_status") != "valid":
             reason = "invalid_validation_status"
             detail = f"validation_status={candidate.get('validation_status')!r}"
-        elif (
-            "_validation_observed_at" in candidate
-            and candidate["_validation_observed_at"] is None
-        ):
+        elif candidate.get("_validation_observed_at") is None:
             reason = "validation_observation_missing"
             detail = "validation_status='valid' has no validated_at observation time"
         elif candidate.get("name_stage") not in {"accepted", "approved"}:
