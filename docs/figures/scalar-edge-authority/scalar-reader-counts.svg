@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="650" viewBox="0 0 1160 650" role="img" aria-labelledby="title desc">
+  <title id="title">Read sites for twelve relationship-mirrored scalar surfaces</title>
+  <desc id="desc">Horizontal stacked bars show publication-gating, pipeline-internal, and informational reader-site counts from the static inventory.</desc>
+  <style>
+    .bg { fill: rgb(255 255 255); } .title { font: 700 22px sans-serif; fill: rgb(21 36 58); } .sub { font: 13px sans-serif; fill: rgb(83 98 118); }
+    .lab { font: 13px sans-serif; fill: rgb(31 45 61); } .count { font: 12px sans-serif; fill: rgb(31 45 61); } .axis { font: 11px sans-serif; fill: rgb(83 98 118); }
+    .grid { stroke: rgb(217 225 234); stroke-width: 1; } .pub { fill: rgb(201 76 76); } .internal { fill: rgb(67 119 165); } .info { fill: rgb(85 167 120); }
+  </style>
+  <rect class="bg" width="1160" height="650"/>
+  <text class="title" x="40" y="38">Stored-scalar reader sites by consequence class</text>
+  <text class="sub" x="40" y="60">Static executable reads only; schema declarations and writes are excluded. Each bar is one DERIVE surface.</text>
+  <rect class="pub" x="755" y="28" width="14" height="14"/><text class="sub" x="775" y="40">publication-gating</text>
+  <rect class="internal" x="906" y="28" width="14" height="14"/><text class="sub" x="926" y="40">pipeline-internal</text>
+  <rect class="info" x="755" y="50" width="14" height="14"/><text class="sub" x="775" y="62">informational</text>
+  <line class="grid" x1="330" y1="95" x2="330" y2="590"/><line class="grid" x1="490" y1="95" x2="490" y2="590"/><line class="grid" x1="650" y1="95" x2="650" y2="590"/><line class="grid" x1="810" y1="95" x2="810" y2="590"/><line class="grid" x1="970" y1="95" x2="970" y2="590"/>
+  <text class="axis" x="326" y="87">0</text><text class="axis" x="483" y="87">10</text><text class="axis" x="643" y="87">20</text><text class="axis" x="803" y="87">30</text><text class="axis" x="963" y="87">40</text>
+  <text class="lab" x="40" y="121">source_paths</text><rect class="pub" x="330" y="108" width="16" height="18"/><rect class="internal" x="346" y="108" width="256" height="18"/><rect class="info" x="602" y="108" width="144" height="18"/><text class="count" x="754" y="122">1 / 16 / 9</text>
+  <text class="lab" x="40" y="160">produced_sn_id</text><rect class="pub" x="330" y="147" width="32" height="18"/><rect class="internal" x="362" y="147" width="288" height="18"/><rect class="info" x="650" y="147" width="64" height="18"/><text class="count" x="722" y="161">2 / 18 / 4</text>
+  <text class="lab" x="40" y="199">source_types</text><rect class="pub" x="330" y="186" width="16" height="18"/><rect class="internal" x="346" y="186" width="112" height="18"/><rect class="info" x="458" y="186" width="32" height="18"/><text class="count" x="498" y="200">1 / 7 / 2</text>
+  <text class="lab" x="40" y="238">dd_path / signal</text><rect class="internal" x="330" y="225" width="224" height="18"/><rect class="info" x="554" y="225" width="48" height="18"/><text class="count" x="610" y="239">0 / 14 / 3</text>
+  <text class="lab" x="40" y="277">primary_cluster_id</text><rect class="internal" x="330" y="264" width="16" height="18"/><text class="count" x="354" y="278">0 / 1 / 0</text>
+  <text class="lab" x="40" y="316">links</text><rect class="pub" x="330" y="303" width="32" height="18"/><rect class="internal" x="362" y="303" width="96" height="18"/><rect class="info" x="458" y="303" width="32" height="18"/><text class="count" x="498" y="317">2 / 6 / 2</text>
+  <text class="lab" x="40" y="355">deprecates / superseded_by</text><rect class="pub" x="330" y="342" width="16" height="18"/><rect class="internal" x="346" y="342" width="80" height="18"/><rect class="info" x="426" y="342" width="16" height="18"/><text class="count" x="450" y="356">1 / 5 / 1</text>
+  <text class="lab" x="40" y="394">axis review projections</text><rect class="pub" x="330" y="381" width="32" height="18"/><rect class="internal" x="362" y="381" width="320" height="18"/><rect class="info" x="682" y="381" width="112" height="18"/><text class="count" x="802" y="395">2 / 20 / 7</text>
+  <text class="lab" x="40" y="433">reviewed timestamps</text><rect class="internal" x="330" y="420" width="112" height="18"/><rect class="info" x="442" y="420" width="16" height="18"/><text class="count" x="466" y="434">0 / 7 / 1</text>
+  <text class="lab" x="40" y="472">chain_length</text><rect class="pub" x="330" y="459" width="16" height="18"/><rect class="internal" x="346" y="459" width="160" height="18"/><rect class="info" x="506" y="459" width="48" height="18"/><text class="count" x="562" y="473">1 / 10 / 3</text>
+  <text class="lab" x="40" y="511">docs_chain_length</text><rect class="pub" x="330" y="498" width="16" height="18"/><rect class="internal" x="346" y="498" width="128" height="18"/><rect class="info" x="474" y="498" width="32" height="18"/><text class="count" x="514" y="512">1 / 8 / 2</text>
+  <text class="lab" x="40" y="550">origin</text><rect class="pub" x="330" y="537" width="48" height="18"/><rect class="internal" x="378" y="537" width="320" height="18"/><rect class="info" x="698" y="537" width="64" height="18"/><text class="count" x="770" y="551">3 / 20 / 4</text>
+  <text class="sub" x="40" y="620">Counts are execution-path groups, not raw token hits; detailed file-and-line inventory is in scalar-reader-inventory.md.</text>
+</svg>
