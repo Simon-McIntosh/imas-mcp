@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-10T07:28:26",
+  "updated": "2026-09-10T09:13:02",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -4693,6 +4693,24 @@
       },
       {
         "id": "s10c-local-b",
+        "harness": "clive",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-10"
+      },
+      {
+        "id": "s10c-local-c",
+        "harness": "clive",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-10"
+      },
+      {
+        "id": "s10c-local-d",
         "harness": "clive",
         "role": "implement",
         "session_id": null,
@@ -120398,6 +120416,196 @@
         "watch_override": null,
         "tool_steps": 70.0,
         "orientation_input_tokens": 3233499.0
+      },
+      {
+        "run_id": "r-20260910T052853975418-n-swcr-a-dry-run-writes-nothing-and-the-ledger-links-once",
+        "plan": "sn-west-catalog-release",
+        "section": "cut-predates-its-problems",
+        "node": "n-swcr-a-dry-run-writes-nothing-and-the-ledger-links-once",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2365,
+                "cached_input_tokens": 723905,
+                "input_tokens": 726272,
+                "output_tokens": 1490,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 727762,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "imas_codex/standard_names/catalog_release.py stops a dry run from writing anything and stops the exclusion-ledger link from being appended twice, and tests/standard_names/test_cli_release.py proves both directions for each. Defect one, dry-run-writes: in run_review_release near line 1618 the RC is computed and _freeze_review_artifact near line 1519 is called unconditionally as step three, while the dry_run branch is not consulted until step five, so a dry run writes a release-shaped roster into imas_codex/standard_names/manifests/reviews/, writes into the staging directory, and ADVANCES THE RC COUNTER - very likely the origin of the untracked rc2, rc3 and rc4 rosters. The measure is that a dry run creates no manifest file, writes nothing into staging and leaves the RC counter unchanged, with a paired test proving a real non-dry run still writes exactly one artifact and advances the counter exactly once. Defect two, ledger idempotence: body_with_exclusion_ledger_link near line 245 appends the ledger blob address unconditionally, so a body that already links it carries the same information twice. Resolve the ledger to its repository-relative path and return the body unchanged when that path already appears, lifting the resolution currently inlined inside exclusion_ledger_blob_url near line 213 into one shared helper so both callers compute the same answer. The measure is that the address appears AT MOST ONCE, tested both ways: an authored body already linking the ledger comes back byte-identical, and a body without it gains exactly one link. Both fixes live in this one node because they share a file and cannot be split across parallel workers. docs/evidence/sn-west-catalog-release/release-path-dry-run-and-ledger.md records before and after behaviour for each with the test names that hold them. Do not weaken or delete any existing check to make a test pass. Gate with tests/standard_names on a debug partition and report added failures against a stated base revision rather than absolute green. If fixtures outside your write fence must change, name them and stop rather than writing out of scope. Produce no figure and read no image file: this lane is not multimodal. Write the manifest before the suite run because your process ends with its turn.",
+          "estimated_hours": null,
+          "goal": "Make a release dry run inert and the exclusion-ledger link idempotent",
+          "id": "n-swcr-a-dry-run-writes-nothing-and-the-ledger-links-once",
+          "lane_declaration": {
+            "backend": "clive",
+            "headroom": null,
+            "metered": false,
+            "observed_at": null,
+            "read_at": "2026-09-10T05:28:54Z",
+            "resolved_backend": "clive",
+            "utilisation_pct": null
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260910T052853975418-n-swcr-a-dry-run-writes-nothing-and-the-ledger-links-once/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requested_backend": "clive",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "cut-predates-its-problems",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "token_budget": null,
+          "write_paths": [
+            "imas_codex/standard_names/catalog_release.py",
+            "tests/standard_names/test_cli_release.py",
+            "docs/evidence/sn-west-catalog-release/release-path-dry-run-and-ledger.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10c-local",
+        "backend": "clive",
+        "local": false,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-10T05:29:00Z",
+        "completed_at": "2026-09-10T07:10:00.884Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 6044,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 6060,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "cb53d77d96487d5e8318be93c174e76fddac635b",
+        "commits": [
+          "abf1d553e819ea01725560f3f8250a2c56e85614"
+        ],
+        "changed_lines": {
+          "added": 150,
+          "removed": 25,
+          "files": 3
+        },
+        "tests_added": 2,
+        "gate": "passed",
+        "gate_check": {
+          "command": "focused run of the three adjacent release test files, then the full tests/standard_names suite on sirius_debug at the landed head",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "focused 69 passed 1 deselected; full 7317 passed 11 skipped 323 deselected 0 failed exit 0"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260910T052853975418-n-swcr-a-dry-run-writes-nothing-and-the-ledger-links-once/manifest.md",
+        "scope_changed": true,
+        "session_id": "ab3154ac-a983-4045-b65b-a8d13f73784f",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 12161962,
+            "input_tokens_cumulative": 12161962,
+            "output_tokens": 65739,
+            "output_tokens_cumulative": 65739,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lane_receipt": {
+          "quota_state": "unmeasured",
+          "observed_at": "2026-09-10T07:10:00.884Z",
+          "effective_context_window": "unmeasured",
+          "quota_windows": [],
+          "notional_cost_usd": "unmeasured",
+          "rate_basis": "unmeasured",
+          "unmeasured": {
+            "effective_context_window": "missing_rollout",
+            "notional_cost_usd": "missing_rollout",
+            "rate_basis": "missing_rollout",
+            "quota_windows": "unmetered"
+          }
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 0,
+          "cumulative_input_tokens": 12161962,
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 6057.184,
+          "generated_tokens": 65739,
+          "generation_seconds": 5422.038,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 17.7,
+          "machine_seconds": 635.146,
+          "peak_input_tokens": 179553,
+          "tokens_per_second": 12.12,
+          "wall_tokens_per_second": 10.85
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": [
+          {
+            "path": "tests/standard_names/test_review_release.py",
+            "reason": "the natural home for these cases, holding the existing review-release tests; my fence named test_cli_release.py, which was the wrong file - a coordinator error, not an overreach"
+          }
+        ],
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-swcr-a-dry-run-writes-nothing-and-the-ledger-links-once",
+          "session_id": "ab3154ac-a983-4045-b65b-a8d13f73784f",
+          "session_source": "stream",
+          "retained_at": "2026-09-10T07:10:00.884Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null,
+        "tool_steps": 96.0,
+        "orientation_input_tokens": 3807770.0
       }
     ],
     "holds": [
@@ -120668,6 +120876,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2089
+    "_version": 2092
   }
 }
