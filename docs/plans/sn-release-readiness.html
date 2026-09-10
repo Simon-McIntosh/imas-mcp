@@ -24,8 +24,8 @@
   <title>What the First Catalog Release Would Silently Drop | imas-codex</title>
   <link rel="stylesheet" href="/_shared/foundation.css">
   <link rel="stylesheet" href="/_shared/dashboard.css">
-<meta name="plan-modified" content="2026-09-08">
-<meta name="plan-version" content="109">
+<meta name="plan-modified" content="2026-09-10">
+<meta name="plan-version" content="110">
 <meta name="plan-commits" content="459279203f628c110ca9f8daa33cc674f93682d1">
 <meta name="plan-artifacts" content="docs/evidence/sn-release-readiness/unsourced-origin-cause.md,docs/evidence/sn-release-readiness/unsourced-origin-verification.md">
 <meta name="plan-impl" content="0.95">
@@ -980,6 +980,9 @@
 </div>
 <div class="r-comment" data-section="_top" data-id="c-srr-the-cut-proved-the-thesis" data-who="" data-when="">
     <div class="r-comment-body"><p><strong>A real cut has now been taken, and it dropped eighteen names with both declared exclusion counters reading zero.</strong> This plan's whole subject is making every export exclusion counted and named; the candidate published on 2026-09-07 declares <code>candidate_count: 214</code>, <code>published_count: 196</code>, <code>excluded_below_score_count: 0</code> and <code>excluded_unreviewed_count: 0</code>. The <code>exclusion_accounting</code> gate passed on that header.</p><p>So the eighteen left through exits this plan has not yet enumerated. Two are now identified by comparing the withheld set against the published one in the graph. A <strong>null <code>physics_domain</code></strong> puts a name outside the header's own <code>domains_included</code> list and drops it silently — that alone cost <code>total_electron_count</code> at 0.947 and <code>vertical_coordinate_of_ece_channel</code> at 0.966, both accepted and valid. <strong><code>validation_status: quarantined</code></strong> drops a name as well, taking five more that are accepted, unit-bound, source-bound and scored 0.844 to 0.906. One further row was a tombstoned <code>status: superseded</code> identity that should never have entered candidate selection. Six accepted-and-valid drops remain unexplained; the strongest signal on them is a null <code>link_status</code>, carried by nine of the eighteen against two of the published 196.</p><p>Two calibration readings from the same header belong here too. Neither exclusion counter has ever been exercised in anger — both read zero on a cut that excluded eighteen — so a zero from either is not yet evidence of anything. And the published set contains a name scored <strong>0.568</strong> against a declared <code>min_score_applied: 0.65</code>, so the score filter the header claims to have applied did not gate the published side either.</p><p>At 0.94 this plan reads as nearly finished. The measurement above says it is unfinished in precisely its own subject, and that a re-cut before the accounting closes will lose names as quietly as this one did. The full tabulation of both tails is section 9 of the cohort-treatment plan.</p></div>
+</div>
+<div class="r-comment" data-section="_top" data-id="c-run-r-20260910T035838932139-n-srr-drain-the-live-tail-through-the-pipeline" data-who="s10c-local" data-when="2026-09-10T04:00:13.529Z">
+    <div class="r-comment-body"><p>Stopped by me, not by the worker: I wrote a 250 USD cap into the done-when and the lead authorised 150. Caught 94 seconds in, before any pipeline invocation, so no spend and no graph change. Re-dispatched at the authorised cap. Worth recording that the cap belongs in the measure rather than only in a brief line, which is why correcting it needed a re-dispatch rather than an advisory</p></div>
 </div>
 <div class="r-comment" data-section="§7a" data-id="c-run-r-20260901T122318417713-n-producerembeddrain" data-who="impl-embedgap" data-when="2026-09-01T12:34:30Z">
     <div class="r-comment-body"><p>Scoped runs now drain StandardName embeddings and refuse completion on a residual gap; regression fails pre-change at assert embedded is True and passes post-change 2/0; targeted pool suites 52 passed 0 failed; no LLM cost</p></div>
