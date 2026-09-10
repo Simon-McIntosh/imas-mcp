@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-10T11:27:32",
+  "updated": "2026-09-10T11:30:25",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -121172,6 +121172,198 @@
           "status": "failed",
           "error": "OperationalError: table runs has no column named payload"
         }
+      },
+      {
+        "run_id": "r-20260910T063837242422-n-sli-the-orphan-sweep-is-a-safety-net",
+        "plan": "sn-lifecycle-integrity",
+        "section": "\u00a72",
+        "node": "n-sli-the-orphan-sweep-is-a-safety-net",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 2135,
+                "cached_input_tokens": 738754,
+                "input_tokens": 740891,
+                "output_tokens": 2445,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 743336,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "imas_codex/standard_names/loop.py starts the orphan sweep regardless of skip_global_maintenance, and tests/standard_names/test_orphan_sweep.py proves it both ways: with skip_global_maintenance set the sweep task is still created, and the mutating global-maintenance work it was bundled with is still skipped. At loop.py near line 2113 the sweep is gated as 'if not skip_global_maintenance: sweep_task = asyncio.create_task(run_orphan_sweep_loop(...))', with an elif drain_scope_id branch starting a manifest-drain heartbeat instead. That coupling caused a measured production halt on 2026-09-10: a drain run correctly passed --skip-global-maintenance to avoid an unrelated open delete defect, its worker processes were killed mid-invocation by turn-end, and with no sweeper running 92 StandardName rows kept live claim tokens - oldest claimed_at 2026-09-10T04:20:11Z. A claimed row is ineligible, so the pipeline reported no work while 78 USD of authorised budget remained and roughly 300 non-exhausted rows still needed processing. The distinction to encode is that ORPHAN SWEEPING IS A SAFETY NET, NOT A MUTATION: releasing a claim abandoned by a dead process restores an invariant, whereas the graph-wide reconciliation that skip_global_maintenance exists to suppress rewrites live rows. Skipping the second must not disable the first. Keep the drain heartbeat behaviour intact for the drain_scope_id case. Do not weaken or remove any other guard, and do not change what global maintenance itself does. If the correct fix turns out to be a separate flag rather than always-on, argue for it in the evidence with the reason. docs/evidence/sn-lifecycle-integrity/orphan-sweep-is-a-safety-net.md records the gating before and after, the 92-claim incident with its timestamps, and the test names holding both directions. Gate with tests/standard_names on a debug partition and report added failures against a stated base revision rather than absolute green. If fixtures outside your write fence must change, name them and stop rather than writing out of scope. Produce no figure and read no image file: this lane is not multimodal. Write the manifest before the suite run because your process ends with its turn.",
+          "estimated_hours": null,
+          "goal": "Keep the orphan sweep running when global maintenance is skipped, so a dead worker cannot permanently lock rows",
+          "id": "n-sli-the-orphan-sweep-is-a-safety-net",
+          "lane_declaration": {
+            "backend": "clive",
+            "headroom": null,
+            "metered": false,
+            "observed_at": null,
+            "read_at": "2026-09-10T06:38:37Z",
+            "resolved_backend": "clive",
+            "utilisation_pct": null
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260910T063837242422-n-sli-the-orphan-sweep-is-a-safety-net/manifest.md",
+          "plan": "sn-lifecycle-integrity",
+          "requested_backend": "clive",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "\u00a72",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "token_budget": null,
+          "write_paths": [
+            "imas_codex/standard_names/loop.py",
+            "tests/standard_names/test_orphan_sweep.py",
+            "docs/evidence/sn-lifecycle-integrity/orphan-sweep-is-a-safety-net.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10c-local-c",
+        "backend": "clive",
+        "local": false,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-10T06:38:47Z",
+        "completed_at": "2026-09-10T09:26:12.769Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 9951,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 10045,
+        "stalled": true,
+        "time_budget": "55m",
+        "base_sha": "cb53d77d96487d5e8318be93c174e76fddac635b",
+        "commits": [
+          "09e720a5ec4cbce20952e2b1524c2ea4bca21687",
+          "797d48851025e1a722374192e8d70a5b3cebc773"
+        ],
+        "changed_lines": {
+          "added": 414,
+          "removed": 12,
+          "files": 3
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "full tests/standard_names on all_debug, plus coordinator verification that the sweep no longer sits under the maintenance flag and that the remaining gates cover only mutating work",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "sweep starts unconditionally; heartbeat alongside not elif; remaining gates are the reconcile import and the embed worker only"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260910T063837242422-n-sli-the-orphan-sweep-is-a-safety-net/manifest.md",
+        "scope_changed": false,
+        "session_id": "fca0e41a-612e-4d57-ad22-02d320daedfa",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 14344457,
+            "input_tokens_cumulative": 14344457,
+            "output_tokens": 81923,
+            "output_tokens_cumulative": 81923,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lane_receipt": {
+          "quota_state": "unmeasured",
+          "observed_at": "2026-09-10T09:26:12.769Z",
+          "effective_context_window": "unmeasured",
+          "quota_windows": [],
+          "notional_cost_usd": "unmeasured",
+          "rate_basis": "unmeasured",
+          "unmeasured": {
+            "effective_context_window": "missing_rollout",
+            "notional_cost_usd": "missing_rollout",
+            "rate_basis": "missing_rollout",
+            "quota_windows": "unmetered"
+          }
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 0,
+          "cumulative_input_tokens": 14344457,
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 10042.716,
+          "generated_tokens": 81923,
+          "generation_seconds": 9139.316,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 19.9,
+          "machine_seconds": 903.4,
+          "peak_input_tokens": 202496,
+          "tokens_per_second": 8.96,
+          "wall_tokens_per_second": 8.16
+        },
+        "follow_on_paths": [
+          "tests/standard_names/test_scoped_global_maintenance.py"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-sli-the-orphan-sweep-is-a-safety-net",
+          "session_id": "fca0e41a-612e-4d57-ad22-02d320daedfa",
+          "session_source": "stream",
+          "retained_at": "2026-09-10T09:26:12.769Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null,
+        "tool_steps": 112.0,
+        "orientation_input_tokens": 3557845.0,
+        "store_write": {
+          "status": "failed",
+          "error": "OperationalError: table runs has no column named payload"
+        }
       }
     ],
     "holds": [
@@ -121442,6 +121634,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2095
+    "_version": 2096
   }
 }
