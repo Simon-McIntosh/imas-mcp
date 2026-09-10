@@ -2109,17 +2109,25 @@ async def run_sn_pools(
             run_orphan_sweep_loop,
         )
 
+        # The orphan sweep is a safety net, not a mutation: it reverts rows
+        # whose claim was abandoned by a dead process, restoring the invariant
+        # that a claimed row belongs to a live worker. The graph-wide reconcile
+        # writers that skip_global_maintenance suppresses rewrite live rows;
+        # releasing a stale claim only clears ownership no live worker holds.
+        # So the sweep must not be switched off by the same flag that silences
+        # those writers — it starts unconditionally, and the manifest-drain
+        # heartbeat that keeps a bounded drain's lease fresh starts alongside
+        # it when a bounded drain owns the run.
         sweep_task: asyncio.Task[None] | None = None
-        if not skip_global_maintenance:
-            sweep_task = asyncio.create_task(
-                run_orphan_sweep_loop(
-                    interval_s=DEFAULT_ORPHAN_SWEEP_INTERVAL_S,
-                    timeout_s=DEFAULT_ORPHAN_SWEEP_TIMEOUT_S,
-                    stop_event=stop_event,
-                ),
-                name="orphan_sweep",
-            )
-        elif drain_scope_id:
+        sweep_task = asyncio.create_task(
+            run_orphan_sweep_loop(
+                interval_s=DEFAULT_ORPHAN_SWEEP_INTERVAL_S,
+                timeout_s=DEFAULT_ORPHAN_SWEEP_TIMEOUT_S,
+                stop_event=stop_event,
+            ),
+            name="orphan_sweep",
+        )
+        if drain_scope_id:
             drain_heartbeat_task = asyncio.create_task(
                 run_manifest_drain_heartbeat_loop(
                     drain_scope_id=drain_scope_id,
