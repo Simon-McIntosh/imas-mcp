@@ -472,7 +472,6 @@ def test_review_export_restores_approved_entry_bytes(
         "Review batch demo",
         staging_dir=tmp_path / "staging",
         bump="minor",
-        dry_run=True,
         reviews_dir=tmp_path / "reviews",
         exporter=exporter,
         publisher=_stub_publisher(isnc_repo),
@@ -645,7 +644,6 @@ def test_review_assembly_reproduces_and_closes_sparse_baseline_failure(
         "Review sparse batch",
         staging_dir=tmp_path / "staging",
         bump="minor",
-        dry_run=True,
         reviews_dir=tmp_path / "reviews",
         exporter=exporter,
         publisher=_stub_publisher(isnc_repo),
@@ -805,11 +803,14 @@ def test_review_release_dry_run_no_push_no_pr(isnc_repo, tmp_path):
     assert report.errors == []
     assert report.pushed is False
     assert report.pr_number is None
-    # Export still ran (staging built) — a dry run stays a faithful rehearsal.
-    assert record.get("review_batch") == ["plasma_current", "poloidal_flux"]
-    # But it writes no roster: the release-shaped path it reports does not
-    # exist, so no candidate-named artifact is left for a release that never
-    # happens.
+    # The rehearsal is inert: the exporter never runs and the staging directory
+    # is never created, so nothing is written into staging for a release that
+    # never happens.
+    assert record == {}
+    assert not (tmp_path / "staging").exists()
+    # It still reports the roster path it would freeze, but writes no roster:
+    # the release-shaped path it reports does not exist, so no candidate-named
+    # artifact is left behind.
     assert report.artifact_path.endswith(".sn_names.yaml")
     assert not Path(report.artifact_path).exists()
     # No review branch created on a dry run.
@@ -847,8 +848,52 @@ def test_dry_run_writes_no_roster_and_moves_no_candidate(isnc_repo, tmp_path):
     after_candidate = compute_next_version(isnc_repo, "minor", final=False, build=label)
     assert after_listing == before_listing
     assert after_candidate == before_candidate
+    # The rehearsal also leaves the staging directory untouched.
+    assert not (tmp_path / "staging").exists()
     # The rehearsal still reports the candidate it would have taken.
     assert report.rc_version == before_candidate[0]
+
+
+def test_real_run_writes_exactly_one_artifact_and_advances_candidate_once(
+    isnc_repo, tmp_path
+):
+    """A real cut freezes exactly one roster and moves the candidate by one.
+
+    The paired counterpart to the inert rehearsal: where a dry run leaves the
+    reviews directory unchanged and the candidate unmoved, a real run writes
+    exactly one artifact and advances the RC counter exactly one step. A batch
+    cut inside an RC series omits ``--bump``, so the next candidate increments
+    within the same version (rc2, then rc3).
+    """
+    _git("tag", "v0.1.0rc1+first-batch", cwd=isnc_repo)
+    focus = _write_names_focus(tmp_path, name="second-batch")
+    reviews = tmp_path / "reviews"
+    reviews.mkdir()
+    label = batch_build_metadata(focus)
+    before_listing = sorted(p.name for p in reviews.iterdir())
+    before_candidate = compute_next_version(isnc_repo, None, final=False, build=label)
+
+    report = run_review_release(
+        isnc_repo,
+        focus,
+        "x",
+        staging_dir=tmp_path / "staging",
+        reviews_dir=reviews,
+        exporter=_stub_exporter({}),
+        publisher=_stub_publisher(isnc_repo),
+        pr_creator=_stub_pr(),
+        **_PR_TARGET,
+    )
+
+    assert report.errors == [], report.errors
+    after_listing = sorted(p.name for p in reviews.iterdir())
+    after_candidate = compute_next_version(isnc_repo, None, final=False, build=label)
+    # Exactly one new roster, for the candidate the run actually took.
+    assert after_listing == before_listing + [f"{report.rc_version}.sn_names.yaml"]
+    # The next candidate moved on by exactly one RC step.
+    assert report.rc_version == before_candidate[0]
+    assert after_candidate[0] == "v0.1.0rc3+second-batch"
+    assert Path(report.artifact_path).exists()
 
 
 def test_review_release_empty_focus_errors(isnc_repo, tmp_path):
@@ -910,9 +955,10 @@ def test_review_release_source_batch_excludes_unbound_family(
 
     assert report.errors == [], report.errors
     assert report.names == [bound_name]
-    assert record["review_batch"] == [bound_name]
-    # The batch contents are observed through the report and the export; a
-    # rehearsal also reports the roster path it would freeze without writing
+    # The rehearsal resolves the source batch without running the export, so
+    # the batch contents are observed through the report alone.
+    assert record == {}
+    # A rehearsal also reports the roster path it would freeze without writing
     # it.
     assert report.artifact_path.endswith(".sn_names.yaml")
     assert not Path(report.artifact_path).exists()
