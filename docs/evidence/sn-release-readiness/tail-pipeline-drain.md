@@ -149,8 +149,82 @@ name-accepted rows. The exhausted docs rows (3) and the exhausted name cohort
 
 ## After-state (measured post-run, 2026-09-10)
 
-_Filled after the run completes._
+### Slice 1 (run `4e87869b-b8c8-49ae-ae3d-709e363b0219`, 04:21:15Z–04:26:58Z)
+
+The first pipeline invocation ran broad-pool over the 509-identity scope with
+`--skip-global-maintenance --cost-limit 150 --time 28`. The worker process was
+interrupted after 414 s (the node's process ended mid-run), so `stop_reason`
+is `interrupted` rather than a clean cap stop. That is a completed wave: the
+run's own reported figure is the authoritative spend.
+
+| Run record field | Value |
+|---|---|
+| `stop_reason` | interrupted |
+| `cost_spent` | USD 30.504402 |
+| `cost_limit` | USD 150.0 |
+| `names_reviewed` | 174 |
+| `names_enriched` | 172 |
+| `names_regenerated` | 43 |
+| `elapsed_s` | 413.8 |
+
+Ledger (LLMCost, `llm_at >= 2026-09-10T04:00Z`, all rows in this one run):
+**694 rows, USD 30.504402** — matches the run record exactly.
+
+| Pool | Rows | USD |
+|---|---|---|
+| review (docs-axis review) | 169 | 12.014247 |
+| review_name | 279 | 9.991374 |
+| refine_name | 35 | 4.307425 |
+| refine_docs | 28 | 3.267625 |
+| generate_docs | 172 | 0.745194 |
+| refine_name+fanout | 1 | 0.167748 |
+| enrich_parents | 10 | 0.010789 |
+| **Total** | **694** | **30.504402** |
+
+### Cumulative spend vs the ceiling
+
+- Ceiling: **USD 150 cumulative across this node** (not per invocation) — hard stop.
+- Spent after slice 1: **USD 30.504402**.
+- Remaining: **USD 119.495598**.
+
+### Live tail shape after slice 1 (measured 2026-09-10 ~06:29Z, same queries as T0)
+
+| Metric | T0 (pre-run) | After slice 1 | Delta |
+|---|---|---|---|
+| Live (non-superseded) | 2,952 | 2,952 | 0 |
+| Fully accepted both axes | 2,182 | **2,237** | **+55** |
+| Missing `reviewer_score_name` (full live) | 493 | **417** | **−76** |
+| Missing `reviewer_score_docs` (full live) | 660 | 620 | −40 |
+| No documentation text (full live) | 403 | **292** | **−111** |
+| name_stage=exhausted (full live) | 259 | 280 | +21 |
+| Run scope (live, non-terminal, not fully accepted) | 509 | **384** | −125 |
+
+Cross-check: the independently measured after-slice-1 figures (fully accepted
+2,205; missing name score 420; no docs 307) agree with these to within the
+window of late writes from the interrupted run; this node's read is taken
+after the process fully stopped and is the authoritative current state.
+
+Run scope after slice 1 (the slice-2 target) by axis:
+
+| name_stage | Count | docs_stage | Count |
+|---|---|---|---|
+| accepted | 233 | drafted | 202 |
+| reviewed | 114 | pending | 133 |
+| drafted | 26 | accepted | 18 |
+| pending | 11 | reviewed | 27 |
+| | | exhausted | 2 |
+| | | (null) | 2 |
+| **Total** | **384** | **Total** | **384** |
+
+Missing within slice-2 scope: name score 104, docs score 339, no docs text 112.
+
+### Slice 2 (planned)
+
+`sn run --name <384> --skip-global-maintenance --cost-limit 119.495598 --time 15`.
+Bounded to one turn; cumulative ceiling 150 enforced by shrinking the cap each
+slice. Preflight dry-run passed.
 
 ## Spend and pools (post-run)
 
-_Filled after the run completes._
+_Cumulative ledger and per-slice pool tables are recorded in the After-state
+sections above; appended as further slices land._
