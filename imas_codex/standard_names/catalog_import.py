@@ -145,6 +145,31 @@ class CheckResult:
     catalog_commit_sha: str | None = None
     graph_commit_sha: str | None = None
 
+    def describe_divergence(self, limit: int = 5) -> str | None:
+        """Render the divergence signal as an actionable refusal string.
+
+        Returns ``None`` when nothing diverged — the published tree agrees
+        with the graph on every compared field. Otherwise names the count and
+        the first diverged identities so a publish that refuses the tree can
+        point the operator at what disagreed rather than at an opaque number.
+
+        *limit* caps how many identities are named; the remainder is counted
+        in the trailing clause.
+        """
+        if not self.diverged:
+            return None
+        sample = ", ".join(
+            str(entry.get("name")) for entry in self.diverged[:limit] if entry
+        )
+        total = len(self.diverged)
+        if len(self.diverged) > limit:
+            sample = f"{sample} … and {total - limit} more"
+        return (
+            f"post-copy check found {total} diverged entr"
+            f"{'y' if total == 1 else 'ies'} (published tree disagrees with "
+            f"the graph): {sample}"
+        )
+
 
 # ---------------------------------------------------------------------------
 # Git helpers
