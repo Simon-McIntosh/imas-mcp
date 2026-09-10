@@ -16,7 +16,9 @@ Publish safety:
   the tree with the current exporter.
 - Full-scope: ``rmtree`` + ``copytree``.
 - Domain-subset: per-domain ``copy2``.
-- Post-copy: ``check_catalog`` + ``load_catalog`` rollback on failure.
+- Post-copy: ``check_catalog``; a real divergence refuses the publish (the
+  finding lands in ``report.errors`` so the command exits non-zero), while an
+  uncomparable tree (graph unreachable) is skipped rather than blocked.
 """
 
 from __future__ import annotations
@@ -502,16 +504,24 @@ def run_publish(
         logger.info("Copied %d files to %s", report.files_copied, isnc)
 
         # ── Post-copy validation ───────────────────────────────
-        # (Best-effort — validate without graph if GraphClient unavailable)
+        # Best-effort only against graph *availability*: a tree that cannot be
+        # compared (graph unreachable) is not proof of agreement, but neither
+        # must an unreachable graph block a healthy publish, so the check is
+        # skipped on exception. A REAL divergence, however, refuses the
+        # publish: a tree that disagrees with the graph on printed entries
+        # must not be committed and reported as success. Previously the
+        # finding was logged as a warning while the command still exited 0 —
+        # the false-success defect — so the divergence now lands in
+        # ``report.errors`` and stops the commit.
         try:
             from imas_codex.standard_names.catalog_import import check_catalog
 
             check_result = check_catalog(isnc)
-            if check_result.diverged:
-                logger.warning(
-                    "Post-copy check found %d diverged entries",
-                    len(check_result.diverged),
-                )
+            divergence_error = check_result.describe_divergence()
+            if divergence_error is not None:
+                report.errors.append(divergence_error)
+                logger.error("%s", divergence_error)
+                return report
         except Exception as exc:
             logger.debug("Post-copy check skipped: %s", exc)
 
