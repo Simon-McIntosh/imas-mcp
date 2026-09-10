@@ -271,11 +271,50 @@ docs 101.
   never **generating** — the drain's remaining budget buys scoring, and the
   docs text it generates on the way is nearly a byproduct.
 
-### Slice 3 (planned, foreground)
+### Slice 3 (run `e5b9f99d…`, 04:46:19Z–04:55:22Z)
 
-`sn run --name <304> --skip-global-maintenance --cost-limit 111.983363 --time 8`,
-run in the foreground so it returns inside the same turn. Cumulative ceiling
-150 enforced by shrinking the per-slice cap each round.
+Ran broad-pool over the 304-identity scope with
+`--skip-global-maintenance --cost-limit 111.983363 --time 8` as a foreground
+invocation; it returned inside the turn.
+
+| Run record field | Value |
+|---|---|
+| `stop_reason` | **time_limit_reached** (clean cap stop) |
+| `cost_spent` | USD 29.278691 |
+| `names_reviewed` | 152 |
+| `names_regenerated` | 29 |
+| `names_enriched` | 1 |
+| `elapsed_s` | 542.3 |
+
+Pool summaries (run's own output): review_docs 152 / 25.3507, refine_docs
+29 / 3.9196, generate_docs 1 / 0.0085, review_name 0, refine_name 0. Exit
+code 1 accompanies the time-limit stop (partial completion, not a crash).
+
+### Cumulative spend vs the ceiling (updated)
+
+- After slice 3: **USD 67.295328** (1,237 LLMCost rows).
+- Remaining: **USD 82.704672** (150 − 67.295328).
+
+### Live tail shape after slice 3 (measured post-stop, same queries)
+
+| Metric | T0 | After slice 3 | Delta vs T0 |
+|---|---|---|---|
+| Fully accepted both axes | 2,182 | **2,398** | **+216** |
+| Missing name score (full live) | 493 | 420 | −73 |
+| Missing docs score (full live) | 660 | **464** | **−196** |
+| No documentation text (full live) | 403 | 288 | −115 |
+| name_stage=exhausted (full live) | 259 | 281 | +22 |
+| Run scope (live, non-terminal, not fully accepted) | 509 | **179** | **−330** |
+
+Run scope after slice 3 (slice-4 target) — name_stage: reviewed 109, accepted
+37, drafted 22, pending 11. docs_stage: pending 121, accepted 18, reviewed 23,
+drafted 13, exhausted 2, (null) 2. Missing in scope: name 48, docs 139, no docs
+100. The docs axis now dominates the tail.
+
+### Slice 4 (planned, foreground)
+
+`sn run --name <179> --skip-global-maintenance --cost-limit 82.704672 --time 8`,
+foreground, returns inside the same turn.
 
 ## Spend and pools (post-run)
 
