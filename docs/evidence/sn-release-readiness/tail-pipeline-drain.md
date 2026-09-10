@@ -42,7 +42,15 @@ graph on 2026-09-10, immediately before the run (and again after it). Definition
 | Live tail (live minus fully accepted) | 770 |
 | — of which exhausted cohort (`name_stage='exhausted'`) | 259 |
 | — of which contested | 0 |
-| **Run scope (tail minus exhausted)** | **511** |
+| — of which terminal on the catalog-status axis (`status` superseded/deprecated) | 2 |
+| **Run scope (tail minus exhausted minus status-terminal)** | **509** |
+
+Two of the 770 tail identities are terminal on the catalog-status axis
+(`status='superseded'` while pipeline name_stage is `reviewed`), so the
+`--name` preflight refuses them as terminal lifecycle:
+`accumulated_methane_carbon_13_count_due_to_gas_injection` and
+`accumulated_total_gas_count_at_midplane_due_to_gas_injection`. They are
+excluded from the run and reported here so the scope arithmetic closes.
 
 ### Run scope by name_stage
 
@@ -50,9 +58,13 @@ graph on 2026-09-10, immediately before the run (and again after it). Definition
 |---|---|
 | accepted | 206 |
 | drafted | 169 |
-| reviewed | 125 |
+| reviewed | 123 |
 | pending | 11 |
-| **Total** | **511** |
+| **Total** | **509** |
+
+(The T0 511 slice was accepted 206, drafted 169, reviewed 125, pending 11; the
+two removed status-terminal rows were both `reviewed`, so reviewed drops 125 →
+123 on the exact run scope.)
 
 ### Run scope by docs_stage
 
@@ -60,15 +72,18 @@ graph on 2026-09-10, immediately before the run (and again after it). Definition
 |---|---|
 | pending | 335 |
 | drafted | 75 |
-| accepted | 72 |
+| accepted | 70 |
 | reviewed | 24 |
 | exhausted | 3 |
 | (null) | 2 |
-| **Total** | **511** |
+| **Total** | **509** |
+
+(The two removed rows carry `docs_stage='accepted'`, so the T0 511-slice docs
+stages are unchanged except accepted 72 → 70.)
 
 ### Missing-score / missing-docs figures
 
-Within the **run scope (511)**:
+Within the **run scope (509)**, measured at T0 before the run:
 
 | Measure | Count |
 |---|---|
