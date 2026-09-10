@@ -220,3 +220,63 @@ a few minutes at the post-stop read) — the pipeline's background sweep gates
 on 600 s age, so these are normal in-flight state to be re-claimed in later
 slices, not evidence of re-accumulation. Recorded as pipeline state rather
 than swept again.
+
+### Slice 2 attempt: refused by the claim predicate (evidence for the gate repair)
+
+The next launch (`sn run --name <205> --skip-global-maintenance
+--cost-limit 65.873199 --time 8`, ~08:04Z) was refused atomically at
+preflight: **30 of the 205 identities report "current worker claim"**
+(`average_charge_number`, `energy_flux_normalized_due_to_
+perturbed_parallel_magnetic_field`, `ion_charge_state_average_charge_number`,
+`particle_flux_normalized_due_to_e_cross_b_drift`, … — the rows slice 1 was
+holding when it hit its time limit).
+
+Reflecting on the refusal, the claim predicate is **age-blind**. A bounded
+read at the refusal moment returns 31 still-claimed rows with
+`claimed_at` 07:36:44Z–07:45:42Z — by then every one of them was already
+**past the 600 s orphan threshold** (the newest was 18.5 min old), yet
+`_exact_name_scope_refusals` refuses on `claimed_at IS NOT NULL OR
+claim_token IS NOT NULL` with no expiry tolerance. So a claim that passes
+the orphan age is only reaped by a *running* process's background sweep, and
+the `--name` preflight refuses the run from starting to reap it. Between-run
+handoff therefore needs either the claimed rows excluded from the scope, a
+wait plus a sweep, or the peer node repairing the sweep gating in
+`loop.py`. This is the second-accumulation signal the node was told to name
+with counts and timestamps rather than re-sweep: **31 claims at 07:36–07:45Z,
+all stale by 08:04Z, still blocking the next preflight**. It is reported to
+the peer channel, not swept again.
+
+### Does the pipeline still report eligible work when you stop?
+
+Yes. At the stopped state the run scope is 205 identities, of which 174 carry
+no claim token and remain eligible — the pipeline processes real work to a
+clean time-limit stop (slice 1: 55 reviewed, 39 fully-accepted) and next
+launch is blocked **not by exhaustion but by the age-blind claim
+predicate**. The original wedge — hours-old claims with no worker process to
+sweep them — is gone; the residual block is minutes dead and clears with one
+sweep or the gate repair.
+
+### Cumulative spend (final for this record)
+
+| Measure | Value |
+|---|---|
+| Campaign rows (`llm_at >= 2026-09-10T04:00Z`) | 1,449 |
+| Campaign spend | **USD 84.126801** |
+| Overspend | 0.0 |
+| **Remaining under the 150 USD ceiling** | **USD 65.873199** |
+
+### Live tail shape at stop (final, 08:04Z)
+
+| Metric | Release-time | At stop | Delta |
+|---|---|---|---|
+| Fully accepted both axes | 2,412 | **2,451** | **+39** |
+| Run scope | 248 | 205 | −43 |
+| Missing name score (full live) | 420 | 408 | −12 |
+| Missing docs score (full live) | 451 | 422 | −29 |
+| No documentation text (full live) | 288 | 287 | −1 |
+| Claim tokens present | 0 | 31 | +31 |
+| Stuck `refining` rows | 0 | 3 | +3 |
+
+Resume recipe for the next slice (if taken): scope 205 with the 31 claimed
+identities excluded (or a sweep first), `--skip-global-maintenance
+--cost-limit 65.873199 --time 8`.
