@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-10T06:01:47",
+  "updated": "2026-09-10T07:28:26",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -4690,6 +4690,15 @@
         "session_model": null,
         "sessions": {},
         "created": "2026-09-09"
+      },
+      {
+        "id": "s10c-local-b",
+        "harness": "clive",
+        "role": "implement",
+        "session_id": null,
+        "session_model": null,
+        "sessions": {},
+        "created": "2026-09-10"
       },
       {
         "id": "scout-bench",
@@ -120201,6 +120210,194 @@
         "watch_override": null,
         "tool_steps": 12.0,
         "orientation_input_tokens": null
+      },
+      {
+        "run_id": "r-20260910T040216575287-n-srr-drain-the-live-tail-at-the-authorised-cap",
+        "plan": "sn-release-readiness",
+        "section": "",
+        "node": "n-srr-drain-the-live-tail-at-the-authorised-cap",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1208,
+                "cached_input_tokens": 683052,
+                "input_tokens": 684262,
+                "output_tokens": 1425,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 685687,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/sn-release-readiness/tail-pipeline-drain.md reports the live tail shape before and after a broad scoped pipeline run: counts of live non-terminal StandardName rows by name_stage and docs_stage, the count missing reviewer_score_name, the count missing reviewer_score_docs, and the count with no documentation text, measured before the run and again after it. The coordinator measured 2919 live identities with 2151 fully accepted on both axes, leaving 768, of which 493 lack a name score, 660 lack a docs score and 403 have no documentation text - confirm or correct each figure with your own bounded read before running anything. Then run the pipeline over the live tail with a HARD COST LIMIT OF 150 USD, which is the authorised ceiling and must not be exceeded, and a time limit that fits inside your wall-clock budget; report actual spend against that 150, the pools that ran, the number of identities advanced on each axis, and the resulting stage counts. EXCLUDE the exhausted cohort: roughly 258 rows carry name_stage=exhausted, meaning the refine rotation cap was already hit, so another rotation spends money and changes nothing - report their count and leave them for a separate rescore pass. Pass --skip-global-maintenance on every invocation: global structural maintenance runs a superseded-child cleanup that removes protected parent edges without consulting protection, an open defect recorded as f-pidp-superseded-child-cleanup-ignores-protection, and a broad run is exactly what would exercise it. Never pass --reseed and never pass --force. Mid-pipeline state is normal and expected: if the time or cost limit stops the run partway that is a completed wave and not a failure, so report where it reached rather than treating it as an error, and never stop a running pipeline early to tidy the report. Read spend from the run's own reported figures and the log at ~/.local/share/imas-codex/logs rather than from a filtered tail. Attempt no signed manifest apply and edit no name by hand. Live graph work runs on the login node because the Neo4j tunnel is login-node-local. Never pipe imas-codex CLI output. Produce no figure and read no image file: this lane is not multimodal. Write the manifest with what you have BEFORE starting the pipeline run, because your process ends with its turn and a deferred manifest is indistinguishable from a crash.",
+          "estimated_hours": null,
+          "goal": "Drive the live non-exhausted tail toward accepted through a pipeline run at the authorised spend ceiling",
+          "id": "n-srr-drain-the-live-tail-at-the-authorised-cap",
+          "lane_declaration": {
+            "backend": "clive",
+            "headroom": null,
+            "metered": false,
+            "observed_at": null,
+            "read_at": "2026-09-10T04:02:17Z",
+            "resolved_backend": "clive",
+            "utilisation_pct": null
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260910T040216575287-n-srr-drain-the-live-tail-at-the-authorised-cap/manifest.md",
+          "plan": "sn-release-readiness",
+          "requested_backend": "clive",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "token_budget": null,
+          "write_paths": [
+            "docs/evidence/sn-release-readiness/tail-pipeline-drain.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10c-local",
+        "backend": "clive",
+        "local": false,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-10T04:02:23Z",
+        "completed_at": "2026-09-10T05:25:42.106Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 4962,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 4999,
+        "stalled": false,
+        "time_budget": "55m",
+        "base_sha": "eae3fa693ca19f93a7e07da5fc59f5154b1f0d50",
+        "commits": [
+          "ebac69ec13eecc3cf6d39b2e17a1bda307091f07",
+          "f9d3a4df530aa300a08e7e37fcb457c6e691b518",
+          "9826a652eb4fb0d5ba64ca034454e78ef1d36f1f",
+          "ae97959a6e63e5d477e35d6b048b41b2f80af5e2",
+          "93b4ff410c2bdfd1ac68d0bdc07dde5850456045",
+          "d2ccdabb60adef30bc8eb78d4caa59f1ac3e394b"
+        ],
+        "changed_lines": {
+          "added": 367,
+          "removed": 0,
+          "files": 1
+        },
+        "tests_added": 0,
+        "gate": "passed",
+        "gate_check": {
+          "command": "bounded before-and-after census of the live non-terminal population by axis, ledger spend aggregation, and repeated bounded 8-minute scoped pipeline slices with --skip-global-maintenance",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "fully-accepted 2151 to 2381 (+230); docs-score gap 660 to 469; name-score gap 493 to 420; docs-text gap 403 to 306; 1284 cost rows, 72.12 USD of 150"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260910T040216575287-n-srr-drain-the-live-tail-at-the-authorised-cap/manifest.md",
+        "scope_changed": false,
+        "session_id": "c23a4912-5c5a-4108-920e-aa7c8768166b",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 8895951,
+            "input_tokens_cumulative": 8895951,
+            "output_tokens": 34717,
+            "output_tokens_cumulative": 34717,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lane_receipt": {
+          "quota_state": "unmeasured",
+          "observed_at": "2026-09-10T05:25:42.106Z",
+          "effective_context_window": "unmeasured",
+          "quota_windows": [],
+          "notional_cost_usd": "unmeasured",
+          "rate_basis": "unmeasured",
+          "unmeasured": {
+            "effective_context_window": "missing_rollout",
+            "notional_cost_usd": "missing_rollout",
+            "rate_basis": "missing_rollout",
+            "quota_windows": "unmetered"
+          }
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 0,
+          "cumulative_input_tokens": 8895951,
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 2642.667,
+          "generated_tokens": 34717,
+          "generation_seconds": 1358.106,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 25.1,
+          "machine_seconds": 1284.561,
+          "peak_input_tokens": 255178,
+          "tokens_per_second": 25.56,
+          "wall_tokens_per_second": 13.14
+        },
+        "follow_on_paths": [],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "resume",
+        "attempt": 3,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-srr-drain-the-live-tail-at-the-authorised-cap",
+          "session_id": "c23a4912-5c5a-4108-920e-aa7c8768166b",
+          "session_source": "stream",
+          "retained_at": "2026-09-10T05:25:42.106Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null,
+        "tool_steps": 70.0,
+        "orientation_input_tokens": 3233499.0
       }
     ],
     "holds": [
@@ -120471,6 +120668,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2087
+    "_version": 2089
   }
 }
