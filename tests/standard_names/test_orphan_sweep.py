@@ -24,13 +24,19 @@ Section 2 — Integration tests (real Neo4j, auto-skipped when unavailable)
 - test_sweep_count_returns_correctly       — 3 stale name + 2 stale docs → correct per-category
 - test_run_loop_respects_stop_event        — loop exits within 0.5 s when stop_event is set
 - test_run_loop_periodic                   — stale claim swept within 0.3 s by running loop
+
+Section 3 — run_sn_pools wiring: the sweep is a safety net, not a mutation
+--------------------------------------------------------------------------
+- test_sweep_starts_when_scoped_maintenance_is_bypassed — sweep task still starts under the bypass flag; the embed worker bundled with it still does not
+- test_global_maintenance_writers_remain_bypassed_while_sweep_runs — every graph-wide mutation writer stays quiet when the bypass flag is set
+- test_drain_starts_sweep_and_manifest_heartbeat_together — a bounded drain keeps its lease heartbeat AND gets the safety-net sweep
 """
 
 from __future__ import annotations
 
 import asyncio
-from contextlib import contextmanager
-from unittest.mock import MagicMock, call, patch
+from contextlib import ExitStack, contextmanager
+from unittest.mock import AsyncMock, MagicMock, call, patch
 
 import pytest
 
@@ -736,3 +742,237 @@ async def test_run_loop_periodic(_gc, _clean_test_nodes):
     assert row["name_stage"] == "reviewed", (
         f"Loop did not sweep the stale claim within 0.3 s: {row}"
     )
+
+
+# ===========================================================================
+# Section 3 — run_sn_pools wiring: the sweep is a safety net, not a mutation
+# ===========================================================================
+#
+# --skip-global-maintenance silences the graph-wide reconcile writers (they
+# rewrite live rows), but it must not silence the orphan sweep, which clears
+# claim tokens abandoned by a dead process.  A claimed row is ineligible, so
+# a run whose workers were killed mid-invocation and whose sweep was
+# suppressed reports no work forever, with the budget idling.  These tests
+# drive run_sn_pools over a mocked graph/worker boundary and hold both sides
+# of the flag: the sweep still starts when the flag is set, and every
+# mutating maintenance writer is still skipped.  A bounded drain keeps its
+# lease heartbeat alongside the sweep.
+
+_SN_GO = "imas_codex.standard_names.graph_ops"
+_SN_LOOP = "imas_codex.standard_names.loop"
+
+# Graph-wide mutation writers the bypass flag must keep quiet.  Each is
+# declared with the return value its caller consumes, so a run that (wrongly)
+# reaches one stays graph-free and the not-called assertion is the signal.
+_MAINTENANCE_WRITERS: dict[str, object] = {
+    "reconcile_standard_name_sources": {},
+    "mark_orphaned_standard_name_runs_stale": 0,
+    "release_all_orphan_claims": {"sn": 0, "sns": 0},
+    "resolve_doc_links": {},
+    "rederive_structural_edges": {},
+    "normalize_derived_parent_lifecycle": 0,
+    "reconcile_orphan_parent_sources": 0,
+    "restamp_harmonized_families": {},
+    "refresh_drifted_sources": {},
+}
+
+# Writers hosted outside graph_ops keep their binding-site module so the
+# ``run_sn_pools`` import-site patch intercepts them.
+_MAINTENANCE_WRITER_MODULES: dict[str, str] = {
+    "restamp_harmonized_families": "imas_codex.standard_names.harmonize",
+    "refresh_drifted_sources": "imas_codex.standard_names.source_refresh",
+}
+
+
+def _loop_graph_context() -> tuple[MagicMock, MagicMock]:
+    """GraphClient mock whose default query answers the SNRun-count probe."""
+    graph = MagicMock()
+    graph.query.return_value = [{"cnt": 1}]
+    context = MagicMock()
+    context.__enter__.return_value = graph
+    context.__exit__.return_value = False
+    return context, graph
+
+
+async def _drive_run_sn_pools(
+    *,
+    scope_run_id: str | None = None,
+    drain_scope_id: str | None = None,
+) -> dict[str, MagicMock]:
+    """Run ``run_sn_pools`` over a mocked boundary; return its worker mocks.
+
+    Only unconditional call sites are stubbed; the maintenance writers are
+    replaced by spies so the assertion is on whether the orchestrator calls
+    them, not on stubbed data.  The stop event is set before entry, so the
+    run exits promptly after the startup path (which is where the sweep is
+    wired) without any pool or drain work.
+
+    Returns:
+        ``{"sweep", "embed", "heartbeat", "writers"}`` — ``heartbeat`` is
+        ``None`` for a non-drain run.
+    """
+    graph_ctx, _ = _loop_graph_context()
+    with ExitStack() as stack:
+        stack.enter_context(patch(f"{_SN_GO}.create_sn_run_open"))
+        stack.enter_context(patch(f"{_SN_GO}.finalize_sn_run"))
+        stack.enter_context(
+            patch(f"{_SN_GO}.persist_outcome_snapshot", return_value={})
+        )
+        stack.enter_context(patch(f"{_SN_GO}.reset_persist_outcomes"))
+        stack.enter_context(
+            patch(
+                f"{_SN_GO}.scoped_terminal_residue",
+                return_value={"total": 0, "names": [], "sources": []},
+            )
+        )
+        stack.enter_context(
+            patch(
+                "imas_codex.standard_names.ledger.find_provenance_orphans",
+                return_value=[],
+            )
+        )
+        stack.enter_context(
+            patch(
+                "imas_codex.standard_names.audits."
+                "find_flux_surface_reduction_violations",
+                return_value=[],
+            )
+        )
+        stack.enter_context(
+            patch(
+                "imas_codex.standard_names.audits.find_removed_dd_sources",
+                return_value=[],
+            )
+        )
+        stack.enter_context(patch(f"{_SN_LOOP}._build_pool_specs", return_value=[]))
+        stack.enter_context(
+            patch(
+                "imas_codex.standard_names.pools.run_pools",
+                new_callable=AsyncMock,
+                return_value={},
+            )
+        )
+        stack.enter_context(
+            patch(
+                "imas_codex.standard_names.budget.BudgetManager.start",
+                new_callable=AsyncMock,
+            )
+        )
+        stack.enter_context(
+            patch(
+                "imas_codex.standard_names.budget.BudgetManager.drain_pending",
+                new_callable=AsyncMock,
+                return_value=True,
+            )
+        )
+        stack.enter_context(
+            patch(
+                "imas_codex.standard_names.budget.BudgetManager._get_total_spent_sync",
+                return_value=0.0,
+            )
+        )
+        stack.enter_context(
+            patch("imas_codex.graph.client.GraphClient", return_value=graph_ctx)
+        )
+        sweep = stack.enter_context(
+            patch(
+                "imas_codex.standard_names.orphan_sweep.run_orphan_sweep_loop",
+                new_callable=AsyncMock,
+            )
+        )
+        embed = stack.enter_context(
+            patch(
+                "imas_codex.discovery.base.embed_worker.embed_description_worker",
+                new_callable=AsyncMock,
+            )
+        )
+        heartbeat: MagicMock | None = None
+        if drain_scope_id:
+            heartbeat = stack.enter_context(
+                patch(
+                    "imas_codex.standard_names.orphan_sweep."
+                    "run_manifest_drain_heartbeat_loop",
+                    new_callable=AsyncMock,
+                )
+            )
+            stack.enter_context(
+                patch(f"{_SN_GO}.finalize_manifest_drain_scope", return_value={})
+            )
+        writers = {
+            name: stack.enter_context(
+                patch(
+                    f"{_MAINTENANCE_WRITER_MODULES.get(name, _SN_GO)}.{name}",
+                    return_value=default,
+                )
+            )
+            for name, default in _MAINTENANCE_WRITERS.items()
+        }
+
+        from imas_codex.standard_names.loop import run_sn_pools
+
+        stop = asyncio.Event()
+        stop.set()
+        kwargs: dict[str, object] = {
+            "cost_limit": 5.0,
+            "stop_event": stop,
+            "skip_global_maintenance": True,
+        }
+        if scope_run_id is not None:
+            kwargs["scope_run_id"] = scope_run_id
+        if drain_scope_id is not None:
+            kwargs["drain_scope_id"] = drain_scope_id
+            kwargs["drain_paths"] = ("magnetics/ip",)
+            kwargs["drain_dd_version"] = "4.1.0"
+        await run_sn_pools(**kwargs)
+
+    return {
+        "sweep": sweep,
+        "embed": embed,
+        "heartbeat": heartbeat,
+        "writers": writers,
+    }
+
+
+@pytest.mark.asyncio
+async def test_sweep_starts_when_scoped_maintenance_is_bypassed() -> None:
+    """The bypass flag silences the embed worker, never the sweep task.
+
+    The sweep was historically bundled with the mutating workers under a
+    single ``if not skip_global_maintenance:`` block, so a scoped run lost
+    its safety net exactly when a dead worker could leave claims stranded.
+    """
+    mocks = await _drive_run_sn_pools(scope_run_id="bounded-run")
+
+    # create_task invoked the coroutine — the task was wired. (The task can be
+    # cancelled on its first turn when the run stops immediately, so the
+    # assertion is on creation, not on completion.)
+    mocks["sweep"].assert_called()
+    mocks["embed"].assert_not_called()  # mutating worker still skipped
+
+
+@pytest.mark.asyncio
+async def test_global_maintenance_writers_remain_bypassed_while_sweep_runs() -> None:
+    """Every graph-wide mutation writer stays untouched when the sweep runs."""
+    mocks = await _drive_run_sn_pools(scope_run_id="bounded-run")
+
+    for _name, writer in mocks["writers"].items():
+        writer.assert_not_called()
+    mocks["sweep"].assert_called()
+
+
+@pytest.mark.asyncio
+async def test_drain_starts_sweep_and_manifest_heartbeat_together() -> None:
+    """A bounded drain keeps its lease heartbeat and gains the sweep.
+
+    The drain path forces the bypass flag, so before this decoupling it ran
+    neither worker; a drain whose workers died mid-invocation also stranded
+    its claims.  The heartbeat (lease liveness) must survive alongside the
+    safety-net sweep.
+    """
+    mocks = await _drive_run_sn_pools(drain_scope_id="owned-scope")
+
+    mocks["sweep"].assert_called()
+    mocks["heartbeat"].assert_called()  # drain lease stays fresh
+    mocks["embed"].assert_not_called()
+    for _name, writer in mocks["writers"].items():
+        writer.assert_not_called()
