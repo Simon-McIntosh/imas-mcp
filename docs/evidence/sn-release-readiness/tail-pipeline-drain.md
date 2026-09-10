@@ -311,9 +311,54 @@ Run scope after slice 3 (slice-4 target) — name_stage: reviewed 109, accepted
 drafted 13, exhausted 2, (null) 2. Missing in scope: name 48, docs 139, no docs
 100. The docs axis now dominates the tail.
 
-### Slice 4 (planned, foreground)
+### Slice 4 (run `616fefe5…`, 04:59:51Z–05:08:09Z)
 
-`sn run --name <179> --skip-global-maintenance --cost-limit 82.704672 --time 8`,
+Foreground broad-pool over the 179-identity scope with
+`--skip-global-maintenance --cost-limit 82.704672 --time 8`. Clean
+time-limit stop.
+
+| Run record field | Value |
+|---|---|
+| `stop_reason` | time_limit_reached |
+| `cost_spent` | USD 4.682584 |
+| `names_reviewed` | 16 |
+| `names_regenerated` | 4 |
+| `elapsed_s` | 497.9 |
+
+Pools: review_docs 16 / 3.6326, refine_docs 4 / 1.0500. review_name and
+refine_name processed 0 — the remaining reviewed rows are not being claimed
+by refine (see note below). Slice 4 found markedly less eligible work than
+slice 3: the tail is converging.
+
+### Cumulative spend vs the ceiling (updated)
+
+- After slice 4: **USD 71.977912** (1,282 LLMCost rows).
+- Remaining: **USD 78.022088** (150 − 71.977912).
+
+### Live tail shape after slice 4 (measured post-stop, same queries)
+
+| Metric | T0 | After slice 4 | Delta vs T0 |
+|---|---|---|---|
+| Fully accepted both axes | 2,182 | **2,411** | **+229** |
+| Missing name score (full live) | 493 | 420 | −73 |
+| Missing docs score (full live) | 660 | **452** | **−208** |
+| No documentation text (full live) | 403 | 288 | −115 |
+| name_stage=exhausted (full live) | 259 | 281 | +22 |
+| Run scope (live, non-terminal, not fully accepted) | 509 | **166** | **−343** |
+
+Run scope after slice 4 (slice-5 target) — name_stage: reviewed 109, accepted
+24, drafted 22, pending 11. docs_stage: pending 121, accepted 18, reviewed 22,
+drafted 1, exhausted 2, (null) 2. Missing in scope: name 44, docs 127, no docs
+100.
+
+Note: refine_name has claimed nothing since slice 2 while 109 reviewed rows
+remain in scope; those rows are not yielding to the name refine pool (they
+are the residual below-bar / steering population), which is why the tail is
+sticking around this row class rather than the reviewed work draining.
+
+### Slice 5 (planned, foreground)
+
+`sn run --name <166> --skip-global-maintenance --cost-limit 78.022088 --time 8`,
 foreground, returns inside the same turn.
 
 ## Spend and pools (post-run)
