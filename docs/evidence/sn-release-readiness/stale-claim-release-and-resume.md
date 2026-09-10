@@ -168,8 +168,55 @@ uv run --no-sync imas-codex sn run \
 to 72.123238. This is the cumulative ceiling across both drains — not a fresh
 allowance — and each slice is capped at the remaining figure.)
 
-## After-state (filled in as slices land)
+## After-state (recorded as slices land)
 
-### Slice 1
+### Slice 1 (run `f2562940…`, 07:37Z–07:45Z)
 
-_placeholder_
+Broad-pool over the 248-identity scope with
+`--skip-global-maintenance --cost-limit 77.876762 --time 8`. Clean
+time-limit stop.
+
+| Run record field | Value |
+|---|---|
+| `stop_reason` | time_limit_reached |
+| `cost_spent` | USD 12.003563 |
+| `cost_limit` | USD 77.876762 |
+| `names_reviewed` | 55 |
+| `names_enriched` | 2 |
+| `names_regenerated` | 8 |
+| `elapsed_s` | 542.6 |
+
+Pool summaries (run's own output): review_docs 33 / 8.2212, review_name
+22 / 2.4474, refine_docs 7 / 1.0213, refine_name 1 / 0.2924, generate_docs
+2 / 0.0212, generate_name and enrich_parents 0.
+
+#### Cumulative spend vs the ceiling (updated)
+
+- After slice 1: **USD 84.126801** (1,449 LLMCost rows) — ledger delta
+  matches the run's own figure exactly.
+- Remaining: **USD 65.873199** (150 − 84.126801).
+
+#### Live tail shape after slice 1 (measured post-stop, same queries)
+
+| Metric | Release-time | After slice 1 | Delta |
+|---|---|---|---|
+| Fully accepted both axes | 2,412 | **2,451** | **+39** |
+| Live (non-superseded) | 2,952 | 2,952 | 0 |
+| Run scope | 248 | **205** | −43 |
+| Missing name score (full live) | 420 | 408 | −12 |
+| Missing docs score (full live) | 451 | **422** | −29 |
+| No documentation text (full live) | 288 | 287 | −1 |
+| name_stage=exhausted (full live) | 281 | 284 | +3 |
+| Live claim tokens at stop | 0 | **31** | +31 |
+
+Run scope after slice 1 (slice-2 target) — name_stage: reviewed 110,
+drafted 43, accepted 38, pending 11, refining 3. docs_stage: pending 126,
+accepted 36, reviewed 24, drafted 14, exhausted 3, (null) 2. Missing in
+scope: name 57, docs 165, no docs 105.
+
+The 31 claim tokens present at stop are **fresh** (claimed_at 07:36–07:45Z,
+the slice's own processing window; `claimed_at` ages are measured seconds to
+a few minutes at the post-stop read) — the pipeline's background sweep gates
+on 600 s age, so these are normal in-flight state to be re-claimed in later
+slices, not evidence of re-accumulation. Recorded as pipeline state rather
+than swept again.
