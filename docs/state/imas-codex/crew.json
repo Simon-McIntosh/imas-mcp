@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-10T10:27:42",
+  "updated": "2026-09-10T11:27:32",
   "project": "imas-codex",
   "doc": "crew",
   "data": {
@@ -120978,6 +120978,200 @@
         "watch_override": null,
         "tool_steps": 55.0,
         "orientation_input_tokens": 2179414.0
+      },
+      {
+        "run_id": "r-20260910T071400083388-n-swcr-a-release-command-must-not-report-a-success-it-did-not-have",
+        "plan": "sn-west-catalog-release",
+        "section": "cut-predates-its-problems",
+        "node": "n-swcr-a-release-command-must-not-report-a-success-it-did-not-have",
+        "node_definition": {
+          "coordinator": {
+            "authoring_turn": {
+              "source": "claude-code-session-transcript",
+              "status": "measured",
+              "tokens": {
+                "cache_creation_input_tokens": 1645,
+                "cached_input_tokens": 753873,
+                "input_tokens": 755520,
+                "output_tokens": 1547,
+                "reasoning_output_tokens": 0,
+                "total_tokens": 757067,
+                "uncached_input_tokens": 2
+              }
+            },
+            "harness": "claude-code",
+            "runtime_session_id": "9a2a0944-44ee-4d69-8147-14071cf6a5e9",
+            "session_id": "ship-s10-20260908"
+          },
+          "done_when": "docs/evidence/sn-west-catalog-release/release-commands-report-success.md first CONFIRMS EACH DEFECT STILL REPRODUCES at current HEAD before changing anything, quoting the reproduction or stating plainly that it no longer reproduces - two sibling release defects were found already fixed by adjacent work, so a repair applied to a working path is the likely error here. Three defects were recorded on 2026-09-07, each a command that reported success while something it was responsible for did not happen. One: the compose gate fails the whole run rather than only its pool, so a gate that should degrade one pool stops everything. Two: an unreachable generation endpoint exits an unscoped sn run before it claims anything, including pools that use only remote models, so a wrong address in one seat stopped every pool - and the failure text names the endpoint, sending the reader at a healthy service instead of at the configuration that was wrong; thirteen sources sat parked behind this while the model served normally. Three: a post-copy signal reported 196 diverged entries at exit 0, around publish.py line 510 where check_result.diverged is consulted and catalog_import.py near line 531 where diverged entries are appended. For each defect that still reproduces, make the failure land where it belongs and be visible: a gate that fails should fail its own pool and point at itself rather than aborting the run, an unreachable seat should not stop pools that do not use it and its message should name the configuration rather than the service, and a post-copy divergence must not exit 0. Prove each with a test asserting BOTH directions - the failure is now reported or scoped, and the healthy path still succeeds unchanged - and name the tests in the evidence. Do not silence a signal to make a test pass and do not widen any exit code to zero. Gate with tests/standard_names on a debug partition and report added failures against a stated base revision rather than absolute green. Peers hold imas_codex/standard_names/loop.py, cascade.py and catalog_release.py right now, so if a fix needs any of those, NAME the file and stop rather than writing into another worker's scope. Produce no figure and read no image file: this lane is not multimodal. Write the manifest before the suite run because your process ends with its turn.",
+          "estimated_hours": null,
+          "goal": "Make the release and pipeline commands report the failures they currently hide",
+          "id": "n-swcr-a-release-command-must-not-report-a-success-it-did-not-have",
+          "lane_declaration": {
+            "backend": "clive",
+            "headroom": null,
+            "metered": false,
+            "observed_at": null,
+            "read_at": "2026-09-10T07:14:00Z",
+            "resolved_backend": "clive",
+            "utilisation_pct": null
+          },
+          "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260910T071400083388-n-swcr-a-release-command-must-not-report-a-success-it-did-not-have/manifest.md",
+          "plan": "sn-west-catalog-release",
+          "requested_backend": "clive",
+          "requires_decisions": [],
+          "role": "implement",
+          "section": "cut-predates-its-problems",
+          "spec_level": "guided",
+          "time_budget": "55m",
+          "token_budget": null,
+          "write_paths": [
+            "imas_codex/standard_names/publish.py",
+            "imas_codex/standard_names/catalog_import.py",
+            "tests/standard_names/test_catalog_import_divergence.py",
+            "docs/evidence/sn-west-catalog-release/release-commands-report-success.md"
+          ]
+        },
+        "role": "implement",
+        "spec_level": "guided",
+        "member": "s10c-local",
+        "backend": "clive",
+        "local": false,
+        "agent": {
+          "alias": "dsv4-flash",
+          "backend": "clive",
+          "effort": "high",
+          "launch": "cli",
+          "model": "deepseek-v4-flash",
+          "sandbox": "worktree-full",
+          "usable_input_window": 1016576
+        },
+        "dispatched_at": "2026-09-10T07:14:09Z",
+        "completed_at": "2026-09-10T09:23:56.048Z",
+        "completed_at_source": "terminal_event",
+        "worker_seconds": 7710,
+        "worker_seconds_source": "stream_events",
+        "wall_seconds": 7787,
+        "stalled": true,
+        "time_budget": "55m",
+        "base_sha": "ff1755f6cc6b8c767fe72e2fe4c58ad47315566f",
+        "commits": [
+          "1369b8f041c9c1f9d7cdfd691ac8a6832312ee10",
+          "c968e9e50eb281fb537983d5b483b7fb999bd325"
+        ],
+        "changed_lines": {
+          "added": 419,
+          "removed": 7,
+          "files": 4
+        },
+        "tests_added": 6,
+        "gate": "passed",
+        "gate_check": {
+          "command": "per-defect reproduction attempt at HEAD, a divergence repro test run against pre-change and fixed publish.py, the focused publish and catalog-import suite, then the full tests/standard_names suite",
+          "exit_status": 0,
+          "log_path": null,
+          "log_digest": "defect 1 still reproduces (loop.py, peer-held, deferred); defect 2 no longer reproduces; defect 3 reproduced and fixed; focused 67 passed exit 0; 0 added failures"
+        },
+        "suite_delta": null,
+        "failure_classification": null,
+        "outcome": "",
+        "manifest_path": "/home/ITER/mcintos/.config/reckon/crew/runs/r-20260910T071400083388-n-swcr-a-release-command-must-not-report-a-success-it-did-not-have/manifest.md",
+        "scope_changed": false,
+        "session_id": "77d35149-0620-42fb-af05-e83df493e894",
+        "budget": {
+          "headroom": "unknown",
+          "utilisation_pct": null,
+          "rate_limit_type": null,
+          "rate_limit_period_minutes": null,
+          "resets_at": null,
+          "threshold_status": null,
+          "surpassed_threshold": null,
+          "tokens": {
+            "cache_creation_input_tokens": 0,
+            "cache_creation_input_tokens_cumulative": 0,
+            "cache_read_input_tokens": 0,
+            "cache_read_input_tokens_cumulative": 0,
+            "inference_geo": "",
+            "input_tokens": 1328081,
+            "input_tokens_cumulative": 1328081,
+            "output_tokens": 3428,
+            "output_tokens_cumulative": 3428,
+            "service_tier": "standard",
+            "speed": "standard"
+          },
+          "cost_usd": null,
+          "refusal": false,
+          "detail": "no rate-limit event in the stream yet",
+          "cost_usd_cumulative": null,
+          "cost_usd_imputed": true
+        },
+        "lane_receipt": {
+          "quota_state": "unmeasured",
+          "observed_at": "2026-09-10T09:23:56.048Z",
+          "effective_context_window": "unmeasured",
+          "quota_windows": [],
+          "notional_cost_usd": "unmeasured",
+          "rate_basis": "unmeasured",
+          "unmeasured": {
+            "effective_context_window": "missing_rollout",
+            "notional_cost_usd": "missing_rollout",
+            "rate_basis": "missing_rollout",
+            "quota_windows": "unmetered"
+          }
+        },
+        "lineage": null,
+        "shadow_controlled": null,
+        "shadow_patch": "",
+        "unreconciled_override": null,
+        "throughput": {
+          "cumulative_cached_input_tokens": 0,
+          "cumulative_input_tokens": 19771354,
+          "detail": "generation and wall clock reported separately by the backend",
+          "elapsed_seconds": 231.752,
+          "generated_tokens": 70568,
+          "generation_seconds": -37.938,
+          "input_budget_tokens": 1016576,
+          "input_utilisation_pct": 21.9,
+          "machine_seconds": 269.69,
+          "peak_input_tokens": 222882,
+          "wall_tokens_per_second": 304.5
+        },
+        "follow_on_paths": [
+          "cli/sn.py",
+          "loop.py",
+          "/"
+        ],
+        "dispute_count": 0,
+        "execution_fit": {
+          "allowed": true,
+          "execution_capable": true,
+          "matched_measure": null,
+          "override": false,
+          "role": "implement",
+          "status": "no-execution-measure"
+        },
+        "attempt_kind": "dispatch",
+        "attempt": 1,
+        "scope_acceptances": null,
+        "no_commit": null,
+        "commit_resolution": null,
+        "worktree_retention": {
+          "classification": "retained-for-resume",
+          "worktree": "/home/ITER/mcintos/Code/.reckon-worktrees/imas-codex-c994bf55fb01/ship-s10-20260908/n-swcr-a-release-command-must-not-report-a-success-it-did-not-have",
+          "session_id": "77d35149-0620-42fb-af05-e83df493e894",
+          "session_source": "stream",
+          "retained_at": "2026-09-10T09:23:56.048Z"
+        },
+        "predecessor_run": null,
+        "boundary_waiver": null,
+        "resume_waiver": null,
+        "watch_override": null,
+        "tool_steps": 125.0,
+        "orientation_input_tokens": 9126362.0,
+        "store_write": {
+          "status": "failed",
+          "error": "OperationalError: table runs has no column named payload"
+        }
       }
     ],
     "holds": [
@@ -121248,6 +121442,6 @@
         "resumption_fired": false
       }
     ],
-    "_version": 2094
+    "_version": 2095
   }
 }
