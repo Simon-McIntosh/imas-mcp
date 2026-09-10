@@ -1808,6 +1808,23 @@ def run_review_release(
     report.batch_label = batch_label
     report.branch = f"review/{git_tag}"
 
+    if dry_run:
+        # A rehearsal reports the roster it would freeze and the branch it
+        # would cut, but writes nothing: the staging directory is not created,
+        # no roster is frozen, and the RC counter does not move for a release
+        # that never happens.
+        report.artifact_path = str(reviews_dir / f"{git_tag}.sn_names.yaml")
+        logger.info(
+            "[dry-run] would export into %s, freeze %s (not written), branch "
+            "%s, publish and tag on %s%s",
+            staging_dir,
+            report.artifact_path,
+            report.branch,
+            effective_remote,
+            ", then open a PR" if open_pr else " without opening a PR",
+        )
+        return report
+
     # ── 3. Export approved ∪ batch (review_batch stamped) ──────────────
     staging_dir.mkdir(parents=True, exist_ok=True)
     try:
@@ -1852,21 +1869,6 @@ def run_review_release(
         )
     except Exception as exc:
         report.errors.append(f"approved baseline check failed: {exc}")
-        return report
-
-    if dry_run:
-        # A rehearsal reports the roster it would freeze and the branch it
-        # would cut, but writes neither: the repository stays byte-identical
-        # and the RC counter does not move for a release that never happens.
-        report.artifact_path = str(reviews_dir / f"{git_tag}.sn_names.yaml")
-        logger.info(
-            "[dry-run] would freeze %s (not written), branch %s, publish, "
-            "and tag on %s%s",
-            report.artifact_path,
-            report.branch,
-            effective_remote,
-            ", then open a PR" if open_pr else " without opening a PR",
-        )
         return report
 
     # ── 4. Freeze the batch artifact (pre-PR fields) ───────────────────
